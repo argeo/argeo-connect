@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.PeopleWebConstants;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -35,15 +36,12 @@ public class SearchEntitiesLP implements ILabelProvider {
 	// Cache local images
 	private Map<String, Image> icons;
 
-	public SearchEntitiesLP(PeopleService peopleService, Display display,
+	public SearchEntitiesLP(ResourceService resourceService, PeopleService peopleService, Display display,
 			Map<String, String> iconPathes) {
 		this.peopleService = peopleService;
-		personOLP = new PersonOverviewLP(
-				PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST,
-				peopleService);
-		orgOLP = new OrgOverviewLP(
-				PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST,
-				peopleService);
+		personOLP = new PersonOverviewLP(resourceService, peopleService,
+				PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST);
+		orgOLP = new OrgOverviewLP(resourceService, peopleService, PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST);
 
 		if (iconPathes != null) {
 			createIconMap(display, iconPathes);
@@ -120,11 +118,9 @@ public class SearchEntitiesLP implements ILabelProvider {
 			return null;
 
 		Node node = (Node) element;
-		if (icons.containsKey(PeopleTypes.PEOPLE_PERSON)
-				&& ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
+		if (icons.containsKey(PeopleTypes.PEOPLE_PERSON) && ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
 			return icons.get(PeopleTypes.PEOPLE_PERSON);
-		else if (icons.containsKey(PeopleTypes.PEOPLE_ORG)
-				&& ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
+		else if (icons.containsKey(PeopleTypes.PEOPLE_ORG) && ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
 			return icons.get(PeopleTypes.PEOPLE_ORG);
 		else
 			return null;

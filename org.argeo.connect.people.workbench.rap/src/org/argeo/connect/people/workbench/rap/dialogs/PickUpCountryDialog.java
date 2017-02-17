@@ -23,11 +23,11 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.workbench.rap.composites.SimpleJcrTableComposite;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesNames;
+import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
@@ -49,8 +49,8 @@ import org.eclipse.swt.widgets.Shell;
 public class PickUpCountryDialog extends TrayDialog {
 	private static final long serialVersionUID = 3766899676609659573L;
 
-	// Business objects
-	private PeopleService peopleService;
+	// Context
+	private ResourceService resourceService;
 	private final Session session;
 	private Node selectedNode;
 
@@ -60,18 +60,15 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new JcrColumnDefinition(null, PeopleNames.PEOPLE_CODE,
-				PropertyType.STRING, "Iso Code", 100));
-		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE,
-				PropertyType.STRING, "Label", 240));
+		colDefs.add(new JcrColumnDefinition(null, ResourcesNames.PEOPLE_CODE, PropertyType.STRING, "Iso Code", 100));
+		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Label", 240));
 	};
 
-	public PickUpCountryDialog(Shell parentShell, PeopleService peopleService,
-			Session session, String title) {
+	public PickUpCountryDialog(Shell parentShell, ResourceService resourceService, Session session, String title) {
 		super(parentShell);
-		this.title = title;
+		this.resourceService = resourceService;
 		this.session = session;
-		this.peopleService = peopleService;
+		this.title = title;
 	}
 
 	protected Point getInitialSize() {
@@ -81,21 +78,16 @@ public class PickUpCountryDialog extends TrayDialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-		Node tagParent = peopleService.getResourceService()
-				.getTagLikeResourceParent(session,
-						PeopleConstants.RESOURCE_COUNTRY);
+		Node tagParent = resourceService.getTagLikeResourceParent(session, ConnectConstants.RESOURCE_COUNTRY);
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session,
-				ConnectJcrUtils.getPath(tagParent),
-				PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE, colDefs, true, false);
+		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session, ConnectJcrUtils.getPath(tagParent),
+				ResourcesTypes.PEOPLE_TAG_ENCODED_INSTANCE, colDefs, true, false);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Add listeners
-		tableCmp.getTableViewer().addDoubleClickListener(
-				new MyDoubleClickListener());
-		tableCmp.getTableViewer().addSelectionChangedListener(
-				new MySelectionChangedListener());
+		tableCmp.getTableViewer().addDoubleClickListener(new MyDoubleClickListener());
+		tableCmp.getTableViewer().addSelectionChangedListener(new MySelectionChangedListener());
 
 		parent.pack();
 		return dialogArea;
@@ -103,7 +95,7 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	public String getSelected() {
 		if (selectedNode != null)
-			return ConnectJcrUtils.get(selectedNode, PeopleNames.PEOPLE_CODE);
+			return ConnectJcrUtils.get(selectedNode, ResourcesNames.PEOPLE_CODE);
 		else
 			return null;
 	}
@@ -121,8 +113,7 @@ public class PickUpCountryDialog extends TrayDialog {
 				return;
 			}
 
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			if (obj instanceof Node) {
 				selectedNode = (Node) obj;
 			}
@@ -136,8 +127,7 @@ public class PickUpCountryDialog extends TrayDialog {
 				return;
 			}
 
-			Object obj = ((IStructuredSelection) evt.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 			if (obj instanceof Node) {
 				selectedNode = (Node) obj;
 				okPressed();

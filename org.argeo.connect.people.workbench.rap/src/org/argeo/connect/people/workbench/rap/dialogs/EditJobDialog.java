@@ -26,20 +26,19 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DelayedText;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -78,17 +77,24 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * Dialog with a filtered list to create or edit a position for a given person
- * in an organization. If editing an existing position, note that both
+ * in an organisation. If editing an existing position, note that both
  * referenced and referencing entities must be given in order to eventually
  * remove old reference
  * 
  * <p>
- * It is the dialog duty to correctly initialize what is displayed based on the
+ * It is the dialog duty to correctly initialise what is displayed based on the
  * parameters passed at instantiation time.
  * </p>
  */
 public class EditJobDialog extends TrayDialog {
 	private static final long serialVersionUID = -3534660152626908662L;
+
+	// Context
+	private Session session;
+	private final ResourceService resourceService;
+	private final PeopleService peopleService;
+	private final AppWorkbenchService appWorkbenchService;
+
 	// The various field
 	private Text positionTxt;
 	private Text selectedItemTxt;
@@ -108,10 +114,6 @@ public class EditJobDialog extends TrayDialog {
 	private TableViewer entityViewer;
 
 	private final String title;
-
-	private Session session;
-	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
 
 	private boolean isBackward;
 	private String toSearchNodeType;
@@ -136,13 +138,13 @@ public class EditJobDialog extends TrayDialog {
 	 *            tells if we must remove referenced (if true) or referencing
 	 *            (if false) node
 	 */
-	public EditJobDialog(Shell parentShell, String title, PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService, Node oldLink, Node toUpdateNode, boolean isBackward) {
-		// , String toSearchNodeType
+	public EditJobDialog(Shell parentShell, String title, ResourceService resourceService, PeopleService peopleService,
+			AppWorkbenchService appWorkbenchService, Node oldLink, Node toUpdateNode, boolean isBackward) {
 		super(parentShell);
 		this.title = title;
+		this.resourceService = resourceService;
 		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
+		this.appWorkbenchService = appWorkbenchService;
 
 		this.isBackward = isBackward;
 		if (isBackward)
@@ -230,7 +232,8 @@ public class EditJobDialog extends TrayDialog {
 		GridData gd = EclipseUiUtils.fillWidth(2);
 		gd.heightHint = 290;
 		listCmp.setLayoutData(gd);
-		entityViewer = createListPart(listCmp, new EntitySingleColumnLabelProvider(peopleService, peopleUiService));
+		entityViewer = createListPart(listCmp,
+				new EntitySingleColumnLabelProvider(resourceService, peopleService, appWorkbenchService));
 		refreshFilteredList(toSearchNodeType);
 
 		// An empty line to give some air to the dialog
@@ -269,7 +272,7 @@ public class EditJobDialog extends TrayDialog {
 		dialogarea.layout();
 		// Set the focus on the first field.
 		filterTxt.setFocus();
-		if (!peopleService.lazyLoadLists())
+		if (!appWorkbenchService.lazyLoadLists())
 			refreshFilteredList(toSearchNodeType);
 		return dialogarea;
 	}
@@ -333,7 +336,7 @@ public class EditJobDialog extends TrayDialog {
 		layout.horizontalSpacing = 5;
 		parent.setLayout(layout);
 
-		boolean isDyn = peopleService.queryWhenTyping();
+		boolean isDyn = appWorkbenchService.queryWhenTyping();
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
 		if (isDyn)
 			filterTxt = new DelayedText(parent, style, SEARCH_TEXT_DELAY);
@@ -463,15 +466,13 @@ public class EditJobDialog extends TrayDialog {
 	}
 
 	protected NodeIterator query(String nodeType) {
+		String filter = filterTxt.getText();
 		try {
-			String filter = filterTxt.getText();
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
-
 			String xpathQueryStr = "//element(*, " + nodeType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filter);
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
+			Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
 			xpathQuery.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
 			QueryResult result = xpathQuery.execute();
 			return result.getNodes();

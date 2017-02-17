@@ -6,8 +6,8 @@ import javax.jcr.query.Row;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -21,40 +21,33 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 public class PeopleJcrViewerDClickListener implements IDoubleClickListener {
 
 	private String selectorName;
-	private final PeopleWorkbenchService peopleWorkbenchService;
+	private final AppWorkbenchService appWorkbenchService;
 
-	public PeopleJcrViewerDClickListener(String selectorName,
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public PeopleJcrViewerDClickListener(String selectorName, AppWorkbenchService appWorkbenchService) {
 		if (EclipseUiUtils.notEmpty(selectorName))
 			this.selectorName = selectorName;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.appWorkbenchService = appWorkbenchService;
 	}
 
-	public PeopleJcrViewerDClickListener(
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public PeopleJcrViewerDClickListener(AppWorkbenchService appWorkbenchService) {
 		selectorName = null;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.appWorkbenchService = appWorkbenchService;
 	}
 
 	public void doubleClick(DoubleClickEvent event) {
 		if (event.getSelection() == null || event.getSelection().isEmpty())
 			return;
-		Object obj = ((IStructuredSelection) event.getSelection())
-				.getFirstElement();
+		Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 		Node currNode = null;
 		try {
 			if (obj instanceof Row || obj instanceof Node)
 				currNode = ConnectJcrUtils.getNodeFromElement(obj, selectorName);
 			if (currNode != null)
-				CommandUtils
-						.callCommand(peopleWorkbenchService
-								.getOpenEntityEditorCmdId(),
-								OpenEntityEditor.PARAM_JCR_ID, currNode
-										.getIdentifier());
+				CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+						currNode.getIdentifier());
 
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to open editor for node "
-					+ currNode, re);
+			throw new PeopleException("Unable to open editor for node " + currNode, re);
 		}
 	}
 }

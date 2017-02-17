@@ -14,6 +14,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.OrgOverviewLP;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -34,11 +35,11 @@ import org.eclipse.swt.widgets.Label;
 public class OrganizationPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
+	private ResourceService resourceService;
 	private PeopleService peopleService;
 
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 
 		Composite body = new Composite(parent, SWT.NO_FOCUS);
 		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -75,10 +76,8 @@ public class OrganizationPage implements CmsUiProvider {
 		// Initialize image
 		try {
 			if (context.hasNode(PeopleNames.PEOPLE_PICTURE)) {
-				Node imageNode = context.getNode(PeopleNames.PEOPLE_PICTURE)
-						.getNode(Node.JCR_CONTENT);
-				is = imageNode.getProperty(Property.JCR_DATA).getBinary()
-						.getStream();
+				Node imageNode = context.getNode(PeopleNames.PEOPLE_PICTURE).getNode(Node.JCR_CONTENT);
+				is = imageNode.getProperty(Property.JCR_DATA).getBinary().getStream();
 				itemPicture = new Image(parent.getShell().getDisplay(), is);
 			} else
 				itemPicture = null;
@@ -89,8 +88,7 @@ public class OrganizationPage implements CmsUiProvider {
 
 		if (itemPicture != null) {
 			parent.setLayout(new GridLayout(2, false));
-			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS
-					| SWT.NO_SCROLL | SWT.NO_TRIM);
+			Composite imgCmp = new Composite(parent, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 			imgCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			imgCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 			new ImageLabel(imgCmp, SWT.NO_FOCUS, itemPicture);
@@ -104,21 +102,19 @@ public class OrganizationPage implements CmsUiProvider {
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		ILabelProvider labelProvider = new OrgOverviewLP(
-				PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
+		ILabelProvider labelProvider = new OrgOverviewLP(resourceService, peopleService,
+				PeopleWebConstants.OVERVIEW_TYPE_HEADER);
 		readOnlyInfoLbl.setText(labelProvider.getText(context));
 	}
 
-	private void createMailingListPanel(Composite parent, final Node context)
-			throws RepositoryException {
+	private void createMailingListPanel(Composite parent, final Node context) throws RepositoryException {
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
 		rl.spacing = 8;
 		parent.setLayout(rl);
 		if (context.hasProperty(PeopleNames.PEOPLE_MAILING_LISTS)) {
 
-			Value[] values = context.getProperty(
-					PeopleNames.PEOPLE_MAILING_LISTS).getValues();
+			Value[] values = context.getProperty(PeopleNames.PEOPLE_MAILING_LISTS).getValues();
 			for (Value value : values) {
 				final String valueStr = value.getString();
 				new Label(parent, SWT.NONE).setText(valueStr);
@@ -131,8 +127,7 @@ public class OrganizationPage implements CmsUiProvider {
 
 					@Override
 					public void widgetSelected(SelectionEvent e) {
-						ConnectJcrUtils.removeStringFromMultiValuedProp(
-								context, PeopleNames.PEOPLE_MAILING_LISTS,
+						ConnectJcrUtils.removeStringFromMultiValuedProp(context, PeopleNames.PEOPLE_MAILING_LISTS,
 								valueStr);
 						// FIXME won't work: node is checked in
 						// TODO refresh this part or the whole body
@@ -174,8 +169,11 @@ public class OrganizationPage implements CmsUiProvider {
 	}
 
 	/* DEPENDENCY INJECTION */
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
+	}
+
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
-
 }

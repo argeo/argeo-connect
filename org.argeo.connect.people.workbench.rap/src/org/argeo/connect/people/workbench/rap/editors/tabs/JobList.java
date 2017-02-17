@@ -17,7 +17,6 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.PeopleJcrUtils;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
@@ -35,6 +34,8 @@ import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.RoleListLabelProvider;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -60,8 +61,9 @@ public class JobList extends LazyCTabControl {
 	private static final long serialVersionUID = -4736848221960630767L;
 
 	// Context
+	private final ResourceService resourceService;
 	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleWorkbenchService;
+	private final AppWorkbenchService peopleWorkbenchService;
 	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
 	private final Node entity;
@@ -70,11 +72,11 @@ public class JobList extends LazyCTabControl {
 	// UI Objects
 	private MyFormPart myFormPart;
 
-	public JobList(Composite parent, int style, AbstractPeopleEditor editor,
-			PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
+	public JobList(Composite parent, int style, AbstractPeopleEditor editor, ResourceService resourceService,
+			PeopleService peopleService, AppWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);
 		toolkit = editor.getFormToolkit();
+		this.resourceService = resourceService;
 		this.peopleService = peopleService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.entity = entity;
@@ -123,8 +125,8 @@ public class JobList extends LazyCTabControl {
 
 		protected void refreshContent(Composite parent, Node entity) {
 			if (isBackward) {
-				List<Node> employees = peopleService.getRelatedEntities(entity,
-						PeopleTypes.PEOPLE_JOB, PeopleTypes.PEOPLE_PERSON);
+				List<Node> employees = peopleService.getRelatedEntities(entity, PeopleTypes.PEOPLE_JOB,
+						PeopleTypes.PEOPLE_PERSON);
 				Collections.sort(employees, lastNameFirstNamePersonComparator);
 				itemViewer.setInput(employees);
 			} else {
@@ -132,8 +134,7 @@ public class JobList extends LazyCTabControl {
 					List<Node> jobs = new ArrayList<Node>();
 					if (!entity.hasNode(PeopleNames.PEOPLE_JOBS))
 						return; // No member to display
-					NodeIterator ni = entity.getNode(PeopleNames.PEOPLE_JOBS)
-							.getNodes();
+					NodeIterator ni = entity.getNode(PeopleNames.PEOPLE_JOBS).getNodes();
 					while (ni.hasNext()) {
 						// Check relevant nodeType
 						Node currNode = ni.nextNode();
@@ -143,8 +144,7 @@ public class JobList extends LazyCTabControl {
 					}
 					itemViewer.setInput(jobs);
 				} catch (RepositoryException re) {
-					throw new PeopleException(
-							"Cannot refresh person job list for " + entity, re);
+					throw new PeopleException("Cannot refresh person job list for " + entity, re);
 				}
 			}
 		}
@@ -158,53 +158,40 @@ public class JobList extends LazyCTabControl {
 
 		// Primary job for persons only
 		if (!isBackward) {
-			col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.CENTER,
-					25);
-			PrimaryEditingSupport editingSupport = new PrimaryEditingSupport(
-					viewer, PeopleNames.PEOPLE_IS_PRIMARY);
+			col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.CENTER, 25);
+			PrimaryEditingSupport editingSupport = new PrimaryEditingSupport(viewer, PeopleNames.PEOPLE_IS_PRIMARY);
 			col.setEditingSupport(editingSupport);
-			col.setLabelProvider(new BooleanFlagLabelProvider(
-					PeopleNames.PEOPLE_IS_PRIMARY, PeopleRapImages.PRIMARY_BTN,
-					PeopleRapImages.PRIMARY_NOT_BTN));
-			tableColumnLayout.setColumnData(col.getColumn(),
-					new ColumnWeightData(0, 26, true));
+			col.setLabelProvider(new BooleanFlagLabelProvider(PeopleNames.PEOPLE_IS_PRIMARY,
+					PeopleRapImages.PRIMARY_BTN, PeopleRapImages.PRIMARY_NOT_BTN));
+			tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(0, 26, true));
 		}
 
 		// Role
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT, 150);
 		col.setLabelProvider(new RoleListLabelProvider());
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				80, 20, true));
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(80, 20, true));
 
 		// Linked entity
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT, 300);
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				200, 80, true));
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(200, 80, true));
 		if (isBackward)
-			col.setLabelProvider(new PersonOverviewLabelProvider(
-					PeopleRapConstants.LIST_TYPE_MEDIUM, peopleService,
+			col.setLabelProvider(new PersonOverviewLabelProvider(PeopleRapConstants.LIST_TYPE_MEDIUM, resourceService, peopleService,
 					peopleWorkbenchService));
 		else
-			col.setLabelProvider(new OrgOverviewLabelProvider(true,
-					peopleService, peopleWorkbenchService));
+			col.setLabelProvider(new OrgOverviewLabelProvider(true, resourceService, peopleService, peopleWorkbenchService));
 
 		// Edit & Remove links
 		if (editor.isEditing()) {
-			col = ViewerUtils.createTableViewerColumn(viewer,
-					"Edit/Remove links", SWT.NONE, 60);
-			tableColumnLayout.setColumnData(col.getColumn(),
-					new ColumnWeightData(40, 40, true));
+			col = ViewerUtils.createTableViewerColumn(viewer, "Edit/Remove links", SWT.NONE, 60);
+			tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(40, 40, true));
 			col.setLabelProvider(new ColumnLabelProvider() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public String getText(Object element) {
 					Node link = (Node) element;
-					return PeopleRapSnippets.getEditJobSnippetForLists(link,
-							isBackward)
-							+ " <br />"
-							+ PeopleRapSnippets
-									.getRemoveReferenceSnippetForLists(link);
+					return PeopleRapSnippets.getEditJobSnippetForLists(link, isBackward) + " <br />"
+							+ PeopleRapSnippets.getRemoveReferenceSnippetForLists(link);
 				}
 			});
 		}
@@ -239,8 +226,7 @@ public class JobList extends LazyCTabControl {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Map<String, String> params = new HashMap<String, String>();
-				params.put(EditJob.PARAM_RELEVANT_NODE_JCR_ID,
-						ConnectJcrUtils.getIdentifier(entity));
+				params.put(EditJob.PARAM_RELEVANT_NODE_JCR_ID, ConnectJcrUtils.getIdentifier(entity));
 				CommandUtils.callCommand(EditJob.ID, params);
 			}
 		});
@@ -255,14 +241,11 @@ public class JobList extends LazyCTabControl {
 				if (isBackward) {
 					toOpen = ConnectJcrUtils.getParent(ConnectJcrUtils.getParent(link));
 				} else {
-					toOpen = peopleService.getEntityByUid(
-							ConnectJcrUtils.getSession(entity),
+					toOpen = peopleService.getEntityByUid(ConnectJcrUtils.getSession(entity),
 							ConnectJcrUtils.get(link, PeopleNames.PEOPLE_REF_UID));
 				}
-				CommandUtils.callCommand(
-						peopleWorkbenchService.getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID,
-						ConnectJcrUtils.getIdentifier(toOpen));
+				CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(toOpen));
 			}
 		}
 	}
@@ -283,8 +266,7 @@ public class JobList extends LazyCTabControl {
 		protected void setValue(Object element, Object value) {
 			Node currNode = (Node) element;
 			if (((Boolean) value).booleanValue()
-					&& PeopleJcrUtils.markAsPrimary(peopleService, entity,
-							currNode)) {
+					&& PeopleJcrUtils.markAsPrimary(resourceService, peopleService, entity, currNode)) {
 				myFormPart.refresh();
 				myFormPart.markDirty();
 			}
@@ -301,21 +283,16 @@ public class JobList extends LazyCTabControl {
 					node1 = node1.getParent().getParent();
 				if (node2 != null)
 					node2 = node2.getParent().getParent();
-				String lastName1 = ConnectJcrUtils.get(node1,
-						PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
-				String lastName2 = ConnectJcrUtils.get(node2,
-						PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
-				String firstName1 = ConnectJcrUtils.get(node1,
-						PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
-				String firstName2 = ConnectJcrUtils.get(node2,
-						PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
+				String lastName1 = ConnectJcrUtils.get(node1, PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
+				String lastName2 = ConnectJcrUtils.get(node2, PeopleNames.PEOPLE_LAST_NAME).toLowerCase();
+				String firstName1 = ConnectJcrUtils.get(node1, PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
+				String firstName2 = ConnectJcrUtils.get(node2, PeopleNames.PEOPLE_FIRST_NAME).toLowerCase();
 				rc = lastName1.compareTo(lastName2);
 				if (rc == 0)
 					rc = firstName1.compareTo(firstName2);
 				return rc;
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to compare " + node1
-						+ " with " + node2, e);
+				throw new PeopleException("Unable to compare " + node1 + " with " + node2, e);
 			}
 		}
 	};

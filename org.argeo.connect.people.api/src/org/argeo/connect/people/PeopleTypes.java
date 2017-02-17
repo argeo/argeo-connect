@@ -3,13 +3,6 @@ package org.argeo.connect.people;
 /** JCR node types managed by Connect People */
 public interface PeopleTypes {
 
-	/* RESOURCES */
-	String PEOPLE_NODE_TEMPLATE = "people:nodeTemplate";
-
-	String PEOPLE_TAG_PARENT = "people:tagParent";
-	String PEOPLE_TAG_INSTANCE = "people:tagInstance";
-	String PEOPLE_TAG_ENCODED_INSTANCE = "people:encodedTagInstance";
-
 	// Specific tag like resources instance types.
 	String PEOPLE_MAILING_LIST = "people:mailingList";
 
@@ -38,28 +31,6 @@ public interface PeopleTypes {
 	String PEOPLE_JOB = "people:job";
 	String PEOPLE_MEMBER = "people:member";
 	String PEOPLE_BANK_ACCOUNT = "people:bankAccount";
-
-	/* USER MANAGEMENT */
-	String PEOPLE_PROFILE = "people:profile";
-	String PEOPLE_USER_GROUP = "people:userGroup";
-
-	/* TASKS AND ACTIVITIES */
-	String PEOPLE_ACTIVITY = "people:activity";
-	String PEOPLE_TASK = "people:task";
-	String PEOPLE_POLL = "people:poll";
-
-	String PEOPLE_NOTE = "people:note";
-	String PEOPLE_SENT_EMAIL = "people:sentEmail";
-	String PEOPLE_CALL = "people:call";
-	String PEOPLE_MEETING = "people:meeting";
-	String PEOPLE_SENT_LETTER = "people:sentLetter";
-	String PEOPLE_SENT_FAX = "people:sentFax";
-	String PEOPLE_PAYMENT = "people:payment";
-	String PEOPLE_REVIEW = "people:review";
-	String PEOPLE_CHAT = "people:chat";
-	String PEOPLE_TWEET = "people:tweet";
-	String PEOPLE_BLOG_POST = "people:blogPost";
-	String PEOPLE_RATE = "people:rate";
 
 	/* CONTACT */
 	String PEOPLE_CONTACT = "people:contact";

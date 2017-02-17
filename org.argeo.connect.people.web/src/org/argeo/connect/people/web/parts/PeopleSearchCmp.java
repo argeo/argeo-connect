@@ -20,6 +20,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -42,6 +43,7 @@ public class PeopleSearchCmp extends Composite {
 	private static final long serialVersionUID = 8520892609661053149L;
 
 	private final PeopleService peopleService;
+	private final ResourceService resourceService;
 	private final Map<String, String> iconPaths;
 
 	// We search only in this node subtree.
@@ -51,16 +53,18 @@ public class PeopleSearchCmp extends Composite {
 	private TableViewer viewer;
 	private Text entityFilterTxt;
 
-	public PeopleSearchCmp(Composite parent, int style, PeopleService peopleService, Map<String, String> iconPaths) {
+	public PeopleSearchCmp(Composite parent, int style, ResourceService resourceService, PeopleService peopleService,
+			Map<String, String> iconPaths) {
 		super(parent, style);
 		this.peopleService = peopleService;
+		this.resourceService = resourceService;
 		this.iconPaths = iconPaths;
 	}
 
 	public TableViewer getViewer() {
 		return viewer;
 	}
-	
+
 	public void populate(Node context, boolean doDefaultQuery) {
 		this.context = context;
 		Composite parent = this;
@@ -97,7 +101,8 @@ public class PeopleSearchCmp extends Composite {
 		CmsUtils.markup(table);
 		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-		ILabelProvider labelProvider = new SearchEntitiesLP(peopleService, table.getDisplay(), iconPaths);
+		ILabelProvider labelProvider = new SearchEntitiesLP(resourceService, peopleService, table.getDisplay(),
+				iconPaths);
 		v.setLabelProvider(labelProvider);
 		return v;
 	}

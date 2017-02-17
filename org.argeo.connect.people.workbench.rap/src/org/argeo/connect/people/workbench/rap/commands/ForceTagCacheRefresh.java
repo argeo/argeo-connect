@@ -4,10 +4,10 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
-import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
@@ -27,25 +27,23 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class ForceTagCacheRefresh extends AbstractHandler {
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".forceTagCacheRefresh";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".forceTagCacheRefresh";
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private PeopleService peopleService;
+	private ResourceService resourceService;
+	// private PeopleService peopleService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
 		String msg = "You are about to update the tag and mailing list "
-				+ "caches of the repository with all found values.\n"
-				+ "Are you sure you want to proceed ?";
-		Shell activeShell = HandlerUtil.getActiveWorkbenchWindow(event)
-				.getShell();
+				+ "caches of the repository with all found values.\n" + "Are you sure you want to proceed ?";
+		Shell activeShell = HandlerUtil.getActiveWorkbenchWindow(event).getShell();
 
 		if (!MessageDialog.openConfirm(activeShell, "Confirm Deletion", msg))
 			return null;
 
-		new UpdateTagAndInstancesJob(repository, peopleService).schedule();
+		new UpdateTagAndInstancesJob(repository, resourceService).schedule();
 		return null;
 	}
 
@@ -53,20 +51,16 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 	private class UpdateTagAndInstancesJob extends PrivilegedJob {
 
 		private Repository repository;
-		private PeopleService peopleService;
+		private ResourceService resourceService;
 
 		/**
 		 * @param repository
 		 * @param peopleService
 		 */
-		public UpdateTagAndInstancesJob(Repository repository,
-				PeopleService peopleService) {
+		public UpdateTagAndInstancesJob(Repository repository, ResourceService resourceService) {
 			super("Updating the tag and mailing list repository");
-			// Must be called *before* the job is scheduled so that a progress
-			// window appears.
-			// setUser(true);
 			this.repository = repository;
-			this.peopleService = peopleService;
+			this.resourceService = resourceService;
 		}
 
 		protected IStatus doRun(IProgressMonitor progressMonitor) {
@@ -78,17 +72,14 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 
 					session = repository.login();
 
-					peopleService.getResourceService().refreshKnownTags(
-							session, PeopleConstants.RESOURCE_TAG);
+					resourceService.refreshKnownTags(session, ConnectConstants.RESOURCE_TAG);
 
-					peopleService.getResourceService().refreshKnownTags(
-							session, PeopleTypes.PEOPLE_MAILING_LIST);
+					resourceService.refreshKnownTags(session, PeopleTypes.PEOPLE_MAILING_LIST);
 					monitor.worked(1);
 				}
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to refresh tag and ML cache on " + repository,
-						e);
+						"Unable to refresh tag and ML cache on " + repository, e);
 			} finally {
 				JcrUtils.logoutQuietly(session);
 			}
@@ -101,7 +92,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 		this.repository = repository;
 	}
 
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 }

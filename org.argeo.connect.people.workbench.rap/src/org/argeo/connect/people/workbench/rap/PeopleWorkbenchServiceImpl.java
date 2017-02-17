@@ -20,6 +20,7 @@ import org.argeo.connect.people.workbench.rap.editors.TagEditor;
 import org.argeo.connect.people.workbench.rap.editors.TaskEditor;
 import org.argeo.connect.people.workbench.rap.wizards.NewOrgWizard;
 import org.argeo.connect.people.workbench.rap.wizards.NewPersonWizard;
+import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
@@ -34,14 +35,14 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	@Override
 	public String getEntityEditorId(Node curNode) {
 		try {
-			if (curNode.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE))
+			if (curNode.isNodeType(ResourcesTypes.PEOPLE_TAG_INSTANCE))
 				return TagEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				return MailingListEditor.ID;
-			else if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
-				return TaskEditor.ID;
-			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
-				return ActivityEditor.ID;
+//			else if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
+//				return TaskEditor.ID;
+//			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+//				return ActivityEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				return PersonEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORG)) {

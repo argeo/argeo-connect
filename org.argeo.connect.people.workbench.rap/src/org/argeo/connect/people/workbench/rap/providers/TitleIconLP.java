@@ -2,8 +2,8 @@ package org.argeo.connect.people.workbench.rap.providers;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -12,13 +12,11 @@ import org.eclipse.swt.graphics.Image;
  * retrieved texts to be compliant with RAP
  */
 public class TitleIconLP extends SimpleJcrNodeLabelProvider {
-	// WAS public class TitleWithIconLP extends JcrHtmlLabelProvider {
 	private static final long serialVersionUID = 6064779874148619776L;
 
-	private final PeopleWorkbenchService peopleWorkbenchService;
+	private final AppWorkbenchService peopleWorkbenchService;
 
-	public TitleIconLP(PeopleWorkbenchService peopleWorkbenchService,
-			String propertyName) {
+	public TitleIconLP(AppWorkbenchService peopleWorkbenchService, String propertyName) {
 		super(propertyName);
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}

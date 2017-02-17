@@ -1,0 +1,128 @@
+<connect = 'http://www.argeo.org/ns/connect'>
+
+// Base mixin for all connect concept to ease requests in the repository
+[connect:base] > mix:title, mix:created, mix:lastModified
+mixin 
+
+// ENTITY TYPE: it is the parent of all connect business types.
+[connect:entity] > connect:base,  mix:referenceable
+- connect:uid (String) m nofulltext // An implementation dependent UID for each entity
++ connect:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
+
+// External ID instances
+[connect:externalId] > nt:unstructured
+//- connect:source (URI) // an optional URI
+- connect:sourceId (String) nofulltext // The external source ID, this must be cleanly handled in a later version
+- connect:externalUid (String) nofulltext // This entity's unique ID in the external system
+										 // Might be the FN value of a vCard
+
+// TAGGABLE
+[connect:taggable] 
+mixin
+- connect:tags (STRING) *
+
+// ACTIVITIES AND TASKS
+
+// Activities
+[connect:activity] > connect:base
+mixin
+- connect:activityDate (DATE) // References the relevant date for this activity. Generally, the creation date. 
+- connect:reportedBy (STRING) // Tracks the user that has reported (and generally created) this activity. 
+							 // It is used instead of jcr:createdBy because we cannot force the JCR protected property;
+							 // which is useful, among others, in case of an import 
+- connect:relatedTo (REFERENCE) * // Related entities like persons, orgs or documents
+// + connect:attachments (nt:unstructured) // an optional list of related documents
+// - connect:boundActivities (REFERENCE) * // Enable linking activities together, especially enable referencing of related tasks and workflows.
+
+
+// Various activity types, we use mixin to be able to later enrich the model
+[connect:note]
+mixin 
+
+[connect:sentEmail] 
+mixin  
+
+[connect:call]
+mixin 
+
+[connect:meeting]
+mixin 
+
+[connect:sentLetter]
+mixin 
+
+[connect:sentFax]
+mixin 
+
+[connect:payment]
+mixin 
+
+[connect:review]
+mixin 
+
+[connect:chat]
+mixin 
+
+[connect:tweet]
+mixin 
+
+[connect:blogPost]
+mixin 
+
+[connect:rate]
+mixin 
+- connect:rate (LONG) // the note attributed by the current user  
+
+// Tasks 
+[connect:task] > connect:activity
+- connect:taskStatus (String) // the current status of this task
+- connect:assignedTo (String) // the dn of a group or a user
+- connect:dueDate (DATE) 
+- connect:closeDate (DATE) 
+- connect:closedBy (STRING) // The dn of the user who closed this task
+- connect:wakeUpDate (DATE) 
+//various sub nodes
++ connect:activities (nt:unstructured)
+// - connect:dependsOn (REFERENCE) *
+// + connect:tasks (nt:unstructured)
+
+
+// Gathers user feedback and votes (rates)
+[connect:poll] > connect:task
+- connect:pollName (STRING) // a specific name. Useful?
+- connect:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
+// Contains the child rating activities
++ connect:rates (nt:unstructured)
+
+//
+// RESOURCE MANAGEMENT
+// 
+
+// Defines the template of a given type of node in the system, with, 
+// among others, the various catalogues of pre-defined possible values 
+// for some given String properties.
+// The name of the template for a type of node is generally the corresponding JCR node type
+[connect:nodeTemplate] > nt:unstructured, mix:title, mix:versionable, mix:lastModified
+- connect:templateId (STRING) // Generally the corresponding node type but might something else if necessary.
+
+
+// Defines the parent of a sub tree that enable definition of a nomenclature for a tag like property 
+[connect:tagParent] > nt:unstructured, mix:title
+- connect:tagId (STRING) // Generally the corresponding node type but might something else if necessary
+- connect:tagInstanceType (STRING) // The node type of the corresponding resources
+- connect:codePropName (STRING) 	// the name of the property that provide the code 
+								// that is stored  in the tagged node ("connect:code" for default encode tag  instance type)
+								// if not present, then we use the JCR_TITLE that is the name and the label at the same time
+
+// The 3 below properties enable to narrow the taggable part of the whole repo and
+// thus, among others, fasten the requests, 
+- connect:taggablePropNames (STRING) * // Names of the multi value property of the taggable node in which the corresponding tag is stored
+// Should also the 2 below property be multiple ?
+- connect:taggableParentPath (STRING) // Absolute path of the parent of the taggable nodes
+- connect:taggableNodeType (STRING) // Node type of the taggable nodes
+
+// DEFAULT TAG TYPES
+[connect:tagInstance] > nt:unstructured, mix:title
+
+[connect:encodedTagInstance] > nt:unstructured, mix:title
+- connect:code (STRING) 

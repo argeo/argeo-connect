@@ -1,4 +1,4 @@
-package org.argeo.connect.people.core;
+package org.argeo.connect;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -10,9 +10,6 @@ import javax.transaction.UserTransaction;
 
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.UserAdminService;
-import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.node.NodeConstants;
 import org.argeo.osgi.useradmin.UserAdminConf;
@@ -41,85 +38,21 @@ public class UserAdminServiceImpl implements UserAdminService {
 	private ServiceReference<UserAdmin> userAdminServiceReference;
 	private UserTransaction userTransaction;
 
-	// // CURRENT USER
-	// /** Returns the current user */
-	// public User getMyUser() {
-	// return UserAdminUtils.getCurrentUser(getUserAdmin());
-	// }
-	//
-	// /** Returns the DN of the current user */
-	// public String getMyUsername() {
-	// return CurrentUser.getUsername();
-	// }
-	//
 	@Override
 	public String getMyMail() {
 		return getUserMail(CurrentUser.getUsername());
 	}
-	//
-	// /** Lists all roles of the current user */
-	// public String[] getMyRoles() {
-	// return getUserRoles(getMyUsername());
-	// }
-	//
-	// /** Returns the local uid of the current connected user in this context
-	// */
-	// public String getMyLocalName() {
-	// return getMyUser().getName();
-	// }
 
-	// @Override
-	// public String getCurrentUserHomePath() {
-	// return getHomeBasePath() + "/" +
-	// UserAdminUtils.getCurrentUserHomeRelPath();
+	// protected String getHomeBasePath() {
+	// return "/home";
 	// }
-	//
-	// @Override
-	// public String getUserHomePath(String dn) {
-	// return getHomeBasePath() + "/" + UserAdminUtils.getHomeRelPath(dn);
-	// }
-
-	protected String getHomeBasePath() {
-		return "/home";
-	}
 
 	@Override
 	public Role[] getRoles(String filter) throws InvalidSyntaxException {
 		return userAdmin.getRoles(filter);
 	}
 
-	// /** Returns the display name of the current logged in user */
-	// public String getMyDisplayName() {
-	// return getUserDisplayName(getMyUsername());
-	// }
-
-	// /** Returns true if the current user is in the specified role */
-	// @Override
-	// public boolean amIInRole(String rolename) {
-	// // FIXME clean this
-	// String dn;
-	// if (rolename.startsWith(LdapAttrs.cn.name() + "=") ||
-	// rolename.startsWith(LdapAttrs.uid.name() + "="))
-	// dn = rolename;
-	// else
-	// dn = LdapAttrs.cn.name() + "=" + rolename + "," +
-	// NodeConstants.ROLES_BASEDN;
-	//
-	// Role role = getUserAdmin().getRole(dn);
-	// if (role == null)
-	// return false;
-	//
-	// String roledn = role.getName();
-	//
-	// for (String currRole : getMyRoles()) {
-	// if (roledn.equals(currRole))
-	// return true;
-	// }
-	// return false;
-	// }
-
 	// ALL USER: WARNING access to this will be later reduced
-
 	/** Retrieve a user given his dn */
 	public User getUser(String dn) {
 		return (User) getUserAdmin().getRole(dn);
@@ -166,11 +99,11 @@ public class UserAdminServiceImpl implements UserAdminService {
 		try {
 			roles = getUserAdmin().getRoles(null);
 		} catch (InvalidSyntaxException e) {
-			throw new PeopleException("Unable to get roles with filter: " + filter, e);
+			throw new ConnectException("Unable to get roles with filter: " + filter, e);
 		}
 
 		List<User> users = new ArrayList<User>();
-		boolean doFilter = EclipseUiUtils.notEmpty(filter);
+		boolean doFilter = filter != null && !"".equals(filter);
 		loop: for (Role role : roles) {
 			if ((includeUsers && role.getType() == Role.USER || role.getType() == Role.GROUP) && !users.contains(role)
 					&& (includeSystemRoles || !role.getName().toLowerCase().endsWith(NodeConstants.ROLES_BASEDN))) {
@@ -197,12 +130,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 		return users;
 	}
 
-	// @Override
-	// public List<Group> listGroups(String filter) {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-
 	@Override
 	public User getUserFromLocalId(String localId) {
 		User user = getUserAdmin().getUser(LdapAttrs.uid.name(), localId);
@@ -222,8 +149,8 @@ public class UserAdminServiceImpl implements UserAdminService {
 		if (dns.size() == 1)
 			return dns.keySet().iterator().next();
 		else
-			throw new PeopleException("Current context contains " + dns.size() + " base dns: " + dns.keySet().toString()
-					+ ". Unable to chose a default one.");
+			throw new ConnectException("Current context contains " + dns.size() + " base dns: "
+					+ dns.keySet().toString() + ". Unable to chose a default one.");
 	}
 
 	public Map<String, String> getKnownBaseDns(boolean onlyWritable) {
@@ -253,7 +180,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 		else if (Role.USER == type)
 			dn = LdapAttrs.uid.name() + "=" + localId + "," + UserAdminConf.userBase.getValue(props) + "," + baseDn;
 		else
-			throw new PeopleException("Unknown role type. " + "Cannot deduce dn for " + localId);
+			throw new ConnectException("Unknown role type. " + "Cannot deduce dn for " + localId);
 		return dn;
 	}
 

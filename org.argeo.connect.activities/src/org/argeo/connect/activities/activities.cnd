@@ -1,0 +1,10 @@
+//<projects = 'http://www.argeo.org/ns/projects'>
+
+// [projects:project] > mix:title
+// mixin
+
+// [projects:milestone] > mix:title
+// mixin
+
+//[projects:projectInfo] > mix:title
+// mixin

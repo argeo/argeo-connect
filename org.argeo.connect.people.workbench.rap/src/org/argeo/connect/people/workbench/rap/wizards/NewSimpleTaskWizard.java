@@ -8,9 +8,8 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.ActivityService;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivityService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpGroupDialog;
@@ -49,7 +48,6 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	// Set upon instantiation
 	private Session currSession;
-	private PeopleService peopleService;
 	private ActivityService activityService;
 	private UserAdminService userAdminService;
 
@@ -57,14 +55,6 @@ public class NewSimpleTaskWizard extends Wizard {
 	private List<Node> relatedTo;
 	private String assignedToGroupId;
 	private Node createdTask;
-
-	public void setRelatedTo(List<Node> relatedTo) {
-		this.relatedTo = relatedTo;
-	}
-
-	public Node getCreatedTask() {
-		return createdTask;
-	}
 
 	// This page widgets
 	protected Text titleTxt;
@@ -75,11 +65,18 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	protected TableViewer itemsViewer;
 
-	public NewSimpleTaskWizard(Session session, PeopleService peopleService) {
-		this.peopleService = peopleService;
-		activityService = peopleService.getActivityService();
-		userAdminService = peopleService.getUserAdminService();
+	public NewSimpleTaskWizard(Session session, UserAdminService userAdminService, ActivityService activityService) {
+		this.userAdminService = userAdminService;
+		this.activityService = activityService;
 		this.currSession = session;
+	}
+
+	public void setRelatedTo(List<Node> relatedTo) {
+		this.relatedTo = relatedTo;
+	}
+
+	public Node getCreatedTask() {
+		return createdTask;
 	}
 
 	// Exposes to extending classes
@@ -166,7 +163,7 @@ public class NewSimpleTaskWizard extends Wizard {
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 					PickUpGroupDialog diag = new PickUpGroupDialog(assignedToTxt.getShell(), "Choose a group",
-							peopleService);
+							userAdminService);
 					if (diag.open() == Window.OK) {
 						assignedToGroupId = diag.getSelected().getName();
 						if (EclipseUiUtils.notEmpty(assignedToGroupId))

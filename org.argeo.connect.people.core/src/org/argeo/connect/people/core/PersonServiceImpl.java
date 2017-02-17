@@ -15,6 +15,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PersonService;
 import org.argeo.connect.people.util.PeopleJcrUtils;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -22,10 +23,12 @@ import org.argeo.jcr.JcrUtils;
 /** Concrete access to people {@link PersonService} */
 public class PersonServiceImpl implements PersonService, PeopleNames {
 
-	private PeopleService peopleService;
+	private final PeopleService peopleService;
+	private final ResourceService resourceService;
 
-	public PersonServiceImpl(PeopleService peopleService) {
+	public PersonServiceImpl(PeopleService peopleService, ResourceService resourceService) {
 		this.peopleService = peopleService;
+		this.resourceService = resourceService;
 	}
 
 	@Override
@@ -194,7 +197,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 
 			// primary flag
 			if (isPrimary)
-				PeopleJcrUtils.markAsPrimary(peopleService, person, newJob);
+				PeopleJcrUtils.markAsPrimary(resourceService, peopleService, person, newJob);
 			else
 				newJob.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, isPrimary);
 			// FIXME we should not save the session anymore

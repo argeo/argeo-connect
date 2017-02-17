@@ -6,7 +6,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.util.CsvParserWithLinesAsMap;
 
 /** Base utility to load an encoded tag like resource catalogue in a repository **/

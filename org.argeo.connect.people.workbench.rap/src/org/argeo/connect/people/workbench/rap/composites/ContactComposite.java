@@ -7,10 +7,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -32,8 +33,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ContactComposite extends Composite {
 	private static final long serialVersionUID = -789885142022513273L;
 
+	private final ResourceService resourceService;
 	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleUiService;
+	private final AppWorkbenchService appWorkbenchService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 
@@ -43,11 +45,12 @@ public class ContactComposite extends Composite {
 	private final boolean isCheckedOut;
 
 	public ContactComposite(Composite parent, int style, AbstractPeopleEditor editor, AbstractFormPart formPart,
-			Node contactNode, Node parentVersionableNode, PeopleWorkbenchService peopleUiService,
-			PeopleService peopleService) {
+			Node contactNode, Node parentVersionableNode, ResourceService resourceService,
+			AppWorkbenchService appWorkbenchService, PeopleService peopleService) {
 		super(parent, style);
+		this.resourceService = resourceService;
 		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
+		this.appWorkbenchService = appWorkbenchService;
 		this.contactNode = contactNode;
 		this.parentVersionableNode = parentVersionableNode;
 
@@ -65,7 +68,7 @@ public class ContactComposite extends Composite {
 
 		// buttons
 		Composite buttCmp = new ContactButtonsComposite(editor, formPart, parent, SWT.NO_FOCUS, contactNode,
-				parentVersionableNode, peopleUiService, peopleService);
+				parentVersionableNode, resourceService, peopleService, appWorkbenchService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
@@ -82,7 +85,7 @@ public class ContactComposite extends Composite {
 		readOnlyPanel.setLayout(new GridLayout());
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "", SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(peopleService, contactNode);
+		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(resourceService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}
 

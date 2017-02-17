@@ -12,9 +12,9 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
-import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerService;
@@ -92,7 +92,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	protected void addPages() {
 		// Initialise the nodes
 		project = getNode();
-		issueService = ((PeopleTrackerService) getPeopleService()).getTrackerService();
+		issueService = getTrackerService();
 		try {
 			projectMainPage = new MainPage(this);
 			addPage(projectMainPage);
@@ -230,8 +230,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String jcrId = ConnectJcrUtils.getIdentifier(milestone);
-				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-						jcrId);
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 			}
 		});
 
@@ -249,7 +249,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		coc.layout(true, true);
 
 		Label datesLbl = new Label(boxCmp, SWT.WRAP);
-		String ddVal = ConnectJcrUtils.getDateFormattedAsString(milestone, PeopleNames.PEOPLE_DUE_DATE,
+		String ddVal = ConnectJcrUtils.getDateFormattedAsString(milestone, ActivitiesNames.ACTIVITIES_DUE_DATE,
 				TrackerUiConstants.defaultDateFormat);
 		if (EclipseUiUtils.isEmpty(ddVal)) {
 			datesLbl.setText("No due date defined");
@@ -294,7 +294,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 			columnDefs.add(new ColumnDefinition(getJcrLP(TrackerNames.TRACKER_ID), "ID", 40));
 			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_TITLE), "Title", 300));
-			columnDefs.add(new ColumnDefinition(getJcrLP(PeopleNames.PEOPLE_TASK_STATUS), "Status", 100));
+			columnDefs.add(new ColumnDefinition(getJcrLP(ActivitiesNames.ACTIVITIES_TASK_STATUS), "Status", 100));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new ImportanceLabelProvider(), "Importance", 100));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new PriorityLabelProvider(), "Priority", 100));
 			columnDefs.add(new ColumnDefinition(getJcrLP(TrackerNames.TRACKER_TARGET_ID), "Target", 80));
@@ -337,7 +337,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 
-					NewIssueWizard wizard = new NewIssueWizard(getPeopleService(), project);
+					NewIssueWizard wizard = new NewIssueWizard(getUserAdminService(), getTrackerService(), project);
 					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
 					if (dialog.open() == Window.OK) {
 						try {
@@ -611,8 +611,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			public void doubleClick(DoubleClickEvent event) {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-						jcrId);
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 			}
 		});
 	}

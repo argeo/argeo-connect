@@ -5,6 +5,7 @@ import javax.jcr.Node;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.PeopleWebConstants;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -19,14 +20,11 @@ public class EntitySingleLineLabelProvider implements ILabelProvider {
 	private final PersonOverviewLP personOLP;
 	private final OrgOverviewLP orgOLP;
 
-	public EntitySingleLineLabelProvider(PeopleService peopleService) {
+	public EntitySingleLineLabelProvider(ResourceService resourceService, PeopleService peopleService) {
 		this.peopleService = peopleService;
-		this.personOLP = new PersonOverviewLP(
-				PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST,
-				peopleService);
-		orgOLP = new OrgOverviewLP(
-				PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST,
-				peopleService);
+		this.personOLP = new PersonOverviewLP(resourceService, peopleService,
+				PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST);
+		orgOLP = new OrgOverviewLP(resourceService, peopleService, PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST);
 	}
 
 	// @Override

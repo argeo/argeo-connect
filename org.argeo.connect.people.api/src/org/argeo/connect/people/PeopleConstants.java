@@ -19,13 +19,6 @@ public interface PeopleConstants {
 	// Types that do not correspond to a Jcr type
 	String PEOPLE_PROJECT = "people:project";
 	String PEOPLE_RESOURCE = "people:resource";
-	String RESOURCE_TAG = "people:tag";
-	String RESOURCE_COUNTRY = "people:country";
-	String RESOURCE_LANG = "people:language";
-
-	// Known resources IDs
-	String RESOURCE_TYPE_ID_TEMPLATE = "people.resourceId.template";
-	String RESOURCE_TYPE_ID_TAG_LIKE = "people.resourceId.tagLike";
 
 	// Main concepts parent node names
 	String PEOPLE_RESOURCES = "resources";
@@ -33,22 +26,21 @@ public interface PeopleConstants {
 	String PEOPLE_PERSONS = "persons";
 	String PEOPLE_PROJECTS = "projects";
 	String PEOPLE_EDITIONS = "editions";
-	String PEOPLE_USER_GROUPS = "userGroups";
+	// String PEOPLE_USER_GROUPS = "userGroups";
 	String PEOPLE_ACTIVITIES = "activities";
 	String PEOPLE_DRAFT = "draft";
 
 	// Known types
 	List<String> PEOPLE_KNOWN_PARENT_NAMES = asList(
 			//
-			PEOPLE_RESOURCES, PEOPLE_ORGS, PEOPLE_PERSONS, PEOPLE_PROJECTS, PEOPLE_USER_GROUPS, PEOPLE_ACTIVITIES);
+			PEOPLE_RESOURCES, PEOPLE_ORGS, PEOPLE_PERSONS, PEOPLE_PROJECTS, PEOPLE_ACTIVITIES);
 
-	// Corresponding subnodes for resources
-	String PEOPLE_RESOURCE_TEMPLATE = "templates";
-	String PEOPLE_RESOURCE_TAG_LIKE = "tags";
+	// // Corresponding subnodes for resources
+	// String PEOPLE_RESOURCE_TEMPLATE = "templates";
+	// String PEOPLE_RESOURCE_TAG_LIKE = "tags";
 
 	// Configuration System Properties
 	String PEOPLE_DEFAULT_DOMAIN_NAME = "connect.people.defaultDomainName";
-	String PEOPLE_PROP_PREVENT_TAG_ADDITION = "connect.people.user.preventTagAddition";
 	String MIGRATION_USER_LOGIN = "connect.migration.user.login";
 	String MIGRATION_USER_PWD = "connect.migration.user.pwd";
 
@@ -80,5 +72,4 @@ public interface PeopleConstants {
 	String IMPORT_CATALOGUE_KEY_COL = "Field";
 	String IMPORT_CATALOGUE_VALUES_COL = "Values";
 	String IMPORT_CATALOGUE_VALUES_SEPARATOR = "; ";
-
 }

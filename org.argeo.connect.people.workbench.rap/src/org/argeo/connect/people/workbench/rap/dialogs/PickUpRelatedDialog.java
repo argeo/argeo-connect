@@ -19,8 +19,8 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.FilterEntitiesVirtualTable;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -43,9 +43,9 @@ import org.eclipse.swt.widgets.Shell;
 public class PickUpRelatedDialog extends TrayDialog {
 	private static final long serialVersionUID = -2526572299370624808L;
 
-	// Business objects
+	// Context
 	private final Session session;
-	private final PeopleWorkbenchService peopleWorkbenchService;
+	private final AppWorkbenchService peopleWorkbenchService;
 	private Node selectedNode;
 
 	// this page widgets and UI objects
@@ -55,9 +55,8 @@ public class PickUpRelatedDialog extends TrayDialog {
 	// draft workaround to prevent window close when the user presses return
 	private Button dummyButton;
 
-	public PickUpRelatedDialog(Shell parentShell, String title,
-			Session session, PeopleWorkbenchService peopleWorkbenchService,
-			Node referencingNode) {
+	public PickUpRelatedDialog(Shell parentShell, String title, Session session,
+			AppWorkbenchService peopleWorkbenchService, Node referencingNode) {
 		super(parentShell);
 		this.title = title;
 		// this.referencingNode = referencingNode;
@@ -80,15 +79,13 @@ public class PickUpRelatedDialog extends TrayDialog {
 		bodyCmp.setLayout(new GridLayout());
 
 		int style = SWT.BORDER | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new FilterEntitiesVirtualTable(bodyCmp, style, session,
-				peopleWorkbenchService, PeopleTypes.PEOPLE_ENTITY);
+		tableCmp = new FilterEntitiesVirtualTable(bodyCmp, style, session, peopleWorkbenchService,
+				PeopleTypes.PEOPLE_ENTITY);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Add listeners
-		tableCmp.getTableViewer().addDoubleClickListener(
-				new MyDoubleClickListener());
-		tableCmp.getTableViewer().addSelectionChangedListener(
-				new MySelectionChangedListener());
+		tableCmp.getTableViewer().addDoubleClickListener(new MyDoubleClickListener());
+		tableCmp.getTableViewer().addSelectionChangedListener(new MySelectionChangedListener());
 
 		// draft workaround to prevent window close when the user presses return
 		dummyButton = new Button(dialogArea, SWT.PUSH);
@@ -119,8 +116,7 @@ public class PickUpRelatedDialog extends TrayDialog {
 			if (event.getSelection().isEmpty())
 				return;
 
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			if (obj instanceof Node) {
 				selectedNode = (Node) obj;
 			}
@@ -132,8 +128,7 @@ public class PickUpRelatedDialog extends TrayDialog {
 			if (evt.getSelection().isEmpty())
 				return;
 
-			Object obj = ((IStructuredSelection) evt.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 			if (obj instanceof Node) {
 				selectedNode = (Node) obj;
 				okPressed();

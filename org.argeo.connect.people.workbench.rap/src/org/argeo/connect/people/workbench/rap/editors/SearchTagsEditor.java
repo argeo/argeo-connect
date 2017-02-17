@@ -20,8 +20,6 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
@@ -30,7 +28,10 @@ import org.argeo.connect.people.workbench.rap.editors.util.SearchNodeEditorInput
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
@@ -68,12 +69,12 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
+	private ResourceService resourceService;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// Context
 	private Session session;
-	private ResourceService resourceService;
 	private Node tagParent;
 	private String tagId;
 	private String tagInstanceType;
@@ -91,7 +92,6 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
 		setPartName(label);
 
-		this.resourceService = peopleService.getResourceService();
 		String basePath = ((SearchNodeEditorInput) getEditorInput()).getBasePath();
 		try {
 			session = ConnectJcrUtils.login(repository);
@@ -100,11 +100,11 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 			throw new PeopleException(
 					"Unable to retrieve tag parent with path " + basePath + "\nUnable to open search editor.", e);
 		}
-		tagInstanceType = ConnectJcrUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
-		tagId = ConnectJcrUtils.get(tagParent, PEOPLE_TAG_ID);
+		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAG_INSTANCE_TYPE);
+		tagId = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAG_ID);
 
 		// TODO this info should be stored in the parent path
-		if (tagId.equals(PeopleConstants.RESOURCE_TAG)) {
+		if (tagId.equals(ConnectConstants.RESOURCE_TAG)) {
 			propertyName = PeopleNames.PEOPLE_TAGS;
 		} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(tagId)) {
 			propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
@@ -178,7 +178,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs);
 		tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(null, peopleWorkbenchService));
+		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(null, appWorkbenchService));
 		tableViewer.getTable().addSelectionListener(new HtmlRwtAdapter());
 	}
 
@@ -263,7 +263,7 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 					Node node = session.getNodeByIdentifier(token[1]);
 
 					if ("edit".equals(token[0])) {
-						Wizard wizard = new EditTagWizard(peopleService, peopleWorkbenchService, node, tagId,
+						Wizard wizard = new EditTagWizard(resourceService, appWorkbenchService, node, tagId,
 								propertyName);
 						WizardDialog dialog = new WizardDialog(event.display.getActiveShell(), wizard);
 						int result = dialog.open();
@@ -272,8 +272,8 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 						}
 					} else {
 						if (canDelete(node)) { // Superstition
-							String msg = "Are you sure you want to delete \"" + ConnectJcrUtils.get(node, Property.JCR_TITLE)
-									+ "\" ?";
+							String msg = "Are you sure you want to delete \""
+									+ ConnectJcrUtils.get(node, Property.JCR_TITLE) + "\" ?";
 							if (MessageDialog.openConfirm(event.display.getActiveShell(), "Confirm deletion", msg)) {
 								ConnectJcrUtils.checkCOStatusBeforeUpdate(node);
 								session.removeItem(node.getPath());
@@ -305,19 +305,6 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 		super.dispose();
 	}
 
-	/* DEPENDENCY INJECTION */
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
-
-	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
-	}
-
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-
 	// Unused compulsory methods
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -336,4 +323,22 @@ public class SearchTagsEditor extends EditorPart implements PeopleNames, Refresh
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
+
+	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
+	}
+
 }

@@ -21,6 +21,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -51,6 +52,8 @@ public class PeopleSearchPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private ResourceService resourceService;
+
 	private Map<String, String> iconPathes;
 
 	@Override
@@ -64,8 +67,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 
 	public void populateBodyPanel(Composite parent, final Node context) {
 		parent.setLayout(new GridLayout());
-		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
-				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		entityFilterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		// entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
 		Composite tableComposite = new Composite(parent, SWT.NONE);
@@ -77,8 +79,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 
 			public void modifyText(ModifyEvent event) {
 				// might be better to use an asynchronous Refresh();
-				refreshFilteredList(entityViewer, entityFilterTxt.getText(),
-						context);
+				refreshFilteredList(entityViewer, entityFilterTxt.getText(), context);
 			}
 		});
 		refreshFilteredList(entityViewer, entityFilterTxt.getText(), context);
@@ -98,14 +99,13 @@ public class PeopleSearchPage implements CmsUiProvider {
 		CmsUtils.markup(table);
 		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-		ILabelProvider labelProvider = new SearchEntitiesLP(peopleService,
-				table.getDisplay(), iconPathes);
+		ILabelProvider labelProvider = new SearchEntitiesLP(resourceService, peopleService, table.getDisplay(),
+				iconPathes);
 		v.setLabelProvider(labelProvider);
 		v.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				Object firstObj = ((IStructuredSelection) event.getSelection())
-						.getFirstElement();
+				Object firstObj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String path = ConnectJcrUtils.getPath((Node) firstObj);
 				CmsUtils.getCmsView().navigateTo("display" + path);
 			}
@@ -113,8 +113,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 		return v;
 	}
 
-	protected void refreshFilteredList(TableViewer entityViewer, String filter,
-			Node context) {
+	protected void refreshFilteredList(TableViewer entityViewer, String filter, Node context) {
 		try {
 			// Do not load all contacts when no filter is present
 			// if (ConnectJcrUtils.isEmptyString(filter)) {
@@ -123,37 +122,28 @@ public class PeopleSearchPage implements CmsUiProvider {
 			// }
 
 			Session session = context.getSession();
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			String path = context.getPath();
 
-			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-					PeopleTypes.PEOPLE_ENTITY);
+			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY, PeopleTypes.PEOPLE_ENTITY);
 
-			Constraint defaultC = factory.descendantNode(
-					source.getSelectorName(), path);
+			Constraint defaultC = factory.descendantNode(source.getSelectorName(), path);
 			String[] strs = filter.trim().split(" ");
 			for (String token : strs) {
-				StaticOperand so = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so);
+				StaticOperand so = factory.literal(session.getValueFactory().createValue("*" + token + "*"));
+				Constraint currC = factory.fullTextSearch(source.getSelectorName(), null, so);
 				if (defaultC == null)
 					defaultC = currC;
 				else
 					defaultC = factory.and(defaultC, currC);
 			}
 
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					new Ordering[] { order }, null);
-			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute()
-					.getNodes()));
+			Ordering order = factory.ascending(factory.propertyValue(source.getSelectorName(), Property.JCR_TITLE));
+			QueryObjectModel query = factory.createQuery(source, defaultC, new Ordering[] { order }, null);
+			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute().getNodes()));
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list entities for context "
-					+ context + " and filter " + filter, e);
+			throw new PeopleException("Unable to list entities for context " + context + " and filter " + filter, e);
 		}
 	}
 
@@ -171,7 +161,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 		public Object[] getElements(Object arg0) {
 			return nodes.toArray();
 		}
-		
+
 		public void dispose() {
 		}
 	}
@@ -179,6 +169,10 @@ public class PeopleSearchPage implements CmsUiProvider {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 
 	public void setIconPathes(Map<String, String> iconPathes) {

@@ -11,10 +11,11 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
@@ -62,7 +63,9 @@ import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 
-/** Update the status of the selected tasks (with only one node type) as batch */
+/**
+ * Update the status of the selected tasks (with only one node type) as batch
+ */
 public class AssignToWizard extends Wizard implements PeopleNames {
 	// private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
@@ -85,14 +88,13 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 	 * @param selectorName
 	 * @param taskId
 	 */
-	public AssignToWizard(PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Object[] elements,
-			String selectorName) {
+	public AssignToWizard(UserAdminService userAdminService, PeopleService peopleService,
+			PeopleWorkbenchService peopleWorkbenchService, Object[] elements, String selectorName) {
+		this.userAdminService = userAdminService;
 		this.peopleService = peopleService;
 		this.peopleUiService = peopleWorkbenchService;
 		this.elements = elements;
 		this.selectorName = selectorName;
-		userAdminService = peopleService.getUserAdminService();
 	}
 
 	@Override
@@ -126,8 +128,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new UpdateAssignmentJob(peopleService, elements, selectorName,
-				chosenGroupId).schedule();
+		new UpdateAssignmentJob(peopleService, elements, selectorName, chosenGroupId).schedule();
 		return true;
 	}
 
@@ -138,8 +139,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		return EclipseUiUtils.notEmpty(chosenGroupId)
-				&& getContainer().getCurrentPage().getNextPage() == null;
+		return EclipseUiUtils.notEmpty(chosenGroupId) && getContainer().getCurrentPage().getNextPage() == null;
 	}
 
 	protected class MainInfoPage extends WizardPage {
@@ -151,8 +151,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 		public MainInfoPage(String pageName) {
 			super(pageName);
 			setTitle("Select a group");
-			setMessage("Choose the group that must manage "
-					+ "the previously selected tasks.");
+			setMessage("Choose the group that must manage " + "the previously selected tasks.");
 		}
 
 		public void createControl(Composite parent) {
@@ -176,8 +175,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			TableColumnLayout tableColumnLayout = new TableColumnLayout();
 			viewer = new TableViewer(table);
 
-			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE,
-					100);
+			column = ViewerUtils.createTableViewerColumn(viewer, "", SWT.NONE, 100);
 			column.setLabelProvider(new ColumnLabelProvider() {
 				private static final long serialVersionUID = -3677453559279606328L;
 
@@ -199,15 +197,13 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 					return userAdminService.getUserDisplayName(user.getName());
 				}
 			});
-			tableColumnLayout.setColumnData(column.getColumn(),
-					new ColumnWeightData(100, 100, true));
+			tableColumnLayout.setColumnData(column.getColumn(), new ColumnWeightData(100, 100, true));
 
 			viewer.setContentProvider(new IStructuredContentProvider() {
 				private static final long serialVersionUID = 7310636623175577101L;
 
 				@Override
-				public void inputChanged(Viewer viewer, Object oldInput,
-						Object newInput) {
+				public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 				}
 
 				@Override
@@ -243,8 +239,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			body.setFocus();
 		}
 
-		private final String[] knownProps = { LdapAttrs.uid.name(),
-				LdapAttrs.cn.name(), LdapAttrs.DN };
+		private final String[] knownProps = { LdapAttrs.uid.name(), LdapAttrs.cn.name(), LdapAttrs.DN };
 
 		private void refreshList(String filter) {
 			// List<Role> groups = userAdminService.listGroups(null);
@@ -262,16 +257,13 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 						filterBuilder.append("*)");
 					}
 
-				String typeStr = "(" + LdapAttrs.objectClass.name() + "="
-						+ LdapObjs.groupOfNames.name() + ")";
+				String typeStr = "(" + LdapAttrs.objectClass.name() + "=" + LdapObjs.groupOfNames.name() + ")";
 				if ((showUserBtn.getSelection()))
-					typeStr = "(|(" + LdapAttrs.objectClass.name() + "="
-							+ LdapObjs.inetOrgPerson.name() + ")" + typeStr
+					typeStr = "(|(" + LdapAttrs.objectClass.name() + "=" + LdapObjs.inetOrgPerson.name() + ")" + typeStr
 							+ ")";
 
 				// if (!showSystemRoleBtn.getSelection())
-				typeStr = "(& " + typeStr + "(!(" + LdapAttrs.DN + "=*"
-						+ NodeConstants.ROLES_BASEDN + ")))";
+				typeStr = "(& " + typeStr + "(!(" + LdapAttrs.DN + "=*" + NodeConstants.ROLES_BASEDN + ")))";
 
 				if (filterBuilder.length() > 1) {
 					builder.append("(&" + typeStr);
@@ -281,20 +273,12 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				} else {
 					builder.append(typeStr);
 				}
-				roles = userAdminService.getUserAdmin().getRoles(
-						builder.toString());
+				roles = userAdminService.getUserAdmin().getRoles(builder.toString());
 			} catch (InvalidSyntaxException e) {
-				throw new PeopleException("Unable to get roles with filter: "
-						+ filter, e);
+				throw new PeopleException("Unable to get roles with filter: " + filter, e);
 			}
-
-			// // List<String> values = new ArrayList<String>();
-			// for (Group group : groups) {
-			// values.add();
-			// }
 			viewer.setInput(roles);
 			viewer.refresh();
-
 		}
 
 		class MySelectionChangedListener implements ISelectionChangedListener {
@@ -303,8 +287,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				if (event.getSelection().isEmpty())
 					chosenGroupId = null;
 				else {
-					Object obj = ((IStructuredSelection) event.getSelection())
-							.getFirstElement();
+					Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 					if (obj instanceof User) {
 						chosenGroupId = ((User) obj).getName();
 					}
@@ -318,8 +301,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				if (evt.getSelection().isEmpty()) {
 					chosenGroupId = null;
 				} else {
-					Object obj = ((IStructuredSelection) evt.getSelection())
-							.getFirstElement();
+					Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 					if (obj instanceof User) {
 						chosenGroupId = ((User) obj).getName();
 						getContainer().showPage(getNextPage());
@@ -344,11 +326,9 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			super.setVisible(visible);
 			if (visible == true) {
 				setErrorMessage(null);
-				String dName = userAdminService
-						.getUserDisplayName(chosenGroupId);
+				String dName = userAdminService.getUserDisplayName(chosenGroupId);
 				setTitle("Assign to " + dName + ": check and confirm.");
-				setMessage("Your are about to assign the below listed "
-						+ elements.length + " tasks to " + dName
+				setMessage("Your are about to assign the below listed " + elements.length + " tasks to " + dName
 						+ ". Are you sure you want to proceed?");
 			}
 		}
@@ -360,16 +340,12 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			layout.marginTop = layout.marginWidth = 10;
 			body.setLayout(layout);
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
-			colDefs.add(new ConnectColumnDefinition(selectorName,
-					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-					new TitleIconRowLP(peopleUiService, selectorName,
-							Property.JCR_TITLE), 300));
+			colDefs.add(new ConnectColumnDefinition(selectorName, Property.JCR_TITLE, PropertyType.STRING,
+					"Display Name", new TitleIconRowLP(peopleUiService, selectorName, Property.JCR_TITLE), 300));
 
-			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body,
-					SWT.READ_ONLY, colDefs);
+			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
-			membersViewer.setContentProvider(new MyLazyContentProvider(
-					membersViewer));
+			membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
 			setViewerInput(membersViewer, elements);
 			// workaround the issue with fill layout and virtual viewer
 			GridData gd = new GridData(SWT.FILL, SWT.TOP, true, false);
@@ -419,24 +395,21 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 
 		// private final String taskTypeId;
 
-		public UpdateAssignmentJob(PeopleService peopleService,
-				Object[] toUpdateItems, String selectorName, String chosenGroup) {
+		public UpdateAssignmentJob(PeopleService peopleService, Object[] toUpdateItems, String selectorName,
+				String chosenGroup) {
 			super("Updating");
 
 			// this.taskTypeId = taskTypeId;
 			this.chosenGroup = chosenGroup;
 			try {
-				Node tmpNode = ConnectJcrUtils.getNodeFromElement(toUpdateItems[0],
-						selectorName);
+				Node tmpNode = ConnectJcrUtils.getNodeFromElement(toUpdateItems[0], selectorName);
 				repository = tmpNode.getSession().getRepository();
 				for (Object element : toUpdateItems) {
-					Node currNode = ConnectJcrUtils.getNodeFromElement(element,
-							selectorName);
+					Node currNode = ConnectJcrUtils.getNodeFromElement(element, selectorName);
 					pathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to initialise "
-						+ "status batch update ", e);
+				throw new PeopleException("Unable to initialise " + "status batch update ", e);
 			}
 		}
 
@@ -454,14 +427,12 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 					// children task if needed, update JCR rights
 					loop: for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
-						String oldAssignedTo = ConnectJcrUtils.get(currNode,
-								PeopleNames.PEOPLE_ASSIGNED_TO);
+						String oldAssignedTo = ConnectJcrUtils.get(currNode, ActivitiesNames.ACTIVITIES_ASSIGNED_TO);
 						if (chosenGroup.equals(oldAssignedTo))
 							continue loop;
 						// Legacy insure the node is checked out before update
 						// ConnectJcrUtils.checkCOStatusBeforeUpdate(currNode);
-						if (ConnectJcrUtils.setJcrProperty(currNode,
-								PeopleNames.PEOPLE_ASSIGNED_TO,
+						if (ConnectJcrUtils.setJcrProperty(currNode, ActivitiesNames.ACTIVITIES_ASSIGNED_TO,
 								PropertyType.STRING, chosenGroup))
 							peopleService.saveEntity(currNode, true);
 					}
@@ -469,8 +440,8 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				}
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to perform batch assignment to " + chosenGroup
-								+ " for " + selectorName + " row list ", e);
+						"Unable to perform batch assignment to " + chosenGroup + " for " + selectorName + " row list ",
+						e);
 			} finally {
 				JcrUtils.logoutQuietly(session);
 			}

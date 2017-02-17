@@ -18,52 +18,50 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.eclipse.gemini.blueprint.io.OsgiBundleResource;
 import org.springframework.core.io.Resource;
 
 /** Base utility to load CSV data in a People repository **/
-public abstract class AbstractPeopleCsvFileParser extends
-		CsvParserWithLinesAsMap implements PeopleNames {
-	private final static Log log = LogFactory
-			.getLog(AbstractPeopleCsvFileParser.class);
+public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMap implements PeopleNames {
+	private final static Log log = LogFactory.getLog(AbstractPeopleCsvFileParser.class);
 
-	protected Session adminSession;
+	private final Session adminSession;
+	private final PeopleService peopleService;
+	private final ResourceService resourceService;
+
 	protected VersionManager vm;
-	private PeopleService peopleService;
-
 	protected DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	// Enable importing images
 	private Resource images = null;
 
-	public AbstractPeopleCsvFileParser(Session adminSession,
-			PeopleService peopleService, Resource images) {
+	public AbstractPeopleCsvFileParser(Session adminSession, PeopleService peopleService,
+			ResourceService resourceService, Resource images) {
 		super();
 		this.adminSession = adminSession;
 		this.peopleService = peopleService;
+		this.resourceService = resourceService;
 		this.images = images;
 		try {
 			vm = adminSession.getWorkspace().getVersionManager();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get version manager "
-					+ "while trying to import nodes", e);
+			throw new PeopleException("Unable to get version manager " + "while trying to import nodes", e);
 		}
 	}
 
-	public AbstractPeopleCsvFileParser(Session adminSession,
-			PeopleService peopleService) {
-		this(adminSession, peopleService, null);
+	public AbstractPeopleCsvFileParser(Session adminSession, PeopleService peopleService,
+			ResourceService resourceService) {
+		this(adminSession, peopleService, resourceService, null);
 	}
 
 	@Override
-	protected abstract void processLine(Integer lineNumber,
-			Map<String, String> line);
+	protected abstract void processLine(Integer lineNumber, Map<String, String> line);
 
 	// UTILS
-	protected void setDateValueFromString(Node node, String propName,
-			String value) {
+	protected void setDateValueFromString(Node node, String propName, String value) {
 		try {
 			Calendar cal = new GregorianCalendar();
 			cal.setTime(dateFormat.parse(value));
@@ -71,8 +69,7 @@ public abstract class AbstractPeopleCsvFileParser extends
 		} catch (ParseException e) {
 			throw new PeopleException("Unable to parse date for: " + value, e);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get version manager "
-					+ "while trying to import nodes", e);
+			throw new PeopleException("Unable to get version manager " + "while trying to import nodes", e);
 		}
 
 	}
@@ -91,5 +88,13 @@ public abstract class AbstractPeopleCsvFileParser extends
 	/* Exposes context */
 	protected PeopleService getPeopleService() {
 		return peopleService;
+	}
+
+	protected ResourceService getResourceService() {
+		return resourceService;
+	}
+
+	protected Session getSession() {
+		return adminSession;
 	}
 }

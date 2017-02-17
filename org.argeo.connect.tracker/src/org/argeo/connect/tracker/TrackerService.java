@@ -6,7 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.activities.ActivityService;
 
 /**
  * Manage Issue tracking concepts based on the Argeo People activity management

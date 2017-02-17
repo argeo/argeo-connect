@@ -20,12 +20,11 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
-import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconLP;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.widgets.DelayedText;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -58,7 +57,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 
 	// Context
 	private Session session;
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// UI Objects
 	private TableViewer entityViewer;
@@ -69,8 +68,8 @@ public class FilterEntitiesVirtualTable extends Composite {
 	private String nodeType = PeopleTypes.PEOPLE_ENTITY;
 
 	public FilterEntitiesVirtualTable(Composite parent, int style, Session session,
-			PeopleWorkbenchService peopleWorkbenchService, String nodeType) {
-		this(parent, style, session, peopleWorkbenchService, nodeType, false);
+			AppWorkbenchService appWorkbenchService, String nodeType) {
+		this(parent, style, session, appWorkbenchService, nodeType, false);
 	}
 
 	/**
@@ -79,10 +78,10 @@ public class FilterEntitiesVirtualTable extends Composite {
 	 * definition of other column
 	 */
 	public FilterEntitiesVirtualTable(Composite parent, int style, Session session,
-			PeopleWorkbenchService peopleWorkbenchService, String nodeType, boolean lazy) {
+			AppWorkbenchService appWorkbenchService, String nodeType, boolean lazy) {
 		super(parent, SWT.NONE);
 		this.session = session;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.appWorkbenchService = appWorkbenchService;
 		this.tableStyle = style;
 		if (EclipseUiUtils.notEmpty(nodeType))
 			this.nodeType = nodeType;
@@ -100,7 +99,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 		this.layout();
 		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
 
-		if (!PeopleRapUtils.getPeopleService().lazyLoadLists())
+		if (!appWorkbenchService.lazyLoadLists())
 			refreshFilteredList();
 	}
 
@@ -166,7 +165,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 		List<ConnectColumnDefinition> colDefs;
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Name",
-				new TitleIconLP(peopleWorkbenchService, Property.JCR_TITLE), 300));
+				new TitleIconLP(appWorkbenchService, Property.JCR_TITLE), 300));
 		return colDefs;
 	}
 
@@ -187,7 +186,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
 
-		boolean isDyn = PeopleRapUtils.getPeopleService().queryWhenTyping();
+		boolean isDyn = appWorkbenchService.queryWhenTyping();
 		if (isDyn)
 			filterTxt = new DelayedText(parent, style, SEARCH_TEXT_DELAY);
 		else

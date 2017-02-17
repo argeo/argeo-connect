@@ -10,19 +10,22 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.people.ActivityService;
-import org.argeo.connect.people.ActivityValueCatalogs;
+import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivityValueCatalogs;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivitiesTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.editors.parts.ActivityTable;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.wizards.NewSimpleTaskWizard;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -52,12 +55,13 @@ public class ActivityList extends LazyCTabControl {
 	// private final static Log log = LogFactory.getLog(ActivityList.class);
 
 	// Context
+	private final UserAdminService userAdminService;
+	private final ResourceService resourceService;
+	private final ActivityService activityService;
+	private final AppWorkbenchService appWorkbenchService;
+	private final Node entity;
 	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
-	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleWorkbenchService;
-	private final ActivityService activityService;
-	private final Node entity;
 
 	// UI Objects
 	private MyFormPart myFormPart;
@@ -69,16 +73,17 @@ public class ActivityList extends LazyCTabControl {
 		ActivityList.this.layout(true, true);
 	}
 
-	public ActivityList(Composite parent, int style,
-			AbstractPeopleEditor editor, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
+	public ActivityList(Composite parent, int style, AbstractPeopleEditor editor, UserAdminService userAdminService,
+			ResourceService resourceService, ActivityService activityService, AppWorkbenchService appWorkbenchService,
+			Node entity) {
 		super(parent, style);
+		this.userAdminService = userAdminService;
+		this.resourceService = resourceService;
+		this.activityService = activityService;
+		this.appWorkbenchService = appWorkbenchService;
+		this.entity = entity;
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
-		this.peopleService = peopleService;
-		activityService = peopleService.getActivityService();
-		this.peopleWorkbenchService = peopleWorkbenchService;
-		this.entity = entity;
 	}
 
 	@Override
@@ -96,13 +101,10 @@ public class ActivityList extends LazyCTabControl {
 		activityTable = new MyActivityTableCmp(parent, SWT.MULTI, entity);
 		activityTable.setLayoutData(EclipseUiUtils.fillAll());
 		if (addCmp != null)
-			addNewActivityPanel(addCmp, entity,
-					peopleWorkbenchService.getOpenEntityEditorCmdId(),
-					activityTable);
+			addNewActivityPanel(addCmp, entity, appWorkbenchService.getOpenEntityEditorCmdId(), activityTable);
 		// Doubleclick listener
-		activityTable.getTableViewer().addDoubleClickListener(
-				new ActivityTableDCL(peopleWorkbenchService
-						.getOpenEntityEditorCmdId()));
+		activityTable.getTableViewer()
+				.addDoubleClickListener(new ActivityTableDCL(appWorkbenchService.getOpenEntityEditorCmdId()));
 
 		myFormPart = new MyFormPart();
 		myFormPart.initialize(editor.getManagedForm());
@@ -118,16 +120,14 @@ public class ActivityList extends LazyCTabControl {
 		}
 	}
 
-	private void addNewActivityPanel(final Composite addActivityBar,
-			final Node entity, final String openEditorCmdId,
+	private void addNewActivityPanel(final Composite addActivityBar, final Node entity, final String openEditorCmdId,
 			final MyActivityTableCmp activityTable) {
 		// The Add Activity bar
 		addActivityBar.setLayoutData(EclipseUiUtils.fillWidth());
 		addActivityBar.setLayout(new GridLayout(7, false));
 
 		// Activity type
-		final Combo typeCmb = new Combo(addActivityBar, SWT.NONE
-				| SWT.READ_ONLY);
+		final Combo typeCmb = new Combo(addActivityBar, SWT.NONE | SWT.READ_ONLY);
 		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		gd.widthHint = 100;
 		typeCmb.setLayoutData(gd);
@@ -137,17 +137,14 @@ public class ActivityList extends LazyCTabControl {
 		toolkit.adapt(typeCmb, true, true);
 
 		// Title
-		final Text titleTxt = PeopleRapUtils.createGDText(toolkit,
-				addActivityBar, "Title",
+		final Text titleTxt = PeopleRapUtils.createGDText(toolkit, addActivityBar, "Title",
 				"Enter a short title for the activity to create", 150, 1);
 
 		// Description
-		final Text descTxt = PeopleRapUtils.createGDText(toolkit,
-				addActivityBar, "Description",
+		final Text descTxt = PeopleRapUtils.createGDText(toolkit, addActivityBar, "Description",
 				"Enter a description for the activity to create", 300, 1);
 
-		Button validBtn = toolkit.createButton(addActivityBar, "Add activity",
-				SWT.PUSH);
+		Button validBtn = toolkit.createButton(addActivityBar, "Add activity", SWT.PUSH);
 
 		toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
 
@@ -160,8 +157,7 @@ public class ActivityList extends LazyCTabControl {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				createActivity(entity, typeCmb, titleTxt, descTxt,
-						activityTable);
+				createActivity(entity, typeCmb, titleTxt, descTxt, activityTable);
 			}
 		});
 
@@ -172,8 +168,7 @@ public class ActivityList extends LazyCTabControl {
 			public void keyTraversed(TraverseEvent e) {
 				if (e.keyCode == SWT.CR) {
 					e.doit = false;
-					createActivity(entity, typeCmb, titleTxt, descTxt,
-							activityTable);
+					createActivity(entity, typeCmb, titleTxt, descTxt, activityTable);
 				}
 			}
 		};
@@ -205,8 +200,7 @@ public class ActivityList extends LazyCTabControl {
 		public void doubleClick(DoubleClickEvent event) {
 			if (event.getSelection() == null || event.getSelection().isEmpty())
 				return;
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			try {
 				Node currNode;
 				if (obj instanceof Node)
@@ -214,8 +208,7 @@ public class ActivityList extends LazyCTabControl {
 				else
 					return;
 				String jcrId = currNode.getIdentifier();
-				CommandUtils.callCommand(openEditorCmdId,
-						OpenEntityEditor.PARAM_JCR_ID, jcrId);
+				CommandUtils.callCommand(openEditorCmdId, OpenEntityEditor.PARAM_JCR_ID, jcrId);
 			} catch (RepositoryException re) {
 				throw new PeopleException("Unable to open editor for node", re);
 			}
@@ -226,19 +219,17 @@ public class ActivityList extends LazyCTabControl {
 		private static final long serialVersionUID = 1L;
 
 		public MyActivityTableCmp(Composite parent, int style, Node entity) {
-			super(parent, style, peopleService, peopleWorkbenchService, entity);
+			super(parent, style, userAdminService, resourceService, activityService, appWorkbenchService, entity);
 		}
 
 		protected void refreshFilteredList() {
 			try {
 				List<Node> nodes = new ArrayList<Node>();
-				PropertyIterator pit = entity
-						.getReferences(PeopleNames.PEOPLE_RELATED_TO); //
+				PropertyIterator pit = entity.getReferences(ActivitiesNames.ACTIVITIES_RELATED_TO); //
 				while (pit.hasNext()) {
 					Property currProp = pit.nextProperty();
 					Node currNode = currProp.getParent();
-					if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)
-							&& !nodes.contains(currNode))
+					if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY) && !nodes.contains(currNode))
 						nodes.add(currNode);
 				}
 				getTableViewer().setInput(nodes.toArray());
@@ -248,13 +239,11 @@ public class ActivityList extends LazyCTabControl {
 		}
 	}
 
-	private Node createActivity(Node entity, Combo typeLbCmb, Text titleTxt,
-			Text descTxt, ActivityTable table) {
+	private Node createActivity(Node entity, Combo typeLbCmb, Text titleTxt, Text descTxt, ActivityTable table) {
 		String typeLbl = typeLbCmb.getText();
 		String title = titleTxt.getText();
 		String desc = descTxt.getText();
-		String type = ActivityValueCatalogs.getKeyByValue(
-				ActivityValueCatalogs.MAPS_ACTIVITY_TYPES, typeLbl);
+		String type = ActivityValueCatalogs.getKeyByValue(ActivityValueCatalogs.MAPS_ACTIVITY_TYPES, typeLbl);
 		Node activity = createActivity(entity, type, title, desc);
 		if (activity != null) {
 			table.refresh();
@@ -272,8 +261,7 @@ public class ActivityList extends LazyCTabControl {
 			// FIXME session management is not clean here
 			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
-			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(session,
-					peopleService);
+			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(session, userAdminService, activityService);
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(relatedEntity);
 			wizard.setRelatedTo(relatedTo);
@@ -281,23 +269,20 @@ public class ActivityList extends LazyCTabControl {
 			dialog.open();
 			session.save();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create task node related to "
-					+ relatedEntity, e);
+			throw new PeopleException("Unable to create task node related to " + relatedEntity, e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
 	}
 
-	private Node createActivity(Node relatedEntity, String type, String title,
-			String desc) {
+	private Node createActivity(Node relatedEntity, String type, String title, String desc) {
 		Session session = null;
 		try {
 			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(relatedEntity);
-			Node activity = activityService.createActivity(session, type,
-					title, desc, relatedTo);
+			Node activity = activityService.createActivity(session, type, title, desc, relatedTo);
 			ConnectJcrUtils.saveAndPublish(activity, true);
 			return activity;
 		} catch (RepositoryException e) {

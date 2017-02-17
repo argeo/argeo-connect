@@ -10,14 +10,12 @@ import javax.jcr.nodetype.NodeType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.editors.tabs.TemplateValueCatalogue;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -39,17 +37,12 @@ import org.eclipse.ui.forms.AbstractFormPart;
 public class TemplateEditor extends AbstractPeopleCTabEditor {
 
 	final static Log log = LogFactory.getLog(TemplateEditor.class);
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".templateEditor";
-
-	/* DEPENDENCY INJECTION */
-	private ResourceService resourceService;
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".templateEditor";
 
 	// Context
 	private Node nodeTemplate;
 
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		nodeTemplate = getNode();
 		// TODO workaround to manually add missing mixin
@@ -61,19 +54,15 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 			Session session = nodeTemplate.getSession();
 			if (session.hasPendingChanges()) {
 				session.save();
-				log.warn("Versionable and last modified mixins "
-						+ "have been added to " + nodeTemplate);
+				log.warn("Versionable and last modified mixins " + "have been added to " + nodeTemplate);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to add missing mixins for node template: "
-							+ nodeTemplate, e);
+			throw new PeopleException("Unable to add missing mixins for node template: " + nodeTemplate, e);
 		}
 
-		String shortName = resourceService.getItemDefaultEnLabel(ConnectJcrUtils
-				.get(nodeTemplate, PeopleNames.PEOPLE_TEMPLATE_ID));
+		String shortName = getResourceService()
+				.getItemDefaultEnLabel(ConnectJcrUtils.get(nodeTemplate, ResourcesNames.PEOPLE_TEMPLATE_ID));
 		setPartName(shortName);
-		resourceService = getPeopleService().getResourceService();
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
@@ -92,20 +81,15 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 				String propLabel = propName;
 
 				tooltip = "Manage and edit the \"" + propLabel + "\" catalogue";
-				LazyCTabControl oneBusinessPropertyCatalogue = new TemplateValueCatalogue(
-						folder, SWT.NO_FOCUS, this, getPeopleService(),
-						getPeopleWorkbenchService(), nodeTemplate, propName,
-						ConnectJcrUtils.get(nodeTemplate,
-								PeopleNames.PEOPLE_TEMPLATE_ID));
-				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils
-						.fillAll());
-				addLazyTabToFolder(folder, oneBusinessPropertyCatalogue,
-						propLabel, PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/"
-								+ propName, tooltip);
+				LazyCTabControl oneBusinessPropertyCatalogue = new TemplateValueCatalogue(folder, SWT.NO_FOCUS, this,
+						getResourceService(), getAppWorkbenchService(), nodeTemplate, propName,
+						ConnectJcrUtils.get(nodeTemplate, ResourcesNames.PEOPLE_TEMPLATE_ID));
+				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils.fillAll());
+				addLazyTabToFolder(folder, oneBusinessPropertyCatalogue, propLabel,
+						PeopleRapConstants.CTAB_EDIT_CATALOGUE + "/" + propName, tooltip);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("unable to create property "
-					+ "tabs for node template " + nodeTemplate, e);
+			throw new PeopleException("unable to create property " + "tabs for node template " + nodeTemplate, e);
 		}
 	}
 
@@ -113,8 +97,7 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 	protected void populateHeader(final Composite parent) {
 		try {
 			parent.setLayout(new GridLayout());
-			final Label editionInfoROLbl = getManagedForm().getToolkit()
-					.createLabel(parent, "", SWT.WRAP);
+			final Label editionInfoROLbl = getManagedForm().getToolkit().createLabel(parent, "", SWT.WRAP);
 			editionInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider festivalLP = new EditionOLP();
 
@@ -149,16 +132,10 @@ public class TemplateEditor extends AbstractPeopleCTabEditor {
 			StringBuilder builder = new StringBuilder();
 			builder.append("<span style='font-size:15px;'>");
 			builder.append("<b><big>");
-			builder.append(ConnectJcrUtils.get(node, PeopleNames.PEOPLE_TEMPLATE_ID));
+			builder.append(ConnectJcrUtils.get(node, ResourcesNames.PEOPLE_TEMPLATE_ID));
 			builder.append("</big></b> ");
 			builder.append("</span>");
 			return builder.toString();
 		}
-	}
-
-	@Override
-	public void setPeopleService(PeopleService peopleService) {
-		super.setPeopleService(peopleService);
-		resourceService = peopleService.getResourceService();
 	}
 }

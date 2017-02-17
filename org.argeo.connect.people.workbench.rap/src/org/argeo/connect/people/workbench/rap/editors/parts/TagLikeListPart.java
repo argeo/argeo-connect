@@ -13,22 +13,19 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -62,15 +59,14 @@ public class TagLikeListPart extends Composite {
 	private final String newTagMsg;
 
 	// Context
-	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleWorkbenchService;
+	private final ResourceService resourceService;
+	private final AppWorkbenchService appWorkbenchService;
 	private final Node taggable;
 	private final Node tagParent;
 	private final String tagId;
 	private final String taggablePropName;
 
 	// Deduced from the context, shortcut for this class
-	private final ResourceService resourceService;
 	private final Session session;
 
 	// Cache to trace newly created versionable tag like objects.
@@ -88,21 +84,20 @@ public class TagLikeListPart extends Composite {
 	 * @param tagId
 	 * @param newTagMsg
 	 */
-	public TagLikeListPart(AbstractPeopleEditor editor, Composite parent, int style, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, String tagId, Node taggable, String taggablePropName,
+	public TagLikeListPart(AbstractPeopleEditor editor, Composite parent, int style, ResourceService resourceService,
+			AppWorkbenchService appWorkbenchService, String tagId, Node taggable, String taggablePropName,
 			String newTagMsg) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
-		this.peopleService = peopleService;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.resourceService = resourceService;
+		this.appWorkbenchService = appWorkbenchService;
 		this.tagId = tagId;
 		this.taggable = taggable;
 		this.taggablePropName = taggablePropName;
 		this.newTagMsg = newTagMsg;
 
 		// Cache some context object to ease implementation
-		this.resourceService = peopleService.getResourceService();
 		session = ConnectJcrUtils.getSession(taggable);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 
@@ -181,7 +176,7 @@ public class TagLikeListPart extends Composite {
 
 							@Override
 							public void widgetSelected(final SelectionEvent event) {
-								Node tag = peopleService.getResourceService().getRegisteredTag(tagParent, tagValue);
+								Node tag = resourceService.getRegisteredTag(tagParent, tagValue);
 
 								try {
 									if (createdTagPath.contains(tag.getPath())) {
@@ -189,7 +184,7 @@ public class TagLikeListPart extends Composite {
 												+ "Please save first.";
 										MessageDialog.openInformation(parentCmp.getShell(), "Forbidden action", msg);
 									} else
-										CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),
+										CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
 												OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
 								} catch (RepositoryException e) {
 									throw new PeopleException("unable to get path for resource tag node " + tag
@@ -209,8 +204,8 @@ public class TagLikeListPart extends Composite {
 					RowData rd = new RowData(120, SWT.DEFAULT);
 					tagTxt.setLayoutData(rd);
 
-					final TagLikeDropDown tagDD = new TagLikeDropDown(taggable.getSession(),
-							peopleService.getResourceService(), tagId, tagTxt);
+					final TagLikeDropDown tagDD = new TagLikeDropDown(taggable.getSession(), resourceService, tagId,
+							tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
 						private static final long serialVersionUID = 1L;
@@ -291,19 +286,14 @@ public class TagLikeListPart extends Composite {
 		try {
 			Session session = taggable.getSession();
 			// Check if such a tag is already registered
-			Node registered = peopleService.getResourceService().getRegisteredTag(tagParent, newTag);
+			Node registered = resourceService.getRegisteredTag(tagParent, newTag);
 
 			if (registered == null) {
-				boolean canAdd = !"true"
-						.equals(peopleService.getConfigProperty(PeopleConstants.PEOPLE_PROP_PREVENT_TAG_ADDITION))
-						|| CurrentUser.isInRole(PeopleConstants.ROLE_BUSINESS_ADMIN);
-				// || userService.amIInRole(PeopleConstants.ROLE_ADMIN);
-
-				if (canAdd) {
+				if (resourceService.canCreateTag(session)) {
 					// Ask end user if we create a new tag
 					msg = "\"" + newTag + "\" is not yet registered.\n Are you sure you want to create it?";
 					if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
-						registered = peopleService.getResourceService().registerTag(session, tagId, newTag);
+						registered = resourceService.registerTag(session, tagId, newTag);
 						if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
 							createdTagPath.add(registered.getPath());
 

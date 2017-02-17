@@ -7,10 +7,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jackrabbit.util.ISO9075;
+import org.argeo.connect.ConnectConstants;
 
 /** Ease XPath generation for JCR requests */
 public class XPathUtils {
@@ -132,5 +136,28 @@ public class XPathUtils {
 			builder.append(xPathNot(cond));
 			builder.append(" and ");
 		}
+	}
+
+	public static Query createQuery(Session session, String queryString) throws RepositoryException {
+		QueryManager queryManager = session.getWorkspace().getQueryManager();
+
+		// Localise JCR properties for XPATH
+
+		return queryManager.createQuery(queryString, ConnectConstants.QUERY_XPATH);
+	}
+
+	private final static String NS_JCR = "{http://www.jcp.org/jcr/1.0}";
+	private final static String NS_NT = "{http://www.jcp.org/jcr/nt/1.0}";
+	private final static String NS_MIX = "{http://www.jcp.org/jcr/mix/1.0}";
+
+	/**
+	 * Replace the generic namespace with the local "jcr:", "nt:", "mix:"
+	 * values. It is a workaround that must be later cleaned
+	 */
+	public static String localiseJcrItemNames(String name) {
+		name = name.replaceAll(NS_JCR, "jcr:");
+		name = name.replaceAll(NS_NT, "nt:");
+		name = name.replaceAll(NS_MIX, "mix:");
+		return name;
 	}
 }

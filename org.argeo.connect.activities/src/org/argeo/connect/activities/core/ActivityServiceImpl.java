@@ -1,4 +1,4 @@
-package org.argeo.connect.people.core;
+package org.argeo.connect.activities.core;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
@@ -17,34 +17,42 @@ import javax.jcr.query.Query;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.people.ActivityService;
-import org.argeo.connect.people.ActivityValueCatalogs;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesException;
+import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivitiesTypes;
+import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivityValueCatalogs;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to People's {@link ActivityService} */
-public class ActivityServiceImpl implements ActivityService, PeopleNames {
+public class ActivityServiceImpl implements ActivityService, ActivitiesNames {
 	// private final static Log log =
 	// LogFactory.getLog(ActivityServiceImpl.class);
 
 	// Keeps a local reference to the parent people service,
 	// Among other to rely on its base path policies.
-	private final PeopleService peopleService;
+	// private final PeopleService peopleService;
+
+	/* DEPENDENCY INJECTION */
+	private UserAdminService userAdminService;
+	private ResourceService resourceService;
 
 	/**
 	 * Default constructor, caller must then inject a relevant
 	 * {@link userManagementService}
 	 */
-	public ActivityServiceImpl(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public ActivityServiceImpl() {
+		// this.peopleService = peopleService;
+	}
+
+	private String getBasePath() {
+		// FIXME move the parent node to the root of the workspace
+		return "/people/activities";
 	}
 
 	/* ACTIVITIES */
@@ -52,8 +60,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public String getActivityParentCanonicalPath(Session session) {
 		String currentUser = session.getUserID();
 		Calendar currentTime = GregorianCalendar.getInstance();
-		String path = peopleService.getBasePath(PeopleTypes.PEOPLE_ACTIVITY) + "/"
-				+ JcrUtils.dateAsPath(currentTime, true) + currentUser;
+		String path = getBasePath() + "/" + JcrUtils.dateAsPath(currentTime, true) + currentUser;
 		return path;
 	}
 
@@ -71,21 +78,21 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public Node createActivity(Session session, String reporterId, String type, String title, String desc,
 			List<Node> relatedTo, Calendar date) {
 		try {
-			Node activityBase = session.getNode(peopleService.getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
+			Node activityBase = session.getNode(getBasePath());
 			String localId = UserAdminUtils.getUserLocalId(reporterId);
 			Node parent = JcrUtils.mkdirs(activityBase, getActivityParentRelPath(session, date, localId),
 					NodeType.NT_UNSTRUCTURED);
-			Node activity = parent.addNode(type, PeopleTypes.PEOPLE_ACTIVITY);
+			Node activity = parent.addNode(type, ActivitiesTypes.ACTIVITIES_ACTIVITY);
 			activity.addMixin(type);
-			activity.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
+			activity.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
 
 			// Activity Date
 			if (date != null)
-				activity.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, date);
+				activity.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, date);
 
 			// related to
 			if (relatedTo != null && !relatedTo.isEmpty())
-				ConnectJcrUtils.setMultipleReferences(activity, PeopleNames.PEOPLE_RELATED_TO, relatedTo);
+				ConnectJcrUtils.setMultipleReferences(activity, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
 
 			// Content
 			activity.setProperty(Property.JCR_TITLE, title);
@@ -93,7 +100,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			JcrUtils.updateLastModified(activity);
 			return activity;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create activity node", e);
+			throw new ActivitiesException("Unable to create activity node", e);
 		}
 	}
 
@@ -101,22 +108,22 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public Calendar getActivityRelevantDate(Node activityNode) {
 		try {
 			Calendar relevantDate = null;
-			if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
-				if (activityNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
-					relevantDate = activityNode.getProperty(PeopleNames.PEOPLE_CLOSE_DATE).getDate();
-				else if (activityNode.hasProperty(PeopleNames.PEOPLE_DUE_DATE))
-					relevantDate = activityNode.getProperty(PeopleNames.PEOPLE_DUE_DATE).getDate();
-				else if (activityNode.hasProperty(PeopleNames.PEOPLE_WAKE_UP_DATE))
-					relevantDate = activityNode.getProperty(PeopleNames.PEOPLE_WAKE_UP_DATE).getDate();
-				else if (activityNode.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE))
-					relevantDate = activityNode.getProperty(PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+			if (activityNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
+				if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE))
+					relevantDate = activityNode.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).getDate();
+				else if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE))
+					relevantDate = activityNode.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate();
+				else if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE))
+					relevantDate = activityNode.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate();
+				else if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE))
+					relevantDate = activityNode.getProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE).getDate();
 				else if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED))
 					relevantDate = activityNode.getProperty(Property.JCR_LAST_MODIFIED).getDate();
 				else if (activityNode.hasProperty(Property.JCR_CREATED))
 					relevantDate = activityNode.getProperty(Property.JCR_CREATED).getDate();
-			} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-				if (activityNode.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE))
-					relevantDate = activityNode.getProperty(PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+			} else if (activityNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
+				if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE))
+					relevantDate = activityNode.getProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE).getDate();
 				else if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED))
 					relevantDate = activityNode.getProperty(Property.JCR_LAST_MODIFIED).getDate();
 				else if (activityNode.hasProperty(Property.JCR_CREATED))
@@ -124,7 +131,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			}
 			return relevantDate;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get relevant date " + "for activity " + activityNode, re);
+			throw new ActivitiesException("Unable to get relevant date " + "for activity " + activityNode, re);
 		}
 	}
 
@@ -135,9 +142,9 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 				if (activity.isNodeType(type))
 					return ActivityValueCatalogs.MAPS_ACTIVITY_TYPES.get(type);
 			}
-			throw new PeopleException("Undefined type for activity: " + activity);
+			throw new ActivitiesException("Undefined type for activity: " + activity);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get type for activity " + activity, e);
+			throw new ActivitiesException("Unable to get type for activity " + activity, e);
 		}
 	}
 
@@ -156,20 +163,19 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	 */
 	@Override
 	public NodeIterator getTasksForUser(Session session, String username, boolean onlyOpenTasks) {
-		UserAdminService usm = peopleService.getUserAdminService();
-		return getTasksForGroup(session, usm.getUserRoles(username), onlyOpenTasks);
+		return getTasksForGroup(session, userAdminService.getUserRoles(username), onlyOpenTasks);
 	}
 
 	public NodeIterator getTasksForGroup(Session session, String[] roles, boolean onlyOpenTasks) {
 		try {
 			// XPath
 			StringBuilder builder = new StringBuilder();
-			builder.append("//element(*, ").append(PeopleTypes.PEOPLE_TASK).append(")");
+			builder.append("//element(*, ").append(ActivitiesTypes.ACTIVITIES_TASK).append(")");
 
 			// Assigned to
 			StringBuilder tmpBuilder = new StringBuilder();
 			for (String role : roles) {
-				String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_ASSIGNED_TO, role);
+				String attrQuery = XPathUtils.getPropertyEquals(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, role);
 				if (notEmpty(attrQuery))
 					tmpBuilder.append(attrQuery).append(" or ");
 			}
@@ -180,19 +186,20 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			// Only opened tasks
 			String notClosedCond = null;
 			if (onlyOpenTasks)
-				notClosedCond = "not(@" + PeopleNames.PEOPLE_CLOSE_DATE + ")";
+				notClosedCond = "not(@" + ActivitiesNames.ACTIVITIES_CLOSE_DATE + ")";
 
 			String allCond = XPathUtils.localAnd(groupCond, notClosedCond);
 			if (EclipseUiUtils.notEmpty(allCond))
 				builder.append("[").append(allCond).append("]");
 
-			builder.append(" order by @").append(PeopleNames.JCR_LAST_MODIFIED).append(" descending");
+			builder.append(" order by @").append(ConnectJcrUtils.getLocalJcrItemName(Property.JCR_LAST_MODIFIED))
+					.append(" descending");
 
 			Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
 					ConnectConstants.QUERY_XPATH);
 			return query.execute().getNodes();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get tasks for groups " + roles.toString());
+			throw new ActivitiesException("Unable to get tasks for groups " + roles.toString());
 		}
 	}
 
@@ -200,9 +207,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			List<String> modifiedPaths) throws RepositoryException {
 		try {
 			Session session = taskNode.getSession();
-			ResourceService resourceService = peopleService.getResourceService();
 			List<String> closingStatus = resourceService.getTemplateCatalogue(session, templateId,
-					PeopleNames.PEOPLE_TASK_CLOSING_STATUSES, null);
+					ActivitiesNames.ACTIVITIES_TASK_CLOSING_STATUSES, null);
 
 			boolean changed = false;
 
@@ -211,8 +217,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					// Already closed, nothing to do
 				} else {
 					// Close
-					taskNode.setProperty(PeopleNames.PEOPLE_CLOSE_DATE, new GregorianCalendar());
-					taskNode.setProperty(PeopleNames.PEOPLE_CLOSED_BY, session.getUserID());
+					taskNode.setProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE, new GregorianCalendar());
+					taskNode.setProperty(ActivitiesNames.ACTIVITIES_CLOSED_BY, session.getUserID());
 					changed = true;
 				}
 			} else {
@@ -220,10 +226,10 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 					// Already open, nothing to do
 				} else {
 					// Re-Open
-					if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE))
-						taskNode.getProperty(PeopleNames.PEOPLE_CLOSE_DATE).remove();
-					if (taskNode.hasProperty(PeopleNames.PEOPLE_CLOSED_BY))
-						taskNode.getProperty(PeopleNames.PEOPLE_CLOSED_BY).remove();
+					if (taskNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE))
+						taskNode.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).remove();
+					if (taskNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSED_BY))
+						taskNode.getProperty(ActivitiesNames.ACTIVITIES_CLOSED_BY).remove();
 					changed = true;
 				}
 			}
@@ -237,11 +243,11 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public boolean updateStatus(String templateId, Node taskNode, String newStatus, List<String> modifiedPaths)
 			throws RepositoryException {
 		try {
-			String oldStatus = ConnectJcrUtils.get(taskNode, PeopleNames.PEOPLE_TASK_STATUS);
+			String oldStatus = ConnectJcrUtils.get(taskNode, ActivitiesNames.ACTIVITIES_TASK_STATUS);
 			if (notEmpty(oldStatus) && oldStatus.equals(newStatus))
 				return false;
 			else {
-				taskNode.setProperty(PeopleNames.PEOPLE_TASK_STATUS, newStatus);
+				taskNode.setProperty(ActivitiesNames.ACTIVITIES_TASK_STATUS, newStatus);
 				manageClosedState(templateId, taskNode, oldStatus, newStatus, modifiedPaths);
 				return true;
 			}
@@ -255,17 +261,17 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	public boolean isTaskDone(Node taskNode) {
 		try {
 			// Only rely on the non-nullity of the closed date
-			return taskNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE);
+			return taskNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get done status for task " + taskNode, re);
+			throw new ActivitiesException("Unable to get done status for task " + taskNode, re);
 		}
 	}
 
 	@Override
 	public boolean isTaskSleeping(Node taskNode) {
 		try {
-			if (taskNode.hasProperty(PeopleNames.PEOPLE_WAKE_UP_DATE)) {
-				Calendar wuDate = taskNode.getProperty(PeopleNames.PEOPLE_WAKE_UP_DATE).getDate();
+			if (taskNode.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE)) {
+				Calendar wuDate = taskNode.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate();
 				Calendar now = new GregorianCalendar();
 				// Add a day: the task is awake as from 00:01AM on the given day
 				now.add(Calendar.DAY_OF_YEAR, 1);
@@ -273,7 +279,7 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			} else
 				return false;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get sleeping status for task " + taskNode, re);
+			throw new ActivitiesException("Unable to get sleeping status for task " + taskNode, re);
 		}
 	}
 
@@ -281,13 +287,13 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public String getAssignedToDisplayName(Node taskNode) {
 		try {
-			if (taskNode.hasProperty(PeopleNames.PEOPLE_ASSIGNED_TO)) {
-				String groupId = taskNode.getProperty(PeopleNames.PEOPLE_ASSIGNED_TO).getString();
-				return peopleService.getUserAdminService().getUserDisplayName(groupId);
+			if (taskNode.hasProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO)) {
+				String groupId = taskNode.getProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO).getString();
+				return userAdminService.getUserDisplayName(groupId);
 			}
 			return "";
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get name of group assigned to " + taskNode, e);
+			throw new ActivitiesException("Unable to get name of group assigned to " + taskNode, e);
 		}
 	}
 
@@ -301,8 +307,8 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 	@Override
 	public Node createTask(Session session, Node parentNode, String reporterId, String title, String description,
 			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate) {
-		return createTask(session, parentNode, PeopleTypes.PEOPLE_TASK, reporterId, title, description, assignedTo,
-				relatedTo, creationDate, dueDate, wakeUpDate);
+		return createTask(session, parentNode, ActivitiesTypes.ACTIVITIES_TASK, reporterId, title, description,
+				assignedTo, relatedTo, creationDate, dueDate, wakeUpDate);
 	}
 
 	@Override
@@ -311,14 +317,14 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			Calendar wakeUpDate) {
 		try {
 			if (session == null && parentNode == null)
-				throw new PeopleException(
+				throw new ActivitiesException(
 						"Define either a session or a parent node. " + "Both cannot be null at the same time.");
 
 			if (session == null)
 				session = parentNode.getSession();
 
 			if (parentNode == null) {
-				Node activityBase = session.getNode(peopleService.getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
+				Node activityBase = session.getNode(getBasePath());
 				String localId = UserAdminUtils.getUserLocalId(reporterId);
 				parentNode = JcrUtils.mkdirs(activityBase, getActivityParentRelPath(session, creationDate, localId),
 						NodeType.NT_UNSTRUCTURED);
@@ -335,57 +341,56 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			if (EclipseUiUtils.isEmpty(reporterId))
 				reporterId = session.getUserID();
 
-			taskNode.setProperty(PeopleNames.PEOPLE_REPORTED_BY, reporterId);
+			taskNode.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
 
 			if (notEmpty(assignedTo)) {
 				// String atdn = peopleService.getUserAdminService()
 				// .getDistinguishedName(assignedTo, Role.GROUP);
-				taskNode.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, assignedTo);
+				taskNode.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, assignedTo);
 			}
 
 			if (relatedTo != null && !relatedTo.isEmpty())
-				ConnectJcrUtils.setMultipleReferences(taskNode, PeopleNames.PEOPLE_RELATED_TO, relatedTo);
+				ConnectJcrUtils.setMultipleReferences(taskNode, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
 
 			if (creationDate == null)
 				creationDate = new GregorianCalendar();
-			taskNode.setProperty(PeopleNames.PEOPLE_ACTIVITY_DATE, creationDate);
+			taskNode.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, creationDate);
 
 			if (dueDate != null) {
-				taskNode.setProperty(PeopleNames.PEOPLE_DUE_DATE, dueDate);
+				taskNode.setProperty(ActivitiesNames.ACTIVITIES_DUE_DATE, dueDate);
 			}
 			if (wakeUpDate != null) {
-				taskNode.setProperty(PeopleNames.PEOPLE_WAKE_UP_DATE, wakeUpDate);
+				taskNode.setProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE, wakeUpDate);
 			}
 			setTaskDefaultStatus(taskNode, taskNodeType);
 			return taskNode;
 		} catch (RepositoryException e) {
-			throw new PeopleException(
+			throw new ActivitiesException(
 					"Unable to create task of type " + taskNodeType + " named " + title + " under " + parentNode, e);
 		}
 	}
 
 	protected void setTaskDefaultStatus(Node taskNode, String taskNodeType) throws RepositoryException {
 		// Default status management
-		ResourceService resourceService = peopleService.getResourceService();
 		Node template = resourceService.getNodeTemplate(taskNode.getSession(), taskNodeType);
 		String defaultStatus = null;
 		if (template != null)
-			defaultStatus = ConnectJcrUtils.get(template, PEOPLE_TASK_DEFAULT_STATUS);
+			defaultStatus = ConnectJcrUtils.get(template, ActivitiesNames.ACTIVITIES_TASK_DEFAULT_STATUS);
 		if (notEmpty(defaultStatus))
-			taskNode.setProperty(PEOPLE_TASK_STATUS, defaultStatus);
+			taskNode.setProperty(ActivitiesNames.ACTIVITIES_TASK_STATUS, defaultStatus);
 	}
 
 	@Override
 	public Node createPoll(Node parentNode, String reporterId, String pollName, String title, String description,
 			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate) {
-		Node poll = createTask(null, parentNode, PeopleTypes.PEOPLE_POLL, reporterId, title, description, assignedTo,
-				relatedTo, creationDate, dueDate, wakeUpDate);
+		Node poll = createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_POLL, reporterId, title, description,
+				assignedTo, relatedTo, creationDate, dueDate, wakeUpDate);
 
 		String newPath = null;
 		try {
 			newPath = parentNode.getPath() + "/" + JcrUtils.replaceInvalidChars(pollName);
-			poll.setProperty(PEOPLE_POLL_NAME, pollName);
-			poll.addNode(PeopleNames.PEOPLE_RATES);
+			poll.setProperty(ActivitiesNames.ACTIVITIES_POLL_NAME, pollName);
+			poll.addNode(ActivitiesNames.ACTIVITIES_RATES);
 
 			// TODO clean this
 			// Enhance task naming
@@ -393,9 +398,18 @@ public class ActivityServiceImpl implements ActivityService, PeopleNames {
 			Session session = parentNode.getSession();
 			session.move(poll.getPath(), newPath);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to add poll specific info to task " + poll + " and move it to " + newPath,
-					e);
+			throw new ActivitiesException(
+					"Unable to add poll specific info to task " + poll + " and move it to " + newPath, e);
 		}
 		return poll;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 }

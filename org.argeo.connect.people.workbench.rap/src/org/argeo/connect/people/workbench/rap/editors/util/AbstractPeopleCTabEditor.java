@@ -66,7 +66,7 @@ public abstract class AbstractPeopleCTabEditor extends AbstractPeopleWithImgEdit
 					// History panel
 					String tooltip = "History of information about " + JcrUtils.get(getNode(), Property.JCR_TITLE);
 					HistoryLog historyLogCmp = new HistoryLog(folder, SWT.NO_FOCUS, AbstractPeopleCTabEditor.this,
-							getPeopleService(), getNode());
+							getUserAdminService(), getNode());
 					historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
 					addLazyTabToFolder(folder, historyLogCmp, "History", PeopleRapConstants.CTAB_HISTORY, tooltip);
 					if (!showHistoryBtn.isDisposed()) {

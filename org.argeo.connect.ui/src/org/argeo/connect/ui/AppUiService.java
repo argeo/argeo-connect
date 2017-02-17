@@ -17,4 +17,13 @@ public interface AppUiService {
 	default public Wizard getCreationWizard(Node node) {
 		return null;
 	}
+
+	/* CONFIGURE QUERIES */
+	default public boolean lazyLoadLists() {
+		return true;
+	}
+
+	default public boolean queryWhenTyping() {
+		return false;
+	}
 }

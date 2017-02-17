@@ -62,7 +62,7 @@ public class ConnectJcrUtils {
 			throw new ConnectException("Unknown prefix for " + name);
 	}
 
-	public static String checkAndLocalzeNamespaces(String name) {
+	public static String checkAndLocalizeNamespaces(String name) {
 		String jcr = "{" + NS_JCR + "}";
 		String nt = "{" + NS_NT + "}";
 		if (name.startsWith(jcr))
@@ -262,9 +262,9 @@ public class ConnectJcrUtils {
 		try {
 			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) + "//element(*, "
-					+ checkAndLocalzeNamespaces(nodeType) + ")";
+					+ checkAndLocalizeNamespaces(nodeType) + ")";
 
-			String attrQuery = XPathUtils.getPropertyEquals(checkAndLocalzeNamespaces(propName), propValue);
+			String attrQuery = XPathUtils.getPropertyEquals(checkAndLocalizeNamespaces(propName), propValue);
 
 			xpathQueryStr += "[" + attrQuery + "]";
 			// String cleanStr = cleanStatement(xpathQueryStr);

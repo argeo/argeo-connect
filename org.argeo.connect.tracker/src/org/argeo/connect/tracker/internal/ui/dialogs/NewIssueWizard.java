@@ -9,11 +9,10 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.ExistingGroupsDropDown;
-import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.core.TrackerUtils;
@@ -47,10 +46,8 @@ import org.eclipse.swt.widgets.Text;
 public class NewIssueWizard extends Wizard {
 	private final static Log log = LogFactory.getLog(NewIssueWizard.class);
 
-	// Set upon instantiation
-	private PeopleTrackerService aoService;
-	private TrackerService issueService;
 	private UserAdminService userAdminService;
+	private TrackerService trackerService;
 
 	// Business objects
 	private Node project;
@@ -75,11 +72,10 @@ public class NewIssueWizard extends Wizard {
 
 	protected TableViewer itemsViewer;
 
-	public NewIssueWizard(PeopleTrackerService aoService, Node project) {
-		this.aoService = aoService;
+	public NewIssueWizard(UserAdminService userAdminService, TrackerService trackerService, Node project) {
 		this.project = project;
-		issueService = aoService.getTrackerService();
-		userAdminService = aoService.getUserAdminService();
+		this.userAdminService = userAdminService;
+		this.trackerService = trackerService;
 	}
 
 	@Override
@@ -111,7 +107,7 @@ public class NewIssueWizard extends Wizard {
 			String priorityStr = TrackerUtils.getKeyByValue(TrackerUtils.MAPS_ISSUE_PRIORITIES, priorityCmb.getText());
 			int priority = new Integer(priorityStr).intValue();
 
-			createdIssue = issueService.createIssue(project.getNode(TrackerUtils.issuesRelPath()), titleTxt.getText(),
+			createdIssue = trackerService.createIssue(project.getNode(TrackerUtils.issuesRelPath()), titleTxt.getText(),
 					descTxt.getText(), versionDD.getText(), targetDD.getText(), priority, importance,
 					assignedToDD.getText());
 		} catch (RepositoryException e) {
@@ -191,7 +187,7 @@ public class NewIssueWizard extends Wizard {
 			// Assigned to
 			Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
 					"Choose a group or person to manage this issue", 3);
-			assignedToDD = new ExistingGroupsDropDown(assignedToTxt, aoService, true, false);
+			assignedToDD = new ExistingGroupsDropDown(assignedToTxt, userAdminService, true, false);
 
 			// PeopleRapUtils.createBoldLabel(parent, "Assigned to");
 			// Composite assignedToCmp = new Composite(parent, SWT.NO_FOCUS);

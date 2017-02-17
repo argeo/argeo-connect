@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.jcr.Session;
 
-import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.resources.ResourceService;
 import org.eclipse.swt.widgets.Text;
 
 /**

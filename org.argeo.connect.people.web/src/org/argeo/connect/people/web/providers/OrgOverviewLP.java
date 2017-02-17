@@ -5,7 +5,7 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -13,6 +13,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebSnippets;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -28,10 +29,12 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 	private final int listType;
 
 	private PeopleService peopleService;
+	private ResourceService resourceService;
 
-	public OrgOverviewLP(int listType, PeopleService peopleService) {
+	public OrgOverviewLP(ResourceService resourceService, PeopleService peopleService, int listType) {
 		this.listType = listType;
 		this.peopleService = peopleService;
+		this.resourceService = resourceService;
 	}
 
 	@Override
@@ -66,8 +69,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		builder.append(peopleService.getDisplayName(orga));
 		builder.append("</b></big> ");
 
-		String local = PeopleUiSnippets
-				.getLocalisationInfo(peopleService, orga);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, orga);
 		if (notEmpty(local))
 			builder.append(local);
 
@@ -81,8 +83,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		return builder.toString();
 	}
 
-	private String getOverviewForList(Node orga, boolean isSmallList)
-			throws RepositoryException {
+	private String getOverviewForList(Node orga, boolean isSmallList) throws RepositoryException {
 
 		StringBuilder builder = new StringBuilder();
 
@@ -94,14 +95,12 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		if (!isSmallList)
 			builder.append("</big>");
 
-		String local = PeopleUiSnippets
-				.getLocalisationInfo(peopleService, orga);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, orga);
 		if (notEmpty(local))
 			builder.append(local);
 
 		if (isSmallList)
-			builder.append(ConnectUiConstants.NB_SPACE
-					+ ConnectUiConstants.NB_SPACE);
+			builder.append(ConnectUiConstants.NB_SPACE + ConnectUiConstants.NB_SPACE);
 		else
 			builder.append("<br/>");
 
@@ -109,17 +108,13 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		if (notEmpty(tmpStr))
 			builder.append(tmpStr);
 
-		String tags = PeopleWebSnippets.getTagLikeValues(peopleService,
-				PeopleConstants.RESOURCE_TAG, orga, PeopleNames.PEOPLE_TAGS,
-				"#");
-		String mailingLists = PeopleWebSnippets.getTagLikeValues(peopleService,
-				PeopleTypes.PEOPLE_MAILING_LIST, orga,
+		String tags = PeopleWebSnippets.getTagLikeValues(resourceService, ConnectConstants.RESOURCE_TAG, orga,
+				PeopleNames.PEOPLE_TAGS, "#");
+		String mailingLists = PeopleWebSnippets.getTagLikeValues(resourceService, PeopleTypes.PEOPLE_MAILING_LIST, orga,
 				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {
-			builder.append(
-					ConnectUiConstants.NB_SPACE + ConnectUiConstants.NB_SPACE)
-					.append(tags.trim());
+			builder.append(ConnectUiConstants.NB_SPACE + ConnectUiConstants.NB_SPACE).append(tags.trim());
 			if (notEmpty(tags) && notEmpty(mailingLists))
 				builder.append(ConnectUiConstants.NB_SPACE);
 			builder.append(mailingLists.trim());

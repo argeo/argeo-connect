@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- EDITORS -->
+	<bean id="folderEditor" class="org.argeo.connect.activities.workbench.parts.FolderEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="documentsService" ref="documentsService" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
+	</bean>
+	<bean id="fileEditor" class="org.argeo.connect.activities.workbench.parts.FileEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="documentsService" ref="documentsService" />
+		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+	
+	<!-- VIEWS -->
+	<bean id="myFilesView" class="org.argeo.connect.activities.workbench.parts.MyFilesView"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
+		<property name="documentsService" ref="documentsService" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+</beans>

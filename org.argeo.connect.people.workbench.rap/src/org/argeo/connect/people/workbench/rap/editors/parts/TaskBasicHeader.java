@@ -13,17 +13,17 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
-import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.window.Window;
@@ -47,10 +47,11 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 	// Context
 	private final Session session;
-	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleWorkbenchService;
+
+	private final UserAdminService userAdminService;
 	private final ResourceService resourceService;
 	private final ActivityService activityService;
+	private final AppWorkbenchService appWorkbenchService;
 	private final Node task;
 	private final String taskTypeId;
 
@@ -83,24 +84,27 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private DateFormat dtFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 	private DateFormat dateFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_FORMAT);
 
-	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent, int style, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, String taskTypeId, Node task) {
-		this(editor, parent, style, peopleService, peopleWorkbenchService, taskTypeId, task, null);
+	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent, int style, UserAdminService uas,
+			ResourceService resourceService, ActivityService activityService,
+			AppWorkbenchService peopleWorkbenchService, String taskTypeId, Node task) {
+		this(editor, parent, style, uas, resourceService, activityService, peopleWorkbenchService, taskTypeId, task,
+				null);
 	}
 
-	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent, int style, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, String taskTypeId, Node task, List<String> hiddenItemIds) {
+	public TaskBasicHeader(AbstractPeopleEditor editor, Composite parent, int style, UserAdminService uas,
+			ResourceService resourceService, ActivityService activityService, AppWorkbenchService appWorkbenchService,
+			String taskTypeId, Node task, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
-		this.peopleService = peopleService;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.resourceService = resourceService;
+		this.activityService = activityService;
+		this.userAdminService = uas;
+		this.appWorkbenchService = appWorkbenchService;
 		this.taskTypeId = taskTypeId;
 		this.task = task;
 
 		// Caches a few context object to ease implementation
-		resourceService = peopleService.getResourceService();
-		activityService = peopleService.getActivityService();
 		session = ConnectJcrUtils.getSession(task);
 
 		this.hiddenItemIds = hiddenItemIds;
@@ -185,8 +189,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		// RELATED ENTITIES
 		// Label label =
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
-		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, peopleWorkbenchService, task,
-				PEOPLE_RELATED_TO, hiddenItemIds);
+		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, appWorkbenchService, task,
+				ActivitiesNames.ACTIVITIES_RELATED_TO, hiddenItemIds);
 		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Title
@@ -211,7 +215,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 		// DUE DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Due date");
-		dueDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS, myFormPart, task, PeopleNames.PEOPLE_DUE_DATE);
+		dueDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS, myFormPart, task,
+				ActivitiesNames.ACTIVITIES_DUE_DATE);
 		dueDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// ASSIGNED TO
@@ -222,13 +227,13 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		// WAKE UP DATE
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Wake up date");
 		wakeUpDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS, myFormPart, task,
-				PeopleNames.PEOPLE_WAKE_UP_DATE);
+				ActivitiesNames.ACTIVITIES_WAKE_UP_DATE);
 		wakeUpDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// RELATED ENTITIES
 		PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
-		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, peopleWorkbenchService, task,
-				PEOPLE_RELATED_TO, hiddenItemIds);
+		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, appWorkbenchService, task,
+				ActivitiesNames.ACTIVITIES_RELATED_TO, hiddenItemIds);
 		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(3));
 		relatedCmp.layout();
 
@@ -245,7 +250,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 		// Add listeners
 		dueDateCmp.setFormPart(myFormPart);
 		wakeUpDateCmp.setFormPart(myFormPart);
-		addStatusCmbSelListener(myFormPart, statusCmb, task, PEOPLE_TASK_STATUS, PropertyType.STRING);
+		addStatusCmbSelListener(myFormPart, statusCmb, task, ActivitiesNames.ACTIVITIES_TASK_STATUS,
+				PropertyType.STRING);
 		PeopleRapUtils.addModifyListener(titleTxt, task, Property.JCR_TITLE, myFormPart);
 		PeopleRapUtils.addModifyListener(descTxt, task, Property.JCR_DESCRIPTION, myFormPart);
 		addChangeAssignListener();
@@ -254,24 +260,24 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 	private String getStatusText() {
 		try {
 			StringBuilder builder = new StringBuilder();
-			String status = ConnectJcrUtils.get(task, PEOPLE_TASK_STATUS);
+			String status = ConnectJcrUtils.get(task, ActivitiesNames.ACTIVITIES_TASK_STATUS);
 
 			String dueDateStr = null;
-			if (task.hasProperty(PEOPLE_DUE_DATE)) {
-				Calendar dueDate = task.getProperty(PEOPLE_DUE_DATE).getDate();
+			if (task.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE)) {
+				Calendar dueDate = task.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate();
 				dueDateStr = dateFormat.format(dueDate.getTime());
 			}
 			builder.append(status);
 
 			if (activityService.isTaskDone(task)) {
-				String closeBy = ConnectJcrUtils.get(task, PEOPLE_CLOSED_BY);
-				Calendar closedDate = task.getProperty(PEOPLE_CLOSE_DATE).getDate();
+				String closeBy = ConnectJcrUtils.get(task, ActivitiesNames.ACTIVITIES_CLOSED_BY);
+				Calendar closedDate = task.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).getDate();
 				builder.append(" - Marked as closed by ").append(closeBy);
 				builder.append(" on ").append(dtFormat.format(closedDate.getTime())).append(".");
 				if (EclipseUiUtils.notEmpty(dueDateStr))
 					builder.append(" Due date was ").append(dueDateStr);
 			} else if (activityService.isTaskSleeping(task)) {
-				Calendar wakeUpDate = task.getProperty(PEOPLE_WAKE_UP_DATE).getDate();
+				Calendar wakeUpDate = task.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate();
 				builder.append(" - Sleeping until  ");
 				builder.append(dateFormat.format(wakeUpDate.getTime()));
 				if (EclipseUiUtils.notEmpty(dueDateStr))
@@ -311,10 +317,10 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 
 	/** Override this to add specific rights for status change */
 	protected void refreshStatusCombo(Combo combo, Node currTask) {
-		List<String> values = resourceService.getTemplateCatalogue(session, taskTypeId, PeopleNames.PEOPLE_TASK_STATUS,
-				null);
+		List<String> values = resourceService.getTemplateCatalogue(session, taskTypeId,
+				ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
 		combo.setItems(values.toArray(new String[values.size()]));
-		PeopleRapUtils.refreshFormCombo(editor, combo, currTask, PeopleNames.PEOPLE_TASK_STATUS);
+		PeopleRapUtils.refreshFormCombo(editor, combo, currTask, ActivitiesNames.ACTIVITIES_TASK_STATUS);
 		combo.setEnabled(editor.isEditing());
 	}
 
@@ -325,9 +331,8 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				try {
-					UserAdminService uas = peopleService.getUserAdminService();
 					PickUpUserDialog diag = new PickUpUserDialog(changeAssignationLk.getShell(), "Choose a group",
-							uas.getUserAdmin());
+							userAdminService.getUserAdmin());
 					int result = diag.open();
 					if (Window.OK == result) {
 						User newGroup = diag.getSelected();
@@ -339,12 +344,11 @@ public class TaskBasicHeader extends Composite implements PeopleNames {
 							return; // nothing has changed
 						else {
 							// Update value
-							task.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, newGroupName);
+							task.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, newGroupName);
 							// update cache and display.
 							assignedToGroupId = newGroupName;
 							changeAssignationLk
-									.setText(peopleService.getUserAdminService().getUserDisplayName(newGroupName)
-											+ "  ~ <a>Change</a>");
+									.setText(userAdminService.getUserDisplayName(newGroupName) + "  ~ <a>Change</a>");
 							myFormPart.markDirty();
 						}
 					}

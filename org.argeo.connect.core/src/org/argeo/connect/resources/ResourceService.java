@@ -1,4 +1,4 @@
-package org.argeo.connect.people;
+package org.argeo.connect.resources;
 
 import java.util.List;
 
@@ -15,13 +15,6 @@ import javax.jcr.Session;
  * peopleService.
  */
 public interface ResourceService {
-
-	/**
-	 * Initialise the current repository with parent nodes for known resources
-	 * the corresponding admin session is not saved.
-	 **/
-	public void initialiseResources(Session adminSession)
-			throws RepositoryException;
 
 	/* LABEL FOR NODE TYPES AND PROPERTY NAMES MANAGEMENT */
 	/**
@@ -346,5 +339,8 @@ public interface ResourceService {
 	 * Count members that have such a tag in the corresponding taggable sub tree
 	 */
 	public long countMembers(Node tag);
+	
+	
+	public boolean canCreateTag(Session session);
 
 }

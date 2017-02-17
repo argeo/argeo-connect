@@ -12,13 +12,13 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleStyles;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpRelatedDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.ui.ConnectUiStyles;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -42,7 +42,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 	private static final long serialVersionUID = -5813631462166187272L;
 
 	// Context
-	private final PeopleWorkbenchService peopleWorkbenchService;
+	private final AppWorkbenchService peopleWorkbenchService;
 	private final Node entity;
 	private final String propName;
 	private final List<String> hiddenItemIds = new ArrayList<String>();
@@ -58,18 +58,13 @@ public class LinkListPart extends Composite implements PeopleNames {
 		try {
 			return entity.getSession().getNodeByIdentifier(string);
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to retrieve target node of related entity for "
-							+ entity, e);
+			throw new PeopleException("Unable to retrieve target node of related entity for " + entity, e);
 		}
 	}
 
-	public LinkListPart(AbstractPeopleEditor editor, AbstractFormPart formPart,
-			Composite parent, int style,
-			PeopleWorkbenchService peopleWorkbenchService, Node entity,
-			String propName) {
-		this(editor, formPart, parent, style, peopleWorkbenchService, entity,
-				propName, null);
+	public LinkListPart(AbstractPeopleEditor editor, AbstractFormPart formPart, Composite parent, int style,
+			AppWorkbenchService peopleWorkbenchService, Node entity, String propName) {
+		this(editor, formPart, parent, style, peopleWorkbenchService, entity, propName, null);
 	}
 
 	/**
@@ -84,10 +79,8 @@ public class LinkListPart extends Composite implements PeopleNames {
 	 * @param propName
 	 * @param hiddenItemIds
 	 */
-	public LinkListPart(AbstractPeopleEditor editor, AbstractFormPart formPart,
-			Composite parent, int style,
-			PeopleWorkbenchService peopleWorkbenchService, Node entity,
-			String propName, List<String> hiddenItemIds) {
+	public LinkListPart(AbstractPeopleEditor editor, AbstractFormPart formPart, Composite parent, int style,
+			AppWorkbenchService peopleWorkbenchService, Node entity, String propName, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.formPart = formPart;
 		this.editor = editor;
@@ -125,10 +118,8 @@ public class LinkListPart extends Composite implements PeopleNames {
 					String valueStr = value.getString();
 					if (!hiddenItemIds.contains(valueStr)) {
 						Node targetNode = getTargetWithValue(valueStr);
-						String labelStr = ConnectJcrUtils.get(targetNode,
-								Property.JCR_TITLE);
-						createDeletableClickable(relatedCmp, valueStr,
-								labelStr, editor.isEditing());
+						String labelStr = ConnectJcrUtils.get(targetNode, Property.JCR_TITLE);
+						createDeletableClickable(relatedCmp, valueStr, labelStr, editor.isEditing());
 					}
 				}
 			} else if (!editor.isEditing())
@@ -142,13 +133,11 @@ public class LinkListPart extends Composite implements PeopleNames {
 				addNewRelatedSelList(newRelatedLk);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to create related to composite for " + entity, e);
+			throw new PeopleException("Unable to create related to composite for " + entity, e);
 		}
 	}
 
-	private Composite createDeletableClickable(Composite parent,
-			final String value, String label, boolean isEditing) {
+	private Composite createDeletableClickable(Composite parent, final String value, String label, boolean isEditing) {
 		Composite part = new Composite(parent, SWT.NO_FOCUS);
 		part.setLayout(new FormLayout());
 		part.setData(VALUE_KEY, value);
@@ -171,8 +160,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					ConnectJcrUtils.removeRefFromMultiValuedProp(entity, propName,
-							value);
+					ConnectJcrUtils.removeRefFromMultiValuedProp(entity, propName, value);
 					formPart.refresh();
 					formPart.markDirty();
 				}
@@ -216,8 +204,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 				if (currUiValue == null)
 					// skip non business controls
 					continue loop;
-				if (valueIndex >= values.length
-						|| !currUiValue.equals(values[valueIndex].getString()))
+				if (valueIndex >= values.length || !currUiValue.equals(values[valueIndex].getString()))
 					return true;
 				valueIndex++;
 			}
@@ -226,9 +213,7 @@ public class LinkListPart extends Composite implements PeopleNames {
 				return true;
 			return false;
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to determine stale state for prop " + propName
-							+ " of " + entity, e);
+			throw new PeopleException("Unable to determine stale state for prop " + propName + " of " + entity, e);
 		}
 	}
 
@@ -244,9 +229,8 @@ public class LinkListPart extends Composite implements PeopleNames {
 
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
-			CommandUtils.callCommand(
-					peopleWorkbenchService.getOpenEntityEditorCmdId(),
-					OpenEntityEditor.PARAM_JCR_ID, jcrId);
+			CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+					jcrId);
 		}
 	}
 
@@ -261,26 +245,22 @@ public class LinkListPart extends Composite implements PeopleNames {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				try {
-					PickUpRelatedDialog diag = new PickUpRelatedDialog(link
-							.getShell(), "Choose a related item", entity
-							.getSession(), peopleWorkbenchService, entity);
+					PickUpRelatedDialog diag = new PickUpRelatedDialog(link.getShell(), "Choose a related item",
+							entity.getSession(), peopleWorkbenchService, entity);
 
 					int result = diag.open();
 					if (Window.OK == result) {
 						Node node = diag.getSelected();
-						String errMsg = ConnectJcrUtils.addRefToMultiValuedProp(
-								entity, propName, node);
+						String errMsg = ConnectJcrUtils.addRefToMultiValuedProp(entity, propName, node);
 						if (errMsg != null)
-							MessageDialog.openError(link.getShell(),
-									"Duplicates", errMsg);
+							MessageDialog.openError(link.getShell(), "Duplicates", errMsg);
 						else {
 							formPart.refresh();
 							formPart.markDirty();
 						}
 					}
 				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to link chosen node "
-							+ "to current activity " + entity, e);
+					throw new PeopleException("Unable to link chosen node " + "to current activity " + entity, e);
 				}
 			}
 		});

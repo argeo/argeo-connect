@@ -8,7 +8,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -19,9 +19,11 @@ import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.EditJob;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.commands.RemoveEntityReference;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 
 /** Some helper methods to generate HTML snippet */
@@ -104,14 +106,14 @@ public class PeopleRapSnippets {
 	/**
 	 * a snippet to display clickable tags that are linked to the current entity
 	 */
-	public static String getTags(PeopleService peopleService, PeopleWorkbenchService peopleWorkbenchService,
+	public static String getTags(ResourceService resourceService, AppWorkbenchService appWorkbenchService,
 			Node entity) {
 		try {
 			StringBuilder tags = new StringBuilder();
 			if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
 				for (Value value : entity.getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
-					tags.append("#").append(getTagLink(ConnectJcrUtils.getSession(entity), peopleService,
-							peopleWorkbenchService, PeopleConstants.RESOURCE_TAG, value.getString())).append("  ");
+					tags.append("#").append(getTagLink(ConnectJcrUtils.getSession(entity), resourceService,
+							appWorkbenchService, ConnectConstants.RESOURCE_TAG, value.getString())).append("  ");
 			}
 			return ConnectUiUtils.replaceAmpersand(tags.toString());
 		} catch (RepositoryException e) {
@@ -124,10 +126,10 @@ public class PeopleRapSnippets {
 	 * tag if it is already registered. The corresponding Label / List must have
 	 * a HtmlRWTAdapter to catch when the user click on the link
 	 */
-	public static String getTagLink(Session session, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, String tagId, String value) {
-		String commandId = peopleWorkbenchService.getOpenEntityEditorCmdId();
-		Node tag = peopleService.getResourceService().getRegisteredTag(session, tagId, value);
+	public static String getTagLink(Session session, ResourceService resourceService,
+			AppWorkbenchService appWorkbenchService, String tagId, String value) {
+		String commandId = appWorkbenchService.getOpenEntityEditorCmdId();
+		Node tag = resourceService.getRegisteredTag(session, tagId, value);
 		if (tag == null)
 			return value;
 		String tagJcrId = ConnectJcrUtils.getIdentifier(tag);
@@ -137,7 +139,7 @@ public class PeopleRapSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */
-	public static String getWorkAddressForList(PeopleService peopleService,
+	public static String getWorkAddressForList(ResourceService resourceService,
 			PeopleWorkbenchService peopleWorkbenchService, Node contactNode, Node referencedEntity) {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
@@ -153,12 +155,12 @@ public class PeopleRapSnippets {
 			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
 			if (primaryAddress != null) {
 				builder.append("<br />");
-				builder.append(PeopleUiSnippets.getAddressDisplayValue(peopleService, primaryAddress));
+				builder.append(PeopleUiSnippets.getAddressDisplayValue(resourceService, primaryAddress));
 			}
 		}
 		return ConnectUiUtils.replaceAmpersand(builder.toString());
 	}
-	
+
 	private PeopleRapSnippets() {
 	}
 }

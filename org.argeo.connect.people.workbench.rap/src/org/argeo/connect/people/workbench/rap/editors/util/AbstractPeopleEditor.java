@@ -18,15 +18,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivityService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.ChangeEditingState;
 import org.argeo.connect.people.workbench.rap.commands.DeleteEntity;
 import org.argeo.connect.people.workbench.rap.util.EditionSourceProvider;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -59,17 +62,17 @@ import org.eclipse.ui.services.ISourceProviderService;
  * cycle of the JCR session that is bound to it. It provides no UI layout except
  * from the header with some buttons.
  */
-public abstract class AbstractPeopleEditor extends EditorPart implements
-		CmsEditable, Refreshable {
-	private final static Log log = LogFactory
-			.getLog(AbstractPeopleEditor.class);
+public abstract class AbstractPeopleEditor extends EditorPart implements CmsEditable, Refreshable {
+	private final static Log log = LogFactory.getLog(AbstractPeopleEditor.class);
 
 	/* DEPENDENCY INJECTION */
-	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleWorkbenchService;
-	// There is *one session per editor*
 	private Repository repository;
-	private Session session;
+	private Session session; // There is *one* session per editor
+	private UserAdminService userAdminService;
+	private ResourceService resourceService;
+	private ActivityService activityService;
+	private PeopleService peopleService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// New approach: we do not rely on the checkin status of the underlying node
 	// which should always be in a checkout state.
@@ -80,8 +83,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	// length for short strings (typically tab names)
 	protected final static int SHORT_NAME_LENGHT = 10;
 
-	private final static DateFormat df = new SimpleDateFormat(
-			ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private final static DateFormat df = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// Context
 	private Node node;
@@ -92,8 +94,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	private Composite main;
 
 	// LIFE CYCLE
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		try {
@@ -104,8 +105,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			updatePartName();
 			updateToolTip();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create new session"
-					+ " to use with current editor", e);
+			throw new PeopleException("Unable to create new session" + " to use with current editor", e);
 		}
 	}
 
@@ -127,22 +127,19 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 
 		// Internal main Layout
 		// Header
-		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
-				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 		GridLayout gl = ConnectUiUtils.noSpaceGridLayout(2);
 		gl.marginRight = 5; // otherwise buttons are too close from right border
 		header.setLayout(gl);
 		header.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// header content
-		Composite left = toolkit.createComposite(header, SWT.NO_FOCUS
-				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		Composite left = toolkit.createComposite(header, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 		left.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateHeader(left);
 
 		// header buttons
-		Composite right = toolkit.createComposite(header, SWT.NO_FOCUS
-				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		Composite right = toolkit.createComposite(header, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 		GridData gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
 		gd.verticalIndent = 5;
 		right.setLayoutData(gd);
@@ -186,8 +183,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		buttons.setLayout(new FormLayout());
 
 		// READ ONLY PANEL
-		final Composite roPanelCmp = toolkit.createComposite(buttons,
-				SWT.NO_FOCUS);
+		final Composite roPanelCmp = toolkit.createComposite(buttons, SWT.NO_FOCUS);
 		PeopleRapUtils.setSwitchingFormData(roPanelCmp);
 		roPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
@@ -204,10 +200,8 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 					// Superstition? we can only be here when we can edit.
 					if (canEdit()) {
 						Map<String, String> params = new HashMap<String, String>();
-						params.put(ChangeEditingState.PARAM_NEW_STATE,
-								ChangeEditingState.EDITING);
-						params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
-								ChangeEditingState.PRIOR_ACTION_CHECKOUT);
+						params.put(ChangeEditingState.PARAM_NEW_STATE, ChangeEditingState.EDITING);
+						params.put(ChangeEditingState.PARAM_PRIOR_ACTION, ChangeEditingState.PRIOR_ACTION_CHECKOUT);
 						CommandUtils.callCommand(ChangeEditingState.ID, params);
 					}
 				}
@@ -215,8 +209,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 		// Add a refresh button to enable forcing refresh when having some UI
 		// glitches.
-		Button refreshBtn = toolkit.createButton(roPanelCmp, "Refresh",
-				SWT.PUSH);
+		Button refreshBtn = toolkit.createButton(roPanelCmp, "Refresh", SWT.PUSH);
 		refreshBtn.setLayoutData(new RowData(60, 20));
 		refreshBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -228,8 +221,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		});
 
 		// EDIT PANEL
-		final Composite editPanelCmp = toolkit.createComposite(buttons,
-				SWT.NONE);
+		final Composite editPanelCmp = toolkit.createComposite(buttons, SWT.NONE);
 		PeopleRapUtils.setSwitchingFormData(editPanelCmp);
 		editPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
@@ -243,27 +235,21 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				try {
 					if (isEditing())
 						if (node.getSession().hasPendingChanges())
-							CommandUtils
-									.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
+							CommandUtils.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
 						else {
 							// Nothing has changed we in fact call cancel
 							Map<String, String> params = new HashMap<String, String>();
-							params.put(ChangeEditingState.PARAM_NEW_STATE,
-									ChangeEditingState.NOT_EDITING);
-							params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
-									ChangeEditingState.PRIOR_ACTION_CANCEL);
-							CommandUtils.callCommand(ChangeEditingState.ID,
-									params);
+							params.put(ChangeEditingState.PARAM_NEW_STATE, ChangeEditingState.NOT_EDITING);
+							params.put(ChangeEditingState.PARAM_PRIOR_ACTION, ChangeEditingState.PRIOR_ACTION_CANCEL);
+							CommandUtils.callCommand(ChangeEditingState.ID, params);
 						}
 				} catch (RepositoryException re) {
-					throw new PeopleException(
-							"Unable to save pending changes on " + node, re);
+					throw new PeopleException("Unable to save pending changes on " + node, re);
 				}
 			}
 		});
 
-		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel",
-				SWT.PUSH);
+		Button cancelBtn = toolkit.createButton(editPanelCmp, "Cancel", SWT.PUSH);
 		cancelBtn.setLayoutData(new RowData(60, 20));
 		cancelBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -272,18 +258,15 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			public void widgetSelected(SelectionEvent e) {
 				if (isEditing()) {
 					Map<String, String> params = new HashMap<String, String>();
-					params.put(ChangeEditingState.PARAM_NEW_STATE,
-							ChangeEditingState.NOT_EDITING);
-					params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
-							ChangeEditingState.PRIOR_ACTION_CANCEL);
+					params.put(ChangeEditingState.PARAM_NEW_STATE, ChangeEditingState.NOT_EDITING);
+					params.put(ChangeEditingState.PARAM_PRIOR_ACTION, ChangeEditingState.PRIOR_ACTION_CANCEL);
 					CommandUtils.callCommand(ChangeEditingState.ID, params);
 				}
 			}
 		});
 
 		if (showDeleteButton()) {
-			Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete",
-					SWT.PUSH);
+			Button deleteBtn = toolkit.createButton(editPanelCmp, "Delete", SWT.PUSH);
 			deleteBtn.setLayoutData(new RowData(60, 20));
 			deleteBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
@@ -291,8 +274,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					Map<String, String> params = new HashMap<String, String>();
-					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
-							ConnectJcrUtils.getIdentifier(node));
+					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID, ConnectJcrUtils.getIdentifier(node));
 					// params.put(DeleteEntity.PARAM_REMOVE_ALSO_PARENT,
 					// deleteParentOnRemove().toString());
 					CommandUtils.callCommand(DeleteEntity.ID, params);
@@ -330,11 +312,6 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		this.node = node;
 	}
 
-	/** Returns the entity Node that is bound to this editor */
-	public Node getNode() {
-		return node;
-	}
-
 	public FormToolkit getFormToolkit() {
 		return toolkit;
 	}
@@ -343,21 +320,9 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		return mForm;
 	}
 
-	/* EXPOSES TO CHILDREN CLASSES */
-	protected PeopleService getPeopleService() {
-		return peopleService;
-	}
-
-	protected PeopleWorkbenchService getPeopleWorkbenchService() {
-		return peopleWorkbenchService;
-	}
-
-	protected Session getSession() {
-		return session;
-	}
-
-	protected Repository getRepository() {
-		return repository;
+	/** Overwrite to hide the delete button */
+	protected boolean showDeleteButton() {
+		return canEdit();
 	}
 
 	// LIFE CYCLE
@@ -400,7 +365,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			// use of our twicked form.
 			forceRefresh();
 			notifyEditionStateChange();
-			main.layout(true,true);
+			main.layout(true, true);
 		}
 	}
 
@@ -410,7 +375,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			markAllStale();
 			forceRefresh();
 			notifyEditionStateChange();
-			main.layout(true,true);
+			main.layout(true, true);
 		}
 	}
 
@@ -426,8 +391,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 	 * external extension (typically the toolbar buttons)
 	 */
 	protected void notifyEditionStateChange() {
-		ISourceProviderService sourceProviderService = (ISourceProviderService) this
-				.getSite().getWorkbenchWindow()
+		ISourceProviderService sourceProviderService = (ISourceProviderService) this.getSite().getWorkbenchWindow()
 				.getService(ISourceProviderService.class);
 		EditionSourceProvider csp = (EditionSourceProvider) sourceProviderService
 				.getSourceProvider(EditionSourceProvider.EDITING_STATE);
@@ -460,16 +424,14 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			part.refresh();
 			lapEnd = System.currentTimeMillis();
 			if (log.isTraceEnabled())
-				log.trace("FormPart " + part.getClass().getName()
-						+ " refreshed in " + (lapEnd - lap) + " ms");
+				log.trace("FormPart " + part.getClass().getName() + " refreshed in " + (lapEnd - lap) + " ms");
 		}
 		lap = System.currentTimeMillis();
 		mForm.reflow(true);
 		end = System.currentTimeMillis();
 		if (log.isTraceEnabled()) {
 			log.trace("Reflow done in " + (end - lap) + " ms");
-			log.trace("Full refresh of " + this.getClass().getName() + " in "
-					+ (end - start) + " ms");
+			log.trace("Full refresh of " + this.getClass().getName() + " in " + (end - start) + " ms");
 		}
 	}
 
@@ -489,25 +451,19 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		StringBuilder builder = new StringBuilder();
 		try {
 			if (currNode.isNodeType(NodeType.MIX_TITLE)) {
-				builder.append(ConnectJcrUtils.get(currNode, Property.JCR_TITLE))
-						.append(" - ");
+				builder.append(ConnectJcrUtils.get(currNode, Property.JCR_TITLE)).append(" - ");
 			}
 			if (currNode.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
 				builder.append("Last updated on ");
-				builder.append(df.format(currNode
-						.getProperty(Property.JCR_LAST_MODIFIED).getDate()
-						.getTime()));
+				builder.append(df.format(currNode.getProperty(Property.JCR_LAST_MODIFIED).getDate().getTime()));
 				builder.append(", by ");
-				String lstModByDn = currNode.getProperty(
-						Property.JCR_LAST_MODIFIED_BY).getString();
-				builder.append(peopleService.getUserAdminService()
-						.getUserDisplayName(lstModByDn));
+				String lstModByDn = currNode.getProperty(Property.JCR_LAST_MODIFIED_BY).getString();
+				builder.append(userAdminService.getUserDisplayName(lstModByDn));
 				builder.append(". ");
 			}
 			return builder.toString();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to create last "
-					+ "modified message for " + currNode, re);
+			throw new PeopleException("Unable to create last " + "modified message for " + currNode, re);
 		}
 	}
 
@@ -517,8 +473,7 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 			boolean isDirty = session.hasPendingChanges();
 			return isDirty;
 		} catch (Exception e) {
-			throw new PeopleException(
-					"Error getting session status on " + node, e);
+			throw new PeopleException("Error getting session status on " + node, e);
 		}
 	}
 
@@ -569,23 +524,62 @@ public abstract class AbstractPeopleEditor extends EditorPart implements
 		}
 	}
 
-	/** Overwrite to hide the delete button */
-	protected boolean showDeleteButton() {
-		return canEdit();
+	/* EXPOSES TO CHILDREN CLASSES */
+	protected Session getSession() {
+		return session;
+	}
+
+	protected Repository getRepository() {
+		return repository;
+	}
+
+	/** Returns the entity Node that is bound to this editor */
+	public Node getNode() {
+		return node;
+	}
+
+	protected UserAdminService getUserAdminService() {
+		return userAdminService;
+	}
+
+	protected ResourceService getResourceService() {
+		return resourceService;
+	}
+
+	protected ActivityService getActivityService() {
+		return activityService;
+	}
+
+	protected PeopleService getPeopleService() {
+		return peopleService;
+	}
+
+	protected AppWorkbenchService getAppWorkbenchService() {
+		return appWorkbenchService;
 	}
 
 	/* DEPENDENCY INJECTION */
-
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
+	}
+
+	public void setActivityService(ActivityService activityService) {
+		this.activityService = activityService;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 	}
 }

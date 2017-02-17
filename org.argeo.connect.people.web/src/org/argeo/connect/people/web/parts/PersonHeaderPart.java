@@ -12,6 +12,7 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.providers.PersonOverviewLP;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.rap.rwt.RWT;
@@ -26,7 +27,9 @@ import org.eclipse.swt.widgets.Label;
 /** Overview header for Node of type PeopleTypes.PEOPLE_PERSON */
 public class PersonHeaderPart implements CmsUiProvider {
 
+	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private ResourceService resourceService;
 	private TagLikeValuesPart tagsPart;
 	private TagLikeValuesPart mailingListsPart;
 
@@ -72,7 +75,8 @@ public class PersonHeaderPart implements CmsUiProvider {
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		ILabelProvider personLP = new PersonOverviewLP(PeopleWebConstants.OVERVIEW_TYPE_HEADER, peopleService);
+		ILabelProvider personLP = new PersonOverviewLP(resourceService, peopleService,
+				PeopleWebConstants.OVERVIEW_TYPE_HEADER);
 		readOnlyInfoLbl.setText(personLP.getText(context));
 
 		Composite tagsCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -115,6 +119,10 @@ public class PersonHeaderPart implements CmsUiProvider {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 
 	public void setTagsPart(TagLikeValuesPart tagsPart) {

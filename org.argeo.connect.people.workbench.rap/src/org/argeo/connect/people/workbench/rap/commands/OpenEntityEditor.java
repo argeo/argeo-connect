@@ -12,15 +12,14 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.editors.ActivityEditor;
 import org.argeo.connect.people.workbench.rap.editors.GroupEditor;
 import org.argeo.connect.people.workbench.rap.editors.MailingListEditor;
 import org.argeo.connect.people.workbench.rap.editors.OrgEditor;
 import org.argeo.connect.people.workbench.rap.editors.PersonEditor;
 import org.argeo.connect.people.workbench.rap.editors.TagEditor;
-import org.argeo.connect.people.workbench.rap.editors.TaskEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
+import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -45,8 +44,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 public class OpenEntityEditor extends AbstractHandler {
 	private final static Log log = LogFactory.getLog(OpenEntityEditor.class);
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".openEntityEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".openEntityEditor";
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
@@ -74,8 +72,7 @@ public class OpenEntityEditor extends AbstractHandler {
 
 			String editorId = getEditorIdFromNode(entity);
 			if (editorId != null) {
-				IWorkbenchWindow iww = HandlerUtil
-						.getActiveWorkbenchWindow(event);
+				IWorkbenchWindow iww = HandlerUtil.getActiveWorkbenchWindow(event);
 				IWorkbenchPage iwp = iww.getActivePage();
 				IEditorPart editor = iwp.openEditor(eei, editorId);
 
@@ -84,17 +81,13 @@ public class OpenEntityEditor extends AbstractHandler {
 					((CmsEditable) editor).startEditing();
 
 				String tabId = event.getParameter(PARAM_CTAB_ID);
-				if (EclipseUiUtils.notEmpty(tabId)
-						&& editor instanceof AbstractPeopleCTabEditor)
+				if (EclipseUiUtils.notEmpty(tabId) && editor instanceof AbstractPeopleCTabEditor)
 					((AbstractPeopleCTabEditor) editor).openTabItem(tabId);
 			}
 		} catch (PartInitException pie) {
-			throw new PeopleException(
-					"Unexpected PartInitException while opening entity editor",
-					pie);
+			throw new PeopleException("Unexpected PartInitException while opening entity editor", pie);
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"unexpected JCR error while opening editor", e);
+			throw new PeopleException("unexpected JCR error while opening editor", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
@@ -111,14 +104,14 @@ public class OpenEntityEditor extends AbstractHandler {
 	 */
 	protected String getEditorIdFromNode(Node curNode) {
 		try {
-			if (curNode.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE))
+			if (curNode.isNodeType(ResourcesTypes.PEOPLE_TAG_INSTANCE))
 				return TagEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				return MailingListEditor.ID;
-			else if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
-				return TaskEditor.ID;
-			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
-				return ActivityEditor.ID;
+			// else if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
+			// return TaskEditor.ID;
+			// else if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+			// return ActivityEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				return PersonEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORG)) {

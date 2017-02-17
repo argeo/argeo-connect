@@ -24,9 +24,6 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
@@ -36,10 +33,12 @@ import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
@@ -81,8 +80,8 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	private static final long serialVersionUID = -5018569293721397600L;
 
 	// Context
-	private final PeopleWorkbenchService peopleWorkbenchService;
-	private final PeopleService peopleService;
+	private final ResourceService resourceService;
+	private final AppWorkbenchService peopleWorkbenchService;
 	private final Node templateNode;
 	private final String propertyName;
 	private final String taggableType;
@@ -91,13 +90,12 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	private final AbstractPeopleEditor editor;
 	private MyFormPart myFormPart;
 
-	public TemplateValueCatalogue(Composite parent, int style,
-			AbstractPeopleEditor editor, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Node templateNode,
+	public TemplateValueCatalogue(Composite parent, int style, AbstractPeopleEditor editor,
+			ResourceService resourceService, AppWorkbenchService peopleWorkbenchService, Node templateNode,
 			String propertyName, String taggableType) {
 		super(parent, style);
 		this.editor = editor;
-		this.peopleService = peopleService;
+		this.resourceService = resourceService;
 		this.peopleWorkbenchService = peopleWorkbenchService;
 		this.templateNode = templateNode;
 		this.propertyName = propertyName;
@@ -148,48 +146,41 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 			valuesCmp.setLayoutData(gd);
 			valuesViewer = createValuesViewer(valuesCmp);
 			valuesViewer.setContentProvider(new ValuesTableCP());
-			valuesViewer.getTable().addSelectionListener(
-					new MyEditRemoveAdapter());
+			valuesViewer.getTable().addSelectionListener(new MyEditRemoveAdapter());
 
 			Composite instancesCmp = new Composite(panel, SWT.NO_FOCUS);
 			instancesCmp.setLayoutData(EclipseUiUtils.fillAll());
 			instancesViewer = createInstancesViewer(instancesCmp);
-			instancesViewer.setContentProvider(new InstancesTableCP(
-					instancesViewer));
+			instancesViewer.setContentProvider(new InstancesTableCP(instancesViewer));
 			instancesViewer.addDoubleClickListener(new InstanceDClickAdapter());
 
 			// enables update of the bottom table when one of the value is
 			// selected
-			valuesViewer
-					.addSelectionChangedListener(new ISelectionChangedListener() {
-						@Override
-						public void selectionChanged(SelectionChangedEvent event) {
-							IStructuredSelection selection = (IStructuredSelection) event
-									.getSelection();
-							if (!selection.isEmpty()) {
-								String currSelected = (String) selection
-										.getFirstElement();
-								RowIterator rit = query(currSelected);
-								setViewerInput(instancesViewer,
-										ConnectJcrUtils.rowIteratorToArray(rit));
-							}
-						}
-					});
+			valuesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+				@Override
+				public void selectionChanged(SelectionChangedEvent event) {
+					IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+					if (!selection.isEmpty()) {
+						String currSelected = (String) selection.getFirstElement();
+						RowIterator rit = query(currSelected);
+						setViewerInput(instancesViewer, ConnectJcrUtils.rowIteratorToArray(rit));
+					}
+				}
+			});
 
 			refreshContent(panel, editionInfo);
 		}
 
 		protected void refreshContent(Composite parent, Node editionInfo) {
 			try {
-				valuesViewer.setInput(ConnectJcrUtils.getMultiAsList(templateNode,
-						propertyName).toArray(new String[0]));
+				valuesViewer
+						.setInput(ConnectJcrUtils.getMultiAsList(templateNode, propertyName).toArray(new String[0]));
 				valuesViewer.refresh();
 				setViewerInput(instancesViewer, null);
 				if (editionInfo.getSession().hasPendingChanges())
 					MyFormPart.this.markDirty();
 			} catch (RepositoryException e) {
-				throw new PeopleException("unable to occurrences for "
-						+ editionInfo, e);
+				throw new PeopleException("unable to occurrences for " + editionInfo, e);
 			}
 		}
 	}
@@ -201,40 +192,32 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	protected RowIterator query(String currVal) {
 		try {
 			Session session = templateNode.getSession();
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			Selector source = factory.selector(taggableType, taggableType);
 
-			StaticOperand so = factory.literal(session.getValueFactory()
-					.createValue(currVal));
-			DynamicOperand dyo = factory.propertyValue(
-					source.getSelectorName(), propertyName);
-			Constraint constraint = factory.comparison(dyo,
-					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+			StaticOperand so = factory.literal(session.getValueFactory().createValue(currVal));
+			DynamicOperand dyo = factory.propertyValue(source.getSelectorName(), propertyName);
+			Constraint constraint = factory.comparison(dyo, QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 
 			Ordering order = factory
-					.ascending(factory.upperCase(factory.propertyValue(
-							source.getSelectorName(), Property.JCR_TITLE)));
+					.ascending(factory.upperCase(factory.propertyValue(source.getSelectorName(), Property.JCR_TITLE)));
 			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, constraint,
-					orderings, null);
+			QueryObjectModel query = factory.createQuery(source, constraint, orderings, null);
 
 			QueryResult result = query.execute();
 			return result.getRows();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list entities with property "
-					+ currVal + " for property " + propertyName + " of "
-					+ templateNode, e);
+			throw new PeopleException("Unable to list entities with property " + currVal + " for property "
+					+ propertyName + " of " + templateNode, e);
 		}
 	}
 
 	/** Displays existing values for this property */
 	private TableViewer createValuesViewer(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		final Table table = new Table(parent, SWT.SINGLE | SWT.V_SCROLL
-				| SWT.H_SCROLL);
+		final Table table = new Table(parent, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		table.setLayoutData(EclipseUiUtils.fillAll());
@@ -243,8 +226,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 		TableViewer viewer = new TableViewer(table);
 
-		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer,
-				"Name", SWT.NONE, 400);
+		TableViewerColumn col = ViewerUtils.createTableViewerColumn(viewer, "Name", SWT.NONE, 400);
 		col.setLabelProvider(new ColumnLabelProvider() {
 			private static final long serialVersionUID = 1L;
 
@@ -261,22 +243,14 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 				@Override
 				public String getText(Object element) {
-					String value = ConnectUiUtils
-							.replaceAmpersand((String) element);
-					String editLink = ConnectUiSnippets
-							.getRWTLink(
-									ConnectUiConstants.CRUD_EDIT
-											+ ConnectUiConstants.HREF_SEPARATOR
-											+ value,
-									ConnectUiConstants.CRUD_EDIT);
-					String removeLink = ConnectUiSnippets
-							.getRWTLink(
-									ConnectUiConstants.CRUD_DELETE
-											+ ConnectUiConstants.HREF_SEPARATOR
-											+ value,
-									ConnectUiConstants.CRUD_DELETE);
-					return editLink + ConnectUiConstants.NB_DOUBLE_SPACE
-							+ removeLink;
+					String value = ConnectUiUtils.replaceAmpersand((String) element);
+					String editLink = ConnectUiSnippets.getRWTLink(
+							ConnectUiConstants.CRUD_EDIT + ConnectUiConstants.HREF_SEPARATOR + value,
+							ConnectUiConstants.CRUD_EDIT);
+					String removeLink = ConnectUiSnippets.getRWTLink(
+							ConnectUiConstants.CRUD_DELETE + ConnectUiConstants.HREF_SEPARATOR + value,
+							ConnectUiConstants.CRUD_DELETE);
+					return editLink + ConnectUiConstants.NB_DOUBLE_SPACE + removeLink;
 				}
 			});
 		}
@@ -294,8 +268,8 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 				String href = event.text;
 				String[] val = href.split(ConnectUiConstants.HREF_SEPARATOR);
 				EditValueWizard wizard = new EditValueWizard(val[0], val[1]);
-				NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(
-						TemplateValueCatalogue.this.getShell(), wizard);
+				NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(TemplateValueCatalogue.this.getShell(),
+						wizard);
 
 				if (Window.OK == dialog.open()) {
 					try {
@@ -304,8 +278,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 						if (templateNode.getSession().hasPendingChanges())
 							templateNode.getSession().save();
 					} catch (RepositoryException re) {
-						throw new PeopleException("Unable to save session for "
-								+ templateNode, re);
+						throw new PeopleException("Unable to save session for " + templateNode, re);
 					}
 
 					// // Small workaround to keep the calling editor in a clean
@@ -353,12 +326,9 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	private TableViewer createInstancesViewer(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
-		colDefs.add(new ConnectColumnDefinition(taggableType,
-				Property.JCR_TITLE, PropertyType.STRING, "Instances",
-				new TitleIconRowLP(peopleWorkbenchService, taggableType,
-						Property.JCR_TITLE), 350));
-		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent,
-				SWT.MULTI, colDefs);
+		colDefs.add(new ConnectColumnDefinition(taggableType, Property.JCR_TITLE, PropertyType.STRING, "Instances",
+				new TitleIconRowLP(peopleWorkbenchService, taggableType, Property.JCR_TITLE), 350));
+		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		TableViewer viewer = tableCmp.getTableViewer();
 		viewer.setContentProvider(new InstancesTableCP(viewer));
@@ -369,9 +339,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		@Override
 		protected void processDoubleClick(Object obj) {
 			Node occurrence = ConnectJcrUtils.getNode((Row) obj, taggableType);
-			CommandUtils.callCommand(
-					peopleWorkbenchService.getOpenEntityEditorCmdId(),
-					OpenEntityEditor.PARAM_JCR_ID,
+			CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 					ConnectJcrUtils.getIdentifier(occurrence));
 		}
 	}
@@ -414,8 +382,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		viewer.refresh();
 	}
 
-	private void configureAddValueBtn(final AbstractFormPart formPart,
-			final Button button) {
+	private void configureAddValueBtn(final AbstractFormPart formPart, final Button button) {
 		String tooltip = "Create a new value for this catalogue";
 		button.setToolTipText(tooltip);
 		button.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
@@ -425,17 +392,14 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String value = SingleValue.ask("New Option",
-						"Enrich current catalogue with a new option");
+				String value = SingleValue.ask("New Option", "Enrich current catalogue with a new option");
 				if (EclipseUiUtils.notEmpty(value)) {
-					String errMsg = ConnectJcrUtils.addMultiPropertyValue(
-							templateNode, propertyName, value);
+					String errMsg = ConnectJcrUtils.addMultiPropertyValue(templateNode, propertyName, value);
 					if (EclipseUiUtils.isEmpty(errMsg)) {
 						formPart.markDirty();
 						formPart.refresh();
 					} else
-						MessageDialog.openError(button.getShell(),
-								"Duplicate value", errMsg);
+						MessageDialog.openError(button.getShell(), "Duplicate value", errMsg);
 				}
 
 			}
@@ -479,10 +443,8 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		public boolean performFinish() {
 			String errMsg = null;
 			String newValue = null;
-			ResourceService rs = peopleService.getResourceService();
 
-			List<String> existingValues = rs.getTemplateCatalogue(templateNode,
-					propertyName, null);
+			List<String> existingValues = resourceService.getTemplateCatalogue(templateNode, propertyName, null);
 
 			// Sanity checks for update only
 			if (ConnectUiConstants.CRUD_EDIT.equals(actionType)) {
@@ -491,20 +453,16 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 				if (EclipseUiUtils.isEmpty(newValue))
 					errMsg = "New value cannot be blank or an empty string";
 				else if (oldValue.equals(newValue))
-					errMsg = "New value is the same as old one.\n"
-							+ "Either enter a new one or press cancel.";
+					errMsg = "New value is the same as old one.\n" + "Either enter a new one or press cancel.";
 				else if (existingValues.contains(newValue))
-					errMsg = "The new chosen value is already used.\n"
-							+ "Either enter a new one or press cancel.";
+					errMsg = "The new chosen value is already used.\n" + "Either enter a new one or press cancel.";
 			}
 			if (errMsg != null) {
-				MessageDialog.openError(getShell(), "Unvalid information",
-						errMsg);
+				MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 				return false;
 			}
 
-			rs.updateCatalogueValue(templateNode, taggableType, propertyName,
-					oldValue, newValue);
+			resourceService.updateCatalogueValue(templateNode, taggableType, propertyName, oldValue, newValue);
 			return true;
 		}
 
@@ -524,8 +482,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 			public MainInfoPage(String pageName) {
 				super(pageName);
 				setTitle("Enter a new value for this catalogue's item");
-				setMessage("As reminder, former value was: \"" + oldValue
-						+ "\"");
+				setMessage("As reminder, former value was: \"" + oldValue + "\"");
 			}
 
 			public void createControl(Composite parent) {

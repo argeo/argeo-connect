@@ -2,7 +2,7 @@ package org.argeo.connect.people.ui.exports;
 
 import javax.jcr.Property;
 
-import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.JcrRowLabelProvider;
 
 /**

@@ -2,9 +2,8 @@ package org.argeo.connect.people.workbench.rap.providers;
 
 import javax.jcr.Node;
 
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.JcrRowLabelProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -23,19 +22,17 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 	private String selectorName;
 	private String propertyName;
 
-	public JcrUserHtmlLabelProvider(PeopleService peopleService,
-			String selectorName, String propertyName) {
+	public JcrUserHtmlLabelProvider(UserAdminService userAdminService, String selectorName, String propertyName) {
 		super(propertyName);
 		this.propertyName = propertyName;
-		userAdminService = peopleService.getUserAdminService();
+		this.userAdminService = userAdminService;
 		if (EclipseUiUtils.notEmpty(selectorName))
 			this.selectorName = selectorName;
 	}
 
-	public JcrUserHtmlLabelProvider(PeopleService peopleService,
-			String propertyName) {
+	public JcrUserHtmlLabelProvider(UserAdminService userAdminService, String propertyName) {
 		super(propertyName);
-		userAdminService = peopleService.getUserAdminService();
+		this.userAdminService = userAdminService;
 	}
 
 	@Override
@@ -50,8 +47,7 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 				displayName = userId;
 			return ConnectUiUtils.replaceAmpersand(displayName);
 		} catch (Exception e) {
-			throw new PeopleException("Unable to get display name for prop: "
-					+ propertyName + " of " + currNode, e);
+			throw new PeopleException("Unable to get display name for prop: " + propertyName + " of " + currNode, e);
 		}
 	}
 }

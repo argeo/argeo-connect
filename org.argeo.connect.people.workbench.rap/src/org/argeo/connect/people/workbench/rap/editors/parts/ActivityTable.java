@@ -23,20 +23,19 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivitiesTypes;
+import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.core.ActivityUtils;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.util.ActivityUtils;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.connect.people.workbench.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.workbench.rap.util.ActivityViewerComparator;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -60,11 +59,10 @@ public class ActivityTable extends Composite {
 	private TableViewer tableViewer;
 	private Session session;
 	private Node entity;
-	// private PeopleService peopleService;
-	private ResourceService resourceService;
-	private PeopleWorkbenchService peopleWorkbenchService;
-	private ActivityService activityService;
 	private UserAdminService userAdminService;
+	private ResourceService resourceService;
+	private ActivityService activityService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// CONSTRUCTORS
 
@@ -76,16 +74,16 @@ public class ActivityTable extends Composite {
 	 *            the style of the table
 	 * @param session
 	 */
-	public ActivityTable(Composite parent, int style,
-			PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Node entity) {
+	public ActivityTable(Composite parent, int style, UserAdminService userAdminService,
+			ResourceService resourceService, ActivityService activityService, AppWorkbenchService appWorkbenchService,
+			Node entity) {
 		super(parent, SWT.NONE);
 		session = ConnectJcrUtils.getSession(entity);
 		// this.peopleService = peopleService;
-		this.peopleWorkbenchService = peopleWorkbenchService;
-		activityService = peopleService.getActivityService();
-		resourceService = peopleService.getResourceService();
-		userAdminService = peopleService.getUserAdminService();
+		this.appWorkbenchService = appWorkbenchService;
+		this.activityService = activityService;
+		this.resourceService = resourceService;
+		this.userAdminService = userAdminService;
 		this.entity = entity;
 
 		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
@@ -107,11 +105,10 @@ public class ActivityTable extends Composite {
 		table.setLinesVisible(true);
 
 		Map<String, ColumnLabelProvider> lpMap = new HashMap<String, ColumnLabelProvider>();
-		lpMap.put(PeopleNames.PEOPLE_ASSIGNED_TO, new UsersLabelProvider());
-		lpMap.put(PeopleNames.PEOPLE_RELATED_TO, new AlsoRelatedToLP());
+		lpMap.put(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, new UsersLabelProvider());
+		lpMap.put(ActivitiesNames.ACTIVITIES_RELATED_TO, new AlsoRelatedToLP());
 
-		ActivityViewerComparator comparator = new ActivityViewerComparator(
-				activityService, lpMap);
+		ActivityViewerComparator comparator = new ActivityViewerComparator(activityService, lpMap);
 
 		TableColumn col;
 		TableViewerColumn tvCol;
@@ -119,48 +116,40 @@ public class ActivityTable extends Composite {
 
 		// Types
 		col = new TableColumn(table, SWT.LEFT);
-		tableColumnLayout.setColumnData(col,
-				new ColumnWeightData(30, 120, true));
+		tableColumnLayout.setColumnData(col, new ColumnWeightData(30, 120, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new TypeLabelProvider());
-		col.addSelectionListener(getNodeSelectionAdapter(colIndex++,
-				PropertyType.STRING, Property.JCR_PRIMARY_TYPE, comparator,
-				viewer));
+		col.addSelectionListener(getNodeSelectionAdapter(colIndex++, PropertyType.STRING, Property.JCR_PRIMARY_TYPE,
+				comparator, viewer));
 
 		// Dates
 		col = new TableColumn(table, SWT.LEFT);
-		tableColumnLayout.setColumnData(col,
-				new ColumnWeightData(60, 145, true));
+		tableColumnLayout.setColumnData(col, new ColumnWeightData(60, 145, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new DateLabelProvider());
-		col.addSelectionListener(getNodeSelectionAdapter(colIndex++,
-				PropertyType.DATE, ActivityViewerComparator.RELEVANT_DATE,
-				comparator, viewer));
+		col.addSelectionListener(getNodeSelectionAdapter(colIndex++, PropertyType.DATE,
+				ActivityViewerComparator.RELEVANT_DATE, comparator, viewer));
 
 		// relevant users
 		col = new TableColumn(table, SWT.LEFT);
 		col.setText("Reported by");
-		col.addSelectionListener(getNodeSelectionAdapter(colIndex++,
-				PropertyType.STRING, PeopleNames.PEOPLE_ASSIGNED_TO,
-				comparator, viewer));
-		tableColumnLayout.setColumnData(col,
-				new ColumnWeightData(60, 180, true));
+		col.addSelectionListener(getNodeSelectionAdapter(colIndex++, PropertyType.STRING,
+				ActivitiesNames.ACTIVITIES_ASSIGNED_TO, comparator, viewer));
+		tableColumnLayout.setColumnData(col, new ColumnWeightData(60, 180, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new UsersLabelProvider());
 
 		// Also related to
 		col = new TableColumn(table, SWT.LEFT | SWT.WRAP);
 		col.setText("Also related to");
-		tableColumnLayout
-				.setColumnData(col, new ColumnWeightData(80, 80, true));
+		tableColumnLayout.setColumnData(col, new ColumnWeightData(80, 80, true));
 		tvCol = new TableViewerColumn(viewer, col);
 		tvCol.setLabelProvider(new AlsoRelatedToLP());
 		col.setToolTipText("Also related to these entities");
 
 		// Title / description
 		col = new TableColumn(table, SWT.LEFT | SWT.WRAP);
-		tableColumnLayout.setColumnData(col, new ColumnWeightData(200, 150,
-				true));
+		tableColumnLayout.setColumnData(col, new ColumnWeightData(200, 150, true));
 		// col.addSelectionListener(ConnectJcrUtils.getNodeSelectionAdapter(colIndex++,
 		// PropertyType.STRING, Property.JCR_TITLE, comparator, viewer));
 		tvCol = new TableViewerColumn(viewer, col);
@@ -168,11 +157,9 @@ public class ActivityTable extends Composite {
 
 		//
 		// IMPORTANT: initialize comparator before setting it
-		comparator.setColumn(PropertyType.DATE,
-				ActivityViewerComparator.RELEVANT_DATE);
+		comparator.setColumn(PropertyType.DATE, ActivityViewerComparator.RELEVANT_DATE);
 		// 2 times to force descending
-		comparator.setColumn(PropertyType.DATE,
-				ActivityViewerComparator.RELEVANT_DATE);
+		comparator.setColumn(PropertyType.DATE, ActivityViewerComparator.RELEVANT_DATE);
 		viewer.setComparator(comparator);
 
 		table.addSelectionListener(new HtmlListRwtAdapter());
@@ -190,8 +177,7 @@ public class ActivityTable extends Composite {
 	 */
 	protected void refreshFilteredList() {
 		try {
-			List<Node> nodes = JcrUtils
-					.nodeIteratorToList(listFilteredElements(session, null));
+			List<Node> nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session, null));
 			tableViewer.setInput(nodes.toArray());
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to list activities", e);
@@ -207,16 +193,13 @@ public class ActivityTable extends Composite {
 	 * Build repository request : caller might overwrite in order to display a
 	 * subset
 	 */
-	protected NodeIterator listFilteredElements(Session session, String filter)
-			throws RepositoryException {
+	protected NodeIterator listFilteredElements(Session session, String filter) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		String xpathQueryStr = "//element(*, " + PeopleTypes.PEOPLE_ACTIVITY
-				+ ")";
+		String xpathQueryStr = "//element(*, " + ActivitiesTypes.ACTIVITIES_ACTIVITY + ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
 		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
-		Query xpathQuery = queryManager.createQuery(xpathQueryStr,
-				ConnectConstants.QUERY_XPATH);
+		Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 		QueryResult result = xpathQuery.execute();
 		return result.getNodes();
 	}
@@ -232,23 +215,19 @@ public class ActivityTable extends Composite {
 
 			try {
 				StringBuilder builder = new StringBuilder();
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+				if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
 					builder.append("<b>");
-					builder.append(resourceService
-							.getItemDefaultEnLabel(currNode
-									.getPrimaryNodeType().getName()));
+					builder.append(resourceService.getItemDefaultEnLabel(currNode.getPrimaryNodeType().getName()));
 					builder.append("</b>");
 					builder.append("<br />");
-					builder.append(ConnectJcrUtils.get(currNode,
-							PeopleNames.PEOPLE_TASK_STATUS));
+					builder.append(ConnectJcrUtils.get(currNode, ActivitiesNames.ACTIVITIES_TASK_STATUS));
 
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+				} else if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
 					builder.append("<b>");
 					builder.append(activityService.getActivityLabel(currNode));
 					// specific for rate
-					if (currNode.isNodeType(PeopleTypes.PEOPLE_RATE)) {
-						Long rate = ConnectJcrUtils.getLongValue(currNode,
-								PeopleNames.PEOPLE_RATE);
+					if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_RATE)) {
+						Long rate = ConnectJcrUtils.getLongValue(currNode, ActivitiesNames.ACTIVITIES_RATE);
 						if (rate != null)
 							builder.append(": " + rate);
 					}
@@ -256,8 +235,7 @@ public class ActivityTable extends Composite {
 				}
 				return builder.toString();
 			} catch (RepositoryException re) {
-				throw new PeopleException("Unable to get type snippet for "
-						+ currNode, re);
+				throw new PeopleException("Unable to get type snippet for " + currNode, re);
 			}
 		}
 	}
@@ -272,90 +250,62 @@ public class ActivityTable extends Composite {
 				Calendar date = null;
 				StringBuilder builder = new StringBuilder();
 				// VARIOUS WF LAYOUT
-				if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+				if (activityNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
 					// done task
-					if (activityNode.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE)) {
-						date = activityNode.getProperty(
-								PeopleNames.PEOPLE_CLOSE_DATE).getDate();
-						builder.append(funkyFormat(date))
-								.append(" (Done date)").append("<br />");
+					if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE)) {
+						date = activityNode.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).getDate();
+						builder.append(funkyFormat(date)).append(" (Done date)").append("<br />");
 
-						if (activityNode
-								.hasProperty(PeopleNames.PEOPLE_DUE_DATE)) {
-							date = activityNode.getProperty(
-									PeopleNames.PEOPLE_DUE_DATE).getDate();
-							builder.append(funkyFormat(date)).append(
-									" (Due date)");
+						if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE)) {
+							date = activityNode.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate();
+							builder.append(funkyFormat(date)).append(" (Due date)");
 
 						}
-					} else if (activityNode
-							.hasProperty(PeopleNames.PEOPLE_DUE_DATE)) {
-						date = activityNode.getProperty(
-								PeopleNames.PEOPLE_DUE_DATE).getDate();
-						builder.append(funkyFormat(date)).append(" (Due date)")
-								.append("<br />");
+					} else if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE)) {
+						date = activityNode.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate();
+						builder.append(funkyFormat(date)).append(" (Due date)").append("<br />");
 
 						boolean sleeping = false;
-						if (activityNode
-								.hasProperty(PeopleNames.PEOPLE_WAKE_UP_DATE)) {
-							date = activityNode.getProperty(
-									PeopleNames.PEOPLE_WAKE_UP_DATE).getDate();
+						if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE)) {
+							date = activityNode.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate();
 							Calendar now = GregorianCalendar.getInstance();
 							if (date.after(now)) {
-								builder.append(funkyFormat(date)).append(
-										" (Sleep until)");
+								builder.append(funkyFormat(date)).append(" (Sleep until)");
 								sleeping = true;
 							}
 						}
 
-						if (activityNode
-								.hasProperty(Property.JCR_LAST_MODIFIED)
-								&& !sleeping) {
-							date = activityNode.getProperty(
-									Property.JCR_LAST_MODIFIED).getDate();
-							builder.append(funkyFormat(date)).append(
-									" (Last update)");
+						if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED) && !sleeping) {
+							date = activityNode.getProperty(Property.JCR_LAST_MODIFIED).getDate();
+							builder.append(funkyFormat(date)).append(" (Last update)");
 						}
 					} else {
-						if (activityNode
-								.hasProperty(Property.JCR_LAST_MODIFIED)) {
-							date = activityNode.getProperty(
-									Property.JCR_LAST_MODIFIED).getDate();
-							builder.append(funkyFormat(date))
-									.append(" (Last update)").append("<br />");
+						if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED)) {
+							date = activityNode.getProperty(Property.JCR_LAST_MODIFIED).getDate();
+							builder.append(funkyFormat(date)).append(" (Last update)").append("<br />");
 						}
 
-						if (activityNode
-								.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)) {
-							date = activityNode.getProperty(
-									PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
-							builder.append(funkyFormat(date)).append(
-									" (Creation date)");
-						} else if (activityNode
-								.hasProperty(Property.JCR_CREATED)) {
-							date = activityNode.getProperty(
-									Property.JCR_CREATED).getDate();
-							builder.append(funkyFormat(date)).append(
-									" (Creation date)");
+						if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE)) {
+							date = activityNode.getProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE).getDate();
+							builder.append(funkyFormat(date)).append(" (Creation date)");
+						} else if (activityNode.hasProperty(Property.JCR_CREATED)) {
+							date = activityNode.getProperty(Property.JCR_CREATED).getDate();
+							builder.append(funkyFormat(date)).append(" (Creation date)");
 						}
 					}
-				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+				} else if (activityNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
 					Calendar happened = null;
 					// Calendar created = null;
 					String happenedLbl = "";
 					Calendar lastMod = null;
 					if (activityNode.hasProperty(Property.JCR_LAST_MODIFIED))
-						lastMod = activityNode.getProperty(
-								Property.JCR_LAST_MODIFIED).getDate();
+						lastMod = activityNode.getProperty(Property.JCR_LAST_MODIFIED).getDate();
 
-					if (activityNode
-							.hasProperty(PeopleNames.PEOPLE_ACTIVITY_DATE)) {
-						happened = activityNode.getProperty(
-								PeopleNames.PEOPLE_ACTIVITY_DATE).getDate();
+					if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE)) {
+						happened = activityNode.getProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE).getDate();
 						happenedLbl = " (Done date)";
 					} else if (activityNode.hasProperty(Property.JCR_CREATED)) {
-						happened = activityNode.getProperty(
-								Property.JCR_CREATED).getDate();
+						happened = activityNode.getProperty(Property.JCR_CREATED).getDate();
 						happenedLbl = " (Creation date)";
 					}
 					boolean addUpdateDt = happened == null;
@@ -366,16 +316,13 @@ public class ActivityTable extends Composite {
 							addUpdateDt = lastMod.after(date);
 					}
 					if (addUpdateDt)
-						builder.append(funkyFormat(lastMod))
-								.append(" (Last update)").append("<br />");
+						builder.append(funkyFormat(lastMod)).append(" (Last update)").append("<br />");
 					if (happened != null)
-						builder.append(funkyFormat(happened)).append(
-								happenedLbl);
+						builder.append(funkyFormat(happened)).append(happenedLbl);
 				}
 				return builder.toString();
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to get date label for "
-						+ activityNode, e);
+				throw new PeopleException("Unable to get date label for " + activityNode, e);
 			}
 		}
 	}
@@ -400,55 +347,39 @@ public class ActivityTable extends Composite {
 			try {
 				String value = "";
 				StringBuilder builder = new StringBuilder();
-				if (activityNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+				if (activityNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
 					// done task
 					if (activityService.isTaskDone(activityNode)) {
-						value = getDNameFromProp(activityNode,
-								PeopleNames.PEOPLE_CLOSED_BY);
+						value = getDNameFromProp(activityNode, ActivitiesNames.ACTIVITIES_CLOSED_BY);
 						if (EclipseUiUtils.notEmpty(value))
-							builder.append(value).append(" (Closed by)")
-									.append("<br />");
-						value = activityService
-								.getAssignedToDisplayName(activityNode);
+							builder.append(value).append(" (Closed by)").append("<br />");
+						value = activityService.getAssignedToDisplayName(activityNode);
 						if (EclipseUiUtils.notEmpty(value))
-							builder.append(value).append(" (Assignee)")
-									.append("<br />");
+							builder.append(value).append(" (Assignee)").append("<br />");
 					} else {
-						value = activityService
-								.getAssignedToDisplayName(activityNode);
+						value = activityService.getAssignedToDisplayName(activityNode);
 						if (EclipseUiUtils.notEmpty(value))
-							builder.append(value).append(" (Assignee)")
-									.append("<br />");
+							builder.append(value).append(" (Assignee)").append("<br />");
 
-						value = ConnectJcrUtils.get(activityNode,
-								Property.JCR_LAST_MODIFIED_BY);
+						value = ConnectJcrUtils.get(activityNode, Property.JCR_LAST_MODIFIED_BY);
 						if (EclipseUiUtils.notEmpty(value))
-							builder.append(getDisplayName(value)).append(
-									" (Last updater)");
+							builder.append(getDisplayName(value)).append(" (Last updater)");
 					}
-				} else if (activityNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String reporter = getDNameFromProp(activityNode,
-							PeopleNames.PEOPLE_REPORTED_BY);
-					String updater = getDNameFromProp(activityNode,
-							Property.JCR_LAST_MODIFIED_BY);
+				} else if (activityNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
+					String reporter = getDNameFromProp(activityNode, ActivitiesNames.ACTIVITIES_REPORTED_BY);
+					String updater = getDNameFromProp(activityNode, Property.JCR_LAST_MODIFIED_BY);
 
 					if (EclipseUiUtils.isEmpty(reporter))
-						reporter = getDNameFromProp(activityNode,
-								Property.JCR_CREATED_BY);
+						reporter = getDNameFromProp(activityNode, Property.JCR_CREATED_BY);
 
 					if (EclipseUiUtils.notEmpty(reporter))
-						builder.append(reporter).append(" (Reporter)")
-								.append("<br />");
-					if (EclipseUiUtils.notEmpty(updater)
-							&& (reporter == null || !reporter.equals(updater)))
-						builder.append(updater).append(" (Last updater)")
-								.append("<br />");
+						builder.append(reporter).append(" (Reporter)").append("<br />");
+					if (EclipseUiUtils.notEmpty(updater) && (reporter == null || !reporter.equals(updater)))
+						builder.append(updater).append(" (Last updater)").append("<br />");
 				}
 				return builder.toString();
 			} catch (RepositoryException e) {
-				throw new PeopleException(
-						"Unable to get related users snippet for "
-								+ activityNode, e);
+				throw new PeopleException("Unable to get related users snippet for " + activityNode, e);
 			}
 		}
 	}
@@ -460,10 +391,9 @@ public class ActivityTable extends Composite {
 		public String getText(Object element) {
 			try {
 				Node currNode = (Node) element;
-				if (currNode.hasProperty(PeopleNames.PEOPLE_RELATED_TO)) {
+				if (currNode.hasProperty(ActivitiesNames.ACTIVITIES_RELATED_TO)) {
 					StringBuilder builder = new StringBuilder();
-					Value[] refs = currNode.getProperty(
-							PeopleNames.PEOPLE_RELATED_TO).getValues();
+					Value[] refs = currNode.getProperty(ActivitiesNames.ACTIVITIES_RELATED_TO).getValues();
 					if (refs.length > 0) {
 						String currEntityId = null;
 						if (entity != null)
@@ -471,22 +401,16 @@ public class ActivityTable extends Composite {
 						for (Value value : refs) {
 							String id = value.getString();
 							if (!id.equals(currEntityId)) {
-								Node currReferenced = session
-										.getNodeByIdentifier(id);
-								String label = PeopleRapSnippets
-										.getOpenEditorSnippet(
-												peopleWorkbenchService
-														.getOpenEntityEditorCmdId(),
-												currReferenced, ConnectJcrUtils.get(
-														currReferenced,
-														Property.JCR_TITLE));
+								Node currReferenced = session.getNodeByIdentifier(id);
+								String label = PeopleRapSnippets.getOpenEditorSnippet(
+										appWorkbenchService.getOpenEntityEditorCmdId(), currReferenced,
+										ConnectJcrUtils.get(currReferenced, Property.JCR_TITLE));
 								builder.append(label).append(", ");
 							}
 						}
 						if (builder.lastIndexOf(", ") != -1) {
 							String value = ConnectUiUtils
-									.replaceAmpersand(builder.substring(0,
-											builder.lastIndexOf(", ")));
+									.replaceAmpersand(builder.substring(0, builder.lastIndexOf(", ")));
 							return wrapThis(value);
 						}
 					}
@@ -494,8 +418,7 @@ public class ActivityTable extends Composite {
 				}
 				return "";
 			} catch (RepositoryException re) {
-				throw new PeopleException("Unable to get date from node "
-						+ element, re);
+				throw new PeopleException("Unable to get date from node " + element, re);
 			}
 		}
 	}
@@ -508,41 +431,33 @@ public class ActivityTable extends Composite {
 			try {
 				Node currNode = (Node) element;
 
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
+				if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
 					String title = ConnectJcrUtils.get(currNode, Property.JCR_TITLE);
 					// Specific behaviour for polls
-					if (currNode.isNodeType(PeopleTypes.PEOPLE_POLL)) {
-						title = ConnectJcrUtils.get(currNode,
-								PeopleNames.PEOPLE_POLL_NAME)
-								+ ": "
+					if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_POLL)) {
+						title = ConnectJcrUtils.get(currNode, ActivitiesNames.ACTIVITIES_POLL_NAME) + ": "
 								+ ActivityUtils.getAvgRating(currNode);
 					}
 
-					String desc = ConnectJcrUtils.get(currNode,
-							Property.JCR_DESCRIPTION);
-					String res = ConnectJcrUtils
-							.concatIfNotEmpty(title, desc, " - ");
+					String desc = ConnectJcrUtils.get(currNode, Property.JCR_DESCRIPTION);
+					String res = ConnectJcrUtils.concatIfNotEmpty(title, desc, " - ");
 					return wrapThis(res);
 				}
 				return "";
 			} catch (RepositoryException re) {
-				throw new PeopleException("Unable to get date from node "
-						+ element, re);
+				throw new PeopleException("Unable to get date from node " + element, re);
 			}
 		}
 	}
 
 	private DateFormat todayFormat = new SimpleDateFormat("HH:mm");
 	private DateFormat inMonthFormat = new SimpleDateFormat("dd MMM");
-	private DateFormat dateFormat = new SimpleDateFormat(
-			ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
+	private DateFormat dateFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
 
 	private String funkyFormat(Calendar date) {
 		Calendar now = GregorianCalendar.getInstance();
-		if (date.get(Calendar.YEAR) == now.get(Calendar.YEAR)
-				&& date.get(Calendar.MONTH) == now.get(Calendar.MONTH))
-			if (date.get(Calendar.DAY_OF_MONTH) == now
-					.get(Calendar.DAY_OF_MONTH))
+		if (date.get(Calendar.YEAR) == now.get(Calendar.YEAR) && date.get(Calendar.MONTH) == now.get(Calendar.MONTH))
+			if (date.get(Calendar.DAY_OF_MONTH) == now.get(Calendar.DAY_OF_MONTH))
 				return todayFormat.format(date.getTime());
 			else
 				return inMonthFormat.format(date.getTime());
@@ -568,8 +483,7 @@ public class ActivityTable extends Composite {
 	private final String LIST_WRAP_STYLE = "style='float:left;padding:0px;white-space:pre-wrap;'";
 
 	private String wrapThis(String value) {
-		String wrapped = "<span " + LIST_WRAP_STYLE + " >"
-				+ ConnectUiUtils.replaceAmpersand(value) + "</span>";
+		String wrapped = "<span " + LIST_WRAP_STYLE + " >" + ConnectUiUtils.replaceAmpersand(value) + "</span>";
 		return wrapped;
 	}
 

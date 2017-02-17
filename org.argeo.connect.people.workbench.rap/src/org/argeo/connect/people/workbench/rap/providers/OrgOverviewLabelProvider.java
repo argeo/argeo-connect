@@ -9,67 +9,61 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
-/**
- * Provide a single column label provider for person lists
- */
+/** Label provider for organisation overview */
 public class OrgOverviewLabelProvider extends ColumnLabelProvider {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7687462900742079263L;
 
-	// private final static Log log = LogFactory
-	// .getLog(OrgOverviewLabelProvider.class);
+	private final ResourceService resourceService;
+	private final PeopleService peopleService;
+	private AppWorkbenchService appWorkbenchService;
 
 	private boolean isSmallList;
-	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleWorkbenchService;
 
-	public OrgOverviewLabelProvider(boolean isSmallList,
-			PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService) {
+	
+	public OrgOverviewLabelProvider(boolean isSmallList, ResourceService resourceService, PeopleService peopleService,
+			AppWorkbenchService appWorkbenchService) {
 		this.isSmallList = isSmallList;
+		this.resourceService = resourceService;
 		this.peopleService = peopleService;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.appWorkbenchService = appWorkbenchService;
 	}
 
 	@Override
 	public String getText(Object element) {
-
 		try {
 			Node node = (Node) element;
 			Node orga;
 			if (node.isNodeType(PeopleTypes.PEOPLE_ORG))
 				orga = node;
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-				orga = peopleService.getEntityByUid(node.getSession(), node
-						.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
+				orga = peopleService.getEntityByUid(node.getSession(),
+						node.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 				// TODO manage this more cleanly
 				if (orga == null)
-					return "Broken link. This organisation does not exist anymore. "
-							+ "It should have been deleted.";
+					return "Broken link. This organisation does not exist anymore. " + "It should have been deleted.";
 			} else
-				throw new PeopleException("Unvalid node type. "
-						+ "Cannot display org information");
+				throw new PeopleException("Unvalid node type. " + "Cannot display org information");
 
 			StringBuilder builder = new StringBuilder();
 
 			if (isSmallList)
 				builder.append("<span>");
 			else
-				builder.append("<span "
-						+ PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER + " >");
+				builder.append("<span " + PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER + " >");
 			builder.append("<big><b>");
 			builder.append(ConnectJcrUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big> ");
 
-			String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
-					orga);
+			String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, orga);
 			if (EclipseUiUtils.notEmpty(local))
 				builder.append(local);
 
@@ -82,8 +76,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			}
 
 			if (isSmallList) {
-				tmpStr = PeopleRapSnippets.getTags(peopleService,
-						peopleWorkbenchService, orga);
+				tmpStr = PeopleRapSnippets.getTags(resourceService, appWorkbenchService, orga);
 				if (EclipseUiUtils.notEmpty(tmpStr))
 					builder.append(tmpStr);
 			}

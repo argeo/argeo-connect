@@ -31,7 +31,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.people.ActivityService;
 import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.ImportService;
 import org.argeo.connect.people.MaintenanceService;
@@ -41,11 +40,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.PersonService;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.core.imports.TemplateCatalogueCsvFileParser;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.RemoteJcrUtils;
 import org.argeo.connect.util.XPathUtils;
@@ -60,14 +59,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
-	private UserAdminService userAdminService;
+	// private UserAdminService userAdminService;
+	private ResourceService resourceService;
 
 	/* Centralizes the various specific People services */
-	private PersonService personService = new PersonServiceImpl(this);
+	private PersonService personService;
 	private ContactService contactService = new ContactServiceImpl(this);
-	private ActivityService activityService = new ActivityServiceImpl(this);
+	// private ActivityService activityService = new ActivityServiceImpl(this);
 	private ImportService importService = new ImportServiceImpl(this);
-	private ResourceService resourceService = new ResourceServiceImpl(this);
 	private MaintenanceService maintenanceService = new MaintenanceServiceImpl(this);
 
 	/* PATH MANAGEMENT */
@@ -77,12 +76,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private static final Map<String, String> BUSINESS_REL_PATHES;
 	static {
 		Map<String, String> tmpMap = new HashMap<String, String>();
-		tmpMap.put(PeopleConstants.PEOPLE_RESOURCE, PeopleConstants.PEOPLE_RESOURCES);
-		tmpMap.put(PeopleTypes.PEOPLE_ORG, PeopleConstants.PEOPLE_ORGS);
-		tmpMap.put(PeopleTypes.PEOPLE_PERSON, PeopleConstants.PEOPLE_PERSONS);
-		tmpMap.put(PeopleConstants.PEOPLE_PROJECT, PeopleConstants.PEOPLE_PROJECTS);
-		tmpMap.put(PeopleTypes.PEOPLE_USER_GROUP, PeopleConstants.PEOPLE_USER_GROUPS);
-		tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY, PeopleConstants.PEOPLE_ACTIVITIES);
+//		tmpMap.put(PeopleConstants.PEOPLE_RESOURCE, PeopleConstants.PEOPLE_RESOURCES);
+//		tmpMap.put(PeopleTypes.PEOPLE_ORG, PeopleConstants.PEOPLE_ORGS);
+//		tmpMap.put(PeopleTypes.PEOPLE_PERSON, PeopleConstants.PEOPLE_PERSONS);
+//		tmpMap.put(PeopleConstants.PEOPLE_PROJECT, PeopleConstants.PEOPLE_PROJECTS);
+//		tmpMap.put(PeopleTypes.PEOPLE_ACTIVITY, PeopleConstants.PEOPLE_ACTIVITIES);
 		BUSINESS_REL_PATHES = Collections.unmodifiableMap(tmpMap);
 	}
 
@@ -159,13 +157,13 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		if (EclipseUiUtils.notEmpty(getBasePath(null)))
 			JcrUtils.mkdirs(adminSession, getBasePath(null));
 
-//		JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
-//		JcrUtils.mkdirs(adminSession, getPublicPath());// Root public node
+		// JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
+		// JcrUtils.mkdirs(adminSession, getPublicPath());// Root public node
 
 		// Various business parents
 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_PERSON));
 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ORG));
-		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
+// 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
 		JcrUtils.mkdirs(adminSession, getBasePath(PeopleConstants.PEOPLE_RESOURCE)); // Resources
 
 		if (adminSession.hasPendingChanges()) {
@@ -177,16 +175,16 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	/* ENTITY SERVICES */
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
 		try {
-			if (entity.isNodeType(PeopleTypes.PEOPLE_TAG_ENCODED_INSTANCE)
-					|| entity.isNodeType(PeopleTypes.PEOPLE_TAG_INSTANCE)
-					|| entity.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE)) {
+			if (entity.isNodeType(ResourcesTypes.PEOPLE_TAG_ENCODED_INSTANCE)
+					|| entity.isNodeType(ResourcesTypes.PEOPLE_TAG_INSTANCE)
+					|| entity.isNodeType(ResourcesTypes.PEOPLE_NODE_TEMPLATE)) {
 				// Known types that does not have a specific save strategy
 				ConnectJcrUtils.saveAndPublish(entity, publish);
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON) || entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				entity = getPersonService().saveEntity(entity, publish);
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
-				// TODO implement specific behavior for tasks and activities
-				ConnectJcrUtils.saveAndPublish(entity, publish);
+//			else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+//				// TODO implement specific behavior for tasks and activities
+//				ConnectJcrUtils.saveAndPublish(entity, publish);
 			else
 				throw new PeopleException("Unknown entity type for " + entity);
 			return entity;
@@ -278,14 +276,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			for (String currType : PeopleTypes.KNOWN_CONTACT_TYPES) {
 				Node pNode = PeopleJcrUtils.getPrimaryContact(entity, currType);
 				if (pNode != null)
-					PeopleJcrUtils.updatePrimaryCache(this, entity, pNode, true);
+					PeopleJcrUtils.updatePrimaryCache(resourceService, this, entity, pNode, true);
 			}
 
 			// Also update primary job
 			if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)) {
 				Node pJob = PersonJcrUtils.getPrimaryJob(entity);
 				if (pJob != null)
-					PeopleJcrUtils.updatePrimaryCache(this, entity, pJob, true);
+					PeopleJcrUtils.updatePrimaryCache(resourceService, this, entity, pJob, true);
 			}
 		} else
 			log.warn("Trying to update primary cache on " + entity + " - Unknown type.");
@@ -483,19 +481,18 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	protected void importCatalogue(Session session, Resource resource, String templateId) {
 		InputStream stream = null;
-		try {
-			ResourceService resourceService = getResourceService();
-			if (resourceService.getNodeTemplate(session, templateId) == null && resource != null) {
-				Node template = resourceService.createTemplateForType(session, PeopleTypes.PEOPLE_NODE_TEMPLATE,
-						templateId);
-				stream = resource.getInputStream();
-				new TemplateCatalogueCsvFileParser(template).parse(stream, "UTF-8");
-			}
-		} catch (IOException ioe) {
-			throw new PeopleException("Unable to initialise template " + templateId, ioe);
-		} finally {
-			IOUtils.closeQuietly(stream);
-		}
+//		try {
+//			if (resourceService.getNodeTemplate(session, templateId) == null && resource != null) {
+//				Node template = resourceService.createTemplateForType(session, PeopleTypes.PEOPLE_NODE_TEMPLATE,
+//						templateId);
+//				stream = resource.getInputStream();
+//				new TemplateCatalogueCsvFileParser(template).parse(stream, "UTF-8");
+//			}
+//		} catch (IOException ioe) {
+//			throw new PeopleException("Unable to initialise template " + templateId, ioe);
+//		} finally {
+//			IOUtils.closeQuietly(stream);
+//		}
 	}
 
 	protected InputStream getStreamFromUrl(String url) throws IOException {
@@ -515,22 +512,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return inputStream;
 	}
 
-	/* CONFIGURE QUERIES */
-	@Override
-	public boolean lazyLoadLists() {
-		return false;
-	}
-
-	@Override
-	public boolean queryWhenTyping() {
-		return true;
-	}
-
 	/* EXPOSED SERVICES */
-	@Override
-	public ActivityService getActivityService() {
-		return activityService;
-	}
+	// @Override
+	// public ActivityService getActivityService() {
+	// return activityService;
+	// }
 
 	@Override
 	public PersonService getPersonService() {
@@ -542,10 +528,10 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return contactService;
 	}
 
-	@Override
-	public ResourceService getResourceService() {
-		return resourceService;
-	}
+	// @Override
+	// public ResourceService getResourceService() {
+	// return resourceService;
+	// }
 
 	@Override
 	public MaintenanceService getMaintenanceService() {
@@ -557,10 +543,10 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return importService;
 	}
 
-	@Override
-	public UserAdminService getUserAdminService() {
-		return userAdminService;
-	}
+	// @Override
+	// public UserAdminService getUserAdminService() {
+	// return userAdminService;
+	// }
 
 	// HELPERS
 
@@ -579,6 +565,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 * receive/provide data.
 	 */
 	public void init() {
+		personService = new PersonServiceImpl(this, resourceService);
+
 		if (log.isDebugEnabled())
 			log.info("People's backend has been initialized");
 	}
@@ -589,7 +577,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setUserAdminService(UserAdminService userAdminService) {
-		this.userAdminService = userAdminService;
+	// public void setUserAdminService(UserAdminService userAdminService) {
+	// this.userAdminService = userAdminService;
+	// }
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 }

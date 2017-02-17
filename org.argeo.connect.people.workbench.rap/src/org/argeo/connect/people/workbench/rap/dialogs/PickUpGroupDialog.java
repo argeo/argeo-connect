@@ -22,9 +22,8 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -76,32 +75,29 @@ public class PickUpGroupDialog extends TrayDialog {
 	 * A dialog to pick up a group or a user, showing a table with default
 	 * columns
 	 */
-	public PickUpGroupDialog(Shell parentShell, String title,
-			PeopleService peopleService) {
+	public PickUpGroupDialog(Shell parentShell, String title, UserAdminService userAdminService) {
 		super(parentShell);
 		this.title = title;
-		this.userAdminService = peopleService.getUserAdminService();
+		this.userAdminService = userAdminService;
 
 		columnDefs.add(new ColumnDefinition(new RoleIconLP(), "", 26));
-		columnDefs.add(new ColumnDefinition(new CommonNameLP(), "Common Name",
-				150));
+		columnDefs.add(new ColumnDefinition(new CommonNameLP(), "Common Name", 150));
 		columnDefs.add(new ColumnDefinition(new DomainNameLP(), "Domain", 120));
 	}
 
 	/** A dialog to pick up a group or a user */
-	public PickUpGroupDialog(Shell parentShell, String title,
-			PeopleService peopleService, List<ColumnDefinition> columnDefs) {
+	public PickUpGroupDialog(Shell parentShell, String title, UserAdminService userAdminService,
+			List<ColumnDefinition> columnDefs) {
 		super(parentShell);
 		this.title = title;
-		this.userAdminService = peopleService.getUserAdminService();
+		this.userAdminService = userAdminService;
 		this.columnDefs = columnDefs;
 	}
 
 	@Override
 	protected void okPressed() {
 		if (getSelected() == null)
-			MessageDialog.openError(getShell(), "No user chosen",
-					"Please, choose a user or press Cancel.");
+			MessageDialog.openError(getShell(), "No user chosen", "Please, choose a user or press Cancel.");
 		else
 			super.okPressed();
 	}
@@ -114,8 +110,7 @@ public class PickUpGroupDialog extends TrayDialog {
 		bodyCmp.setLayout(new GridLayout());
 
 		// Create and configure the table
-		userTableViewerCmp = new MyUserTableViewer(bodyCmp, SWT.MULTI
-				| SWT.H_SCROLL | SWT.V_SCROLL);
+		userTableViewerCmp = new MyUserTableViewer(bodyCmp, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 
 		userTableViewerCmp.setColumnDefinitions(columnDefs);
 		userTableViewerCmp.populateWithStaticFilters(false, false);
@@ -127,8 +122,7 @@ public class PickUpGroupDialog extends TrayDialog {
 		// Controllers
 		userViewer = userTableViewerCmp.getTableViewer();
 		userViewer.addDoubleClickListener(new MyDoubleClickListener());
-		userViewer
-				.addSelectionChangedListener(new MySelectionChangedListener());
+		userViewer.addSelectionChangedListener(new MySelectionChangedListener());
 
 		parent.pack();
 		return dialogArea;
@@ -151,8 +145,7 @@ public class PickUpGroupDialog extends TrayDialog {
 			if (evt.getSelection().isEmpty())
 				return;
 
-			Object obj = ((IStructuredSelection) evt.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 			if (obj instanceof User) {
 				selectedUser = (User) obj;
 				okPressed();
@@ -167,8 +160,7 @@ public class PickUpGroupDialog extends TrayDialog {
 				selectedUser = null;
 				return;
 			}
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			if (obj instanceof User) {
 				selectedUser = (User) obj;
 			}
@@ -178,8 +170,7 @@ public class PickUpGroupDialog extends TrayDialog {
 	private class MyUserTableViewer extends LdifUsersTable {
 		private static final long serialVersionUID = -2106849828614352347L;
 
-		private final String[] knownProps = { LdapAttrs.uid.name(),
-				LdapAttrs.cn.name(), LdapAttrs.DN };
+		private final String[] knownProps = { LdapAttrs.uid.name(), LdapAttrs.cn.name(), LdapAttrs.DN };
 
 		private Button showSystemRoleBtn;
 		private Button showUserBtn;
@@ -225,16 +216,13 @@ public class PickUpGroupDialog extends TrayDialog {
 						filterBuilder.append("*)");
 					}
 
-				String typeStr = "(" + LdapAttrs.objectClass.name() + "="
-						+ LdapObjs.groupOfNames.name() + ")";
+				String typeStr = "(" + LdapAttrs.objectClass.name() + "=" + LdapObjs.groupOfNames.name() + ")";
 				if ((showUserBtn.getSelection()))
-					typeStr = "(|(" + LdapAttrs.objectClass.name() + "="
-							+ LdapObjs.inetOrgPerson.name() + ")" + typeStr
+					typeStr = "(|(" + LdapAttrs.objectClass.name() + "=" + LdapObjs.inetOrgPerson.name() + ")" + typeStr
 							+ ")";
 
 				if (!showSystemRoleBtn.getSelection())
-					typeStr = "(& " + typeStr + "(!(" + LdapAttrs.DN + "=*"
-							+ NodeConstants.ROLES_BASEDN + ")))";
+					typeStr = "(& " + typeStr + "(!(" + LdapAttrs.DN + "=*" + NodeConstants.ROLES_BASEDN + ")))";
 
 				if (filterBuilder.length() > 1) {
 					builder.append("(&" + typeStr);
@@ -246,8 +234,7 @@ public class PickUpGroupDialog extends TrayDialog {
 				}
 				roles = userAdminService.getRoles(builder.toString());
 			} catch (InvalidSyntaxException e) {
-				throw new PeopleException("Unable to get roles with filter: "
-						+ filter, e);
+				throw new PeopleException("Unable to get roles with filter: " + filter, e);
 			}
 			List<User> users = new ArrayList<User>();
 			for (Role role : roles)
@@ -312,11 +299,9 @@ public class PickUpGroupDialog extends TrayDialog {
 				LdapName name;
 				name = new LdapName(dn);
 				List<Rdn> rdns = name.getRdns();
-				return (String) rdns.get(1).getValue() + '.'
-						+ (String) rdns.get(0).getValue();
+				return (String) rdns.get(1).getValue() + '.' + (String) rdns.get(0).getValue();
 			} catch (InvalidNameException e) {
-				throw new PeopleException(
-						"Unable to get domain name for " + dn, e);
+				throw new PeopleException("Unable to get domain name for " + dn, e);
 			}
 		}
 	}

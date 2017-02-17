@@ -11,9 +11,12 @@ import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivitiesTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.exports.AssignedToLP;
 import org.argeo.connect.people.ui.exports.CountMemberLP;
@@ -27,6 +30,7 @@ import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
+import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.JcrRowLabelProvider;
@@ -49,6 +53,10 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".defaultSearchEntityEditor";
 
+	// Context
+	private PeopleService peopleService;
+	private ActivityService activityService;
+
 	// Default column
 	private List<ConnectColumnDefinition> colDefs;
 	private TagLikeDropDown tagDD;
@@ -67,8 +75,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 
 		Text tagTxt = createBoldLT(body, "Tag", "",
 				"Select from list to find entities that are categorised with this tag");
-		tagDD = new TagLikeDropDown(getSession(), getPeopleService().getResourceService(), PeopleConstants.RESOURCE_TAG,
-				tagTxt);
+		tagDD = new TagLikeDropDown(getSession(), getResourceService(), ConnectConstants.RESOURCE_TAG, tagTxt);
 
 		Button goBtn = new Button(body, SWT.PUSH);
 		goBtn.setText("Search");
@@ -126,22 +133,21 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 		// The editor table sends a null ID whereas the JxlExport mechanism
 		// always passes an ID
 		if (EclipseUiUtils.isEmpty(extractId)) {
-			if (PeopleTypes.PEOPLE_TASK.equals(currType)) {
+			if (ActivitiesTypes.ACTIVITIES_TASK.equals(currType)) {
 				columns.add(new ConnectColumnDefinition("Status",
-						new JcrRowLabelProvider(PeopleNames.PEOPLE_TASK_STATUS), 80));
+						new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_TASK_STATUS), 80));
 				columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(Property.JCR_TITLE), 200));
 				columns.add(new ConnectColumnDefinition("Assigned To",
-						new AssignedToLP(getPeopleService(), null, Property.JCR_DESCRIPTION), 150));
-				columns.add(new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(PEOPLE_DUE_DATE), 100));
-				columns.add(new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(PEOPLE_CLOSE_DATE), 100));
+						new AssignedToLP(activityService, null, Property.JCR_DESCRIPTION), 150));
+				columns.add(new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_DUE_DATE), 100));
+				columns.add(new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE), 100));
 				columns.add(new ConnectColumnDefinition("Closed by",
-						new UserNameLP(getPeopleService(), null, PEOPLE_CLOSED_BY), 120));
+						new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY), 120));
 				return columns;
 			} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(currType)
-					|| PeopleTypes.PEOPLE_TAG_INSTANCE.equals(currType)) {
+					|| ResourcesTypes.PEOPLE_TAG_INSTANCE.equals(currType)) {
 				columns.add(new ConnectColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-				columns.add(new ConnectColumnDefinition("Nb of members",
-						new CountMemberLP(getPeopleService().getResourceService()), 85));
+				columns.add(new ConnectColumnDefinition("Nb of members", new CountMemberLP(getResourceService()), 85));
 
 				// columns.add(new ConnectColumnDefinition("Name", new
 				// JcrRowLabelProvider(Property.JCR_TITLE), 200));
@@ -168,19 +174,19 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 			columns.add(new ConnectColumnDefinition("Middle name", new JcrRowLabelProvider(PEOPLE_MIDDLE_NAME)));
 			columns.add(new ConnectColumnDefinition("Last name", new JcrRowLabelProvider(PEOPLE_LAST_NAME)));
 			columns.add(new ConnectColumnDefinition("Name Suffix", new JcrRowLabelProvider(PEOPLE_NAME_SUFFIX)));
-			columns.add(new ConnectColumnDefinition("Organisation", new PrimOrgNameLP(getPeopleService(), null)));
+			columns.add(new ConnectColumnDefinition("Organisation", new PrimOrgNameLP(peopleService, null)));
 			columns.add(new ConnectColumnDefinition("Primary Street",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET)));
+					new PrimAddressLP(peopleService, null, PEOPLE_STREET)));
 			columns.add(new ConnectColumnDefinition("Primary Street2",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET_COMPLEMENT)));
+					new PrimAddressLP(peopleService, null, PEOPLE_STREET_COMPLEMENT)));
 			columns.add(new ConnectColumnDefinition("Primary Zip",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_ZIP_CODE)));
-			columns.add(new ConnectColumnDefinition("Primary City",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_CITY)));
-			columns.add(new ConnectColumnDefinition("Primary State",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_STATE)));
+					new PrimAddressLP(peopleService, null, PEOPLE_ZIP_CODE)));
+			columns.add(
+					new ConnectColumnDefinition("Primary City", new PrimAddressLP(peopleService, null, PEOPLE_CITY)));
+			columns.add(
+					new ConnectColumnDefinition("Primary State", new PrimAddressLP(peopleService, null, PEOPLE_STATE)));
 			columns.add(new ConnectColumnDefinition("Primary Country ISO",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_COUNTRY)));
+					new PrimAddressLP(peopleService, null, PEOPLE_COUNTRY)));
 			columns.add(new ConnectColumnDefinition("Primary Phone",
 					new PrimContactValueLP(null, PeopleTypes.PEOPLE_PHONE)));
 			columns.add(new ConnectColumnDefinition("Primary Email",
@@ -199,17 +205,17 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 
 			// PRIMARY ADDRESS
 			columns.add(new ConnectColumnDefinition("Primary Street",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET)));
+					new PrimAddressLP(peopleService, null, PEOPLE_STREET)));
 			columns.add(new ConnectColumnDefinition("Primary Street2",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_STREET_COMPLEMENT)));
-			columns.add(new ConnectColumnDefinition("Primary City",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_CITY)));
-			columns.add(new ConnectColumnDefinition("Primary State",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_STATE)));
+					new PrimAddressLP(peopleService, null, PEOPLE_STREET_COMPLEMENT)));
+			columns.add(
+					new ConnectColumnDefinition("Primary City", new PrimAddressLP(peopleService, null, PEOPLE_CITY)));
+			columns.add(
+					new ConnectColumnDefinition("Primary State", new PrimAddressLP(peopleService, null, PEOPLE_STATE)));
 			columns.add(new ConnectColumnDefinition("Primary Zip",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_ZIP_CODE)));
+					new PrimAddressLP(peopleService, null, PEOPLE_ZIP_CODE)));
 			columns.add(new ConnectColumnDefinition("Primary Country ISO",
-					new PrimAddressLP(getPeopleService(), null, PEOPLE_COUNTRY)));
+					new PrimAddressLP(peopleService, null, PEOPLE_COUNTRY)));
 
 			// PRIMARY CONTACTS
 			columns.add(
@@ -240,20 +246,28 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 			columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
 			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(PEOPLE_TAGS)));
 			columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
-		} else if (PeopleTypes.PEOPLE_TASK.equals(currType)) {
-			columns.add(new ConnectColumnDefinition("Status", new JcrRowLabelProvider(PeopleNames.PEOPLE_TASK_STATUS)));
+		} else if (ActivitiesTypes.ACTIVITIES_TASK.equals(currType)) {
+			columns.add(new ConnectColumnDefinition("Status", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_TASK_STATUS)));
 			columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(Property.JCR_TITLE)));
 			columns.add(new ConnectColumnDefinition("Description", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
 			columns.add(new ConnectColumnDefinition("Assigned To",
-					new AssignedToLP(getPeopleService(), null, Property.JCR_DESCRIPTION)));
-			columns.add(new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(PEOPLE_DUE_DATE)));
-			columns.add(new ConnectColumnDefinition("Wake-Up Date", new JcrRowLabelProvider(PEOPLE_WAKE_UP_DATE)));
-			columns.add(new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(PEOPLE_CLOSE_DATE)));
+					new AssignedToLP(activityService, null, Property.JCR_DESCRIPTION)));
+			columns.add(new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_DUE_DATE)));
+			columns.add(new ConnectColumnDefinition("Wake-Up Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE)));
+			columns.add(new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE)));
 			columns.add(new ConnectColumnDefinition("Closed by",
-					new UserNameLP(getPeopleService(), null, PEOPLE_CLOSED_BY)));
+					new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY)));
 		} else
 			return null;
 
 		return columns;
+	}
+
+	public void setActivityService(ActivityService activityService) {
+		this.activityService = activityService;
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 }

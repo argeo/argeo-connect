@@ -58,7 +58,7 @@ public class EntityEditorInput extends NodeEditorInput {
 		this.tooltip = tooltip;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	public Object getAdapter(Class adapter) {
 		return null;
 	}

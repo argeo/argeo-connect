@@ -11,11 +11,14 @@ import javax.jcr.Session;
 import javax.jcr.version.VersionManager;
 
 import org.argeo.cms.ui.CmsEditable;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivityService;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
-import org.argeo.connect.tracker.PeopleTrackerService;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.tracker.TrackerException;
+import org.argeo.connect.tracker.TrackerService;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -33,8 +36,11 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private PeopleTrackerService peopleTrackerService;
-	private PeopleWorkbenchService trackerWbService;
+	private UserAdminService userAdminService;
+	private ResourceService resourceService;
+	private ActivityService activityService;
+	private TrackerService trackerService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// Context
 	private Session session;
@@ -73,20 +79,32 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	protected abstract void addPages();
 
 	// Exposes
-	protected Repository getAoRepository() {
-		return repository;
-	}
-
 	protected Node getNode() {
 		return node;
 	}
 
-	protected PeopleTrackerService getPeopleService() {
-		return peopleTrackerService;
+	protected Repository getRepository() {
+		return repository;
 	}
 
-	protected PeopleWorkbenchService getAoWbService() {
-		return trackerWbService;
+	protected UserAdminService getUserAdminService() {
+		return userAdminService;
+	}
+
+	protected ResourceService getResourceService() {
+		return resourceService;
+	}
+
+	protected ActivityService getActivityService() {
+		return activityService;
+	}
+
+	protected TrackerService getTrackerService() {
+		return trackerService;
+	}
+
+	protected AppWorkbenchService getAppWorkbenchService() {
+		return appWorkbenchService;
 	}
 
 	// Editor life cycle
@@ -153,11 +171,23 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		this.repository = repository;
 	}
 
-	public void setPeopleTrackerService(PeopleTrackerService peopleTrackerService) {
-		this.peopleTrackerService = peopleTrackerService;
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
 	}
 
-	public void setTrackerWbService(PeopleWorkbenchService trackerWbService) {
-		this.trackerWbService = trackerWbService;
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
+	}
+
+	public void setActivityService(ActivityService activityService) {
+		this.activityService = activityService;
+	}
+
+	public void setTrackerService(TrackerService trackerService) {
+		this.trackerService = trackerService;
+	}
+
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 	}
 }

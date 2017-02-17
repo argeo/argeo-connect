@@ -6,12 +6,13 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.PeopleJcrUtils;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -68,13 +69,13 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for various contacts */
-	public static String getContactDisplaySnippet(PeopleService peopleService, Node node) {
+	public static String getContactDisplaySnippet(ResourceService resourceService, Node node) {
 		try {
 			StringBuilder builder = new StringBuilder();
 
-			if (node.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
-				builder.append(getAddressDisplayValue(peopleService, node));
-			} else {
+			if (node.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
+				builder.append(getAddressDisplayValue(resourceService, node));
+			else {
 				String value = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_VALUE);
 				if (node.isNodeType(PeopleTypes.PEOPLE_URL) || node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
 					builder.append(ConnectUiSnippets.getUrlLink(value));
@@ -95,7 +96,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */
-	public static String getWorkAddress(PeopleService peopleService, Node contactNode, Node referencedEntity) {
+	public static String getWorkAddress(ResourceService resourceService, Node contactNode, Node referencedEntity) {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null)
@@ -107,7 +108,7 @@ public class PeopleUiSnippets {
 			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
 			if (primaryAddress != null) {
 				builder.append("<br />");
-				builder.append(getAddressDisplayValue(peopleService, primaryAddress));
+				builder.append(getAddressDisplayValue(resourceService, primaryAddress));
 			}
 		}
 		return ConnectUiUtils.replaceAmpersand(builder.toString());
@@ -144,7 +145,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates an address Display value */
-	public static String getAddressDisplayValue(PeopleService peopleService, Node node) {
+	public static String getAddressDisplayValue(ResourceService resourceService, Node node) {
 		String street = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STREET);
 		String street2 = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STREET_COMPLEMENT);
 		String zip = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_ZIP_CODE);
@@ -185,8 +186,8 @@ public class PeopleUiSnippets {
 		}
 
 		if (notEmpty(country)) {
-			country = peopleService.getResourceService().getEncodedTagValue(ConnectJcrUtils.getSession(node),
-					PeopleConstants.RESOURCE_COUNTRY, country);
+			country = resourceService.getEncodedTagValue(ConnectJcrUtils.getSession(node),
+					ConnectConstants.RESOURCE_COUNTRY, country);
 
 			if (builder.length() > 0)
 				builder.append(", ");
@@ -196,7 +197,8 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the localisation snippet */
-	public static String getLocalisationInfo(PeopleService peopleService, Node entity) {
+	public static String getLocalisationInfo(ResourceService resourceService, PeopleService peopleService,
+			Node entity) {
 		String town = PeopleJcrUtils.getTownFromItem(peopleService, entity);
 		String country = PeopleJcrUtils.getCountryFromItem(peopleService, entity);
 		if (notEmpty(town) || notEmpty(country)) {
@@ -208,8 +210,8 @@ public class PeopleUiSnippets {
 					builder.append(", ");
 			}
 			if (notEmpty(country)) {
-				country = peopleService.getResourceService().getEncodedTagValue(ConnectJcrUtils.getSession(entity),
-						PeopleConstants.RESOURCE_COUNTRY, country);
+				country = resourceService.getEncodedTagValue(ConnectJcrUtils.getSession(entity),
+						ConnectConstants.RESOURCE_COUNTRY, country);
 				builder.append(country);
 			}
 			builder.append("]");

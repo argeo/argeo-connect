@@ -9,17 +9,17 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesNames;
+import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -47,8 +47,7 @@ import org.eclipse.ui.part.EditorPart;
  * Display a list off all projects and corresponding editions of the current
  * manager instance.
  */
-public class TemplateList extends EditorPart implements PeopleNames,
-		Refreshable {
+public class TemplateList extends EditorPart implements PeopleNames, Refreshable {
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".templateList";
 
@@ -65,8 +64,7 @@ public class TemplateList extends EditorPart implements PeopleNames,
 	private TableViewer tableViewer;
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		setPartName("Catalogues");
@@ -92,8 +90,7 @@ public class TemplateList extends EditorPart implements PeopleNames,
 	protected void populateButtonCmp(Composite parent) {
 		parent.setLayout(new GridLayout());
 		Button uploadBtn = new Button(parent, SWT.PUSH);
-		uploadBtn
-				.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+		uploadBtn.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 		uploadBtn.setText("Upload a Csv File");
 		uploadBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -113,18 +110,14 @@ public class TemplateList extends EditorPart implements PeopleNames,
 		int[] bounds = { 120, 110, 100, 50 };
 
 		// Name
-		col = ViewerUtils.createTableViewerColumn(tableViewer, "", SWT.LEFT,
-				bounds[0]);
-		col.setLabelProvider(new NodeTypeLabelProvider(
-				PeopleNames.PEOPLE_TEMPLATE_ID));
-		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(
-				100, 150, true));
+		col = ViewerUtils.createTableViewerColumn(tableViewer, "", SWT.LEFT, bounds[0]);
+		col.setLabelProvider(new NodeTypeLabelProvider(ResourcesNames.PEOPLE_TEMPLATE_ID));
+		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(100, 150, true));
 
 		// Providers and listeners
 		tableViewer.setContentProvider(new BasicNodeListContentProvider());
 
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				peopleWorkbenchService));
+		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(peopleWorkbenchService));
 		// tableViewer.getTable().addSelectionListener(new HtmlRwtAdapter());
 		parent.setLayout(tableColumnLayout);
 	}
@@ -132,17 +125,14 @@ public class TemplateList extends EditorPart implements PeopleNames,
 	/** Refresh the list of registered templates */
 	protected void refreshList() {
 		try {
-			String path = peopleService
-					.getBasePath(PeopleConstants.PEOPLE_RESOURCE)
-					+ "/"
-					+ PeopleConstants.PEOPLE_RESOURCE_TEMPLATE;
+			String path = "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" + ResourcesNames.RESOURCES_TEMPLATES;
 			Node parent = session.getNode(path);
 			List<Node> templates = new ArrayList<Node>();
 
 			NodeIterator nit = parent.getNodes();
 			while (nit.hasNext()) {
 				Node currNode = nit.nextNode();
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_NODE_TEMPLATE))
+				if (currNode.isNodeType(ResourcesTypes.PEOPLE_NODE_TEMPLATE))
 					templates.add(currNode);
 			}
 
@@ -182,8 +172,7 @@ public class TemplateList extends EditorPart implements PeopleNames,
 
 		@Override
 		public String getText(Object element) {
-			return resourceService
-					.getItemDefaultEnLabel(super.getText(element));
+			return resourceService.getItemDefaultEnLabel(super.getText(element));
 		}
 	}
 
@@ -194,11 +183,13 @@ public class TemplateList extends EditorPart implements PeopleNames,
 
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
-		resourceService = peopleService.getResourceService();
 	}
 
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
+	}
+
+	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
 		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 

@@ -15,6 +15,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -40,13 +41,14 @@ import org.eclipse.swt.widgets.Text;
 /** Generic page to display a list of filtered nodes, base on their type */
 public class PeopleQueryPage implements CmsUiProvider {
 
-	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private ResourceService resourceService;
 	private Map<String, String> iconPathes;
 
-	public PeopleQueryPage(PeopleService peopleService,
+	public PeopleQueryPage(PeopleService peopleService, ResourceService resourceService,
 			Map<String, String> iconPathes) {
 		this.peopleService = peopleService;
+		this.resourceService = resourceService;
 		this.iconPathes = iconPathes;
 	}
 
@@ -61,8 +63,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 
 	public void populateBodyPanel(Composite parent, final Node context) {
 		parent.setLayout(new GridLayout());
-		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
-				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		entityFilterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		// entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
 
@@ -75,8 +76,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 
 			public void modifyText(ModifyEvent event) {
 				// might be better to use an asynchronous Refresh();
-				refreshFilteredList(entityViewer, entityFilterTxt.getText(),
-						context);
+				refreshFilteredList(entityViewer, entityFilterTxt.getText(), context);
 			}
 		});
 		refreshFilteredList(entityViewer, entityFilterTxt.getText(), context);
@@ -96,14 +96,13 @@ public class PeopleQueryPage implements CmsUiProvider {
 		CmsUtils.markup(table);
 		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-		ILabelProvider labelProvider = new SearchEntitiesLP(peopleService,
-				table.getDisplay(), iconPathes);
+		ILabelProvider labelProvider = new SearchEntitiesLP(resourceService, peopleService, table.getDisplay(),
+				iconPathes);
 		v.setLabelProvider(labelProvider);
 		v.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				Object firstObj = ((IStructuredSelection) event.getSelection())
-						.getFirstElement();
+				Object firstObj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String path = ConnectJcrUtils.getPath((Node) firstObj);
 				CmsUtils.getCmsView().navigateTo(path);
 			}
@@ -111,8 +110,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 		return v;
 	}
 
-	protected void refreshFilteredList(TableViewer entityViewer, String filter,
-			Node context) {
+	protected void refreshFilteredList(TableViewer entityViewer, String filter, Node context) {
 		try {
 			// Do not load all contacts when no filter is present
 			// if (ConnectJcrUtils.isEmptyString(filter)) {
@@ -121,29 +119,22 @@ public class PeopleQueryPage implements CmsUiProvider {
 			// }
 
 			Session session = context.getSession();
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-			String statement = context.getProperty(Property.JCR_STATEMENT)
-					.getString();
-			String selectorName = statement.substring(statement.indexOf('['),
-					statement.indexOf(']') + 1);
+			String statement = context.getProperty(Property.JCR_STATEMENT).getString();
+			String selectorName = statement.substring(statement.indexOf('['), statement.indexOf(']') + 1);
 
-			String language = context.getProperty(Property.JCR_LANGUAGE)
-					.getString();
+			String language = context.getProperty(Property.JCR_LANGUAGE).getString();
 			if (!Query.JCR_SQL2.equals(language))
 				throw new PeopleException("Unknown language type " + language);
 			if (EclipseUiUtils.notEmpty(filter))
-				statement += " WHERE CONTAINS(" + selectorName + ".*, '*"
-						+ filter + "*')";
+				statement += " WHERE CONTAINS(" + selectorName + ".*, '*" + filter + "*')";
 			Query query = queryManager.createQuery(statement, language);
 
 			query.getBindVariableNames();
-			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute()
-					.getNodes()));
+			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute().getNodes()));
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list entities for context "
-					+ context + " and filter " + filter, e);
+			throw new PeopleException("Unable to list entities for context " + context + " and filter " + filter, e);
 		}
 	}
 

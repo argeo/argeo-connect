@@ -68,47 +68,37 @@ public interface PeopleNames {
 	// String PEOPLE_GROUP_ID = "people:groupId";
 	// String PEOPLE_IS_SINGLE_USER_GROUP = "people:isSingleUserGroup";
 
-	/* RESOURCES */
-	// Generally the corresponding node type. Might be something else.
-	String PEOPLE_TEMPLATE_ID = "people:templateId"; // (STRING)
-	String PEOPLE_TAG_ID = "people:tagId"; // (STRING)
-	String PEOPLE_TAG_INSTANCE_TYPE = "people:tagInstanceType"; // (STRING)
-	String PEOPLE_TAG_CODE_PROP_NAME = "people:codePropName"; // (STRING)
-	String PEOPLE_TAGGABLE_PARENT_PATH = "people:taggableParentPath"; // (STRING)
-	String PEOPLE_TAGGABLE_NODE_TYPE = "people:taggableNodeType"; // (STRING)
-	String PEOPLE_TAGGABLE_PROP_NAME = "people:taggablePropNames"; // (STRING)
-	String PEOPLE_CODE = "people:code"; // (STRING)
-
 	/* ACTIVITIES AND TASKS */
-	String PEOPLE_MANAGER = "people:manager";
-	String PEOPLE_REPORTED_BY = "people:reportedBy";
-	String PEOPLE_RELATED_TO = "people:relatedTo";
-	String PEOPLE_BOUND_ACTIVITIES = "people:boundActivities";
-	String PEOPLE_ATTACHEMENTS = "people:attachments";
-	String PEOPLE_ACTIVITY_DATE = "people:activityDate";
-
-	// Tasks
-	String PEOPLE_TASK_STATUS = "people:taskStatus";
-	// The corresponding groupID - we cannot use references because some groups
-	// might be assigned to a lot of tasks
-	String PEOPLE_ASSIGNED_TO = "people:assignedTo"; // STRING
-	String PEOPLE_DUE_DATE = "people:dueDate";
-	String PEOPLE_CLOSE_DATE = "people:closeDate";
-	String PEOPLE_CLOSED_BY = "people:closedBy";
-	String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
-	String PEOPLE_DEPENDS_ON = "people:dependsOn";
-	String PEOPLE_TASKS = "people:tasks";
-
-	// Management of user rating
-	String PEOPLE_POLL_NAME = "people:pollName"; // (STRING)
-	String PEOPLE_CACHE_AVG_RATE = "people:cacheAvgRate"; // (STRING)
-	String PEOPLE_RATES = "people:rates"; // (nt:unstructured)
-	// a single rate for one of the children people:rate activities
-	String PEOPLE_RATE = "people:rate"; // (LONG)
-
-	// definition of the task template
-	String PEOPLE_TASK_CLOSING_STATUSES = "people:closingStatuses";
-	String PEOPLE_TASK_DEFAULT_STATUS = "people:defaultStatus";
+	// String PEOPLE_MANAGER = "people:manager";
+	// String PEOPLE_REPORTED_BY = "people:reportedBy";
+	// String PEOPLE_RELATED_TO = "people:relatedTo";
+	// String PEOPLE_BOUND_ACTIVITIES = "people:boundActivities";
+	// String PEOPLE_ATTACHEMENTS = "people:attachments";
+	// String PEOPLE_ACTIVITY_DATE = "people:activityDate";
+	//
+	// // Tasks
+	// String PEOPLE_TASK_STATUS = "people:taskStatus";
+	// // The corresponding groupID - we cannot use references because some
+	// groups
+	// // might be assigned to a lot of tasks
+	// String PEOPLE_ASSIGNED_TO = "people:assignedTo"; // STRING
+	// String PEOPLE_DUE_DATE = "people:dueDate";
+	// String PEOPLE_CLOSE_DATE = "people:closeDate";
+	// String PEOPLE_CLOSED_BY = "people:closedBy";
+	// String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
+	// String PEOPLE_DEPENDS_ON = "people:dependsOn";
+	// String PEOPLE_TASKS = "people:tasks";
+	//
+	// // Management of user rating
+	// String PEOPLE_POLL_NAME = "people:pollName"; // (STRING)
+	// String PEOPLE_CACHE_AVG_RATE = "people:cacheAvgRate"; // (STRING)
+	// String PEOPLE_RATES = "people:rates"; // (nt:unstructured)
+	// // a single rate for one of the children people:rate activities
+	// String PEOPLE_RATE = "people:rate"; // (LONG)
+	//
+	// // definition of the task template
+	// String PEOPLE_TASK_CLOSING_STATUSES = "people:closingStatuses";
+	// String PEOPLE_TASK_DEFAULT_STATUS = "people:defaultStatus";
 
 	// Workflow specific
 	String PEOPLE_DATE_BEGIN = "people:dateBegin";

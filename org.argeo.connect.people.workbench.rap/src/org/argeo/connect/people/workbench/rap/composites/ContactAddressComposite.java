@@ -7,21 +7,22 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.util.PeopleJcrUtils;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpOrgDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.rap.rwt.RWT;
@@ -51,8 +52,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	// private final static Log log = LogFactory
 	// .getLog(ContactAddressComposite.class);
 
+	private final ResourceService resourceService;
 	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleWorkbenchService;
+	private final AppWorkbenchService appWorkbenchService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 
@@ -61,11 +63,12 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private final FormToolkit toolkit;
 
 	public ContactAddressComposite(Composite parent, int style, AbstractPeopleEditor editor, AbstractFormPart formPart,
-			PeopleService peopleService, PeopleWorkbenchService peopleUiService, Node contactNode,
-			Node parentVersionableNode) {
+			ResourceService resourceService, PeopleService peopleService, AppWorkbenchService appWorkbenchService,
+			Node contactNode, Node parentVersionableNode) {
 		super(parent, style);
+		this.resourceService = resourceService;
 		this.peopleService = peopleService;
-		this.peopleWorkbenchService = peopleUiService;
+		this.appWorkbenchService = appWorkbenchService;
 		this.contactNode = contactNode;
 
 		this.editor = editor;
@@ -82,7 +85,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(editor, formPart, parent, SWT.NONE, contactNode,
-				parentVersionableNode, peopleWorkbenchService, peopleService);
+				parentVersionableNode, resourceService, peopleService, appWorkbenchService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
@@ -100,7 +103,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		readOnlyPanel.setLayout(new GridLayout());
 
 		String refUid = ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_REF_UID);
-		if (ConnectJcrUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF) && EclipseUiUtils.notEmpty(refUid)) {
+		if (ConnectJcrUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF)
+				&& EclipseUiUtils.notEmpty(refUid)) {
 
 			final Node referencedEntity = peopleService.getEntityByUid(ConnectJcrUtils.getSession(contactNode), refUid);
 
@@ -124,7 +128,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
 				if (primaryAddress != null) {
 					builder.append("\n");
-					builder.append(PeopleUiSnippets.getAddressDisplayValue(peopleService, primaryAddress));
+					builder.append(PeopleUiSnippets.getAddressDisplayValue(resourceService, primaryAddress));
 				}
 			}
 			readOnlyInfoLk.setText(ConnectUiUtils.replaceAmpersandforSWTLink(builder.toString()));
@@ -134,7 +138,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		} else {
 			Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "", SWT.WRAP);
 			readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-			String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(peopleService, contactNode);
+			String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(resourceService, contactNode);
 			readOnlyInfoLbl.setText(addressHtml);
 		}
 	}
@@ -168,7 +172,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					peopleService.getContactService().getContactPossibleValues(contactNode, PEOPLE_CONTACT_CATEGORY));
 
 			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(), "Choose an organisation",
-					contactNode.getSession(), peopleWorkbenchService, contactNode.getParent().getParent());
+					contactNode.getSession(), appWorkbenchService, contactNode.getParent().getParent());
 
 			// REFRESH VALUES
 			PeopleRapUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
@@ -224,7 +228,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
 			if (org != null) {
-				CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(org));
 			}
 
@@ -245,8 +249,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 			// The country drop down
 			Session session = ConnectJcrUtils.getSession(contactNode);
-			final TagLikeDropDown countryDD = new TagLikeDropDown(session, peopleService.getResourceService(),
-					PeopleConstants.RESOURCE_COUNTRY, countryTxt);
+			final TagLikeDropDown countryDD = new TagLikeDropDown(session, resourceService,
+					ConnectConstants.RESOURCE_COUNTRY, countryTxt);
 
 			final Text geoPointTxt = PeopleRapUtils.createRDText(toolkit, parent, "Geopoint", "", 0);
 			final Text labelTxt = PeopleRapUtils.createRDText(toolkit, parent, "Label", "", 0);
@@ -285,8 +289,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			// specific for drop downs
 			String countryIso = ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY);
 			if (EclipseUiUtils.notEmpty(countryIso)) {
-				String countryVal = peopleService.getResourceService().getEncodedTagValue(session,
-						PeopleConstants.RESOURCE_COUNTRY, countryIso);
+				String countryVal = resourceService.getEncodedTagValue(session, ConnectConstants.RESOURCE_COUNTRY,
+						countryIso);
 				countryDD.reset(countryVal);
 			}
 			addCountryTxtModifyListener(formPart, countryTxt);
@@ -305,10 +309,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 				if (EclipseUiUtils.isEmpty(label))
 					return;
 				Session session = ConnectJcrUtils.getSession(contactNode);
-				String iso = peopleService.getResourceService().getEncodedTagCodeFromValue(session,
-						PeopleConstants.RESOURCE_COUNTRY, label);
-				if (EclipseUiUtils.notEmpty(iso) && ConnectJcrUtils.setJcrProperty(contactNode, PeopleNames.PEOPLE_COUNTRY,
-						PropertyType.STRING, iso)) {
+				String iso = resourceService.getEncodedTagCodeFromValue(session, ConnectConstants.RESOURCE_COUNTRY,
+						label);
+				if (EclipseUiUtils.notEmpty(iso) && ConnectJcrUtils.setJcrProperty(contactNode,
+						PeopleNames.PEOPLE_COUNTRY, PropertyType.STRING, iso)) {
 					part.markDirty();
 				}
 			}

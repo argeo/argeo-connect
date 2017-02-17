@@ -19,8 +19,8 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.composites.FilterEntitiesVirtualTable;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -40,19 +40,19 @@ public class PickUpOrgDialog extends TrayDialog {
 
 	// Business objects
 	private final Session session;
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 	private Node selectedNode;
 
 	// this page widgets and UI objects
 	private FilterEntitiesVirtualTable tableCmp;
 	private final String title;
 
-	public PickUpOrgDialog(Shell parentShell, String title, Session session,
-			PeopleWorkbenchService peopleWorkbenchService, Node referencingNode) {
+	public PickUpOrgDialog(Shell parentShell, String title, Session session, AppWorkbenchService appWorkbenchService,
+			Node referencingNode) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.appWorkbenchService = appWorkbenchService;
 	}
 
 	protected Point getInitialSize() {
@@ -66,15 +66,13 @@ public class PickUpOrgDialog extends TrayDialog {
 		// seeAllChk.setText("See all organisation");
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new FilterEntitiesVirtualTable(dialogArea, style, session,
-				peopleWorkbenchService, PeopleTypes.PEOPLE_ORG);
+		tableCmp = new FilterEntitiesVirtualTable(dialogArea, style, session, appWorkbenchService,
+				PeopleTypes.PEOPLE_ORG);
 		tableCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		// Add listeners
-		tableCmp.getTableViewer().addDoubleClickListener(
-				new MyDoubleClickListener());
-		tableCmp.getTableViewer().addSelectionChangedListener(
-				new MySelectionChangedListener());
+		tableCmp.getTableViewer().addDoubleClickListener(new MyDoubleClickListener());
+		tableCmp.getTableViewer().addSelectionChangedListener(new MySelectionChangedListener());
 
 		parent.pack();
 		return dialogArea;
@@ -95,8 +93,7 @@ public class PickUpOrgDialog extends TrayDialog {
 			if (event.getSelection().isEmpty())
 				return;
 
-			Object obj = ((IStructuredSelection) event.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			if (obj instanceof Node) {
 				selectedNode = (Node) obj;
 			}
@@ -108,8 +105,7 @@ public class PickUpOrgDialog extends TrayDialog {
 			if (evt.getSelection().isEmpty())
 				return;
 
-			Object obj = ((IStructuredSelection) evt.getSelection())
-					.getFirstElement();
+			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 			if (obj instanceof Node) {
 				selectedNode = (Node) obj;
 				okPressed();

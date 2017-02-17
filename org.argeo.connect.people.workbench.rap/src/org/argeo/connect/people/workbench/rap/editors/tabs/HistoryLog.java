@@ -16,10 +16,10 @@ import javax.jcr.Value;
 
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.ui.ConnectUiConstants;
@@ -48,19 +48,19 @@ public class HistoryLog extends LazyCTabControl {
 
 	private final AbstractPeopleEditor editor;
 	private final FormToolkit toolkit;
-	private final PeopleService peopleService;
+	private final UserAdminService userAdminService;
 	private final Node entity;
 	private DateFormat dateTimeFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// this page UI Objects
 	private MyFormPart myFormPart;
 
-	public HistoryLog(Composite parent, int style, AbstractPeopleEditor editor, PeopleService peopleService,
+	public HistoryLog(Composite parent, int style, AbstractPeopleEditor editor, UserAdminService userAdminService,
 			Node entity) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
-		this.peopleService = peopleService;
+		this.userAdminService = userAdminService;
 		this.entity = entity;
 	}
 
@@ -130,8 +130,7 @@ public class HistoryLog extends LazyCTabControl {
 					firstL.append("Update " + i + " (");
 
 				if (lst.get(i).getUserId() != null)
-					firstL.append("User : "
-							+ peopleService.getUserAdminService().getUserDisplayName(lst.get(i).getUserId()) + ", ");
+					firstL.append("User : " + userAdminService.getUserDisplayName(lst.get(i).getUserId()) + ", ");
 				if (lst.get(i).getUpdateTime() != null) {
 					firstL.append("Date : ");
 					firstL.append(dateTimeFormat.format(lst.get(i).getUpdateTime().getTime()));

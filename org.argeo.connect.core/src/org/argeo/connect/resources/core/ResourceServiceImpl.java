@@ -1,7 +1,4 @@
-package org.argeo.connect.people.core;
-
-import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
-import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+package org.argeo.connect.resources.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,13 +20,16 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.people.PeopleConstants;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ResourceService;
+import org.argeo.connect.ConnectException;
+import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesConstants;
+import org.argeo.connect.resources.ResourcesNames;
+import org.argeo.connect.resources.ResourcesRole;
+import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
@@ -38,17 +38,7 @@ import org.argeo.jcr.JcrUtils;
 public class ResourceServiceImpl implements ResourceService {
 	private final static Log log = LogFactory.getLog(ResourceServiceImpl.class);
 
-	private PeopleService peopleService;
-
-	public ResourceServiceImpl(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-
-	@Override
-	public void initialiseResources(Session adminSession) throws RepositoryException {
-		Node resourceParent = JcrUtils.mkdirs(adminSession, peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE));
-		JcrUtils.mkdirs(resourceParent, PeopleConstants.PEOPLE_RESOURCE_TEMPLATE, NodeType.NT_UNSTRUCTURED);
-		JcrUtils.mkdirs(resourceParent, PeopleConstants.PEOPLE_RESOURCE_TAG_LIKE, NodeType.NT_UNSTRUCTURED);
+	public ResourceServiceImpl() {
 	}
 
 	/* LABEL FOR NODE TYPES AND PROPERTY NAMES */
@@ -58,11 +48,11 @@ public class ResourceServiceImpl implements ResourceService {
 	private final static Map<String, String> PEOPLE_ITEM_LABELS = new HashMap<String, String>() {
 		private static final long serialVersionUID = 1L;
 		{
-			put(PeopleTypes.PEOPLE_PERSON, "Person");
-			put(PeopleTypes.PEOPLE_ORG, "Organisation");
-			put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
-			put(PeopleTypes.PEOPLE_GROUP, "Group");
-			put(PeopleTypes.PEOPLE_TASK, "Task");
+			// put(PeopleTypes.PEOPLE_PERSON, "Person");
+			// put(PeopleTypes.PEOPLE_ORG, "Organisation");
+			// put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
+			// put(PeopleTypes.PEOPLE_GROUP, "Group");
+			// put(PeopleTypes.PEOPLE_TASK, "Task");
 		}
 	};
 
@@ -105,20 +95,20 @@ public class ResourceServiceImpl implements ResourceService {
 				}
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get " + propertyName + " values for template " + node, re);
+			throw new ConnectException("Unable to get " + propertyName + " values for template " + node, re);
 		}
 		return result;
 	}
 
 	@Override
 	public Node getNodeTemplate(Session session, String templateId) {
-		String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE, templateId);
+		String path = getPathForId(ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE, templateId);
 		try {
 			if (session.nodeExists(path)) {
 				return session.getNode(path);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException(
+			throw new ConnectException(
 					"Unable to retrieve template instance " + "at path " + path + " for templateId " + templateId, e);
 		}
 		return null;
@@ -131,19 +121,19 @@ public class ResourceServiceImpl implements ResourceService {
 		if (node != null)
 			return node;
 		else {
-			String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE, currId);
+			String path = getPathForId(ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE, currId);
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (!session.nodeExists(parPath))
-					throw new PeopleException(
+					throw new ConnectException(
 							"Default tree structure " + "for template resources must have been created. "
 									+ "Please fix this before trying to create template " + currId);
 				Node parent = session.getNode(parPath);
-				Node template = parent.addNode(currId, PeopleTypes.PEOPLE_NODE_TEMPLATE);
-				template.setProperty(PeopleNames.PEOPLE_TEMPLATE_ID, currId);
+				Node template = parent.addNode(currId, ResourcesTypes.PEOPLE_NODE_TEMPLATE);
+				template.setProperty(ResourcesNames.PEOPLE_TEMPLATE_ID, currId);
 				return template;
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to create new temaple " + currId + " at path " + path, e);
+				throw new ConnectException("Unable to create new temaple " + currId + " at path " + path, e);
 			}
 		}
 	}
@@ -157,7 +147,7 @@ public class ResourceServiceImpl implements ResourceService {
 					Query.JCR_SQL2);
 			return query.execute().getNodes();
 		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to retrieve catalogue value instances for type " + entityType
+			throw new ConnectException("Unable to retrieve catalogue value instances for type " + entityType
 					+ " and property " + propName + " for value " + value, ee);
 		}
 	}
@@ -168,7 +158,7 @@ public class ResourceServiceImpl implements ResourceService {
 		try {
 
 			if (isEmpty(oldValue))
-				throw new PeopleException("Old value cannot be empty");
+				throw new ConnectException("Old value cannot be empty");
 
 			Value[] values = templateNode.getProperty(propertyName).getValues();
 			List<String> newValues = new ArrayList<String>();
@@ -190,7 +180,7 @@ public class ResourceServiceImpl implements ResourceService {
 			while (nit.hasNext())
 				updateOneTag(nit.nextNode(), propertyName, oldValue, newValue);
 		} catch (RepositoryException e) {
-			throw new PeopleException(
+			throw new ConnectException(
 					"Unable to update " + templateNode + " with values on " + taggableType + " for property "
 							+ propertyName + " with old value '" + oldValue + "' and new value '" + newValue + "'.",
 					e);
@@ -214,42 +204,42 @@ public class ResourceServiceImpl implements ResourceService {
 		if (node != null)
 			return node;
 		else {
-			String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE, currId);
+			String path = getPathForId(ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE, currId);
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (!session.nodeExists(parPath))
-					throw new PeopleException("Default tree structure "
+					throw new ConnectException("Default tree structure "
 							+ "for tag like resources must have been created. "
 							+ "Please fix this before trying to create " + "tag like resource parent " + currId);
 				Node parent = session.getNode(parPath);
-				Node tagLikeParent = parent.addNode(currId, PeopleTypes.PEOPLE_TAG_PARENT);
-				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_ID, currId);
-				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE, tagInstanceType);
+				Node tagLikeParent = parent.addNode(currId, ResourcesTypes.PEOPLE_TAG_PARENT);
+				tagLikeParent.setProperty(ResourcesNames.PEOPLE_TAG_ID, currId);
+				tagLikeParent.setProperty(ResourcesNames.PEOPLE_TAG_INSTANCE_TYPE, tagInstanceType);
 				// If this property is not set, the key property of the tag
 				// instance is the JCR_TITLE Property
 				if (notEmpty(codePropName))
-					tagLikeParent.setProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME, codePropName);
-				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH, taggableParentPath);
-				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE, taggableNodeType);
-				tagLikeParent.setProperty(PeopleNames.PEOPLE_TAGGABLE_PROP_NAME,
+					tagLikeParent.setProperty(ResourcesNames.PEOPLE_TAG_CODE_PROP_NAME, codePropName);
+				tagLikeParent.setProperty(ResourcesNames.PEOPLE_TAGGABLE_PARENT_PATH, taggableParentPath);
+				tagLikeParent.setProperty(ResourcesNames.PEOPLE_TAGGABLE_NODE_TYPE, taggableNodeType);
+				tagLikeParent.setProperty(ResourcesNames.PEOPLE_TAGGABLE_PROP_NAME,
 						taggablePropNames.toArray(new String[0]));
 				return tagLikeParent;
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to create new temaple " + currId + " at path " + path, e);
+				throw new ConnectException("Unable to create new temaple " + currId + " at path " + path, e);
 			}
 		}
 	}
 
 	@Override
 	public Node getTagLikeResourceParent(Session session, String tagId) {
-		String path = getPathForId(PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE, tagId);
+		String path = getPathForId(ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE, tagId);
 		try {
 			if (session.nodeExists(path)) {
 				return session.getNode(path);
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve tag like parent " + "at path " + path + " for tagId " + tagId,
-					e);
+			throw new ConnectException(
+					"Unable to retrieve tag like parent " + "at path " + path + " for tagId " + tagId, e);
 		}
 		return null;
 	}
@@ -312,7 +302,7 @@ public class ResourceServiceImpl implements ResourceService {
 			}
 			return null;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve existing tag " + tagParent + " for key " + instanceKey, e);
+			throw new ConnectException("Unable to retrieve existing tag " + tagParent + " for key " + instanceKey, e);
 		}
 	}
 
@@ -323,7 +313,7 @@ public class ResourceServiceImpl implements ResourceService {
 			if (tag != null && tag.hasProperty(Property.JCR_TITLE))
 				return tag.getProperty(Property.JCR_TITLE).getString();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve tag " + tagId + " value with key " + code, e);
+			throw new ConnectException("Unable to retrieve tag " + tagId + " value with key " + code, e);
 		}
 		return code;
 	}
@@ -331,19 +321,18 @@ public class ResourceServiceImpl implements ResourceService {
 	@Override
 	public String getEncodedTagCodeFromValue(Session session, String tagId, String value) {
 		try {
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			Node tagParent = getExistingTagLikeParent(session, tagId);
-			String tagNodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
-			String tagCodePropName = tagParent.getProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
+			String tagNodeType = tagParent.getProperty(ResourcesNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
+			String tagCodePropName = tagParent.getProperty(ResourcesNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(tagParent.getPath()));
 			builder.append("//element(*, ").append(tagNodeType).append(")");
 			builder.append("[");
-			builder.append(XPathUtils.getPropertyEquals(PeopleNames.JCR_TITLE, value));
+			builder.append(XPathUtils.getPropertyEquals(Property.JCR_TITLE, value));
 			builder.append("]");
-			Query query = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
 
+			Query query = XPathUtils.createQuery(session, builder.toString());
 			QueryResult queryResult = query.execute();
 			NodeIterator ni = queryResult.getNodes();
 			if (ni.hasNext())
@@ -352,7 +341,7 @@ public class ResourceServiceImpl implements ResourceService {
 				return null;
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get code for encodedTag " + tagId + " with value " + value, e);
+			throw new ConnectException("Unable to get code for encodedTag " + tagId + " with value " + value, e);
 		}
 	}
 
@@ -378,8 +367,8 @@ public class ResourceServiceImpl implements ResourceService {
 					return builder.toString();
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot get values of " + tagId + " for property " + propertyName + " of " + node,
-					e);
+			throw new ConnectException(
+					"Cannot get values of " + tagId + " for property " + propertyName + " of " + node, e);
 		}
 	}
 
@@ -393,9 +382,10 @@ public class ResourceServiceImpl implements ResourceService {
 	public NodeIterator getTaggedEntities(Node tagParent, String key) {
 		try {
 
-			String nodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
-			String parentPath = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
-			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent, PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
+			String nodeType = tagParent.getProperty(ResourcesNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
+			String parentPath = tagParent.getProperty(ResourcesNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
+			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent,
+					ResourcesNames.PEOPLE_TAGGABLE_PROP_NAME);
 
 			// Build xpath for property names;
 			StringBuilder builder = new StringBuilder();
@@ -417,7 +407,7 @@ public class ResourceServiceImpl implements ResourceService {
 			NodeIterator nit = query.execute().getNodes();
 			return nit;
 		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to retrieve tagged entities for key " + key + " on parent " + tagParent,
+			throw new ConnectException("Unable to retrieve tagged entities for key " + key + " on parent " + tagParent,
 					ee);
 		}
 	}
@@ -437,10 +427,11 @@ public class ResourceServiceImpl implements ResourceService {
 			if (log.isDebugEnabled())
 				log.debug("Starting known tag refresh for " + tagParent);
 			String keyPropName = getTagKeyPropName(tagParent);
-			String taggableNodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
-			String taggableParentPath = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
-			String codeProp = ConnectJcrUtils.get(tagParent, PeopleNames.PEOPLE_CODE);
-			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent, PeopleNames.PEOPLE_TAGGABLE_PROP_NAME);
+			String taggableNodeType = tagParent.getProperty(ResourcesNames.PEOPLE_TAGGABLE_NODE_TYPE).getString();
+			String taggableParentPath = tagParent.getProperty(ResourcesNames.PEOPLE_TAGGABLE_PARENT_PATH).getString();
+			String codeProp = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_CODE);
+			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent,
+					ResourcesNames.PEOPLE_TAGGABLE_PROP_NAME);
 
 			if (log.isTraceEnabled())
 				log.trace("Getting already registered tags");
@@ -514,7 +505,7 @@ public class ResourceServiceImpl implements ResourceService {
 				log.debug("Tag refresh for " + tagParent + " has been done, creating " + newExistingValues.size()
 						+ " new tag instances.");
 		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to refresh cache of known tags", ee);
+			throw new ConnectException("Unable to refresh cache of known tags", ee);
 		}
 	}
 
@@ -522,7 +513,7 @@ public class ResourceServiceImpl implements ResourceService {
 	public boolean updateTag(Node tagInstance, String newValue) throws RepositoryException {
 		// TODO use a transaction
 		Node tagParent = retrieveTagParentFromTag(tagInstance);
-		Value[] values = tagParent.getProperty(PeopleNames.PEOPLE_TAGGABLE_PROP_NAME).getValues();
+		Value[] values = tagParent.getProperty(ResourcesNames.PEOPLE_TAGGABLE_PROP_NAME).getValues();
 		if (values.length > 1)
 			// unimplemented multiple value
 			return false;
@@ -577,14 +568,14 @@ public class ResourceServiceImpl implements ResourceService {
 				taggable.setProperty(tagPropName, newValue);
 			taggable.getSession().save();
 		} catch (RepositoryException ee) {
-			throw new PeopleException("Unable to update tag like multiple value property " + tagPropName + " removing "
+			throw new ConnectException("Unable to update tag like multiple value property " + tagPropName + " removing "
 					+ oldValue + " and adding " + newValue + " on " + taggable, ee);
 		}
 	}
 
 	@Override
 	public void unregisterTag(Session session, String tagId, String tag) {
-		throw new PeopleException("Unimplemented method " + "ResourceService.unregisterTag("
+		throw new ConnectException("Unimplemented method " + "ResourceService.unregisterTag("
 				+ "Session session, String tagId, String tag) ");
 	}
 
@@ -609,7 +600,7 @@ public class ResourceServiceImpl implements ResourceService {
 			}
 			return values;
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get values for tag of ID " + tagId, re);
+			throw new ConnectException("Unable to get values for tag of ID " + tagId, re);
 		}
 	}
 
@@ -619,17 +610,17 @@ public class ResourceServiceImpl implements ResourceService {
 		try {
 			// retrieve parameters for this tag
 			String relPath = getTagRelPath(tagKey);
-			String instanceType = tagParent.getProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
+			String instanceType = tagParent.getProperty(ResourcesNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
 			// create and set props
 			Node newTag = JcrUtils.mkdirs(tagParent, relPath, instanceType);
 			newTag.setProperty(getTagKeyPropName(tagParent), tagKey);
-			if (newTag.isNodeType(PeopleTypes.PEOPLE_ENTITY)) {
+			if (newTag.isNodeType(ConnectTypes.CONNECT_ENTITY)) {
 				String uuid = UUID.randomUUID().toString();
-				newTag.setProperty(PeopleNames.PEOPLE_UID, uuid);
+				newTag.setProperty(ConnectNames.CONNECT_UID, uuid);
 			}
 			return newTag;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create tag instance " + tagKey + " for tag " + tagParent, e);
+			throw new ConnectException("Unable to create tag instance " + tagKey + " for tag " + tagParent, e);
 		}
 	}
 
@@ -646,19 +637,19 @@ public class ResourceServiceImpl implements ResourceService {
 
 	protected Node retrieveTagParentFromTag(Node tag) {
 		Node parent = tag;
-		while (!ConnectJcrUtils.isNodeType(parent, PeopleTypes.PEOPLE_TAG_PARENT))
+		while (!ConnectJcrUtils.isNodeType(parent, ResourcesTypes.PEOPLE_TAG_PARENT))
 			parent = ConnectJcrUtils.getParent(parent);
 		return parent;
 	}
 
 	protected String getTagKeyPropName(Node tagParent) {
 		try {
-			if (tagParent.hasProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME))
-				return tagParent.getProperty(PeopleNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
+			if (tagParent.hasProperty(ResourcesNames.PEOPLE_TAG_CODE_PROP_NAME))
+				return tagParent.getProperty(ResourcesNames.PEOPLE_TAG_CODE_PROP_NAME).getString();
 			else
 				return ConnectJcrUtils.getLocalJcrItemName(Property.JCR_TITLE);
 		} catch (RepositoryException e) {
-			throw new PeopleException("unable to retrieve key property name for " + tagParent);
+			throw new ConnectException("unable to retrieve key property name for " + tagParent);
 		}
 	}
 
@@ -666,7 +657,7 @@ public class ResourceServiceImpl implements ResourceService {
 	private Node getExistingTagLikeParent(Session session, String tagId) {
 		Node tagInstanceParent = getTagLikeResourceParent(session, tagId);
 		if (tagInstanceParent == null)
-			throw new PeopleException(
+			throw new ConnectException(
 					"Tag like resource with ID " + tagId + " does not exist. Cannot process current action.");
 		else
 			return tagInstanceParent;
@@ -674,7 +665,7 @@ public class ResourceServiceImpl implements ResourceService {
 
 	private NodeIterator getRegisteredTags(Node tagParent, String filter) {
 		try {
-			String nodeType = tagParent.getProperty(PeopleNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
+			String nodeType = tagParent.getProperty(ResourcesNames.PEOPLE_TAG_INSTANCE_TYPE).getString();
 			String queryStr = "select * from [" + nodeType + "] as nodes where ISDESCENDANTNODE('" + tagParent.getPath()
 					+ "')";
 			if (notEmpty(filter))
@@ -684,18 +675,31 @@ public class ResourceServiceImpl implements ResourceService {
 			Query query = tagParent.getSession().getWorkspace().getQueryManager().createQuery(queryStr, Query.JCR_SQL2);
 			return query.execute().getNodes();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get values for " + tagParent + " with filter " + filter, re);
+			throw new ConnectException("Unable to get values for " + tagParent + " with filter " + filter, re);
 		}
 	}
 
 	private String getPathForId(String resourceType, String id) {
-		if (PeopleConstants.RESOURCE_TYPE_ID_TEMPLATE.equals(resourceType))
-			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE) + "/"
-					+ PeopleConstants.PEOPLE_RESOURCE_TEMPLATE + "/" + id;
-		else if (PeopleConstants.RESOURCE_TYPE_ID_TAG_LIKE.equals(resourceType))
-			return peopleService.getBasePath(PeopleConstants.PEOPLE_RESOURCE) + "/"
-					+ PeopleConstants.PEOPLE_RESOURCE_TAG_LIKE + "/" + id;
+		if (ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE.equals(resourceType))
+			return "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" + ResourcesNames.RESOURCES_TEMPLATES + "/" + id;
+		else if (ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE.equals(resourceType))
+			return "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" + ResourcesNames.RESOURCES_TAG_LIKE + "/" + id;
 		else
-			throw new PeopleException("Unknown resource type " + resourceType + " for id " + id);
+			throw new ConnectException("Unknown resource type " + resourceType + " for id " + id);
+	}
+
+	@Override
+	public boolean canCreateTag(Session session) {
+		// TODO Rather store this info in the instance configuration
+		String prop = System.getProperty(ConnectConstants.SYS_PROP_ID_PREVENT_TAG_ADDITION);
+		return !"true".equals(prop) || CurrentUser.isInRole(ResourcesRole.editor.dn());
+	}
+
+	private static boolean notEmpty(String stringToTest) {
+		return !(stringToTest == null || "".equals(stringToTest.trim()));
+	}
+
+	private static boolean isEmpty(String stringToTest) {
+		return stringToTest == null || "".equals(stringToTest.trim());
 	}
 }

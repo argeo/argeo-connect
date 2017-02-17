@@ -38,9 +38,11 @@ import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.TagLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
 import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.JcrRowLabelProvider;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
@@ -76,8 +78,9 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
+	private ResourceService resourceService;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// UI Objects
 	private Row[] rows;
@@ -103,7 +106,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
-				new TitleIconRowLP(peopleWorkbenchService, null, Property.JCR_TITLE), 300));
+				new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(PEOPLE_TAGS), 300));
 	}
 
@@ -151,8 +154,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 		parent.setLayout(new GridLayout(2, false));
 		titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
 		CmsUtils.markup(titleROLbl);
-		groupTitleLP = new TagLabelProvider(peopleService.getResourceService(),
-				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
+		groupTitleLP = new TagLabelProvider(resourceService, PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
 		titleROLbl.setText(groupTitleLP.getText(getNode()));
 		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
@@ -169,8 +171,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					EditTagWizard wizard = new EditTagWizard(peopleService, peopleWorkbenchService, getNode(),
-							PeopleConstants.RESOURCE_TAG, PeopleNames.PEOPLE_TAGS);
+					EditTagWizard wizard = new EditTagWizard(resourceService, appWorkbenchService, getNode(),
+							ConnectConstants.RESOURCE_TAG, PeopleNames.PEOPLE_TAGS);
 					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(titleROLbl.getShell(), wizard);
 					dialog.open();
 				}
@@ -188,8 +190,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
 		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
 
-		columns.add(
-				new ConnectColumnDefinition("Type", new PrimaryTypeLP(getPeopleService().getResourceService(), null)));
+		columns.add(new ConnectColumnDefinition("Type", new PrimaryTypeLP(resourceService, null)));
 
 		columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
 
@@ -246,7 +247,7 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 		refreshFilteredList();
 
 		// Double click
-		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(null, peopleWorkbenchService);
+		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(null, appWorkbenchService);
 		membersViewer.addDoubleClickListener(ndcl);
 	}
 
@@ -362,8 +363,8 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 		return peopleService;
 	}
 
-	protected PeopleWorkbenchService getPeopleWorkbenchService() {
-		return peopleWorkbenchService;
+	protected AppWorkbenchService getAppWorkbenchService() {
+		return appWorkbenchService;
 	}
 
 	/* UTILITES */
@@ -395,16 +396,20 @@ public class TagEditor extends EditorPart implements PeopleNames, Refreshable, I
 	}
 
 	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
+	}
+
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
 
 	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
-	}
-
-	public void setRepository(Repository repository) {
-		this.repository = repository;
+		this.appWorkbenchService = peopleWorkbenchService;
 	}
 
 }

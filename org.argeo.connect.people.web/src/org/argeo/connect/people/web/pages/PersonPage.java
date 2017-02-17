@@ -10,6 +10,7 @@ import org.argeo.connect.people.web.parts.ContactButtonsPart;
 import org.argeo.connect.people.web.parts.ContactsWithNotePart;
 import org.argeo.connect.people.web.parts.PersonHeaderPart;
 import org.argeo.connect.people.web.parts.SingleContactPart;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -30,12 +31,12 @@ public class PersonPage implements CmsUiProvider {
 	public PersonPage() {
 	}
 
-	public PersonPage(PeopleService peopleService) {
+	public PersonPage(PeopleService peopleService, ResourceService resourceService) {
 		personHeaderPart = new PersonHeaderPart(peopleService);
 
 		ContactButtonsPart cbp = new ContactButtonsPart();
 		SingleContactPart scp = new SingleContactPart();
-		scp.setPeopleService(peopleService);
+		scp.setResourceService(resourceService);
 		scp.setContactButtonsPart(cbp);
 		contactsWithNotePart = new ContactsWithNotePart(scp);
 

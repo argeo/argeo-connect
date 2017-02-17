@@ -1,4 +1,4 @@
-package org.argeo.connect.people;
+package org.argeo.connect.activities;
 
 import java.util.Calendar;
 import java.util.List;

@@ -12,6 +12,8 @@ import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.dialogs.EditJobDialog;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -41,8 +43,9 @@ public class EditJob extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
+	private ResourceService resourceService;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -59,13 +62,13 @@ public class EditJob extends AbstractHandler {
 			if (relevantNode.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 				// Edit an existing job
 				isBackward = new Boolean(event.getParameter(PARAM_IS_BACKWARD));
-				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit employee information", peopleService,
-						peopleWorkbenchService, relevantNode, null, isBackward);
+				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit employee information",
+						resourceService, peopleService, appWorkbenchService, relevantNode, null, isBackward);
 			} else {
 				// Create a new job
 				isBackward = relevantNode.isNodeType(PeopleTypes.PEOPLE_ORG);
-				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit position", peopleService,
-						peopleWorkbenchService, null, relevantNode, isBackward);
+				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit position", resourceService,
+						peopleService, appWorkbenchService, null, relevantNode, isBackward);
 			}
 
 			int result = diag.open();
@@ -83,15 +86,20 @@ public class EditJob extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
+	}
+
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
 
 	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.appWorkbenchService = peopleWorkbenchService;
 	}
 
-	public void setRepository(Repository repository) {
-		this.repository = repository;
-	}
 }

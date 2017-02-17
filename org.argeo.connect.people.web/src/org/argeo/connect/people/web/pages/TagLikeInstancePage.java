@@ -23,6 +23,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -51,6 +52,7 @@ public class TagLikeInstancePage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
+	private ResourceService resourceService;
 	private Map<String, String> iconPathes;
 	private String propertyName;
 
@@ -73,23 +75,19 @@ public class TagLikeInstancePage implements CmsUiProvider {
 		builder.append("</big></b>");
 		title.setText(builder.toString());
 
-		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
-				| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		entityFilterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-				false));
+		final Text entityFilterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+		entityFilterTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		// entityFilterTxt.setMessage(PeopleMsg.searchEntities.lead());
 
 		Composite tableComposite = new Composite(parent, SWT.NONE);
-		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-				true));
+		tableComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		final TableViewer entityViewer = createListPart(tableComposite);
 
 		entityFilterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
 
 			public void modifyText(ModifyEvent event) {
-				refreshFilteredList(entityViewer, entityFilterTxt.getText(),
-						context);
+				refreshFilteredList(entityViewer, entityFilterTxt.getText(), context);
 			}
 		});
 		refreshFilteredList(entityViewer, entityFilterTxt.getText(), context);
@@ -109,14 +107,13 @@ public class TagLikeInstancePage implements CmsUiProvider {
 		CmsUtils.markup(table);
 		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-		ILabelProvider labelProvider = new SearchEntitiesLP(peopleService,
-				table.getDisplay(), iconPathes);
+		ILabelProvider labelProvider = new SearchEntitiesLP(resourceService, peopleService, table.getDisplay(),
+				iconPathes);
 		v.setLabelProvider(labelProvider);
 		v.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				Object firstObj = ((IStructuredSelection) event.getSelection())
-						.getFirstElement();
+				Object firstObj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String path = ConnectJcrUtils.getPath((Node) firstObj);
 				CmsUtils.getCmsView().navigateTo(path);
 			}
@@ -124,51 +121,38 @@ public class TagLikeInstancePage implements CmsUiProvider {
 		return v;
 	}
 
-	protected void refreshFilteredList(TableViewer entityViewer, String filter,
-			Node context) {
+	protected void refreshFilteredList(TableViewer entityViewer, String filter, Node context) {
 		try {
 			Session session = context.getSession();
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
 			String path = peopleService.getBasePath(null);
 			String value = context.getProperty(Property.JCR_TITLE).getString();
 
-			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY,
-					PeopleTypes.PEOPLE_ENTITY);
+			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY, PeopleTypes.PEOPLE_ENTITY);
 
 			// Reduce to the business sub tree
-			Constraint descCst = factory.descendantNode(
-					source.getSelectorName(), path);
+			Constraint descCst = factory.descendantNode(source.getSelectorName(), path);
 
 			// only entities with correct tag like value
-			StaticOperand so = factory.literal(session.getValueFactory()
-					.createValue(value));
-			DynamicOperand dyo = factory.propertyValue(
-					source.getSelectorName(), propertyName);
-			Constraint tagCst = factory.comparison(dyo,
-					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+			StaticOperand so = factory.literal(session.getValueFactory().createValue(value));
+			DynamicOperand dyo = factory.propertyValue(source.getSelectorName(), propertyName);
+			Constraint tagCst = factory.comparison(dyo, QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 
 			Constraint defaultC = factory.and(tagCst, descCst);
 
 			// Apply filtering
 			for (String token : filter.trim().split(" ")) {
-				StaticOperand so2 = factory.literal(session.getValueFactory()
-						.createValue("*" + token + "*"));
-				Constraint currC = factory.fullTextSearch(
-						source.getSelectorName(), null, so2);
+				StaticOperand so2 = factory.literal(session.getValueFactory().createValue("*" + token + "*"));
+				Constraint currC = factory.fullTextSearch(source.getSelectorName(), null, so2);
 				defaultC = factory.and(defaultC, currC);
 			}
 
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
-			QueryObjectModel query = factory.createQuery(source, defaultC,
-					new Ordering[] { order }, null);
-			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute()
-					.getNodes()));
+			Ordering order = factory.ascending(factory.propertyValue(source.getSelectorName(), Property.JCR_TITLE));
+			QueryObjectModel query = factory.createQuery(source, defaultC, new Ordering[] { order }, null);
+			entityViewer.setInput(JcrUtils.nodeIteratorToList(query.execute().getNodes()));
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list entities for context "
-					+ context + " and filter " + filter, e);
+			throw new PeopleException("Unable to list entities for context " + context + " and filter " + filter, e);
 		}
 	}
 
@@ -195,6 +179,10 @@ public class TagLikeInstancePage implements CmsUiProvider {
 	/* DEPENDENCY INJECTION */
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 
 	public void setIconPathes(Map<String, String> iconPathes) {

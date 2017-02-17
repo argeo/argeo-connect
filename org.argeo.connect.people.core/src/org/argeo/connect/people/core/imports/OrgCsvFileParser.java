@@ -21,6 +21,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.PeopleJcrUtils;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.springframework.core.io.Resource;
@@ -32,31 +33,28 @@ import org.springframework.core.io.Resource;
 public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 	private final static Log log = LogFactory.getLog(OrgCsvFileParser.class);
 
-	public OrgCsvFileParser(Session adminSession, PeopleService peopleService,
+	public OrgCsvFileParser(Session adminSession, ResourceService resourceService, PeopleService peopleService,
 			Resource images) {
-		super(adminSession, peopleService, images);
+		super(adminSession, peopleService, resourceService, images);
 	}
 
-	public OrgCsvFileParser(Session adminSession, PeopleService peopleService) {
-		super(adminSession, peopleService);
+	public OrgCsvFileParser(Session adminSession, PeopleService peopleService, ResourceService resourceService) {
+		super(adminSession, peopleService, resourceService);
 	}
 
 	@Override
 	protected void processLine(Integer lineNumber, Map<String, String> line) {
 		try {
-			Node orgs = adminSession.getNode(getPeopleService().getBasePath(
-					PeopleTypes.PEOPLE_ORG));
+			Node orgs = getSession().getNode(getPeopleService().getBasePath(PeopleTypes.PEOPLE_ORG));
 			String legalName = line.get(PEOPLE_LEGAL_NAME).trim();
 
 			// TODO implement a less violent replacement
 			String sLegalName = legalName.replaceAll("[^a-zA-Z0-9]", "");
 
 			Node orga;
-			String relPath = JcrUtils.firstCharsToPath(sLegalName, 2) + "/"
-					+ sLegalName;
-			if (!adminSession.nodeExists(orgs.getPath() + "/" + relPath)) {
-				orga = JcrUtils.mkdirs(orgs, relPath, PeopleTypes.PEOPLE_ORG,
-						NodeType.NT_UNSTRUCTURED);
+			String relPath = JcrUtils.firstCharsToPath(sLegalName, 2) + "/" + sLegalName;
+			if (!getSession().nodeExists(orgs.getPath() + "/" + relPath)) {
+				orga = JcrUtils.mkdirs(orgs, relPath, PeopleTypes.PEOPLE_ORG, NodeType.NT_UNSTRUCTURED);
 
 				// remove special chars so that it is correctly displayed
 				orga.setProperty(PEOPLE_LEGAL_NAME, legalName);
@@ -66,8 +64,8 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 				// Website and dummy picture
 				String webSite = line.get("people:websiteUrl");
 				if (notEmpty(webSite)) {
-					PeopleJcrUtils.createWebsite(getPeopleService(), orga,
-							webSite, true, null, null);
+					PeopleJcrUtils.createWebsite(getPeopleService(), getResourceService(), orga, webSite, true, null,
+							null);
 
 					// picture
 					InputStream is = null;
@@ -82,8 +80,7 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 						}
 
 					} catch (IOException ioe) {
-						log.warn("IOException while importing org image: "
-								+ ioe.getMessage());
+						log.warn("IOException while importing org image: " + ioe.getMessage());
 						// Silent
 					} finally {
 						IOUtils.closeQuietly(is);
@@ -92,48 +89,39 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 				}
 
 				// address
-				Node address = PeopleJcrUtils
-						.createAddress(getPeopleService(), orga,
-								line.get(PEOPLE_STREET),
-								line.get(PEOPLE_STREET_COMPLEMENT),
-								line.get(PEOPLE_ZIP_CODE),
-								line.get(PEOPLE_CITY), line.get(PEOPLE_STATE),
-								line.get(PEOPLE_COUNTRY), true, null,
-								ContactValueCatalogs.CONTACT_CAT_HEADOFFICE,
-								null);
+				Node address = PeopleJcrUtils.createAddress(getPeopleService(), getResourceService(), orga,
+						line.get(PEOPLE_STREET), line.get(PEOPLE_STREET_COMPLEMENT), line.get(PEOPLE_ZIP_CODE),
+						line.get(PEOPLE_CITY), line.get(PEOPLE_STATE), line.get(PEOPLE_COUNTRY), true, null,
+						ContactValueCatalogs.CONTACT_CAT_HEADOFFICE, null);
 				PeopleJcrUtils.updateDisplayAddress(address);
 
 				String emailAddress = line.get("people:emailAddress").trim();
 				if (notEmpty(emailAddress)) {
-					PeopleJcrUtils.createEmail(getPeopleService(), orga,
-							emailAddress, true, null, null, null);
+					PeopleJcrUtils.createEmail(getPeopleService(), getResourceService(), orga, emailAddress, true, null,
+							null, null);
 				}
 
 				// Phone numbers
 				String phone = line.get("people:phoneNb");
 				if (notEmpty(phone)) {
-					PeopleJcrUtils.createPhone(getPeopleService(), orga, phone,
-							true, null, ContactValueCatalogs.CONTACT_CAT_MAIN,
-							null);
+					PeopleJcrUtils.createPhone(getPeopleService(), getResourceService(), orga, phone, true, null,
+							ContactValueCatalogs.CONTACT_CAT_MAIN, null);
 				}
 				phone = line.get("people:faxNb");
 				if (notEmpty(phone)) {
-					PeopleJcrUtils.createPhone(getPeopleService(), orga, phone,
-							true, null, ContactValueCatalogs.CONTACT_CAT_FAX,
-							null);
+					PeopleJcrUtils.createPhone(getPeopleService(), getResourceService(), orga, phone, true, null,
+							ContactValueCatalogs.CONTACT_CAT_FAX, null);
 				}
 
 				// Tags
 				String tags = line.get(PEOPLE_TAGS);
 				if (notEmpty(tags))
-					orga.setProperty(PEOPLE_TAGS,
-							ConnectJcrUtils.parseAndClean(tags, ",", true));
+					orga.setProperty(PEOPLE_TAGS, ConnectJcrUtils.parseAndClean(tags, ",", true));
 
 				// Mailing lists
 				String mailingLists = line.get(PEOPLE_MAILING_LISTS);
 				if (notEmpty(mailingLists))
-					orga.setProperty(PEOPLE_MAILING_LISTS,
-							ConnectJcrUtils.parseAndClean(mailingLists, ",", true));
+					orga.setProperty(PEOPLE_MAILING_LISTS, ConnectJcrUtils.parseAndClean(mailingLists, ",", true));
 				getPeopleService().saveEntity(orga, true);
 			}
 
@@ -141,8 +129,7 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 				log.debug("Test data: loaded " + legalName);
 
 		} catch (RepositoryException e) {
-			throw new PeopleException("Cannot process line " + lineNumber + " "
-					+ line, e);
+			throw new PeopleException("Cannot process line " + lineNumber + " " + line, e);
 		}
 	}
 }

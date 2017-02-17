@@ -14,13 +14,15 @@ import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ResourceService;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.composites.SimpleJcrTableComposite;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -63,7 +65,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 	// Context
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private AppWorkbenchService peopleUiService;
 
 	// Enable refresh of the calling editor at the end of the job
 	private Display callingDisplay;
@@ -93,14 +95,13 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	public TagOrUntagInstancesWizard(Display callingDisplay, int actionType,
-			Session session, PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService, Object[] elements,
+	public TagOrUntagInstancesWizard(Display callingDisplay, int actionType, Session session,
+			ResourceService resourceService, AppWorkbenchService peopleUiService, Object[] elements,
 			String selectorName, String tagId, String tagPropName) {
 
 		this.callingDisplay = callingDisplay;
 		this.session = session;
-		this.peopleService = peopleService;
+		this.resourceService = resourceService;
 		this.peopleUiService = peopleUiService;
 		this.tagId = tagId;
 		this.tagPropName = tagPropName;
@@ -110,17 +111,15 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		this.actionType = actionType;
 
-		resourceService = peopleService.getResourceService();
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		tagInstanceType = ConnectJcrUtils.get(tagParent, PEOPLE_TAG_INSTANCE_TYPE);
+		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAG_INSTANCE_TYPE);
 	}
 
 	@Override
 	public void addPages() {
 		try {
 			// configure container
-			String title = "Batch "
-					+ (actionType == TYPE_ADD ? "addition" : "remove");
+			String title = "Batch " + (actionType == TYPE_ADD ? "addition" : "remove");
 			setWindowTitle(title);
 			MainInfoPage inputPage = new MainInfoPage("Configure");
 			addPage(inputPage);
@@ -147,8 +146,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new UpdateTagAndInstancesJob(callingDisplay, actionType, peopleService,
-				tagInstance, elements, selectorName, tagPropName).schedule();
+		new UpdateTagAndInstancesJob(callingDisplay, actionType, peopleService, tagInstance, elements, selectorName,
+				tagPropName).schedule();
 		return true;
 	}
 
@@ -159,8 +158,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 	@Override
 	public boolean canFinish() {
-		return tagInstance != null
-				&& getContainer().getCurrentPage().getNextPage() == null;
+		return tagInstance != null && getContainer().getCurrentPage().getNextPage() == null;
 	}
 
 	protected class MainInfoPage extends WizardPage {
@@ -170,36 +168,30 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 
 		private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 		{ // By default, it displays only title
-			colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE,
-					PropertyType.STRING, "Label", 420));
+			colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Label", 420));
 		};
 
 		public MainInfoPage(String pageName) {
 			super(pageName);
 			setTitle("Select a tag");
-			setMessage("Choose the value that will be "
-					+ (actionType == TYPE_ADD ? "added to " : "removed from ")
+			setMessage("Choose the value that will be " + (actionType == TYPE_ADD ? "added to " : "removed from ")
 					+ "the previously selected items.");
 		}
 
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
-			Node tagParent = peopleService.getResourceService()
-					.getTagLikeResourceParent(session, tagId);
+			Node tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 			int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-			tableCmp = new SimpleJcrTableComposite(body, style, session,
-					ConnectJcrUtils.getPath(tagParent), tagInstanceType, colDefs,
-					true, false);
+			tableCmp = new SimpleJcrTableComposite(body, style, session, ConnectJcrUtils.getPath(tagParent),
+					tagInstanceType, colDefs, true, false);
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 			gd.heightHint = 400;
 			tableCmp.setLayoutData(gd);
 
 			// Add listeners
-			tableCmp.getTableViewer().addDoubleClickListener(
-					new MyDoubleClickListener());
-			tableCmp.getTableViewer().addSelectionChangedListener(
-					new MySelectionChangedListener());
+			tableCmp.getTableViewer().addDoubleClickListener(new MyDoubleClickListener());
+			tableCmp.getTableViewer().addSelectionChangedListener(new MySelectionChangedListener());
 
 			setControl(body);
 			tableCmp.setFocus();
@@ -211,8 +203,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 				if (event.getSelection().isEmpty())
 					tagInstance = null;
 				else {
-					Object obj = ((IStructuredSelection) event.getSelection())
-							.getFirstElement();
+					Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 					if (obj instanceof Node) {
 						tagInstance = (Node) obj;
 					}
@@ -226,8 +217,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					tagInstance = null;
 					return;
 				} else {
-					Object obj = ((IStructuredSelection) evt.getSelection())
-							.getFirstElement();
+					Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 					if (obj instanceof Node) {
 						tagInstance = (Node) obj;
 						getContainer().showPage(getNextPage());
@@ -253,18 +243,13 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					setErrorMessage("Please choose a tag value to be used");
 				else {
 					setErrorMessage(null);
-					String name = ConnectJcrUtils.get(tagInstance,
-							Property.JCR_TITLE);
+					String name = ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE);
 					if (actionType == TYPE_ADD)
-						setMessage("Your are about to add [" + name
-								+ "] to the below listed " + elements.length
-								+ " items. "
-								+ "Are you sure you want to proceed ?");
+						setMessage("Your are about to add [" + name + "] to the below listed " + elements.length
+								+ " items. " + "Are you sure you want to proceed ?");
 					else
-						setMessage("Your are about to remove [" + name
-								+ "] from the below listed " + elements.length
-								+ " items. "
-								+ "Are you sure you want to proceed ?");
+						setMessage("Your are about to remove [" + name + "] from the below listed " + elements.length
+								+ " items. " + "Are you sure you want to proceed ?");
 				}
 			}
 		}
@@ -274,14 +259,11 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition("Display Name",
-					new TitleIconRowLP(peopleUiService, selectorName,
-							Property.JCR_TITLE), 300));
+					new TitleIconRowLP(peopleUiService, selectorName, Property.JCR_TITLE), 300));
 
-			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body,
-					SWT.READ_ONLY, colDefs);
+			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
-			membersViewer.setContentProvider(new MyLazyContentProvider(
-					membersViewer));
+			membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
 			setViewerInput(membersViewer, elements);
 			GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
 			gd.heightHint = 400;
@@ -332,10 +314,8 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 		private List<String> pathes = new ArrayList<String>();
 		private Display display;
 
-		public UpdateTagAndInstancesJob(Display display, int actionType,
-				PeopleService peopleService, Node taginstance,
-				Object[] toUpdateElements, String selectorName,
-				String tagPropName) {
+		public UpdateTagAndInstancesJob(Display display, int actionType, PeopleService peopleService, Node taginstance,
+				Object[] toUpdateElements, String selectorName, String tagPropName) {
 			super("Updating");
 
 			this.display = display;
@@ -346,13 +326,11 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 				this.tagPath = tagInstance.getPath();
 				repository = tagInstance.getSession().getRepository();
 				for (Object element : toUpdateElements) {
-					Node currNode = ConnectJcrUtils.getNodeFromElement(element,
-							selectorName);
+					Node currNode = ConnectJcrUtils.getNodeFromElement(element, selectorName);
 					pathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to init "
-						+ "tag instance batch update for " + tagInstance, e);
+				throw new PeopleException("Unable to init " + "tag instance batch update for " + tagInstance, e);
 			}
 		}
 
@@ -371,8 +349,7 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 					ConnectJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
 
 					// TODO hardcoded prop name
-					String value = targetTagInstance.getProperty(
-							Property.JCR_TITLE).getString();
+					String value = targetTagInstance.getProperty(Property.JCR_TITLE).getString();
 
 					for (String currPath : pathes) {
 						Node currNode = session.getNode(currPath);
@@ -380,13 +357,11 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 						if (actionType == TYPE_ADD) {
 							// Duplication will return an error message that we
 							// ignore
-							ConnectJcrUtils.addStringToMultiValuedProp(currNode,
-									tagPropName, value);
+							ConnectJcrUtils.addStringToMultiValuedProp(currNode, tagPropName, value);
 						} else if (actionType == TYPE_REMOVE) {
 							// Duplication will return an error message that we
 							// ignore
-							ConnectJcrUtils.removeStringFromMultiValuedProp(
-									currNode, tagPropName, value);
+							ConnectJcrUtils.removeStringFromMultiValuedProp(currNode, tagPropName, value);
 						}
 						ConnectJcrUtils.saveAndPublish(currNode, true);
 					}
@@ -402,12 +377,10 @@ public class TagOrUntagInstancesWizard extends Wizard implements PeopleNames {
 				}
 			} catch (Exception e) {
 				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
-						"Unable to perform batch update on "
-								+ tagPath
-								+ " for "
-								+ (selectorName == null ? "single node "
-										: selectorName) + " row list with "
-								+ tagInstanceType, e);
+						"Unable to perform batch update on " + tagPath + " for "
+								+ (selectorName == null ? "single node " : selectorName) + " row list with "
+								+ tagInstanceType,
+						e);
 			} finally {
 				JcrUtils.logoutQuietly(session);
 			}

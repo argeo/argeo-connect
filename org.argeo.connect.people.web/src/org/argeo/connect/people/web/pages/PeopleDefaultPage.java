@@ -10,6 +10,7 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.parts.PeopleSearchCmp;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -26,20 +27,22 @@ import org.eclipse.swt.widgets.Label;
 /** Default cms page layout for the People apps */
 public class PeopleDefaultPage implements CmsUiProvider {
 
+	private ResourceService resourceService;
 	private PeopleService peopleService;
 	private Map<String, String> peopleIconPaths;
 
 	// Local UI Providers
 	private CmsUiProvider orgPage;
 	private CmsUiProvider personPage;
-	private CmsUiProvider tagLikeInstancePage;
+	// private CmsUiProvider tagLikeInstancePage;
 
-	public PeopleDefaultPage(PeopleService peopleService, Map<String, String> peopleIconPaths) {
+	public PeopleDefaultPage(ResourceService resourceService, PeopleService peopleService,
+			Map<String, String> peopleIconPaths) {
 		this.peopleService = peopleService;
+		this.resourceService = resourceService;
 		this.peopleIconPaths = peopleIconPaths;
-
-		orgPage = new OrgPage(peopleService);
-		personPage = new PersonPage(peopleService);
+		orgPage = new OrgPage(resourceService, peopleService);
+		personPage = new PersonPage(peopleService, resourceService);
 	}
 
 	@Override
@@ -49,7 +52,7 @@ public class PeopleDefaultPage implements CmsUiProvider {
 		form.setLayoutData(EclipseUiUtils.fillAll());
 		Composite leftPannelCmp = new Composite(form, SWT.NO_FOCUS);
 		Composite rightPannelCmp = new Composite(form, SWT.NO_FOCUS);
-		form.setWeights(new int[] { 2, 4});
+		form.setWeights(new int[] { 2, 4 });
 
 		// A search on the left and the display on the right
 		populateSearch(leftPannelCmp, context, rightPannelCmp);
@@ -65,10 +68,11 @@ public class PeopleDefaultPage implements CmsUiProvider {
 	public Viewer populateSearch(Composite parent, Node context, final Composite targetComposite)
 			throws RepositoryException {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		PeopleSearchCmp searchComp = new PeopleSearchCmp(parent, SWT.NO_FOCUS, peopleService, peopleIconPaths);
+		PeopleSearchCmp searchComp = new PeopleSearchCmp(parent, SWT.NO_FOCUS, resourceService, peopleService,
+				peopleIconPaths);
 		searchComp.populate(context, true);
 		searchComp.setLayoutData(EclipseUiUtils.fillAll());
-		
+
 		TableViewer viewer = searchComp.getViewer();
 		viewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override

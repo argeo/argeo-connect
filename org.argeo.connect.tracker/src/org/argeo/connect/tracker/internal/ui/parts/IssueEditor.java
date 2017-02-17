@@ -19,15 +19,12 @@ import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.cms.util.UserAdminUtils;
+import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
-import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.TrackerTypes;
 import org.argeo.connect.tracker.core.TrackerUtils;
 import org.argeo.connect.tracker.internal.ui.AbstractTrackerEditor;
@@ -82,7 +79,6 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".issueEditor";
 
 	// Context
-	private TrackerService issueService;
 	private Session session;
 	private Node issue;
 	private Node project;
@@ -104,7 +100,6 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		issue = getNode();
 		session = ConnectJcrUtils.getSession(issue);
 		project = TrackerUtils.getProjectFromChild(issue);
-		issueService = getPeopleService().getTrackerService();
 		try {
 			IssueMainPage issueMainPage = new IssueMainPage(this);
 			addPage(issueMainPage);
@@ -218,8 +213,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-							ConnectJcrUtils.getIdentifier(project));
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(project));
 				}
 			});
 
@@ -262,7 +257,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					// TODO Prevent edition for user that do not have sufficient
 					// rights
 
-					String manager = getPeopleService().getActivityService().getAssignedToDisplayName(issue);
+					String manager = getActivityService().getAssignedToDisplayName(issue);
 					refreshStatusCombo(statusCmb, issue);
 					if (isEditing()) {
 						manager += " ~ <a>Change</a>";
@@ -270,8 +265,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 					}
 					changeAssignationLk.setText(manager);
-					reporterLk.setText(TrackerUtils.getCreationLabel(getPeopleService(), issue));
-					statusCmb.setText(ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_TASK_STATUS));
+					reporterLk.setText(TrackerUtils.getCreationLabel(getUserAdminService(), issue));
+					statusCmb.setText(ConnectJcrUtils.get(issue, ActivitiesNames.ACTIVITIES_TASK_STATUS));
 					Long importance = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_IMPORTANCE);
 					if (importance != null) {
 						String strVal = importance + "";
@@ -294,7 +289,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					super.refresh();
 				}
 			};
-			addStatusCmbSelListener(part, statusCmb, issue, PeopleNames.PEOPLE_TASK_STATUS, PropertyType.STRING);
+			addStatusCmbSelListener(part, statusCmb, issue, ActivitiesNames.ACTIVITIES_TASK_STATUS,
+					PropertyType.STRING);
 			addLongCmbSelListener(part, importanceCmb, issue, TrackerNames.TRACKER_IMPORTANCE,
 					TrackerUtils.MAPS_ISSUE_IMPORTANCES);
 			addLongCmbSelListener(part, priorityCmb, issue, TrackerNames.TRACKER_PRIORITY,
@@ -313,9 +309,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 					try {
-						UserAdminService uas = getPeopleService().getUserAdminService();
 						PickUpUserDialog diag = new PickUpUserDialog(changeAssignationLk.getShell(), "Choose a group",
-								uas.getUserAdmin());
+								getUserAdminService().getUserAdmin());
 						int result = diag.open();
 						if (Window.OK == result) {
 							User newGroup = diag.getSelected();
@@ -324,12 +319,11 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 								return; // nothing has changed
 							else {
 								// Update value
-								issue.setProperty(PeopleNames.PEOPLE_ASSIGNED_TO, newGroupDn);
+								issue.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, newGroupDn);
 								// update cache and display.
 								assignedToGroupDn = newGroupDn;
-								changeAssignationLk
-										.setText(getPeopleService().getUserAdminService().getUserDisplayName(newGroupDn)
-												+ "  ~ <a>Change</a>");
+								changeAssignationLk.setText(
+										getUserAdminService().getUserDisplayName(newGroupDn) + "  ~ <a>Change</a>");
 								myFormPart.markDirty();
 							}
 						}
@@ -418,7 +412,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					String newTag = newCommentTxt.getText();
 					if (EclipseUiUtils.notEmpty(newTag)) {
 						try {
-							issueService.addComment(issue, newTag);
+							getTrackerService().addComment(issue, newTag);
 						} catch (RepositoryException re) {
 							throw new TrackerException("Unable to add comment " + newTag + " on " + issue, re);
 						}
@@ -538,8 +532,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 				if (index != -1) {
 					String selectedStatus = combo.getItem(index);
 					try {
-						if (getPeopleService().getActivityService().updateStatus(TrackerTypes.TRACKER_ISSUE, issue,
-								selectedStatus, new ArrayList<String>()))
+						if (getActivityService().updateStatus(TrackerTypes.TRACKER_ISSUE, issue, selectedStatus,
+								new ArrayList<String>()))
 							part.markDirty();
 					} catch (RepositoryException e1) {
 						throw new TrackerException("Cannot update status to " + selectedStatus + " for " + issue, e1);
@@ -589,12 +583,10 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	/** Override this to add specific rights for status change */
 	protected void refreshStatusCombo(Combo combo, Node currTask) {
-		ResourceService rs = getPeopleService().getResourceService();
-
-		List<String> values = rs.getTemplateCatalogue(session, TrackerTypes.TRACKER_ISSUE,
-				PeopleNames.PEOPLE_TASK_STATUS, null);
+		List<String> values = getResourceService().getTemplateCatalogue(session, TrackerTypes.TRACKER_ISSUE,
+				ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
 		combo.setItems(values.toArray(new String[values.size()]));
-		PeopleRapUtils.refreshFormCombo(IssueEditor.this, combo, currTask, PeopleNames.PEOPLE_TASK_STATUS);
+		PeopleRapUtils.refreshFormCombo(IssueEditor.this, combo, currTask, ActivitiesNames.ACTIVITIES_TASK_STATUS);
 		combo.setEnabled(IssueEditor.this.isEditing());
 	}
 
@@ -627,7 +619,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 		@Override
 		protected Node createTag(String tagKey) throws RepositoryException {
-			return issueService.createVersion(project, tagKey, null, null, null);
+			return getTrackerService().createVersion(project, tagKey, null, null, null);
 		}
 
 		protected String getTagKey(Node tagDefinition) {
@@ -637,8 +629,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		protected void callOpenEditor(String tagKey) {
 			Node node = TrackerUtils.getVersionById(project, tagKey);
 			if (node != null)
-				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-						ConnectJcrUtils.getIdentifier(node));
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
 		}
 
 	}
@@ -662,7 +654,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 		@Override
 		protected Node createTag(String tagKey) throws RepositoryException {
-			return issueService.createComponent(project, tagKey, tagKey, null);
+			return getTrackerService().createComponent(project, tagKey, tagKey, null);
 		}
 
 		protected String getTagKey(Node tagDefinition) {
@@ -672,8 +664,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		protected void callOpenEditor(String tagKey) {
 			Node node = TrackerUtils.getComponentById(project, tagKey);
 			if (node != null)
-				CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-						ConnectJcrUtils.getIdentifier(node));
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
 		}
 	}
 }

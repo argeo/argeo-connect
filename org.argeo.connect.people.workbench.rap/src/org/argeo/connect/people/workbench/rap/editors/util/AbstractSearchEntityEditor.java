@@ -8,20 +8,21 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.wizards.TagOrUntagInstancesWizard;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DelayedText;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -60,17 +61,17 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
 /**
- * Search the repository with a given entity type at base path. Expect a {@Code
- *  SearchNodeEditorInput} editor input.
+ * Search the repository with a given entity type at base path. Expect a
+ * {@Code SearchNodeEditorInput} editor input.
  */
-public abstract class AbstractSearchEntityEditor extends EditorPart implements
-		PeopleNames, Refreshable {
+public abstract class AbstractSearchEntityEditor extends EditorPart implements PeopleNames, Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
-	private PeopleWorkbenchService peopleWorkbenchService;
-	private PeopleService peopleService;
+	private ResourceService resourceService;
+	private UserAdminService userAdminService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// This page widgets
 	private VirtualJcrTableViewer tableCmp;
@@ -82,8 +83,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	private String filterString;
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
@@ -120,7 +120,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		createListPart(tableCmp);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
-		if (!peopleService.lazyLoadLists())
+		if (!appWorkbenchService.lazyLoadLists())
 			// initialize the table
 			refreshFilteredList();
 	}
@@ -158,7 +158,9 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 			setNbOfFoundResultsLbl(label);
 	}
 
-	/** Override this to provide a label that displays the NB of found results */
+	/**
+	 * Override this to provide a label that displays the NB of found results
+	 */
 	protected Label getResultLengthLbl() {
 		return null;
 	}
@@ -189,8 +191,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 				if (tableCmp.getSelectedElements().length == 0) {
 					tableCmp.setAllChecked(true);
 					selectAllBtn.setImage(PeopleRapImages.CHECK_SELECTED);
-					selectAllBtn
-							.setToolTipText("Unselect all (At least one element is already selected)");
+					selectAllBtn.setToolTipText("Unselect all (At least one element is already selected)");
 				} else {
 					tableCmp.setAllChecked(false);
 					selectAllBtn.setImage(PeopleRapImages.CHECK_UNSELECTED);
@@ -202,21 +203,18 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		Button addTagBtn = new Button(parent, SWT.TOGGLE);
 		addTagBtn.setText("Tag");
 		addTagBtn.setImage(PeopleRapImages.ICON_TAG);
-		addToggleStateTagBtnListener(addTagBtn, PeopleConstants.RESOURCE_TAG,
-				PeopleNames.PEOPLE_TAGS);
+		addToggleStateTagBtnListener(addTagBtn, ConnectConstants.RESOURCE_TAG, PeopleNames.PEOPLE_TAGS);
 
 		if (isOrgOrPerson()) {
 			Button addMLBtn = new Button(parent, SWT.TOGGLE);
 			addMLBtn.setText(" Mailing List");
 			addMLBtn.setImage(PeopleRapImages.ICON_MAILING_LIST);
-			addToggleStateTagBtnListener(addMLBtn,
-					PeopleTypes.PEOPLE_MAILING_LIST,
-					PeopleNames.PEOPLE_MAILING_LISTS);
+			addToggleStateTagBtnListener(addMLBtn, PeopleTypes.PEOPLE_MAILING_LIST, PeopleNames.PEOPLE_MAILING_LISTS);
 		}
 	}
 
-	private void addToggleStateTagBtnListener(final Button addTagBtn,
-			final String tagId, final String taggablePropName) {
+	private void addToggleStateTagBtnListener(final Button addTagBtn, final String tagId,
+			final String taggablePropName) {
 
 		addTagBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 9066664395274942610L;
@@ -232,8 +230,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 						dropDown.setVisible(true);
 					else {
 
-						dropDown = new DropDownPopup(addTagBtn, tagId,
-								taggablePropName);
+						dropDown = new DropDownPopup(addTagBtn, tagId, taggablePropName);
 						dropDown.open();
 					}
 				} else {
@@ -250,8 +247,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		private String tagId;
 		private String taggablePropName;
 
-		public DropDownPopup(final Control source, String tagId,
-				String taggablePropName) {
+		public DropDownPopup(final Control source, String tagId, String taggablePropName) {
 			super(source.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 
 			toggleBtn = (Button) source;
@@ -266,8 +262,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 			// position the popup
 			Rectangle parPosition = source.getBounds();
-			Point absolute = source.toDisplay(source.getSize().x,
-					source.getSize().y);
+			Point absolute = source.toDisplay(source.getSize().x, source.getSize().y);
 			absolute.x = absolute.x - parPosition.width;
 			absolute.y = absolute.y + 2;
 			setLocation(absolute);
@@ -298,17 +293,15 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 			final Button addTagBtn = new Button(parent, SWT.LEAD | SWT.FLAT);
 			addTagBtn.setText("Add to selected");
-			addTagBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-					false));
-			addBtnListener(toggleBtn.getShell(), addTagBtn, tagId,
-					taggablePropName, TagOrUntagInstancesWizard.TYPE_ADD);
+			addTagBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+			addBtnListener(toggleBtn.getShell(), addTagBtn, tagId, taggablePropName,
+					TagOrUntagInstancesWizard.TYPE_ADD);
 
 			final Button removeTagBtn = new Button(parent, SWT.LEAD | SWT.FLAT);
 			removeTagBtn.setText("Remove from selected");
-			removeTagBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false,
-					false));
-			addBtnListener(toggleBtn.getShell(), removeTagBtn, tagId,
-					taggablePropName, TagOrUntagInstancesWizard.TYPE_REMOVE);
+			removeTagBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+			addBtnListener(toggleBtn.getShell(), removeTagBtn, tagId, taggablePropName,
+					TagOrUntagInstancesWizard.TYPE_REMOVE);
 		}
 	}
 
@@ -316,16 +309,14 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		SearchNodeEditorInput eei = (SearchNodeEditorInput) getEditorInput();
 		String nodeType = eei.getNodeType();
 
-		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType)
-				|| PeopleTypes.PEOPLE_ORG.equals(nodeType))
+		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType) || PeopleTypes.PEOPLE_ORG.equals(nodeType))
 			return true;
 		else
 			return false;
 	}
 
-	private void addBtnListener(final Shell parentShell, final Button button,
-			final String tagId, final String taggablePropName,
-			final int actionType) {
+	private void addBtnListener(final Shell parentShell, final Button button, final String tagId,
+			final String taggablePropName, final int actionType) {
 		button.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 2236384303910015747L;
 
@@ -334,16 +325,13 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 				Object[] rows = tableCmp.getSelectedElements();
 
 				if (rows.length == 0)
-					MessageDialog.openInformation(parentShell,
-							"Unvalid selection",
+					MessageDialog.openInformation(parentShell, "Unvalid selection",
 							"No item is selected. Nothing has been done.");
 				else {
 					// We assume here we always use xpath query and thus we have
 					// only single node rows
-					Wizard wizard = new TagOrUntagInstancesWizard(button
-							.getDisplay(), actionType, session, peopleService,
-							peopleWorkbenchService, rows, null, tagId,
-							taggablePropName);
+					Wizard wizard = new TagOrUntagInstancesWizard(button.getDisplay(), actionType, session,
+							resourceService, appWorkbenchService, rows, null, tagId, taggablePropName);
 					WizardDialog dialog = new WizardDialog(parentShell, wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {
@@ -372,8 +360,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	 * Overwrite to provide corresponding column definitions. Also used for
 	 * exports generation
 	 */
-	public abstract List<ConnectColumnDefinition> getColumnDefinition(
-			String extractId);
+	public abstract List<ConnectColumnDefinition> getColumnDefinition(String extractId);
 
 	/**
 	 * Call this when resetting static filters if you also want to reset the
@@ -399,8 +386,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 	protected void createListPart(Composite parent) {
 		parent.setLayout(new GridLayout());
-		tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI,
-				getColumnDefinition(null), hasCheckBoxes());
+		tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, getColumnDefinition(null), hasCheckBoxes());
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
@@ -411,8 +397,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		if (getColumnDefinition(null).get(0).getSelectorName() == null)
 			entityType = null;
 
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(
-				entityType, peopleWorkbenchService));
+		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(entityType, appWorkbenchService));
 	}
 
 	/** Refresh the table viewer based on the free text search field */
@@ -430,8 +415,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		staticFilterCmp.setLayoutData(EclipseUiUtils.fillWidth(2));
 		populateStaticFilters(staticFilterCmp);
 
-		MoreLinkListener listener = new MoreLinkListener(more, staticFilterCmp,
-				false);
+		MoreLinkListener listener = new MoreLinkListener(more, staticFilterCmp, false);
 		// initialise the layout
 		listener.refresh();
 		more.addSelectionListener(listener);
@@ -443,8 +427,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		private final Composite staticFilterCmp;
 		private final Link moreLk;
 
-		public MoreLinkListener(Link moreLk, Composite staticFilterCmp,
-				boolean isShown) {
+		public MoreLinkListener(Link moreLk, Composite staticFilterCmp, boolean isShown) {
 			this.moreLk = moreLk;
 			this.staticFilterCmp = staticFilterCmp;
 			this.isShown = isShown;
@@ -477,7 +460,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 	/** Refresh the table viewer based on the free text search field */
 	protected void populateSearchPanel(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		boolean isDyn = peopleService.queryWhenTyping();
+		boolean isDyn = appWorkbenchService.queryWhenTyping();
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
 		if (isDyn)
 			filterTxt = new DelayedText(parent, style, SEARCH_TEXT_DELAY);
@@ -487,20 +470,19 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 
 		if (isDyn) {
 			final ServerPushSession pushSession = new ServerPushSession();
-			((DelayedText) filterTxt).addDelayedModifyListener(pushSession,
-					new ModifyListener() {
-						private static final long serialVersionUID = 5003010530960334977L;
+			((DelayedText) filterTxt).addDelayedModifyListener(pushSession, new ModifyListener() {
+				private static final long serialVersionUID = 5003010530960334977L;
 
-						public void modifyText(ModifyEvent event) {
-							filterTxt.getDisplay().asyncExec(new Runnable() {
-								@Override
-								public void run() {
-									refreshFilteredList();
-								}
-							});
-							pushSession.stop();
+				public void modifyText(ModifyEvent event) {
+					filterTxt.getDisplay().asyncExec(new Runnable() {
+						@Override
+						public void run() {
+							refreshFilteredList();
 						}
 					});
+					pushSession.stop();
+				}
+			});
 		}
 
 		traverseListener = new TraverseListener() {
@@ -575,6 +557,18 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return session;
 	}
 
+	protected UserAdminService getUserAdminService() {
+		return userAdminService;
+	}
+
+	protected ResourceService getResourceService() {
+		return resourceService;
+	}
+
+	protected AppWorkbenchService getPeopleUiService() {
+		return appWorkbenchService;
+	}
+
 	protected VirtualJcrTableViewer getTableViewer() {
 		return tableCmp;
 	}
@@ -587,24 +581,14 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		return ((SearchNodeEditorInput) getEditorInput()).getBasePath();
 	}
 
-	protected PeopleService getPeopleService() {
-		return peopleService;
-	}
-
-	protected PeopleWorkbenchService getPeopleUiService() {
-		return peopleWorkbenchService;
-	}
-
 	//
 	// Local Methods
 	//
-	protected Text createBoldLT(Composite parent, String title, String message,
-			String tooltip) {
+	protected Text createBoldLT(Composite parent, String title, String message, String tooltip) {
 		return createBoldLT(parent, title, message, tooltip, 1);
 	}
 
-	protected Text createBoldLT(Composite parent, String title, String message,
-			String tooltip, int colspan) {
+	protected Text createBoldLT(Composite parent, String title, String message, String tooltip, int colspan) {
 		PeopleRapUtils.createBoldLabel(parent, title);
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
 		text.setLayoutData(EclipseUiUtils.fillAll(colspan, 1));
@@ -644,12 +628,15 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements
 		this.repository = repository;
 	}
 
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 
-	public void setPeopleWorkbenchService(
-			PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
+	}
+
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 	}
 }

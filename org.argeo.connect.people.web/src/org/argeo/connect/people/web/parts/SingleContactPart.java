@@ -4,8 +4,8 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsUiProvider;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -19,13 +19,12 @@ import org.eclipse.swt.widgets.Label;
  * of the contact value
  */
 public class SingleContactPart implements CmsUiProvider {
-	/* dependency injection */
-	private PeopleService peopleService;
+	/* DEPENDENCY INJECTION */
+	private ResourceService resourceService;
 	private ContactButtonsPart contactButtonsPart;
 
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 		parent.setLayout(new GridLayout(2, false));
 		Composite left = new Composite(parent, SWT.NO_FOCUS);
 		contactButtonsPart.createUi(left, context);
@@ -36,23 +35,20 @@ public class SingleContactPart implements CmsUiProvider {
 		return parent;
 	}
 
-	protected void populateReadOnlyPanel(final Composite readOnlyPanel,
-			Node context) {
+	protected void populateReadOnlyPanel(final Composite readOnlyPanel, Node context) {
 		readOnlyPanel.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Label label = new Label(readOnlyPanel, SWT.WRAP);
 		label.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(
-				peopleService, context);
+		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(resourceService, context);
 		label.setText(addressHtml);
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 
 	public void setContactButtonsPart(ContactButtonsPart contactButtonsPart) {
 		this.contactButtonsPart = contactButtonsPart;
 	}
-
 }

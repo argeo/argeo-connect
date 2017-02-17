@@ -22,12 +22,11 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivitiesTypes;
+import org.argeo.connect.activities.ActivityService;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.UserAdminService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.util.ActivityViewerComparator;
@@ -63,12 +62,9 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
-	private PeopleService peopleService;
-	private AppWorkbenchService appWorkbenchService;
-
-	// Local cache
-	private ActivityService activityService;
 	private UserAdminService userAdminService;
+	private ActivityService activityService;
+	private AppWorkbenchService appWorkbenchService;
 
 	private TableViewer tableViewer;
 
@@ -80,8 +76,6 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	public void createPartControl(Composite parent) {
 		// Finalise initialisation
 		session = ConnectJcrUtils.login(repository);
-		activityService = peopleService.getActivityService();
-		userAdminService = peopleService.getUserAdminService();
 
 		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
@@ -93,7 +87,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		tableViewer.addDoubleClickListener(new ViewDoubleClickListener());
 
 		// The context menu
-		final TodoListContextMenu contextMenu = new TodoListContextMenu(peopleService.getActivityService());
+		final TodoListContextMenu contextMenu = new TodoListContextMenu(activityService);
 		tableViewer.getTable().addMouseListener(new MouseAdapter() {
 			private static final long serialVersionUID = 6737579410648595940L;
 
@@ -141,8 +135,8 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		TableViewerColumn column;
 
 		Map<String, ColumnLabelProvider> lpMap = new HashMap<String, ColumnLabelProvider>();
-		lpMap.put(PeopleNames.PEOPLE_ASSIGNED_TO, new AssignedToLabelProvider());
-		lpMap.put(PeopleNames.PEOPLE_RELATED_TO, new RelatedToLabelProvider());
+		lpMap.put(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, new AssignedToLabelProvider());
+		lpMap.put(ActivitiesNames.ACTIVITIES_RELATED_TO, new RelatedToLabelProvider());
 
 		ActivityViewerComparator comparator = new ActivityViewerComparator(activityService, lpMap);
 
@@ -162,18 +156,18 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		column = ViewerUtils.createTableViewerColumn(viewer, "Assigned to", SWT.NONE, 150);
 		column.setLabelProvider(new AssignedToLabelProvider());
 		column.getColumn().addSelectionListener(
-				getNodeSelectionAdapter(2, PropertyType.STRING, PeopleNames.PEOPLE_ASSIGNED_TO, comparator, viewer));
+				getNodeSelectionAdapter(2, PropertyType.STRING, ActivitiesNames.ACTIVITIES_ASSIGNED_TO, comparator, viewer));
 
 		// Related to
 		column = ViewerUtils.createTableViewerColumn(viewer, "Related to", SWT.NONE, 250);
 		column.setLabelProvider(new RelatedToLabelProvider());
 		column.getColumn().addSelectionListener(
-				getNodeSelectionAdapter(3, PropertyType.STRING, PeopleNames.PEOPLE_RELATED_TO, comparator, viewer));
+				getNodeSelectionAdapter(3, PropertyType.STRING, ActivitiesNames.ACTIVITIES_RELATED_TO, comparator, viewer));
 		// Status
 		column = ViewerUtils.createTableViewerColumn(viewer, "Status", SWT.NONE, 250);
 		column.setLabelProvider(new StatusLabelProvider());
 		column.getColumn().addSelectionListener(
-				getNodeSelectionAdapter(4, PropertyType.STRING, PeopleNames.PEOPLE_TASK_STATUS, comparator, viewer));
+				getNodeSelectionAdapter(4, PropertyType.STRING, ActivitiesNames.ACTIVITIES_TASK_STATUS, comparator, viewer));
 
 		// Warning: initialise comparator before setting it
 		comparator.setColumn(PropertyType.DATE, ActivityViewerComparator.RELEVANT_DATE);
@@ -205,10 +199,10 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		public String getText(Object element) {
 			try {
 				Node currNode = (Node) element;
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+				if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
 					return activityService.getAssignedToDisplayName(currNode);
-				} else if (currNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY)) {
-					String id = ConnectJcrUtils.get(currNode, PeopleNames.PEOPLE_REPORTED_BY);
+				} else if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
+					String id = ConnectJcrUtils.get(currNode, ActivitiesNames.ACTIVITIES_REPORTED_BY);
 					if (EclipseUiUtils.notEmpty(id))
 						return userAdminService.getUserDisplayName(id);
 				}
@@ -226,9 +220,9 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		public String getText(Object element) {
 			try {
 				Node currNode = (Node) element;
-				if (currNode.hasProperty(PeopleNames.PEOPLE_RELATED_TO)) {
+				if (currNode.hasProperty(ActivitiesNames.ACTIVITIES_RELATED_TO)) {
 					StringBuilder builder = new StringBuilder();
-					Value[] refs = currNode.getProperty(PeopleNames.PEOPLE_RELATED_TO).getValues();
+					Value[] refs = currNode.getProperty(ActivitiesNames.ACTIVITIES_RELATED_TO).getValues();
 					for (Value value : refs) {
 						String id = value.getString();
 						Node currReferenced = session.getNodeByIdentifier(id);
@@ -248,7 +242,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 
 		@Override
 		public String getText(Object element) {
-			return ConnectJcrUtils.get((Node) element, PeopleNames.PEOPLE_TASK_STATUS);
+			return ConnectJcrUtils.get((Node) element, ActivitiesNames.ACTIVITIES_TASK_STATUS);
 		}
 	}
 
@@ -260,7 +254,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 			try {
 				Node currNode = (Node) element;
 
-				if (currNode.isNodeType(PeopleTypes.PEOPLE_TASK)) {
+				if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
 					String title = ConnectJcrUtils.get(currNode, Property.JCR_TITLE);
 
 					String desc = ConnectJcrUtils.get(currNode, Property.JCR_DESCRIPTION);
@@ -406,7 +400,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 			try {
 				while (it.hasNext()) {
 					Node currNode = it.next();
-					hasChanged |= activityService.updateStatus(PeopleTypes.PEOPLE_TASK, currNode, "Done",
+					hasChanged |= activityService.updateStatus(ActivitiesTypes.ACTIVITIES_TASK, currNode, "Done",
 							modifiedPaths);
 				}
 				if (hasChanged) {
@@ -428,7 +422,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 			try {
 				while (it.hasNext()) {
 					Node currNode = it.next();
-					hasChanged |= activityService.updateStatus(PeopleTypes.PEOPLE_TASK, currNode, "Canceled",
+					hasChanged |= activityService.updateStatus(ActivitiesTypes.ACTIVITIES_TASK, currNode, "Canceled",
 							modifiedPaths);
 				}
 				if (hasChanged) {
@@ -448,12 +442,12 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
-	}
-
 	public void setRepository(Repository repository) {
 		this.repository = repository;
+	}
+
+	public void setActivityService(ActivityService activityService) {
+		this.activityService = activityService;
 	}
 
 	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {

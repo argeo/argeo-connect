@@ -5,8 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.UserAdminService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.User;
@@ -27,10 +26,10 @@ public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 	 * @param includeUsers
 	 * @param includeSystemRoles
 	 */
-	public ExistingGroupsDropDown(Text text, PeopleService peopleService,
-			boolean includeUsers, boolean includeSystemRoles) {
+	public ExistingGroupsDropDown(Text text, UserAdminService userAdminService, boolean includeUsers,
+			boolean includeSystemRoles) {
 		super(text);
-		this.userService = peopleService.getUserAdminService();
+		this.userService = userAdminService;
 		this.includeUsers = includeUsers;
 		this.includeSystemRoles = includeSystemRoles;
 		init();
@@ -47,8 +46,7 @@ public class ExistingGroupsDropDown extends PeopleAbstractDropDown {
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<User> users = userService.listGroups(filter, includeUsers,
-				includeSystemRoles);
+		List<User> users = userService.listGroups(filter, includeUsers, includeSystemRoles);
 		userMap.clear();
 		List<String> res = new ArrayList<String>();
 

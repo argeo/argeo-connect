@@ -21,8 +21,8 @@ import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.core.ActivityServiceImpl;
+import org.argeo.connect.activities.ActivitiesTypes;
+import org.argeo.connect.activities.core.ActivityServiceImpl;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerService;
@@ -35,11 +35,22 @@ import org.argeo.jcr.JcrUtils;
 
 public class TrackerServiceImpl extends ActivityServiceImpl implements TrackerService {
 
-	private PeopleService aoService;
+	// private PeopleService aoService;
 
 	public TrackerServiceImpl(PeopleService peopleService) {
-		super((PeopleService) peopleService);
-		this.aoService = peopleService;
+		// super((PeopleService) peopleService);
+		// this.aoService = peopleService;
+	}
+
+	/**
+	 * Centralises the management of known types to provide corresponding base
+	 * path
+	 */
+	private String getBasePath(String entityType) {
+		if (TrackerTypes.TRACKER_PROJECT.equals(entityType))
+			return "projects";
+		else
+			throw new TrackerException("Unvalid entity type");
 	}
 
 	/** No check is done to see if a similar project already exists */
@@ -47,7 +58,7 @@ public class TrackerServiceImpl extends ActivityServiceImpl implements TrackerSe
 	public Node createProject(Session session, String title, String description, String managerId,
 			String counterpartyGroupId) {
 		try {
-			String parPath = aoService.getBasePath(TrackerTypes.TRACKER_PROJECT);
+			String parPath = getBasePath(TrackerTypes.TRACKER_PROJECT);
 			Node projects = session.getNode(parPath);
 			String name = cleanTitle(title);
 			Node project = projects.addNode(name);
@@ -126,7 +137,7 @@ public class TrackerServiceImpl extends ActivityServiceImpl implements TrackerSe
 
 	/** Encapsulate the activity service create task to enhance read-ability */
 	private Node createTask(Node parentNode, String title, String description, String assignedTo) {
-		return createTask(null, parentNode, PeopleTypes.PEOPLE_TASK, null, title, description, assignedTo, null, null,
+		return createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_TASK, null, title, description, assignedTo, null, null,
 				null, null);
 	}
 

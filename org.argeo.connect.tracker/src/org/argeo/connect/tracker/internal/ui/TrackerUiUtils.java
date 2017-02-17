@@ -30,11 +30,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 
-/** Centralize usefull methods to ease implementation of the UI */
+/** Centralise useful methods to ease implementation of the UI */
 public class TrackerUiUtils {
-	// Local configuration
-	private static final int PRE_TITLE_INDENT = 10;
-
+	
 	public static TableViewer createTableViewer(final Composite parent, int tableStyle,
 			List<ColumnDefinition> columnDefs) {
 

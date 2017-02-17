@@ -4,8 +4,7 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserAdminService;
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 
@@ -19,11 +18,11 @@ public class UserNameLP extends SimpleJcrNodeLabelProvider {
 	private String selectorName;
 	private UserAdminService userAdminService;
 
-	public UserNameLP(PeopleService peopleService, String selectorName, String propertyName) {
+	public UserNameLP(UserAdminService userAdminService, String selectorName, String propertyName) {
 		super(propertyName);
 		if (notEmpty(selectorName))
 			this.selectorName = selectorName;
-		userAdminService = peopleService.getUserAdminService();
+		this.userAdminService = userAdminService;
 	}
 
 	@Override

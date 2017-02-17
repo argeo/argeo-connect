@@ -1,4 +1,4 @@
-package org.argeo.connect.people;
+package org.argeo.connect;
 
 import java.util.List;
 

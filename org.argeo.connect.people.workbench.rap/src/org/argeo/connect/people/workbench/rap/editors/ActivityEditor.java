@@ -5,11 +5,9 @@ import javax.jcr.Property;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.ActivityService;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
+import org.argeo.connect.activities.ActivityService;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.editors.parts.DateTextPart;
@@ -34,34 +32,31 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class ActivityEditor extends AbstractPeopleEditor {
 	final static Log log = LogFactory.getLog(ActivityEditor.class);
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".activityEditor";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".activityEditor";
 
 	// Context
 	private Node activity;
+	private ActivityService activityService;
 
 	// Workaround to align first column of header and body.
 	private int firstColWHint = 85;
 
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		activity = getNode();
 	}
 
 	@Override
 	protected void updatePartName() {
-		ActivityService as = getPeopleService().getActivityService();
-		String name = as.getActivityLabel(getNode());
+		String name = activityService.getActivityLabel(getNode());
 		if (EclipseUiUtils.notEmpty(name))
 			setPartName(name);
 	}
 
 	protected void populateHeader(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite headerCmp = new ActivityHeader(getFormToolkit(),
-				getManagedForm(), parent, SWT.NO_FOCUS, getPeopleService(),
-				getPeopleWorkbenchService(), activity);
+		Composite headerCmp = new ActivityHeader(getFormToolkit(), getManagedForm(), parent, SWT.NO_FOCUS,
+				getUserAdminService(), activityService, activity);
 		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
@@ -75,8 +70,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 		gd.widthHint = firstColWHint;
 		label.setLayoutData(gd);
-		final Text titleTxt = toolkit.createText(parent, "", SWT.BORDER
-				| SWT.SINGLE);
+		final Text titleTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE);
 		titleTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Bottom part: description
@@ -85,24 +79,19 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		gd.widthHint = firstColWHint;
 		gd.verticalIndent = 2;
 		label.setLayoutData(gd);
-		final Text descTxt = toolkit.createText(parent, "", SWT.BORDER
-				| SWT.MULTI | SWT.WRAP);
+		final Text descTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.MULTI | SWT.WRAP);
 		descTxt.setLayoutData(EclipseUiUtils.fillAll());
 
 		final AbstractFormPart formPart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				PeopleRapUtils.refreshFormTextWidget(ActivityEditor.this,
-						titleTxt, activity, Property.JCR_TITLE);
-				PeopleRapUtils.refreshFormTextWidget(ActivityEditor.this,
-						descTxt, activity, Property.JCR_DESCRIPTION);
+				PeopleRapUtils.refreshFormTextWidget(ActivityEditor.this, titleTxt, activity, Property.JCR_TITLE);
+				PeopleRapUtils.refreshFormTextWidget(ActivityEditor.this, descTxt, activity, Property.JCR_DESCRIPTION);
 			}
 		};
 
-		PeopleRapUtils.addModifyListener(titleTxt, activity,
-				Property.JCR_TITLE, formPart);
-		PeopleRapUtils.addModifyListener(descTxt, activity,
-				Property.JCR_DESCRIPTION, formPart);
+		PeopleRapUtils.addModifyListener(titleTxt, activity, Property.JCR_TITLE, formPart);
+		PeopleRapUtils.addModifyListener(descTxt, activity, Property.JCR_DESCRIPTION, formPart);
 
 		formPart.initialize(getManagedForm());
 		getManagedForm().addPart(formPart);
@@ -125,16 +114,13 @@ public class ActivityEditor extends AbstractPeopleEditor {
 		private DateTextPart dateComposite;
 		private LinkListPart relatedCmp;
 
-		public ActivityHeader(FormToolkit toolkit, IManagedForm form,
-				Composite parent, int style, PeopleService peopleService,
-				PeopleWorkbenchService peopleWorkbenchService, Node activity) {
+		public ActivityHeader(FormToolkit toolkit, IManagedForm form, Composite parent, int style,
+				UserAdminService userAdminService, ActivityService activityService, Node activity) {
 			super(parent, style);
+			this.userAdminService = userAdminService;
+			this.activityService = activityService;
 			this.toolkit = toolkit;
 			this.activity = activity;
-
-			// Caches a few context object to ease implementation
-			activityService = peopleService.getActivityService();
-			userAdminService = peopleService.getUserAdminService();
 
 			// Initialise the form
 			myFormPart = new MyFormPart();
@@ -153,11 +139,9 @@ public class ActivityEditor extends AbstractPeopleEditor {
 					populate(ActivityHeader.this);
 
 				typeLbl.setText(activityService.getActivityLabel(activity));
-				String manager = ConnectJcrUtils.get(activity,
-						PeopleNames.PEOPLE_REPORTED_BY);
+				String manager = ConnectJcrUtils.get(activity, ActivitiesNames.ACTIVITIES_REPORTED_BY);
 				if (EclipseUiUtils.notEmpty(manager))
-					managerLbl.setText(userAdminService
-							.getUserDisplayName(manager));
+					managerLbl.setText(userAdminService.getUserDisplayName(manager));
 
 				dateComposite.refresh();
 
@@ -177,8 +161,7 @@ public class ActivityEditor extends AbstractPeopleEditor {
 				// 1st line (NOTE: it defines the grid data layout of this part)
 				// Work around to be able to kind of also align bold labels of
 				// the body
-				Label label = PeopleRapUtils.createBoldLabel(toolkit, parent,
-						"Type");
+				Label label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Type");
 				GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.widthHint = firstColWHint;
 				label.setLayoutData(gd);
@@ -197,22 +180,24 @@ public class ActivityEditor extends AbstractPeopleEditor {
 
 				// ACTIVITY DATE
 				PeopleRapUtils.createBoldLabel(toolkit, parent, "Date");
-				dateComposite = new DateTextPart(ActivityEditor.this, parent,
-						SWT.NO_FOCUS, myFormPart, activity,
-						PeopleNames.PEOPLE_ACTIVITY_DATE);
+				dateComposite = new DateTextPart(ActivityEditor.this, parent, SWT.NO_FOCUS, myFormPart, activity,
+						ActivitiesNames.ACTIVITIES_ACTIVITY_DATE);
 				dateComposite.setLayoutData(EclipseUiUtils.fillWidth());
 
 				// 2nd line - RELATED ENTITIES
-				label = PeopleRapUtils.createBoldLabel(toolkit, parent,
-						"Related to");
+				label = PeopleRapUtils.createBoldLabel(toolkit, parent, "Related to");
 				gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.verticalIndent = 2;
 				label.setLayoutData(gd);
-				relatedCmp = new LinkListPart(ActivityEditor.this, myFormPart,
-						parent, SWT.NO_FOCUS, getPeopleWorkbenchService(),
-						activity, PeopleNames.PEOPLE_RELATED_TO);
+				relatedCmp = new LinkListPart(ActivityEditor.this, myFormPart, parent, SWT.NO_FOCUS,
+						getAppWorkbenchService(), activity, ActivitiesNames.ACTIVITIES_RELATED_TO);
 				relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(5));
 			}
 		}
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setActivityService(ActivityService activityService) {
+		this.activityService = activityService;
 	}
 }

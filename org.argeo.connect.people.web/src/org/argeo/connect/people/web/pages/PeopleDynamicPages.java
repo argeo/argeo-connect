@@ -11,23 +11,27 @@ import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.cms.ui.LifeCycleUiProvider;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.resources.ResourceService;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-/** Calls the correct {@link CmsUiProvider} depending on the context NodeType **/
+/**
+ * Calls the correct {@link CmsUiProvider} depending on the context NodeType
+ **/
 public class PeopleDynamicPages implements LifeCycleUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private Map<String, CmsUiProvider> dynamicPages;
 	private PeopleService peopleService;
+	private ResourceService resourceService;
+
 	private Map<String, String> iconPathes;
 
 	private CmsUiProvider queryPage;
 
 	// Relevant pages
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 
 		for (String key : dynamicPages.keySet()) {
 			if (context.isNodeType(key))
@@ -51,8 +55,7 @@ public class PeopleDynamicPages implements LifeCycleUiProvider {
 
 	@Override
 	public void init(Session adminSession) throws RepositoryException {
-		queryPage = new PeopleQueryPage(peopleService, iconPathes);
-
+		queryPage = new PeopleQueryPage(peopleService, resourceService, iconPathes);
 	}
 
 	@Override
@@ -66,6 +69,10 @@ public class PeopleDynamicPages implements LifeCycleUiProvider {
 
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
+	}
+
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
 	}
 
 	public void setIconPathes(Map<String, String> iconPathes) {

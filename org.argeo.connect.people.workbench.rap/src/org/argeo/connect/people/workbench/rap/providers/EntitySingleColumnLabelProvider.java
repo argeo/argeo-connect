@@ -7,9 +7,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -17,25 +18,22 @@ import org.eclipse.swt.graphics.Image;
  * Provide a single column label provider for entity lists. Icon and displayed
  * text vary with the element node type
  */
-public class EntitySingleColumnLabelProvider extends LabelProvider implements
-		PeopleNames {
+public class EntitySingleColumnLabelProvider extends LabelProvider implements PeopleNames {
 	private static final long serialVersionUID = -2613028516709467900L;
 
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 
 	private OrgListLabelProvider orgLp;
 	private PersonListLabelProvider personLp;
-	private GroupLabelProvider groupLp = new GroupLabelProvider(
-			PeopleRapConstants.LIST_TYPE_SMALL);
+	private GroupLabelProvider groupLp = new GroupLabelProvider(PeopleRapConstants.LIST_TYPE_SMALL);
 	private TagLabelProvider mlInstanceLp;
 
-	public EntitySingleColumnLabelProvider(PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
+	public EntitySingleColumnLabelProvider(ResourceService resourceService, PeopleService peopleService,
+			AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 		personLp = new PersonListLabelProvider(peopleService);
-		orgLp = new OrgListLabelProvider(peopleService);
-		mlInstanceLp = new TagLabelProvider(peopleService.getResourceService(),
-				PeopleRapConstants.LIST_TYPE_SMALL);
+		orgLp = new OrgListLabelProvider(resourceService, peopleService);
+		mlInstanceLp = new TagLabelProvider(resourceService, PeopleRapConstants.LIST_TYPE_SMALL);
 	}
 
 	@Override
@@ -55,14 +53,13 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements
 				result = "";
 			return ConnectUiUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get formatted value for node",
-					re);
+			throw new PeopleException("Unable to get formatted value for node", re);
 		}
 	}
 
 	/** Overwrite this method to provide project specific images */
 	@Override
 	public Image getImage(Object element) {
-		return peopleWorkbenchService.getIconForType((Node) element);
+		return appWorkbenchService.getIconForType((Node) element);
 	}
 }

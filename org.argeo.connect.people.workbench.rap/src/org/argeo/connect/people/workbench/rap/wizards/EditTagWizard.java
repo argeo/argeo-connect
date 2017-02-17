@@ -27,15 +27,15 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.ResourceService;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.PeopleRapUtils;
 import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
 import org.argeo.connect.people.workbench.rap.editors.util.EntityEditorInput;
 import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
+import org.argeo.connect.resources.ResourceService;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.commands.ForceRefresh;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -73,8 +73,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
 	// Context
-	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private ResourceService resourceService;
+	private AppWorkbenchService appWorkbenchService;
 
 	private String tagId;
 	private Node tagInstance;
@@ -82,7 +82,6 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 	// Cache to ease implementation
 	private Session session;
-	private ResourceService resourceService;
 	private Node tagParent;
 	private String taggableNodeType;
 	private String taggableParentPath;
@@ -94,35 +93,30 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	/**
 	 * 
 	 * @param peopleService
-	 * @param peopleUiService
+	 * @param appWorkbenchService
 	 * @param tagInstanceNode
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	public EditTagWizard(PeopleService peopleService,
-			PeopleWorkbenchService peopleUiService, Node tagInstanceNode,
+	public EditTagWizard(ResourceService resourceService, AppWorkbenchService appWorkbenchService, Node tagInstanceNode,
 			String tagId, String tagPropName) {
-
-		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
+		this.resourceService = resourceService;
+		this.appWorkbenchService = appWorkbenchService;
 		this.tagId = tagId;
 		this.tagInstance = tagInstanceNode;
 		this.tagPropName = tagPropName;
 
 		session = ConnectJcrUtils.getSession(tagInstance);
-		resourceService = peopleService.getResourceService();
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		taggableNodeType = ConnectJcrUtils.get(tagParent, PEOPLE_TAGGABLE_NODE_TYPE);
-		taggableParentPath = ConnectJcrUtils.get(tagParent,
-				PEOPLE_TAGGABLE_PARENT_PATH);
+		taggableNodeType = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAGGABLE_NODE_TYPE);
+		taggableParentPath = ConnectJcrUtils.get(tagParent, ResourcesNames.PEOPLE_TAGGABLE_PARENT_PATH);
 	}
 
 	@Override
 	public void addPages() {
 		try {
 			// configure container
-			String title = "Rename ["
-					+ ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE)
+			String title = "Rename [" + ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE)
 					+ "] and update existing related contacts";
 			setWindowTitle(title);
 			MainInfoPage inputPage = new MainInfoPage("Configure");
@@ -150,26 +144,19 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			if (EclipseUiUtils.isEmpty(newTitle))
 				errMsg = "New value cannot be blank or an empty string";
 			else if (oldTitle.equals(newTitle))
-				errMsg = "New value is the same as old one.\n"
-						+ "Either enter a new one or press cancel.";
-			else if (peopleService.getResourceService().getRegisteredTag(
-					tagInstance.getSession(), tagId, newTitle) != null)
-				errMsg = "The new chosen value is already used.\n"
-						+ "Either enter a new one or press cancel.";
+				errMsg = "New value is the same as old one.\n" + "Either enter a new one or press cancel.";
+			else if (resourceService.getRegisteredTag(tagInstance.getSession(), tagId, newTitle) != null)
+				errMsg = "The new chosen value is already used.\n" + "Either enter a new one or press cancel.";
 
 			if (errMsg != null) {
-				MessageDialog.openError(getShell(), "Unvalid information",
-						errMsg);
+				MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 				return false;
 			}
 
-			new UpdateTagAndInstancesJob(resourceService, tagInstance,
-					newTitle, newDesc).schedule();
+			new UpdateTagAndInstancesJob(resourceService, tagInstance, newTitle, newDesc).schedule();
 			return true;
 		} catch (RepositoryException re) {
-			throw new PeopleException(
-					"unable to update title for tag like resource "
-							+ tagInstance, re);
+			throw new PeopleException("unable to update title for tag like resource " + tagInstance, re);
 		}
 	}
 
@@ -189,8 +176,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 		public MainInfoPage(String pageName) {
 			super(pageName);
 			setTitle("Enter a new title");
-			setMessage("As reminder, former value was: "
-					+ ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
+			setMessage("As reminder, former value was: " + ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
 		}
 
 		public void createControl(Composite parent) {
@@ -200,22 +186,16 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			// New Title Value
 			PeopleRapUtils.createBoldLabel(body, "Title");
 			newTitleTxt = new Text(body, SWT.BORDER);
-			newTitleTxt.setMessage("was: "
-					+ ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
-			newTitleTxt
-					.setText(ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
-			newTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-					false));
+			newTitleTxt.setMessage("was: " + ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
+			newTitleTxt.setText(ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
+			newTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// New Description Value
 			PeopleRapUtils.createBoldLabel(body, "Description", SWT.TOP);
 			newDescTxt = new Text(body, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-			newDescTxt.setMessage("was: "
-					+ ConnectJcrUtils.get(tagInstance, Property.JCR_DESCRIPTION));
-			newDescTxt.setText(ConnectJcrUtils.get(tagInstance,
-					Property.JCR_DESCRIPTION));
-			newDescTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
-					true));
+			newDescTxt.setMessage("was: " + ConnectJcrUtils.get(tagInstance, Property.JCR_DESCRIPTION));
+			newDescTxt.setText(ConnectJcrUtils.get(tagInstance, Property.JCR_DESCRIPTION));
+			newDescTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 			setControl(body);
 			newTitleTxt.setFocus();
@@ -235,16 +215,13 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 			Composite body = new Composite(parent, SWT.NONE);
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
-			colDefs.add(new ConnectColumnDefinition(taggableNodeType,
-					Property.JCR_TITLE, PropertyType.STRING, "Display Name",
-					new TitleIconRowLP(peopleUiService, taggableNodeType,
-							Property.JCR_TITLE), 300));
+			colDefs.add(new ConnectColumnDefinition(taggableNodeType, Property.JCR_TITLE, PropertyType.STRING,
+					"Display Name", new TitleIconRowLP(appWorkbenchService, taggableNodeType, Property.JCR_TITLE),
+					300));
 
-			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body,
-					SWT.MULTI, colDefs);
+			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.MULTI, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
-			membersViewer.setContentProvider(new MyLazyContentProvider(
-					membersViewer));
+			membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
 			refreshFilteredList(membersViewer);
 			tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 			setControl(body);
@@ -255,36 +232,26 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 	protected void refreshFilteredList(TableViewer membersViewer) {
 		String currVal = ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE);
 		try {
-			QueryManager queryManager = session.getWorkspace()
-					.getQueryManager();
+			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			Selector source = factory.selector(taggableNodeType,
-					taggableNodeType);
+			Selector source = factory.selector(taggableNodeType, taggableNodeType);
 
-			StaticOperand so = factory.literal(session.getValueFactory()
-					.createValue(currVal));
-			DynamicOperand dyo = factory.propertyValue(
-					source.getSelectorName(), tagPropName);
-			Constraint constraint = factory.comparison(dyo,
-					QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
+			StaticOperand so = factory.literal(session.getValueFactory().createValue(currVal));
+			DynamicOperand dyo = factory.propertyValue(source.getSelectorName(), tagPropName);
+			Constraint constraint = factory.comparison(dyo, QueryObjectModelConstants.JCR_OPERATOR_EQUAL_TO, so);
 
-			Constraint subTree = factory.descendantNode(
-					source.getSelectorName(), taggableParentPath);
+			Constraint subTree = factory.descendantNode(source.getSelectorName(), taggableParentPath);
 			constraint = ConnectJcrUtils.localAnd(factory, constraint, subTree);
 
-			Ordering order = factory.ascending(factory.propertyValue(
-					source.getSelectorName(), Property.JCR_TITLE));
+			Ordering order = factory.ascending(factory.propertyValue(source.getSelectorName(), Property.JCR_TITLE));
 			Ordering[] orderings = { order };
-			QueryObjectModel query = factory.createQuery(source, constraint,
-					orderings, null);
+			QueryObjectModel query = factory.createQuery(source, constraint, orderings, null);
 			QueryResult result = query.execute();
 			Row[] rows = ConnectJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(membersViewer, rows);
 
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Unable to list entities for tag like property instance "
-							+ currVal, e);
+			throw new PeopleException("Unable to list entities for tag like property instance " + currVal, e);
 		}
 	}
 
@@ -332,8 +299,8 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 		private String tagJcrId;
 		private IWorkbenchPage callingPage;
 
-		public UpdateTagAndInstancesJob(ResourceService resourceService,
-				Node tagInstance, String newTitle, String newDesc) {
+		public UpdateTagAndInstancesJob(ResourceService resourceService, Node tagInstance, String newTitle,
+				String newDesc) {
 			super("Updating");
 			this.resourceService = resourceService;
 			this.newTitle = newTitle;
@@ -342,8 +309,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 				repository = tagInstance.getSession().getRepository();
 				tagPath = tagInstance.getPath();
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to init "
-						+ "tag instance batch update for " + tagId, e);
+				throw new PeopleException("Unable to init " + "tag instance batch update for " + tagId, e);
 			}
 			callingPage = PeopleRapUtils.getActivePage();
 		}
@@ -365,11 +331,9 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 					resourceService.updateTag(tagInstance, newTitle);
 
 					if (EclipseUiUtils.notEmpty(newDesc))
-						tagInstance.setProperty(Property.JCR_DESCRIPTION,
-								newDesc);
+						tagInstance.setProperty(Property.JCR_DESCRIPTION, newDesc);
 					else if (tagInstance.hasProperty(Property.JCR_DESCRIPTION))
-						tagInstance.getProperty(Property.JCR_DESCRIPTION)
-								.remove();
+						tagInstance.getProperty(Property.JCR_DESCRIPTION).remove();
 
 					// Do we really want a new version at each and every time
 					if (tagInstance.isNodeType(NodeType.MIX_VERSIONABLE))
@@ -392,8 +356,7 @@ public class EditTagWizard extends Wizard implements PeopleNames {
 
 		private void doRefresh() {
 			// Update the user interface asynchronously
-			Display currDisplay = callingPage.getWorkbenchWindow().getShell()
-					.getDisplay();
+			Display currDisplay = callingPage.getWorkbenchWindow().getShell().getDisplay();
 			currDisplay.asyncExec(new Runnable() {
 				public void run() {
 					try {

@@ -22,8 +22,10 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivityService;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.tracker.PeopleTrackerService;
 import org.argeo.connect.tracker.TrackerConstants;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
@@ -215,7 +217,7 @@ public class TrackerUtils {
 	public static boolean isIssueClosed(Node issue) {
 		try {
 			// TODO enhance definition of closed status
-			return issue.hasProperty(PeopleNames.PEOPLE_CLOSE_DATE);
+			return issue.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE);
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to check closed status of " + issue, e);
 		}
@@ -245,7 +247,7 @@ public class TrackerUtils {
 
 			if (onlyOpenTasks) {
 				tmpBuilder.append(" not(@");
-				tmpBuilder.append(PeopleNames.PEOPLE_CLOSE_DATE);
+				tmpBuilder.append(ActivitiesNames.ACTIVITIES_CLOSE_DATE);
 				tmpBuilder.append(")");
 				tmpBuilder.append(andStr);
 			}
@@ -382,12 +384,12 @@ public class TrackerUtils {
 		}
 	}
 
-	public static String getCreationLabel(PeopleTrackerService aoService, Node issue) {
+	public static String getCreationLabel(UserAdminService userAdminService, Node issue) {
 		try {
 			String result = "";
 			if (issue.hasProperty(Property.JCR_CREATED_BY)) {
 				String userId = issue.getProperty(Property.JCR_CREATED_BY).getString();
-				String displayName = aoService.getUserAdminService().getUserDisplayName(userId);
+				String displayName = userAdminService.getUserDisplayName(userId);
 				if (EclipseUiUtils.notEmpty(displayName))
 					result = displayName;
 			}
@@ -404,13 +406,13 @@ public class TrackerUtils {
 
 	private static DateFormat dtFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
-	public static String getStatusText(PeopleTrackerService aoService, Node issue) {
+	public static String getStatusText(UserAdminService userAdminService, ActivityService activityService, Node issue) {
 		try {
 			StringBuilder builder = new StringBuilder();
 
 			// status, importance, priority
-			builder.append("<b> Status: </b>").append(ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_TASK_STATUS))
-					.append(" ");
+			builder.append("<b> Status: </b>")
+					.append(ConnectJcrUtils.get(issue, ActivitiesNames.ACTIVITIES_TASK_STATUS)).append(" ");
 			builder.append("[").append(TrackerUtils.getImportanceLabel(issue)).append("/")
 					.append(TrackerUtils.getPriorityLabel(issue)).append("] - ");
 
@@ -424,14 +426,14 @@ public class TrackerUtils {
 				builder.append("<b>Affected version: </b> ").append(versionId).append(" - ");
 
 			// assigned to
-			if (aoService.getActivityService().isTaskDone(issue)) {
-				String closeBy = ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_CLOSED_BY);
-				Calendar closedDate = issue.getProperty(PeopleNames.PEOPLE_CLOSE_DATE).getDate();
+			if (activityService.isTaskDone(issue)) {
+				String closeBy = ConnectJcrUtils.get(issue, ActivitiesNames.ACTIVITIES_CLOSED_BY);
+				Calendar closedDate = issue.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).getDate();
 				builder.append(" - Marked as closed by ").append(closeBy);
 				builder.append(" on ").append(dtFormat.format(closedDate.getTime())).append(".");
 			} else {
-				String assignedToId = ConnectJcrUtils.get(issue, PeopleNames.PEOPLE_ASSIGNED_TO);
-				String dName = aoService.getUserAdminService().getUserDisplayName(assignedToId);
+				String assignedToId = ConnectJcrUtils.get(issue, ActivitiesNames.ACTIVITIES_ASSIGNED_TO);
+				String dName = userAdminService.getUserDisplayName(assignedToId);
 				if (notEmpty(dName))
 					builder.append("<b>Assigned to: </b>").append(dName);
 			}

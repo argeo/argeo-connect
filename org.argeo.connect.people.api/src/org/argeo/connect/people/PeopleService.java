@@ -137,11 +137,6 @@ public interface PeopleService {
 	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
 			String relatedEntityType);
 
-	/* CONFIGURE QUERIES */
-	public boolean lazyLoadLists();
-
-	public boolean queryWhenTyping();
-
 	/* MISCELLANEOUS */
 	/**
 	 * Retrieves a context specific property used to configure the current
@@ -163,22 +158,21 @@ public interface PeopleService {
 	/** Returns the corresponding {@link PersonService} */
 	public PersonService getPersonService();
 
-	/** Returns the corresponding {@link ActivityService} */
-	public ActivityService getActivityService();
+//	/** Returns the corresponding {@link ActivityService} */
+//	public ActivityService getActivityService();
 
 	/** Returns the corresponding {@link ContactService} */
 	public ContactService getContactService();
 
-	/** Returns the corresponding {@link UserAdminService} */
-	public UserAdminService getUserAdminService();
+	// /** Returns the corresponding {@link UserAdminService} */
+	// public UserAdminService getUserAdminService();
 
-	/** Returns the corresponding {@link ResourceService} */
-	public ResourceService getResourceService();
+//	/** Returns the corresponding {@link ResourceService} */
+//	public ResourceService getResourceService();
 
 	/** Returns the corresponding {@link ImportService} */
 	public ImportService getImportService();
 
 	/** Returns the corresponding {@link MaintenanceService} */
 	public MaintenanceService getMaintenanceService();
-
 }

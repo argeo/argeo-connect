@@ -18,12 +18,13 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.widgets.DelayedText;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -54,8 +55,9 @@ public class QuickSearchView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
+	private ResourceService resourceService;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// This page widgets
 	private TableViewer entityViewer;
@@ -68,7 +70,7 @@ public class QuickSearchView extends ViewPart {
 		parent.setLayout(new GridLayout());
 		addFilterPanel(parent);
 		entityViewer = createListPart(parent,
-				new EntitySingleColumnLabelProvider(peopleService, peopleWorkbenchService));
+				new EntitySingleColumnLabelProvider(resourceService, peopleService, appWorkbenchService));
 		refreshFilteredList();
 	}
 
@@ -142,7 +144,7 @@ public class QuickSearchView extends ViewPart {
 		CmsUtils.setItemHeight(table, 26);
 
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(peopleWorkbenchService));
+		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(appWorkbenchService));
 		return v;
 	}
 
@@ -203,11 +205,16 @@ public class QuickSearchView extends ViewPart {
 		this.repository = repository;
 	}
 
+	public void setResourceService(ResourceService resourceService) {
+		this.resourceService = resourceService;
+	}
+
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 	}
+
 }

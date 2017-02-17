@@ -7,7 +7,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -15,6 +15,7 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.web.PeopleWebConstants;
 import org.argeo.connect.people.web.PeopleWebSnippets;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -31,8 +32,9 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 	private final int listType;
 
 	private PeopleService peopleService;
+	private ResourceService resourceService;
 
-	public PersonOverviewLP(int listType, PeopleService peopleService) {
+	public PersonOverviewLP(ResourceService resourceService, PeopleService peopleService, int listType) {
 		this.listType = listType;
 		this.peopleService = peopleService;
 	}
@@ -70,19 +72,15 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		builder.append(displayName);
 		builder.append("</big></b>");
 		String fmn = PeopleUiSnippets.getLongName(person);
-		String localisationStr = PeopleUiSnippets.getLocalisationInfo(
-				peopleService, person);
+		String localisationStr = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, person);
 		String primContactStr = PeopleUiSnippets.getPrimaryContacts(person);
-		Boolean politeFormFlag = ConnectJcrUtils.getBooleanValue(person,
-				PEOPLE_USE_POLITE_FORM);
-		List<String> spokenLanguages = ConnectJcrUtils.getMultiAsList(person,
-				PEOPLE_SPOKEN_LANGUAGES);
+		Boolean politeFormFlag = ConnectJcrUtils.getBooleanValue(person, PEOPLE_USE_POLITE_FORM);
+		List<String> spokenLanguages = ConnectJcrUtils.getMultiAsList(person, PEOPLE_SPOKEN_LANGUAGES);
 
 		if (notEmpty(fmn) || notEmpty(localisationStr)) {
 			builder.append("<br/>").append(fmn);
 			if (notEmpty(fmn) && notEmpty(localisationStr))
-				builder.append(ConnectUiConstants.NB_SPACE
-						+ ConnectUiConstants.NB_SPACE);
+				builder.append(ConnectUiConstants.NB_SPACE + ConnectUiConstants.NB_SPACE);
 			builder.append(localisationStr);
 		}
 		if (notEmpty(primContactStr))
@@ -97,9 +95,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			if (!spokenLanguages.isEmpty()) {
 				for (String str : spokenLanguages) {
 					builder.append(
-							peopleService.getResourceService()
-									.getEncodedTagValue(person.getSession(),
-											PeopleConstants.RESOURCE_LANG, str))
+							resourceService.getEncodedTagValue(person.getSession(), ConnectConstants.RESOURCE_LANG, str))
 							.append(", ");
 				}
 				// remove last occurence of the separator
@@ -111,8 +107,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		return builder.toString();
 	}
 
-	private String getOverviewForList(Node person, boolean isSmallList)
-			throws RepositoryException {
+	private String getOverviewForList(Node person, boolean isSmallList) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
 
 		if (isSmallList) {
@@ -125,8 +120,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append("</big></b>");
 		}
 
-		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
-				person);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, person);
 		if (notEmpty(local)) {
 			builder.append(ConnectUiConstants.NB_DOUBLE_SPACE);
 			builder.append(local);
@@ -148,12 +142,10 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 		}
 
 		// Tags
-		String tags = PeopleWebSnippets.getTagLikeValues(peopleService,
-				PeopleConstants.RESOURCE_TAG, person, PeopleNames.PEOPLE_TAGS,
-				"#");
-		String mailingLists = PeopleWebSnippets.getTagLikeValues(peopleService,
-				PeopleTypes.PEOPLE_MAILING_LIST, person,
-				PeopleNames.PEOPLE_MAILING_LISTS, "@");
+		String tags = PeopleWebSnippets.getTagLikeValues(resourceService, ConnectConstants.RESOURCE_TAG, person,
+				PeopleNames.PEOPLE_TAGS, "#");
+		String mailingLists = PeopleWebSnippets.getTagLikeValues(resourceService, PeopleTypes.PEOPLE_MAILING_LIST,
+				person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {
 			builder.append(tags);
 			if (notEmpty(tags) && notEmpty(mailingLists))

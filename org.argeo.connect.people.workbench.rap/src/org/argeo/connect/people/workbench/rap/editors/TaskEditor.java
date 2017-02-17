@@ -31,8 +31,7 @@ public class TaskEditor extends AbstractPeopleCTabEditor {
 	// Context
 	private Node task;
 
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		task = getNode();
 	}
@@ -42,28 +41,24 @@ public class TaskEditor extends AbstractPeopleCTabEditor {
 			// we rely on the task primary type.
 			return task.getPrimaryNodeType().getName();
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to determine task type for "
-					+ task, re);
+			throw new PeopleException("Unable to determine task type for " + task, re);
 		}
 	}
 
 	protected void populateHeader(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite headerCmp = new TaskBasicHeader(this, parent, SWT.NO_FOCUS,
-				getPeopleService(), getPeopleWorkbenchService(),
-				getCurrentTaskType(), task);
+		Composite headerCmp = new TaskBasicHeader(this, parent, SWT.NO_FOCUS, getUserAdminService(),
+				getResourceService(), getActivityService(), getAppWorkbenchService(), getCurrentTaskType(), task);
 		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
 	@Override
 	protected void populateTabFolder(CTabFolder folder) {
 		// Activities and tasks
-		String tooltip = "Activities and tasks related to "
-				+ JcrUtils.get(task, Property.JCR_TITLE);
-		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS,
-				this, getPeopleService(), getPeopleWorkbenchService(), task);
+		String tooltip = "Activities and tasks related to " + JcrUtils.get(task, Property.JCR_TITLE);
+		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
+				getResourceService(), getActivityService(), getAppWorkbenchService(), task);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
-		addLazyTabToFolder(folder, activitiesCmp, "Activity log",
-				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
+		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 	}
 }

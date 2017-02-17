@@ -11,7 +11,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
@@ -125,7 +125,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_ID), "ID", 40));
 			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(Property.JCR_TITLE), "Title", 300));
-			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(PeopleNames.PEOPLE_TASK_STATUS),
+			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(ActivitiesNames.ACTIVITIES_TASK_STATUS),
 					"Status", 100));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new ImportanceLabelProvider(), "Importance", 100));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new PriorityLabelProvider(), "Priority", 100));
@@ -138,8 +138,8 @@ public class CategoryEditor extends AbstractTrackerEditor {
 				public void doubleClick(DoubleClickEvent event) {
 					Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 					String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-					CommandUtils.callCommand(getAoWbService().getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-							jcrId);
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+							OpenEntityEditor.PARAM_JCR_ID, jcrId);
 				}
 			});
 			refreshViewer(null);
@@ -178,7 +178,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 
-					NewIssueWizard wizard = new NewIssueWizard(getPeopleService(), project);
+					NewIssueWizard wizard = new NewIssueWizard(getUserAdminService(), getTrackerService(), project);
 					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
 					if (dialog.open() == Window.OK) {
 						try {

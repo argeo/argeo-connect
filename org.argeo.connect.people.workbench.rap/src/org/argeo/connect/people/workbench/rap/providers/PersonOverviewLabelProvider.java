@@ -5,36 +5,37 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.PeopleConstants;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
+import org.argeo.connect.resources.ResourceService;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /** Create HTML Snippet to display a person's details in editors and lists */
-public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
-		PeopleNames {
+public class PersonOverviewLabelProvider extends ColumnLabelProvider implements PeopleNames {
 
 	private static final long serialVersionUID = 1L;
 
-	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleWorkbenchService;
+	private final ResourceService resourceService;
+	private final PeopleService peopleService;
+	private final AppWorkbenchService appWorkbenchService;
 	private final int listType;
 
-	public PersonOverviewLabelProvider(int listType,
-			PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService) {
+	public PersonOverviewLabelProvider(int listType, ResourceService resourceService, PeopleService peopleService,
+			AppWorkbenchService appWorkbenchService) {
 		this.listType = listType;
+		this.resourceService = resourceService;
 		this.peopleService = peopleService;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.appWorkbenchService = appWorkbenchService;
 	}
 
 	@Override
@@ -47,11 +48,9 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB))
 				entity = node.getParent().getParent();
 			else if (node.isNodeType(PeopleTypes.PEOPLE_POSITION)) {
-				entity = peopleService.getEntityByUid(node.getSession(), node
-						.getProperty(PEOPLE_REF_UID).getString());
+				entity = peopleService.getEntityByUid(node.getSession(), node.getProperty(PEOPLE_REF_UID).getString());
 			} else
-				throw new PeopleException("Unvalid node type. "
-						+ "Cannot display film information");
+				throw new PeopleException("Unvalid node type. " + "Cannot display film information");
 			String result;
 			switch (listType) {
 			case PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE:
@@ -74,21 +73,17 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 
 	private String getOverviewTitle(Node person) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<span " + PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER
-				+ " >");
+		builder.append("<span " + PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER + " >");
 		// first line
 		builder.append("<b><big> ");
 		String displayName = peopleService.getDisplayName(person);
 		builder.append(displayName);
 		builder.append("</big></b>");
 		String fmn = PeopleUiSnippets.getLongName(person);
-		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
-				person);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, person);
 		String primaryContacts = PeopleUiSnippets.getPrimaryContacts(person);
-		Boolean politeFormFlag = ConnectJcrUtils.getBooleanValue(person,
-				PEOPLE_USE_POLITE_FORM);
-		List<String> spokenLanguages = ConnectJcrUtils.getMultiAsList(person,
-				PEOPLE_SPOKEN_LANGUAGES);
+		Boolean politeFormFlag = ConnectJcrUtils.getBooleanValue(person, PEOPLE_USE_POLITE_FORM);
+		List<String> spokenLanguages = ConnectJcrUtils.getMultiAsList(person, PEOPLE_SPOKEN_LANGUAGES);
 
 		if (EclipseUiUtils.notEmpty(fmn) || EclipseUiUtils.notEmpty(local)) {
 			builder.append("<br/>").append(fmn);
@@ -107,9 +102,8 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 				builder.append(" / ");
 			if (!spokenLanguages.isEmpty()) {
 				for (String str : spokenLanguages) {
-					String language = peopleService.getResourceService()
-							.getEncodedTagValue(ConnectJcrUtils.getSession(person),
-									PeopleConstants.RESOURCE_LANG, str);
+					String language = resourceService.getEncodedTagValue(ConnectJcrUtils.getSession(person),
+							ConnectConstants.RESOURCE_LANG, str);
 					builder.append(language).append(", ");
 				}
 				// remove last occurrence of the separator
@@ -120,15 +114,13 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 		return builder.toString();
 	}
 
-	private String getOverviewForList(Node person, boolean isSmallList)
-			throws RepositoryException {
+	private String getOverviewForList(Node person, boolean isSmallList) throws RepositoryException {
 		StringBuilder builder = new StringBuilder().append("<span>");
 		// first line
 		builder.append("<b><big> ");
 		builder.append(peopleService.getDisplayName(person));
 		builder.append("</big> </b> ");
-		String local = PeopleUiSnippets.getLocalisationInfo(peopleService,
-				person);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, person);
 		if (EclipseUiUtils.notEmpty(local))
 			builder.append(local);
 		builder.append("<br/>");
@@ -139,8 +131,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements
 			builder.append(primContactsStr).append("<br/>");
 
 		// Tags
-		String clickableTags = PeopleRapSnippets.getTags(peopleService,
-				peopleWorkbenchService, person);
+		String clickableTags = PeopleRapSnippets.getTags(resourceService, appWorkbenchService, person);
 		if (EclipseUiUtils.notEmpty(clickableTags))
 			builder.append(clickableTags).append("<br/>");
 

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.ActivityService;
+import org.argeo.connect.activities.ActivityService;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 

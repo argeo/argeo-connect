@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.people.UserAdminService;
-import org.argeo.connect.people.core.UserAdminServiceImpl;
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.UserAdminServiceImpl;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.util.CsvParserWithLinesAsMap;
