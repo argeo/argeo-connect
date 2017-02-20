@@ -8,6 +8,7 @@ public interface ConnectUiStyles {
 	// Overwrite normal behaviour to show a border even when a Text is disabled.
 	String FORCE_BORDER = "force_border";
 	String FLAT_BTN = "flat_btn";
+	String OPEN_CALENDAR_BTN = "open_calendar_btn";
 	String SMALL_DELETE_BTN = "small_delete_btn";
 	String POPUP_SHELL = "popup_shell";
 	

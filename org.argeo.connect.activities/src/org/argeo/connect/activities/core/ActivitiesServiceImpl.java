@@ -40,7 +40,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 
 	/* DEPENDENCY INJECTION */
 	private UserAdminService userAdminService;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 
 	/**
 	 * Default constructor, caller must then inject a relevant
@@ -207,7 +207,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			List<String> modifiedPaths) throws RepositoryException {
 		try {
 			Session session = taskNode.getSession();
-			List<String> closingStatus = resourceService.getTemplateCatalogue(session, templateId,
+			List<String> closingStatus = resourcesService.getTemplateCatalogue(session, templateId,
 					ActivitiesNames.ACTIVITIES_TASK_CLOSING_STATUSES, null);
 
 			boolean changed = false;
@@ -372,7 +372,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 
 	protected void setTaskDefaultStatus(Node taskNode, String taskNodeType) throws RepositoryException {
 		// Default status management
-		Node template = resourceService.getNodeTemplate(taskNode.getSession(), taskNodeType);
+		Node template = resourcesService.getNodeTemplate(taskNode.getSession(), taskNodeType);
 		String defaultStatus = null;
 		if (template != null)
 			defaultStatus = ConnectJcrUtils.get(template, ActivitiesNames.ACTIVITIES_TASK_DEFAULT_STATUS);
@@ -409,7 +409,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		this.userAdminService = userAdminService;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 }

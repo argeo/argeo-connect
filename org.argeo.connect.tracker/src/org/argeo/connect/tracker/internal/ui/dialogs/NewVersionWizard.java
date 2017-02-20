@@ -6,10 +6,10 @@ import java.util.GregorianCalendar;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.people.workbench.rap.composites.DateText;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.tracker.core.TrackerUtils;
+import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;

@@ -52,7 +52,7 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			String peopleUid = UUID.randomUUID().toString();
 
 			// Create corresponding node
-			String path = getPeopleService().getDefaultPathForEntity(peopleUid, PeopleTypes.PEOPLE_PERSON);
+			String path = getPeopleService().getDefaultPath(PeopleTypes.PEOPLE_PERSON, peopleUid);
 			String parPath = JcrUtils.parentPath(path);
 			Node parent = JcrUtils.mkdirs(getSession(), parPath);
 			Node person = parent.addNode(peopleUid, PeopleTypes.PEOPLE_PERSON);

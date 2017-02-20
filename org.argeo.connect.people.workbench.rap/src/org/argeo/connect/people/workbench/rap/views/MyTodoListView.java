@@ -446,6 +446,10 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		this.repository = repository;
 	}
 
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
+	}
+	
 	public void setActivitiesService(ActivitiesService activitiesService) {
 		this.activitiesService = activitiesService;
 	}

@@ -17,10 +17,6 @@ public class PeopleRapImages {
 	public final static Image ICON_MAILING_LIST = createImg(TYPE_PATH, "mailingList.gif");
 	public final static Image ICON_TAG = createImg(TYPE_PATH, "tag.png");
 
-	public final static Image ICON_GROUP = createImg(TYPE_PATH, "group.gif");
-	public final static Image ICON_USER = createImg(TYPE_PATH, "person.gif");
-	public final static Image ICON_ROLE = createImg(TYPE_PATH, "role.gif");
-
 	// Actions Icons
 	public final static Image DELETE_BTN = createImg(ACTION_PATH, "delete.gif");
 	public final static Image DELETE_BTN_LEFT = createImg(ACTION_PATH, "delete_left.gif");

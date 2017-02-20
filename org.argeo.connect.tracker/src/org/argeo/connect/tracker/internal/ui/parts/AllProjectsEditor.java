@@ -11,11 +11,11 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractSearchEntityEditor;
-import org.argeo.connect.people.workbench.rap.providers.JcrHtmlLabelProvider;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.core.TrackerUtils;
 import org.argeo.connect.tracker.ui.TrackerUiPlugin;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;

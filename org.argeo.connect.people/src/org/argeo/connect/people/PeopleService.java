@@ -23,48 +23,49 @@ public interface PeopleService {
 	/** Provides a system specific tmp path typically for imports */
 	public String getTmpPath();
 
-	/**
-	 * Provides a system specific public path typically for CMS or users with
-	 * limited access rights
-	 */
-	public String getPublicPath();
+//	/**
+//	 * Provides a system specific public path typically for CMS or users with
+//	 * limited access rights
+//	 */
+//	public String getPublicPath();
 
-	/**
-	 * Returns the path to a node that centralises information about the current
-	 * instance
-	 */
-	public String getInstanceConfPath();
+	// /**
+	// * Returns the path to a node that centralises information about the
+	// current
+	// * instance
+	// */
+	// public String getInstanceConfPath();
 
-	/**
-	 * Exposes the application specific parent path for this resource. Querying
-	 * with null parameter will return the resource base bath
-	 */
-	public String getResourceBasePath(String resourceType);
+	// /**
+	// * Exposes the application specific parent path for this resource.
+	// Querying
+	// * with null parameter will return the resource base bath
+	// */
+	// public String getResourceBasePath(String resourceType);
 
-	/**
-	 * Exposes the application specific parent path for the given subtype of
-	 * this resource.
-	 */
-	public String getResourcePath(String resourceType, String categoryId);
+	// /**
+	// * Exposes the application specific parent path for the given subtype of
+	// * this resource.
+	// */
+	// public String getResourcePath(String resourceType, String categoryId);
 
 	/**
 	 * Builds a default path for a known type based on the people:uid property
 	 * of this business entity
 	 */
-	public String getDefaultPathForEntity(Node node, String nodeType);
+	public String getDefaultPath(String nodeType, Node node);
 
 	/**
 	 * Builds a default path for a known type based on the people:uid property.
 	 */
-	public String getDefaultPathForEntity(String peopleUid, String nodeType);
+	public String getDefaultPath(String nodeType, String peopleUid);
 
 	/**
 	 * Typically used to move temporary import nodes to the main business
 	 * repository. Returns the new node: warning if a move happened, the node
 	 * has been copied and the returned node is not the same as the passed one
 	 */
-	public Node checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
-			throws RepositoryException;
+	public Node checkPathAndMoveIfNeeded(Node entity, String entityNodeType) throws RepositoryException;
 
 	/* GENERIC */
 	/**
@@ -122,8 +123,7 @@ public interface PeopleService {
 	 * Creates and returns a model specific Node to store a reference, depending
 	 * on the two object we want to link together
 	 */
-	public Node createEntityReference(Node referencingNode,
-			Node referencedNode, String role);
+	public Node createEntityReference(Node referencingNode, Node referencedNode, String role);
 
 	/**
 	 * Returns all entities with the given NodeType related to this entity or
@@ -133,20 +133,20 @@ public interface PeopleService {
 	 * @param relatedEntityType
 	 *            Optionally, the type of the grand-parent node typically to
 	 *            choose between an organisation, a group or a person in a group
-	 * */
-	public List<Node> getRelatedEntities(Node entity, String linkNodeType,
-			String relatedEntityType);
+	 */
+	public List<Node> getRelatedEntities(Node entity, String linkNodeType, String relatedEntityType);
 
 	/* MISCELLANEOUS */
-	/**
-	 * Retrieves a context specific property used to configure the current
-	 * system
-	 */
-	public String getConfigProperty(String key);
+//	/**
+//	 * Retrieves a context specific property used to configure the current
+//	 * system
+//	 */
+//	public String getConfigProperty(String key);
 
-	/** Simply look for primary information and update primary cache if needed */
-	public void updatePrimaryCache(Node entity) throws PeopleException,
-			RepositoryException;
+	/**
+	 * Simply look for primary information and update primary cache if needed
+	 */
+	public void updatePrimaryCache(Node entity) throws PeopleException, RepositoryException;
 
 	/**
 	 * Use with caution. Publishes all versionable Nodes that are in this
@@ -158,8 +158,8 @@ public interface PeopleService {
 	/** Returns the corresponding {@link PersonService} */
 	public PersonService getPersonService();
 
-//	/** Returns the corresponding {@link ActivityService} */
-//	public ActivityService getActivityService();
+	// /** Returns the corresponding {@link ActivityService} */
+	// public ActivityService getActivityService();
 
 	/** Returns the corresponding {@link ContactService} */
 	public ContactService getContactService();
@@ -167,12 +167,12 @@ public interface PeopleService {
 	// /** Returns the corresponding {@link UserAdminService} */
 	// public UserAdminService getUserAdminService();
 
-//	/** Returns the corresponding {@link ResourceService} */
-//	public ResourceService getResourceService();
+	// /** Returns the corresponding {@link ResourceService} */
+	// public ResourceService getResourceService();
 
-//	/** Returns the corresponding {@link ImportService} */
-//	public ImportService getImportService();
-//
-//	/** Returns the corresponding {@link MaintenanceService} */
-//	public MaintenanceService getMaintenanceService();
+	// /** Returns the corresponding {@link ImportService} */
+	// public ImportService getImportService();
+	//
+	// /** Returns the corresponding {@link MaintenanceService} */
+	// public MaintenanceService getMaintenanceService();
 }

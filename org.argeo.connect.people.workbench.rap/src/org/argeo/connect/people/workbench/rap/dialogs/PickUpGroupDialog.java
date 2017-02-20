@@ -22,9 +22,9 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
+import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.rap.PeopleRapImages;
+import org.argeo.connect.activities.workbench.ActivitiesImages;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.parts.LdifUsersTable;
@@ -234,7 +234,7 @@ public class PickUpGroupDialog extends TrayDialog {
 				}
 				roles = userAdminService.getRoles(builder.toString());
 			} catch (InvalidSyntaxException e) {
-				throw new PeopleException("Unable to get roles with filter: " + filter, e);
+				throw new ConnectException("Unable to get roles with filter: " + filter, e);
 			}
 			List<User> users = new ArrayList<User>();
 			for (Role role : roles)
@@ -275,14 +275,16 @@ public class PickUpGroupDialog extends TrayDialog {
 		@Override
 		public Image getImage(Object element) {
 			User user = (User) element;
-			String dn = user.getName();
-			// if (dn.endsWith(AuthConstants.ROLES_BASEDN))
-			if (dn.matches(".*(" + NodeConstants.ROLES_BASEDN + ")"))
-				return PeopleRapImages.ICON_ROLE;
-			else if (user.getType() == Role.GROUP)
-				return PeopleRapImages.ICON_GROUP;
+			// String dn = user.getName();
+			if (user.getType() == Role.GROUP)
+				return ActivitiesImages.ICON_GROUP;
+			else if (user.getType() == Role.USER)
+				return ActivitiesImages.ICON_USER;
+			// dn.matches(".*(" + NodeConstants.ROLES_BASEDN + ")")
+			else if (user.getType() == Role.ROLE)
+				return ActivitiesImages.ICON_ROLE;
 			else
-				return PeopleRapImages.ICON_USER;
+				return null;
 		}
 	}
 
@@ -301,7 +303,7 @@ public class PickUpGroupDialog extends TrayDialog {
 				List<Rdn> rdns = name.getRdns();
 				return (String) rdns.get(1).getValue() + '.' + (String) rdns.get(0).getValue();
 			} catch (InvalidNameException e) {
-				throw new PeopleException("Unable to get domain name for " + dn, e);
+				throw new ConnectException("Unable to get domain name for " + dn, e);
 			}
 		}
 	}

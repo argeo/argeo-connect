@@ -55,7 +55,7 @@ public class QuickSearchView extends ViewPart {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 	private PeopleService peopleService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -70,7 +70,7 @@ public class QuickSearchView extends ViewPart {
 		parent.setLayout(new GridLayout());
 		addFilterPanel(parent);
 		entityViewer = createListPart(parent,
-				new EntitySingleColumnLabelProvider(resourceService, peopleService, appWorkbenchService));
+				new EntitySingleColumnLabelProvider(resourcesService, peopleService, appWorkbenchService));
 		refreshFilteredList();
 	}
 
@@ -205,8 +205,8 @@ public class QuickSearchView extends ViewPart {
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {
@@ -216,5 +216,4 @@ public class QuickSearchView extends ViewPart {
 	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
 		this.appWorkbenchService = appWorkbenchService;
 	}
-
 }

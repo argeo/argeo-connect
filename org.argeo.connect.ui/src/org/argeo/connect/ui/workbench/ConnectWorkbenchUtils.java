@@ -454,15 +454,14 @@ public class ConnectWorkbenchUtils {
 	/**
 	 * Simply create a link to open a search editor with the given parameters
 	 * 
-	 * @param peopleWorkbenchService
+	 * @param appWorkbenchService
 	 * @param parent
 	 * @param label
 	 * @param nodeType
-	 * @param basePath
 	 * @return
 	 */
 	public static Link createOpenSearchEditorLink(final AppWorkbenchService appWorkbenchService, Composite parent,
-			final String label, final String nodeType, final String basePath) {
+			final String label, final String nodeType) {
 		Link link = new Link(parent, SWT.NONE);
 		link.setText("<a>" + label + "</a>");
 		link.setLayoutData(EclipseUiUtils.fillWidth());
@@ -474,7 +473,6 @@ public class ConnectWorkbenchUtils {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put(OpenSearchEntityEditor.PARAM_NODE_TYPE, nodeType);
 				params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, label);
-				params.put(OpenSearchEntityEditor.PARAM_BASE_PATH, basePath);
 				String cmdId = appWorkbenchService.getOpenSearchEntityEditorCmdId();
 				CommandUtils.callCommand(cmdId, params);
 			}

@@ -11,17 +11,15 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
+import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesNames;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
-import org.argeo.connect.people.workbench.rap.PeopleRapImages;
-import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.composites.VirtualJcrTableViewer;
-import org.argeo.connect.people.workbench.rap.providers.TitleIconRowLP;
+import org.argeo.connect.activities.ActivitiesService;
+import org.argeo.connect.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.util.TitleIconRowLP;
+import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -66,13 +64,14 @@ import org.osgi.service.useradmin.User;
 /**
  * Update the status of the selected tasks (with only one node type) as batch
  */
-public class AssignToWizard extends Wizard implements PeopleNames {
+public class AssignToWizard extends Wizard {
 	// private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
 	// Context
-	private final PeopleService peopleService;
-	private final PeopleWorkbenchService peopleUiService;
+	// private final PeopleService peopleService;
 	private final UserAdminService userAdminService;
+	private final ActivitiesService activitiesService;
+	private final AppWorkbenchService appWorkbenchService;
 
 	private final Object[] elements;
 	private final String selectorName;
@@ -81,18 +80,18 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 	private String chosenGroupId;
 
 	/**
-	 * @param session
-	 * @param peopleService
-	 * @param peopleWorkbenchService
+	 * @param userAdminService
+	 * @param activitiesService
+	 * @param appWorkbenchService
 	 * @param elements
 	 * @param selectorName
 	 * @param taskId
 	 */
-	public AssignToWizard(UserAdminService userAdminService, PeopleService peopleService,
-			PeopleWorkbenchService peopleWorkbenchService, Object[] elements, String selectorName) {
+	public AssignToWizard(UserAdminService userAdminService, ActivitiesService activitiesService,
+			AppWorkbenchService appWorkbenchService, Object[] elements, String selectorName) {
 		this.userAdminService = userAdminService;
-		this.peopleService = peopleService;
-		this.peopleUiService = peopleWorkbenchService;
+		this.activitiesService = activitiesService;
+		this.appWorkbenchService = appWorkbenchService;
 		this.elements = elements;
 		this.selectorName = selectorName;
 	}
@@ -109,7 +108,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			addPage(recapPage);
 			// getContainer().updateButtons();
 		} catch (Exception e) {
-			throw new PeopleException("Cannot add page to wizard", e);
+			throw new ConnectException("Cannot add page to wizard", e);
 		}
 	}
 
@@ -128,7 +127,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new UpdateAssignmentJob(peopleService, elements, selectorName, chosenGroupId).schedule();
+		new UpdateAssignmentJob(activitiesService, elements, selectorName, chosenGroupId).schedule();
 		return true;
 	}
 
@@ -183,12 +182,14 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				public Image getImage(Object element) {
 					User user = (User) element;
 					String dn = user.getName();
-					if (dn.endsWith(NodeConstants.ROLES_BASEDN))
-						return PeopleRapImages.ICON_ROLE;
-					else if (user.getType() == Role.GROUP)
-						return PeopleRapImages.ICON_GROUP;
-					else
-						return PeopleRapImages.ICON_USER;
+					// FIXME
+					// if (dn.endsWith(NodeConstants.ROLES_BASEDN))
+					// return ActivitiesImages.ICON_ROLE;
+					// else if (user.getType() == Role.GROUP)
+					// return ActivitiesImages.ICON_GROUP;
+					// else
+					// return ActivitiesImages.ICON_USER;
+					return null;
 				}
 
 				@Override
@@ -275,7 +276,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 				}
 				roles = userAdminService.getUserAdmin().getRoles(builder.toString());
 			} catch (InvalidSyntaxException e) {
-				throw new PeopleException("Unable to get roles with filter: " + filter, e);
+				throw new ConnectException("Unable to get roles with filter: " + filter, e);
 			}
 			viewer.setInput(roles);
 			viewer.refresh();
@@ -341,7 +342,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 			body.setLayout(layout);
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition(selectorName, Property.JCR_TITLE, PropertyType.STRING,
-					"Display Name", new TitleIconRowLP(peopleUiService, selectorName, Property.JCR_TITLE), 300));
+					"Display Name", new TitleIconRowLP(appWorkbenchService, selectorName, Property.JCR_TITLE), 300));
 
 			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
@@ -388,18 +389,19 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 	/** Privileged job that performs the update asynchronously */
 	private class UpdateAssignmentJob extends PrivilegedJob {
 
-		private Repository repository;
-
+		private final Repository repository;
+		private final ActivitiesService activitiesService;
 		final private List<String> pathes = new ArrayList<String>();
 		private final String chosenGroup;
 
 		// private final String taskTypeId;
 
-		public UpdateAssignmentJob(PeopleService peopleService, Object[] toUpdateItems, String selectorName,
+		public UpdateAssignmentJob(ActivitiesService activitiesService, Object[] toUpdateItems, String selectorName,
 				String chosenGroup) {
 			super("Updating");
 
 			// this.taskTypeId = taskTypeId;
+			this.activitiesService = activitiesService;
 			this.chosenGroup = chosenGroup;
 			try {
 				Node tmpNode = ConnectJcrUtils.getNodeFromElement(toUpdateItems[0], selectorName);
@@ -409,7 +411,7 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 					pathes.add(currNode.getPath());
 				}
 			} catch (RepositoryException e) {
-				throw new PeopleException("Unable to initialise " + "status batch update ", e);
+				throw new ConnectException("Unable to initialise " + "status batch update ", e);
 			}
 		}
 
@@ -434,12 +436,12 @@ public class AssignToWizard extends Wizard implements PeopleNames {
 						// ConnectJcrUtils.checkCOStatusBeforeUpdate(currNode);
 						if (ConnectJcrUtils.setJcrProperty(currNode, ActivitiesNames.ACTIVITIES_ASSIGNED_TO,
 								PropertyType.STRING, chosenGroup))
-							peopleService.saveEntity(currNode, true);
+							activitiesService.saveEntity(currNode, true);
 					}
 					monitor.worked(1);
 				}
 			} catch (Exception e) {
-				return new Status(IStatus.ERROR, PeopleRapPlugin.PLUGIN_ID,
+				return new Status(IStatus.ERROR, ActivitiesUiPlugin.PLUGIN_ID,
 						"Unable to perform batch assignment to " + chosenGroup + " for " + selectorName + " row list ",
 						e);
 			} finally {

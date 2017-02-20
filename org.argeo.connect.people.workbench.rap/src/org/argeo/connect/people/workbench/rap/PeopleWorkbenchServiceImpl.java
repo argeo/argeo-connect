@@ -9,24 +9,19 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
-import org.argeo.connect.people.workbench.rap.editors.ActivityEditor;
 import org.argeo.connect.people.workbench.rap.editors.DefaultSearchEntityEditor;
-import org.argeo.connect.people.workbench.rap.editors.GroupEditor;
 import org.argeo.connect.people.workbench.rap.editors.MailingListEditor;
 import org.argeo.connect.people.workbench.rap.editors.OrgEditor;
 import org.argeo.connect.people.workbench.rap.editors.PersonEditor;
-import org.argeo.connect.people.workbench.rap.editors.TagEditor;
-import org.argeo.connect.people.workbench.rap.editors.TaskEditor;
 import org.argeo.connect.people.workbench.rap.wizards.NewOrgWizard;
 import org.argeo.connect.people.workbench.rap.wizards.NewPersonWizard;
-import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Centralize here the definition of context specific parameter (for instance
+ * Centralise here the definition of context specific parameter (for instance
  * the name of the command to open editors so that it is easily extended by
  * specific extensions
  */
@@ -35,20 +30,21 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	@Override
 	public String getEntityEditorId(Node curNode) {
 		try {
-			if (curNode.isNodeType(ResourcesTypes.RESOURCES_TAG_INSTANCE))
-				return TagEditor.ID;
-			else if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
+			// if (curNode.isNodeType(ResourcesTypes.RESOURCES_TAG_INSTANCE))
+			// return TagEditor.ID;
+			// else
+			if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				return MailingListEditor.ID;
-//			else if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
-//				return TaskEditor.ID;
-//			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
-//				return ActivityEditor.ID;
+			// else if (curNode.isNodeType(PeopleTypes.PEOPLE_TASK))
+			// return TaskEditor.ID;
+			// else if (curNode.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
+			// return ActivityEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				return PersonEditor.ID;
 			else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORG)) {
 				return OrgEditor.ID;
-			} else if (curNode.isNodeType(PeopleTypes.PEOPLE_GROUP)) {
-				return GroupEditor.ID;
+				// } else if (curNode.isNodeType(PeopleTypes.PEOPLE_GROUP)) {
+				// return GroupEditor.ID;
 			} else
 				return null;
 		} catch (RepositoryException re) {
@@ -70,8 +66,6 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 				return PeopleRapImages.ICON_ORG;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
 				return PeopleRapImages.ICON_MAILING_LIST;
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_GROUP))
-				return PeopleRapImages.ICON_GROUP;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_CONTACT))
 				return getContactIcon(entity);
 			else

@@ -1,10 +1,9 @@
-package org.argeo.connect.people.workbench.rap.composites;
+package org.argeo.connect.ui.workbench.util;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -105,11 +104,13 @@ public class VirtualJcrTableViewer extends Composite {
 				}
 
 				public Image getImage(Object element) {
-					if (selectedElements.contains(element)) {
-						return PeopleRapImages.CHECK_SELECTED;
-					} else {
-						return PeopleRapImages.CHECK_UNSELECTED;
-					}
+					if (selectedElements.contains(element))
+						return getDisplay().getSystemImage(SWT.CHECK);
+					else
+						return null;
+					// return PeopleRapImages.CHECK_SELECTED;
+					// else
+					// return PeopleRapImages.CHECK_UNSELECTED;
 				}
 			});
 			column.setEditingSupport(new SelectionEditingSupport());

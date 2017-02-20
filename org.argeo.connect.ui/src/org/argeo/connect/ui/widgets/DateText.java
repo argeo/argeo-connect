@@ -1,4 +1,4 @@
-package org.argeo.connect.people.workbench.rap.composites;
+package org.argeo.connect.ui.widgets;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -87,11 +86,8 @@ public class DateText extends Composite {
 		dateTxt.setToolTipText(
 				"Enter a date with form \"" + ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT + "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
-		CmsUtils.style(openCalBtn, ConnectUiStyles.FLAT_BTN);
-		GridData gd = new GridData(SWT.CENTER, SWT.CENTER, false, false);
-		gd.heightHint = 17;
-		openCalBtn.setLayoutData(gd);
-		openCalBtn.setImage(PeopleRapImages.CALENDAR_BTN);
+		CmsUtils.style(openCalBtn, ConnectUiStyles.OPEN_CALENDAR_BTN);
+		openCalBtn.setLayoutData(new GridData(16, 16));
 
 		openCalBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;

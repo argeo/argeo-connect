@@ -56,7 +56,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/* DEPENDENCY INJECTION */
 	// private UserAdminService userAdminService;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 
 	/* Centralizes the various specific People services */
 	private PersonService personService;
@@ -100,51 +100,51 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return PeopleConstants.PEOPLE_TMP_PATH;
 	}
 
-	@Override
-	public String getPublicPath() {
-		return PeopleConstants.PEOPLE_PUBLIC_PATH;
-	}
+	// @Override
+	// public String getPublicPath() {
+	// return PeopleConstants.PEOPLE_PUBLIC_PATH;
+	// }
 
-	@Override
-	public String getInstanceConfPath() {
-		return getBasePath(null) + "/" + PeopleNames.PEOPLE_CONF;
-	}
-
-	@Override
-	public String getResourceBasePath(String resourceType) {
-		if (resourceType == null)
-			return getBasePath(PeopleConstants.PEOPLE_RESOURCE);
-		else
-			throw new PeopleException("Undefined type: " + resourceType);
-	}
-
-	@Override
-	public String getResourcePath(String resourceType, String resourceId) {
-		// TODO clean this
-		return getResourceBasePath(resourceType) + "/" + resourceId;
-	}
+	// @Override
+	// public String getInstanceConfPath() {
+	// return getBasePath(null) + "/" + PeopleNames.PEOPLE_CONF;
+	// }
+	//
+	// @Override
+	// public String getResourceBasePath(String resourceType) {
+	// if (resourceType == null)
+	// return getBasePath(PeopleConstants.PEOPLE_RESOURCE);
+	// else
+	// throw new PeopleException("Undefined type: " + resourceType);
+	// }
+	//
+	// @Override
+	// public String getResourcePath(String resourceType, String resourceId) {
+	// // TODO clean this
+	// return getResourceBasePath(resourceType) + "/" + resourceId;
+	// }
 
 	// Clean this: retrieve a parent node name given a NodeType or a Property
 	// name
-	protected String getParentNameFromType(String typeId) {
-		if (typeId.endsWith("y"))
-			return typeId.substring(0, typeId.length() - 1) + "ies";
-		else
-			return typeId + "s";
-	}
+	// protected String getParentNameFromType(String typeId) {
+	// if (typeId.endsWith("y"))
+	// return typeId.substring(0, typeId.length() - 1) + "ies";
+	// else
+	// return typeId + "s";
+	// }
 
 	@Override
-	public String getDefaultPathForEntity(Node node, String nodeType) {
+	public String getDefaultPath(String nodeType, Node node) {
 		String peopleUid = ConnectJcrUtils.get(node, PEOPLE_UID);
 		if (isEmpty(peopleUid))
 			throw new PeopleException("Unable to define default path for " + node + " of type " + nodeType
 					+ ". No property people:uid is defined");
 		else
-			return getDefaultPathForEntity(peopleUid, nodeType);
+			return getDefaultPath(nodeType, peopleUid);
 	}
 
 	@Override
-	public String getDefaultPathForEntity(String peopleUid, String nodeType) {
+	public String getDefaultPath(String nodeType, String peopleUid) {
 		String path = getBasePath(nodeType) + "/";
 		path += JcrUtils.firstCharsToPath(peopleUid, 2) + "/" + peopleUid;
 		return path;
@@ -207,7 +207,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public Node checkPathAndMoveIfNeeded(Node entity, String entityNodeType) throws RepositoryException {
-		String destPath = getDefaultPathForEntity(entity, entityNodeType);
+		String destPath = getDefaultPath(entityNodeType, entity);
 		if (destPath.equals(entity.getPath()))
 			return entity;
 		else {
@@ -278,14 +278,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			for (String currType : PeopleTypes.KNOWN_CONTACT_TYPES) {
 				Node pNode = PeopleJcrUtils.getPrimaryContact(entity, currType);
 				if (pNode != null)
-					PeopleJcrUtils.updatePrimaryCache(resourceService, this, entity, pNode, true);
+					PeopleJcrUtils.updatePrimaryCache(resourcesService, this, entity, pNode, true);
 			}
 
 			// Also update primary job
 			if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)) {
 				Node pJob = PersonJcrUtils.getPrimaryJob(entity);
 				if (pJob != null)
-					PeopleJcrUtils.updatePrimaryCache(resourceService, this, entity, pJob, true);
+					PeopleJcrUtils.updatePrimaryCache(resourcesService, this, entity, pJob, true);
 			}
 		} else
 			log.warn("Trying to update primary cache on " + entity + " - Unknown type.");
@@ -555,14 +555,15 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	// HELPERS
 
-	/* MISCEALLENEOUS */
-	@Override
-	/**
-	 * Override to define app specific properties that are not system properties
-	 */
-	public String getConfigProperty(String key) {
-		return System.getProperty(key);
-	}
+	// /* MISCEALLENEOUS */
+	// @Override
+	// /**
+	// * Override to define app specific properties that are not system
+	// properties
+	// */
+	// public String getConfigProperty(String key) {
+	// return System.getProperty(key);
+	// }
 
 	/* LIFE CYCLE MANAGEMENT */
 	/**
@@ -570,7 +571,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	 * receive/provide data.
 	 */
 	public void init() {
-		personService = new PersonServiceImpl(this, resourceService);
+		personService = new PersonServiceImpl(this, resourcesService);
 		if (log.isDebugEnabled())
 			log.info("People's backend has been initialized");
 	}
@@ -580,7 +581,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 }

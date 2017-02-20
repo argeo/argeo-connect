@@ -8,6 +8,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.connect.AppService;
+
 /**
  * Manage activity and tasks concepts in a people repository. Implementing
  * applications should extend and/or override the canonical implementation in
@@ -16,7 +18,7 @@ import javax.jcr.Session;
  * The correct instance of this interface is usually acquired through the
  * peopleService.
  */
-public interface ActivitiesService {
+public interface ActivitiesService extends AppService {
 
 	/* ACTIVITIES */
 	/**

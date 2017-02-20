@@ -4,9 +4,9 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesService;
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.wizards.NewSimpleTaskWizard;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -43,13 +43,13 @@ public class CreateSimpleTask extends AbstractHandler {
 				jcrId = wizard.getCreatedTask().getIdentifier();
 			}
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to create task node", e);
+			throw new ConnectException("Unable to create task node", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
 		if (jcrId != null)
-			ConnectWorkbenchUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-					jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
+			ConnectWorkbenchUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
+					OpenEntityEditor.PARAM_JCR_ID, jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
 		return null;
 	}
 
