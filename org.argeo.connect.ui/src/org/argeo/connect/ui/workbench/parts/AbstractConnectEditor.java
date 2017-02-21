@@ -21,10 +21,7 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.workbench.util.EditionSourceProvider;
-import org.argeo.connect.ui.workbench.util.CompositeManagedForm;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.workbench.util.CompositeManagedForm;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -32,6 +29,8 @@ import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.commands.ChangeEditingState;
 import org.argeo.connect.ui.workbench.commands.DeleteEntity;
+import org.argeo.connect.ui.workbench.util.CompositeManagedForm;
+import org.argeo.connect.ui.workbench.util.EditionSourceProvider;
 import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -562,6 +561,10 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 
 	public void setUserAdminService(UserAdminService userAdminService) {
 		this.userAdminService = userAdminService;
+	}
+
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setAppService(AppService appService) {

@@ -42,7 +42,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  * must implement the {@link IJcrTableViewer} interface.
  */
 public class GetJxlExport extends AbstractHandler {
-	public final static String ID = AppWorkbenchService.CONNECT_WORKBENCH_ID_PREFIX + ".getJxlExport";
+	public final static String ID = ConnectUiPlugin.PLUGIN_ID + ".getJxlExport";
 	public final static String PARAM_EXPORT_ID = "param.exportId";
 
 	private final static DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HH-mm");

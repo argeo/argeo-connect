@@ -7,6 +7,7 @@ import javax.jcr.PropertyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.workbench.parts.ActivityList;
 import org.argeo.connect.people.PeopleException;
@@ -15,15 +16,16 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
+import org.argeo.connect.people.workbench.rap.composites.MailingListListPart;
 import org.argeo.connect.people.workbench.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.JobList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.OrgAdminInfo;
+import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleWithImgEditor;
 import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.widgets.TagLikeListPart;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -46,7 +48,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Display an organisation with corresponding details */
-public class OrgEditor extends AbstractConnectCTabEditor {
+public class OrgEditor extends AbstractPeopleWithImgEditor {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".orgEditor";
 
 	final static Log log = LogFactory.getLog(OrgEditor.class);
@@ -80,13 +82,13 @@ public class OrgEditor extends AbstractConnectCTabEditor {
 
 		// Tag Management
 		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, PeopleNames.PEOPLE_TAGS,
+				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, ConnectNames.CONNECT_TAGS,
 				"Enter a new tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
+		Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
 				getAppWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, org, PeopleNames.PEOPLE_MAILING_LISTS,
 				"Add a mailing");
 
@@ -219,6 +221,7 @@ public class OrgEditor extends AbstractConnectCTabEditor {
 	}
 
 	public void setPeopleService(PeopleService peopleService) {
+		super.setAppService(peopleService);
 		this.peopleService = peopleService;
 	}
 }

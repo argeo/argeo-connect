@@ -10,7 +10,7 @@ public interface PeopleNames {
 	 * <code>UUID.randomUUID().toString()</code> Class 3 UUID of the
 	 * distinguished name in UTF-8
 	 */
-	String PEOPLE_UID = "people:uid";
+//	String PEOPLE_UID = "people:uid";
 
 	// A default Node at the root of the business path to store information
 	// about current instance of the People repository
@@ -18,7 +18,7 @@ public interface PeopleNames {
 	String PEOPLE_CONF = "conf";
 
 	// Sub concepts parent node names
-	String PEOPLE_TAGS = "people:tags";
+//	String PEOPLE_TAGS = "people:tags";
 	String PEOPLE_MAILING_LISTS = "people:mailingLists";
 	String PEOPLE_PAYMENT_ACCOUNTS = "people:paymentAccounts";
 	String PEOPLE_CONTACTS = "people:contacts";

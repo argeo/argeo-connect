@@ -15,6 +15,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -47,7 +48,7 @@ public class PeopleJcrUtils implements PeopleNames {
 
 		Node members = JcrUtils.mkdirs(group, PEOPLE_MEMBERS, NodeType.NT_UNSTRUCTURED);
 		Node member = members.addNode(ConnectJcrUtils.get(entity, Property.JCR_TITLE), PeopleTypes.PEOPLE_MEMBER);
-		member.setProperty(PEOPLE_REF_UID, ConnectJcrUtils.get(entity, PEOPLE_UID));
+		member.setProperty(PEOPLE_REF_UID, ConnectJcrUtils.get(entity, ConnectNames.CONNECT_UID));
 		member.setProperty(PEOPLE_ROLE, role);
 		if (EclipseUiUtils.notEmpty(title))
 			throw new PeopleException("Position Nature: Unimplemented property ");
@@ -526,7 +527,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			address.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
 			// set reference field
 			if (referencedOrg != null)
-				address.setProperty(PEOPLE_REF_UID, referencedOrg.getProperty(PEOPLE_UID).getString());
+				address.setProperty(PEOPLE_REF_UID, referencedOrg.getProperty(ConnectNames.CONNECT_UID).getString());
 
 			if (primary)
 				markAsPrimary(resourceService, peopleService, parentNode, address);

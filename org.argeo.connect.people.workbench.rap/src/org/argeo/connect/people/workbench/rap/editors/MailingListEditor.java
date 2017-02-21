@@ -18,6 +18,8 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -236,7 +238,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 				new ConnectColumnDefinition("Primary Website", new PrimContactValueLP(null, PeopleTypes.PEOPLE_URL)));
 
 		columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
-		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(PEOPLE_TAGS)));
+		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ConnectNames.CONNECT_TAGS)));
 		columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
 
 		return columns;
@@ -283,7 +285,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		long begin = System.currentTimeMillis();
 		try {
 			String xpathQueryStr = XPathUtils.descendantFrom(peopleService.getDefaultBasePath()) + "//element(*, "
-					+ PeopleTypes.PEOPLE_ENTITY + ")";
+					+ ConnectTypes.CONNECT_ENTITY + ")";
 			String filter = filterTxt.getText();
 			String currVal = ConnectJcrUtils.get(mailingList, Property.JCR_TITLE);
 
@@ -449,5 +451,4 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
 		this.appWorkbenchService = appWorkbenchService;
 	}
-
 }

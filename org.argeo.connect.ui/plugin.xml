@@ -8,6 +8,18 @@
 	
 	<!-- EDITORS --> 
 	<extension point="org.eclipse.ui.editors">
+		<editor
+			id="org.argeo.connect.ui.tagEditor"
+			name="Tag"
+			icon="theme/icons/types/tag.png"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory">
+		</editor>
+		<editor
+			id="org.argeo.connect.ui.defaultSearchEntityEditor"
+			name="Search"
+			icon="theme/icons/actions/search.png"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory">
+		</editor>
 	</extension>
 	
 	<!-- COMMANDS --> 

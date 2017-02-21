@@ -222,7 +222,7 @@ public abstract class TagListFormPart extends Composite {
 	private void addDeleteButton(final AbstractFormPart part, Composite parent, final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
 		CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
-		deleteBtn.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		deleteBtn.setLayoutData(new GridData(8, 8));
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 

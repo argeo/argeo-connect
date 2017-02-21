@@ -19,9 +19,9 @@ import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.web.providers.SearchEntitiesLP;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -129,7 +129,7 @@ public class TagLikeInstancePage implements CmsUiProvider {
 			String path = peopleService.getDefaultBasePath();
 			String value = context.getProperty(Property.JCR_TITLE).getString();
 
-			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY, PeopleTypes.PEOPLE_ENTITY);
+			Selector source = factory.selector(ConnectTypes.CONNECT_ENTITY, ConnectTypes.CONNECT_ENTITY);
 
 			// Reduce to the business sub tree
 			Constraint descCst = factory.descendantNode(source.getSelectorName(), path);

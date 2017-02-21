@@ -8,6 +8,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -94,9 +95,8 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 				builder.append(" / ");
 			if (!spokenLanguages.isEmpty()) {
 				for (String str : spokenLanguages) {
-					builder.append(
-							resourceService.getEncodedTagValue(person.getSession(), ConnectConstants.RESOURCE_LANG, str))
-							.append(", ");
+					builder.append(resourceService.getEncodedTagValue(person.getSession(),
+							ConnectConstants.RESOURCE_LANG, str)).append(", ");
 				}
 				// remove last occurence of the separator
 				builder.delete(builder.length() - 2, builder.length());
@@ -143,7 +143,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 
 		// Tags
 		String tags = PeopleWebSnippets.getTagLikeValues(resourceService, ConnectConstants.RESOURCE_TAG, person,
-				PeopleNames.PEOPLE_TAGS, "#");
+				ConnectNames.CONNECT_TAGS, "#");
 		String mailingLists = PeopleWebSnippets.getTagLikeValues(resourceService, PeopleTypes.PEOPLE_MAILING_LIST,
 				person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {

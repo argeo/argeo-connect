@@ -14,12 +14,11 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -136,12 +135,11 @@ public class PeopleUiUtils {
 		if (isEmpty(uid))
 			throw new PeopleException("Cannot get entity by id by providing an empty people:uid");
 		try {
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			String xpathQueryStr = XPathUtils.descendantFrom(basePath) + "//element(*, " + nodeType + ")";
-			String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_UID, uid);
+			String attrQuery = XPathUtils.getPropertyEquals(ConnectNames.CONNECT_UID, uid);
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
+			Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
 			QueryResult result = xpathQuery.execute();
 			NodeIterator ni = result.getNodes();
 

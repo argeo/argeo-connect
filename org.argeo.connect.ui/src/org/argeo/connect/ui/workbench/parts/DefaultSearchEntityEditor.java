@@ -12,10 +12,9 @@ import javax.jcr.query.Row;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.ui.workbench.ConnectUiPlugin;
 import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -36,9 +35,6 @@ import org.eclipse.ui.PartInitException;
 public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implements IJcrTableViewer {
 
 	public final static String ID = ConnectUiPlugin.PLUGIN_ID + ".defaultSearchEntityEditor";
-
-	// Context
-	private AppWorkbenchService appWorkbenchService;
 
 	// Default column
 	private List<ConnectColumnDefinition> colDefs;

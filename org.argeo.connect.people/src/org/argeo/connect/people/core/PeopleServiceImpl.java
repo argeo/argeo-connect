@@ -19,11 +19,12 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
-import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.people.ContactService;
 import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
@@ -37,7 +38,6 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeUtils;
 import org.springframework.core.io.ClassPathResource;
@@ -83,8 +83,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return displayName;
 	}
 
-	
-
 	// Map<String, String> PEOPLE_TYPE_LABELS = new HashMap<String, String>() {
 	// private static final long serialVersionUID = 1L;
 	// {
@@ -95,7 +93,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	// put(PeopleTypes.PEOPLE_TASK, "Task");
 	// }
 	// };
-	
+
 	@Override
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
 		try {
@@ -126,7 +124,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		String peopleUid = ConnectJcrUtils.get(entity, PEOPLE_UID);
+		String peopleUid = ConnectJcrUtils.get(entity, ConnectNames.CONNECT_UID);
 		if (isEmpty(peopleUid))
 			throw new PeopleException(
 					"Unable to define default path for " + entity + ". No property people:uid is defined");
@@ -316,9 +314,9 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			throw new PeopleException("Cannot get entity by id by providing an empty people:uid");
 		try {
 			QueryManager queryManager = session.getWorkspace().getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) + "//element(*, " + PeopleTypes.PEOPLE_ENTITY
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) + "//element(*, " + ConnectTypes.CONNECT_ENTITY
 					+ ")";
-			String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_UID, uid);
+			String attrQuery = XPathUtils.getPropertyEquals(ConnectNames.CONNECT_UID, uid);
 			if (notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
@@ -395,7 +393,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			if (notEmpty(role))
 				link.setProperty(PeopleNames.PEOPLE_ROLE, role);
 			link.setProperty(PeopleNames.PEOPLE_REF_UID,
-					referencedNode.getProperty(PeopleNames.PEOPLE_UID).getString());
+					referencedNode.getProperty(ConnectNames.CONNECT_UID).getString());
 			referencingNode.getSession().save();
 
 			return link;
@@ -407,11 +405,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public List<Node> getRelatedEntities(Node entity, String linkNodeType, String relatedEntityType) {
 		try {
-			if (!entity.hasProperty(PeopleNames.PEOPLE_UID))
+			if (!entity.hasProperty(ConnectNames.CONNECT_UID))
 				return null;
 			String xpathQueryStr = "//element(*, " + linkNodeType + ")";
 			String attrQuery = XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_REF_UID,
-					entity.getProperty(PeopleNames.PEOPLE_UID).getString());
+					entity.getProperty(ConnectNames.CONNECT_UID).getString());
 			if (notEmpty(attrQuery))
 				xpathQueryStr += "[" + attrQuery + "]";
 			Query xpathQuery = XPathUtils.createQuery(entity.getSession(), xpathQueryStr);
@@ -436,37 +434,40 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/** Do not use this, there is a problem with the checkPoint method */
 	@Deprecated
-//	public long publishAll(Session session, JcrMonitor monitor) {
-//		Query query;
-//		long nodeNb = 0;
-//		try {
-//			query = session.getWorkspace().getQueryManager().createQuery("SELECT * FROM [" + NodeType.MIX_VERSIONABLE
-//					+ "] ORDER BY [" + Property.JCR_LAST_MODIFIED + "] DESC ", Query.JCR_SQL2);
-//			if (monitor != null && !monitor.isCanceled())
-//				monitor.beginTask("Gathering versionnable items", -1);
-//			NodeIterator nit = query.execute().getNodes();
-//
-//			if (nit.hasNext() && monitor != null && !monitor.isCanceled()) {
-//				nodeNb = nit.getSize();
-//				int shortNb = (int) nodeNb / 100;
-//				monitor.beginTask("Committing " + nodeNb + " nodes", shortNb);
-//
-//			}
-//			long i = 0;
-//			VersionManager vm = session.getWorkspace().getVersionManager();
-//			while (nit.hasNext()) {
-//				String currPath = nit.nextNode().getPath();
-//				vm.checkpoint(currPath);
-//				if (i % 100 == 0 && monitor != null && !monitor.isCanceled())
-//					monitor.worked(1);
-//				i++;
-//			}
-//			return nodeNb;
-//		} catch (RepositoryException e) {
-//			throw new PeopleException("Unable to publish the workspace for " + session, e);
-//		}
-//
-//	}
+	// public long publishAll(Session session, JcrMonitor monitor) {
+	// Query query;
+	// long nodeNb = 0;
+	// try {
+	// query = session.getWorkspace().getQueryManager().createQuery("SELECT *
+	// FROM [" + NodeType.MIX_VERSIONABLE
+	// + "] ORDER BY [" + Property.JCR_LAST_MODIFIED + "] DESC ",
+	// Query.JCR_SQL2);
+	// if (monitor != null && !monitor.isCanceled())
+	// monitor.beginTask("Gathering versionnable items", -1);
+	// NodeIterator nit = query.execute().getNodes();
+	//
+	// if (nit.hasNext() && monitor != null && !monitor.isCanceled()) {
+	// nodeNb = nit.getSize();
+	// int shortNb = (int) nodeNb / 100;
+	// monitor.beginTask("Committing " + nodeNb + " nodes", shortNb);
+	//
+	// }
+	// long i = 0;
+	// VersionManager vm = session.getWorkspace().getVersionManager();
+	// while (nit.hasNext()) {
+	// String currPath = nit.nextNode().getPath();
+	// vm.checkpoint(currPath);
+	// if (i % 100 == 0 && monitor != null && !monitor.isCanceled())
+	// monitor.worked(1);
+	// i++;
+	// }
+	// return nodeNb;
+	// } catch (RepositoryException e) {
+	// throw new PeopleException("Unable to publish the workspace for " +
+	// session, e);
+	// }
+	//
+	// }
 
 	protected void importCatalogue(Session session, Resource resource, String templateId) {
 		InputStream stream = null;

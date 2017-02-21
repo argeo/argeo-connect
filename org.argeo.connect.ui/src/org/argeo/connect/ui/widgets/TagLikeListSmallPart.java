@@ -348,7 +348,7 @@ public class TagLikeListSmallPart extends Composite {
 	private void addDeleteButton(final AbstractFormPart part, Composite parent, final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
 		CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
-		deleteBtn.setLayoutData(new GridData(16, 16));
+		deleteBtn.setLayoutData(new GridData(8, 8));
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 

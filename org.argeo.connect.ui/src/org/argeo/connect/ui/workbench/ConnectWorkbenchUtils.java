@@ -556,8 +556,8 @@ public class ConnectWorkbenchUtils {
 		Button button = new Button(parent, SWT.FLAT | SWT.PUSH);
 		CmsUtils.style(button, ConnectUiStyles.SMALL_DELETE_BTN);
 		RowData rd = new RowData();
-		rd.height = 16;
-		rd.width = 16;
+		rd.height = 8;
+		rd.width = 8;
 		button.setLayoutData(rd);
 		return button;
 	}

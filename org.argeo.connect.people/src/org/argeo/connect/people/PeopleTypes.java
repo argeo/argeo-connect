@@ -8,12 +8,12 @@ public interface PeopleTypes {
 
 	/* COMMON CONCEPTS */
 	// Parent base type
-	String PEOPLE_BASE = "people:base";
-	String PEOPLE_ENTITY = "people:entity";
+	// String PEOPLE_BASE = "people:base";
+	// String PEOPLE_ENTITY = "people:entity";
 	String PEOPLE_EXTERNAL_ID = "people:externalId";
 
 	// Mixins
-	String PEOPLE_TAGGABLE = "people:taggable";
+	// String PEOPLE_TAGGABLE = "people:taggable";
 	String PEOPLE_ORDERABLE = "people:orderable";
 	String PEOPLE_CONTACTABLE = "people:contactable";
 

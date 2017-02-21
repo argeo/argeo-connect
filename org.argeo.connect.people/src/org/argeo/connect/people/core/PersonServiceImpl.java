@@ -9,6 +9,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -97,8 +98,9 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			throw new PeopleException(msg);
 		}
 
-//		person = peopleService.checkPathAndMoveIfNeeded(person, PeopleTypes.PEOPLE_PERSON);
-//		ConnectJcrUtils.saveAndPublish(person, false);
+		// person = peopleService.checkPathAndMoveIfNeeded(person,
+		// PeopleTypes.PEOPLE_PERSON);
+		// ConnectJcrUtils.saveAndPublish(person, false);
 
 		// Update cache
 		peopleService.updatePrimaryCache(person);
@@ -124,7 +126,8 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 					+ "update this organisation.";
 			throw new PeopleException(msg);
 		}
-		// org = peopleService.checkPathAndMoveIfNeeded(org, PeopleTypes.PEOPLE_ORG);
+		// org = peopleService.checkPathAndMoveIfNeeded(org,
+		// PeopleTypes.PEOPLE_ORG);
 		// Update cache
 		peopleService.updatePrimaryCache(org);
 		// real save
@@ -157,7 +160,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 
 			// Define the job node new name
 			String orgName = ConnectJcrUtils.get(organisation, PeopleNames.PEOPLE_LEGAL_NAME);
-			String orgUid = ConnectJcrUtils.get(organisation, PeopleNames.PEOPLE_UID);
+			String orgUid = ConnectJcrUtils.get(organisation, ConnectNames.CONNECT_UID);
 			String newNodeName = null;
 			if (notEmpty(orgName)) {
 				newNodeName = JcrUtils.replaceInvalidChars(orgName);

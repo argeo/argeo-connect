@@ -17,8 +17,7 @@ public class TagLikeDropDown extends ConnectAbstractDropDown {
 	private final ResourcesService resourceService;
 	private final String tagId;
 
-	public TagLikeDropDown(Session session, ResourcesService resourceService,
-			String tagId, Text text) {
+	public TagLikeDropDown(Session session, ResourcesService resourceService, String tagId, Text text) {
 		super(text);
 		this.resourceService = resourceService;
 		this.session = session;
@@ -28,8 +27,7 @@ public class TagLikeDropDown extends ConnectAbstractDropDown {
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<String> values = resourceService.getRegisteredTagValueList(
-				session, tagId, filter);
+		List<String> values = resourceService.getRegisteredTagValueList(session, tagId, filter);
 		return values;
 	}
 }

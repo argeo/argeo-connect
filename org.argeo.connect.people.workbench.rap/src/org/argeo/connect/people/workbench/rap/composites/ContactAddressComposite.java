@@ -8,6 +8,7 @@ import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -207,7 +208,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 						nameLkListener.setOrg(currNode);
 						nameLk.setText("<a>" + ConnectJcrUtils.get(currNode, Property.JCR_TITLE) + "</a>");
 
-						String uid = ConnectJcrUtils.get(currNode, PeopleNames.PEOPLE_UID);
+						String uid = ConnectJcrUtils.get(currNode, ConnectNames.CONNECT_UID);
 						if (ConnectJcrUtils.setJcrProperty(contactNode, PeopleNames.PEOPLE_REF_UID, PropertyType.STRING,
 								uid))
 							formPart.markDirty();

@@ -51,12 +51,13 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 
 			String peopleUid = UUID.randomUUID().toString();
 			String relPath = getPeopleService().getDefaultRelPath(peopleUid);
-			Node orga = JcrUtils.mkdirs(peopleParentNode, relPath, PeopleTypes.PEOPLE_ORG);
+			Node orga = JcrUtils.mkdirs(peopleParentNode, relPath);
+			orga.addMixin(PeopleTypes.PEOPLE_ORG);
 
 			String legalName = line.get(PEOPLE_LEGAL_NAME).trim();
 			orga.setProperty(PEOPLE_LEGAL_NAME, legalName);
 			orga.setProperty(Property.JCR_TITLE, legalName);
-			orga.setProperty(PEOPLE_UID, UUID.randomUUID().toString());
+			orga.setProperty(ConnectNames.CONNECT_UID, UUID.randomUUID().toString());
 
 			// Website and dummy picture
 			String webSite = line.get("people:websiteUrl");
@@ -108,7 +109,7 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 						ContactValueCatalogs.CONTACT_CAT_FAX, null);
 
 			// Tags
-			String tags = line.get(PEOPLE_TAGS);
+			String tags = line.get(ConnectNames.CONNECT_TAGS);
 			if (notEmpty(tags))
 				orga.setProperty(ConnectNames.CONNECT_TAGS, ConnectJcrUtils.parseAndClean(tags, ",", true));
 

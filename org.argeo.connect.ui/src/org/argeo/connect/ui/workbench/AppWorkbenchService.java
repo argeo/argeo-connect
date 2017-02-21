@@ -10,8 +10,6 @@ import org.argeo.eclipse.ui.specific.OpenFile;
 /** Provide interface to manage a connect apps in a RCP/RAP Workbench */
 public interface AppWorkbenchService extends AppUiService {
 
-	String CONNECT_WORKBENCH_ID_PREFIX = "org.argeo.connect.ui.workbench";
-
 	default public String getOpenEntityEditorCmdId() {
 		return OpenEntityEditor.ID;
 	}

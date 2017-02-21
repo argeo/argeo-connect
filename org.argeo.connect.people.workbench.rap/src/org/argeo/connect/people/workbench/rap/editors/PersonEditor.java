@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.workbench.parts.ActivityList;
 import org.argeo.connect.people.PeopleException;
@@ -19,8 +20,10 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
+import org.argeo.connect.people.workbench.rap.composites.MailingListListPart;
 import org.argeo.connect.people.workbench.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.JobList;
+import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleWithImgEditor;
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
@@ -28,7 +31,6 @@ import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.widgets.TagLikeListPart;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -55,7 +57,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Edit a person with corresponding details */
-public class PersonEditor extends AbstractConnectCTabEditor implements PeopleNames {
+public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleNames {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".personEditor";
 
@@ -95,12 +97,13 @@ public class PersonEditor extends AbstractConnectCTabEditor implements PeopleNam
 
 		// Tag Management
 		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, PeopleNames.PEOPLE_TAGS, "Add a tag");
+				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, ConnectNames.CONNECT_TAGS,
+				"Add a tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// Mailing list management
-		Composite mlCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
+		Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
 				getAppWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, person, PEOPLE_MAILING_LISTS,
 				"Add a mailing");
 
@@ -462,22 +465,21 @@ public class PersonEditor extends AbstractConnectCTabEditor implements PeopleNam
 		}
 	}
 
-	
 	protected ActivitiesService getActivitiesService() {
 		return activitiesService;
 	}
+
 	protected PeopleService getPeopleService() {
 		return peopleService;
 	}
 
-	
-	
 	/* DEPENDENCY INJECTION */
 	public void setActivitiesService(ActivitiesService activitiesService) {
 		this.activitiesService = activitiesService;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {
+		super.setAppService(peopleService);
 		this.peopleService = peopleService;
 	}
 }

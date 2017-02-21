@@ -1,6 +1,6 @@
 package org.argeo.connect.ui.workbench.commands;
 
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectUiPlugin;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -17,7 +17,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  */
 public class ForceRefresh extends AbstractHandler {
 
-	public final static String ID = AppWorkbenchService.CONNECT_WORKBENCH_ID_PREFIX + ".forceRefresh";
+	public final static String ID = ConnectUiPlugin.PLUGIN_ID + ".forceRefresh";
 	public final static String PARAM_VIEW_ID = "param.viewId";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {

@@ -16,6 +16,7 @@ import javax.jcr.ValueFactory;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.ImportService;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -68,7 +69,7 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 		}
 
 		// TODO merge mixin?
-		if (slaveNode.hasProperty(PeopleNames.PEOPLE_UID))
+		if (slaveNode.hasProperty(ConnectNames.CONNECT_UID))
 			mergeInternalReferences(masterNode, slaveNode);
 
 		if (slaveNode.isNodeType("mix:referenceable"))
@@ -91,7 +92,7 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 
 	protected void mergeInternalReferences(Node masterNode, Node slaveNode) throws RepositoryException {
 		NodeIterator nit = internalReferencing(slaveNode);
-		String peopleUId = masterNode.getProperty(PEOPLE_UID).getString();
+		String peopleUId = masterNode.getProperty(ConnectNames.CONNECT_UID).getString();
 		while (nit.hasNext()) {
 			Node referencing = nit.nextNode();
 			// checkCOStatusBeforeUpdate(referencing);
@@ -100,7 +101,7 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 	}
 
 	protected NodeIterator internalReferencing(Node slaveNode) throws RepositoryException {
-		String peopleUId = slaveNode.getProperty(PEOPLE_UID).getString();
+		String peopleUId = slaveNode.getProperty(ConnectNames.CONNECT_UID).getString();
 		QueryManager qm = slaveNode.getSession().getWorkspace().getQueryManager();
 		Query query = qm.createQuery("select * from [nt:base] as nodes where ISDESCENDANTNODE('"
 				+ peopleService.getDefaultBasePath() + "') AND [" + PEOPLE_REF_UID + "]='" + peopleUId + "'" + " ",

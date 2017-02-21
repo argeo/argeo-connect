@@ -1,30 +1,17 @@
 <people = 'http://www.argeo.org/ns/people'>
 
 //
-// PARENT BASE TYPE
-//
-[people:base] > nt:unstructured, mix:versionable, mix:created, mix:lastModified, mix:title
-
-//
 // ENTITY TYPE: it is the parent of all people business types.
 //
-[people:entity] > people:base
-- people:uid (String) m nofulltext // An implementation dependent UID for each entity
-+ people:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
-+ people:picture (nt:file) // An optional picture for this entity
-
-
-// External ID instances
-[people:externalId] > nt:unstructured, mix:title
-//- people:source (URI) // an optional URI
-- people:sourceId (String) nofulltext // The external source ID, this must be cleanly handled in a later version
-- people:externalUid (String) nofulltext // This entity's unique ID in the external system
-										 // Might be the FN value of a vCard
+[people:entity] > connect:entity, mix:versionable
+ mixin
++ * (nt:file) // An optional picture for this entity
 
 //
 // PERSON
 //
 [people:person] > people:entity, people:contactable, connect:taggable
+ mixin
 - people:useDistinctDisplayName (BOOLEAN)  
 - people:firstName (STRING) 
 - people:middleName (STRING)
@@ -63,6 +50,7 @@
 // ORGANISATION
 //
 [people:org] > people:entity, people:contactable, connect:taggable
+ mixin
 - people:useDistinctDisplayName (BOOLEAN) 
 - people:legalName (STRING)
 - people:legalForm (STRING)
@@ -85,6 +73,7 @@
 // GROUP : base type for all groups of persons, organisations and/or other groups 
 //
 [people:group] > people:entity, connect:taggable
+ mixin
 + people:members (nt:unstructured) =nt:unstructured m a 
 
 // 
@@ -119,8 +108,7 @@
 // TODO - Enhance to provide additional services like tracking of sent newsletters 
 // The fact that a contactable entity belongs to this mailing list is stored in
 // the corresponding node via the people:mailingLists multi-valued property
-[people:mailingList] > people:entity
-
+[people:mailingList] > connect:tagInstance, people:entity
 
 
 //
@@ -160,8 +148,8 @@ mixin
 [people:contactable] 
 mixin
 + people:contacts (nt:unstructured)
-- people:mailingLists (STRING) * // A tag like property to keep reference to the mailing list this contact is bound to.
-
+- people:mailingLists (STRING) * // A tag like property to keep a reference to the mailing list this contact is bound to.
+- people:unsubscribedMailingLists (STRING) * // Tag like property to track unsubscribed mailing lists
 
 // 
 // CONTACTS
@@ -229,4 +217,3 @@ mixin
 - people:bankNb (STRING)
 - people:iban (STRING)
 - people:bic (STRING)
-

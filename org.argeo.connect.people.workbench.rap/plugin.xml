@@ -62,12 +62,6 @@
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="theme/icons/types/tag.png"
-			id="org.argeo.connect.people.workbench.rap.tagEditor"
-			name="Tag">
-		</editor>
-		<editor
 			id="org.argeo.connect.people.workbench.rap.mailingListEditor"
 			name="Mailing List"
 			icon="theme/icons/types/mailingList.gif"

@@ -102,7 +102,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			String localId = UserAdminUtils.getUserLocalId(reporterId);
 			Node parent = JcrUtils.mkdirs(activityBase, getActivityParentRelPath(session, date, localId),
 					NodeType.NT_UNSTRUCTURED);
-			Node activity = parent.addNode(type, ActivitiesTypes.ACTIVITIES_ACTIVITY);
+			Node activity = parent.addNode(type, NodeType.NT_UNSTRUCTURED);
 			activity.addMixin(type);
 			activity.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
 

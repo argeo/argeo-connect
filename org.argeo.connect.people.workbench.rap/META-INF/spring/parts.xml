@@ -59,17 +59,9 @@
 		class="org.argeo.connect.people.workbench.rap.editors.PeopleSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleService" ref="peopleService" />
-		<property name="peopleWorkbenchService" ref="peopleWorkbenchService" />
-	</bean>
-
-	<!-- Management of tags and static lists -->
-	<bean id="tagEditor"
-		class="org.argeo.connect.ui.workbench.parts.TagEditor"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="peopleService" ref="peopleService" />
 		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
 
@@ -77,12 +69,11 @@
 		class="org.argeo.connect.people.workbench.rap.editors.MailingListEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="peopleService" ref="peopleService" />
 		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
-
+	
 	<bean id="listValuesEditor"
 		class="org.argeo.connect.people.workbench.rap.editors.ListValuesEditor"
 		scope="prototype">
@@ -91,4 +82,6 @@
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
 	</bean>
+	
+	
 </beans>

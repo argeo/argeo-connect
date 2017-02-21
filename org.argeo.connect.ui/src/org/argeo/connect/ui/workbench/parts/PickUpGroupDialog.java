@@ -274,19 +274,17 @@ public class PickUpGroupDialog extends TrayDialog {
 
 		@Override
 		public Image getImage(Object element) {
-		
-			return null;
-//			User user = (User) element;
-//			// String dn = user.getName();
-//			if (user.getType() == Role.GROUP)
-//				return ConnectWorkbenchImages.ICON_GROUP;
-//			else if (user.getType() == Role.USER)
-//				return ConnectWorkbenchImages.ICON_USER;
-//			// dn.matches(".*(" + NodeConstants.ROLES_BASEDN + ")")
-//			else if (user.getType() == Role.ROLE)
-//				return ConnectWorkbenchImages.ICON_ROLE;
-//			else
-//				return null;
+			User user = (User) element;
+			// String dn = user.getName();
+			if (user.getType() == Role.GROUP)
+				return ConnectWorkbenchImages.ICON_GROUP;
+			else if (user.getType() == Role.USER)
+				return ConnectWorkbenchImages.ICON_USER;
+			// dn.matches(".*(" + NodeConstants.ROLES_BASEDN + ")")
+			else if (user.getType() == Role.ROLE)
+				return ConnectWorkbenchImages.ICON_ROLE;
+			else
+				return null;
 		}
 	}
 

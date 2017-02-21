@@ -6,6 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -109,7 +110,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 			builder.append(tmpStr);
 
 		String tags = PeopleWebSnippets.getTagLikeValues(resourceService, ConnectConstants.RESOURCE_TAG, orga,
-				PeopleNames.PEOPLE_TAGS, "#");
+				ConnectNames.CONNECT_TAGS, "#");
 		String mailingLists = PeopleWebSnippets.getTagLikeValues(resourceService, PeopleTypes.PEOPLE_MAILING_LIST, orga,
 				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 

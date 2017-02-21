@@ -1,4 +1,4 @@
-package org.argeo.connect.people.workbench.rap.editors;
+package org.argeo.connect.activities.workbench.parts;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
@@ -19,7 +19,7 @@ import org.argeo.connect.activities.ActivitiesException;
 import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.core.ActivityUtils;
-import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
+import org.argeo.connect.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.widgets.LinkListPart;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
@@ -42,13 +42,13 @@ import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
- * Default People rate editor: display a rate and an optional comment. Only the
- * manager can edit an existing rate, the business admin can yet delete it
+ * Default Activities rate editor: display a rate and an optional comment. Only
+ * the manager can edit an existing rate, the business admin can yet delete it
  */
 public class RateEditor extends AbstractConnectEditor {
 	final static Log log = LogFactory.getLog(RateEditor.class);
 
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".rateEditor";
+	public final static String ID = ActivitiesUiPlugin.PLUGIN_ID + ".rateEditor";
 
 	// Context
 	private ActivitiesService activitiesService;
@@ -134,7 +134,7 @@ public class RateEditor extends AbstractConnectEditor {
 	}
 
 	private class RateHeader extends Composite {
-		private static final long serialVersionUID = 6434106955847719839L;
+		private static final long serialVersionUID = 3489094552204283164L;
 
 		private final Node activity;
 

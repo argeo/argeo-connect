@@ -15,6 +15,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
@@ -84,29 +85,20 @@ public class PersonJcrUtils implements PeopleNames {
 	 * Helper to retrieve a person given her first and last Name. Must be
 	 * refined.
 	 */
-	public static Node getPersonWithLastAndFirstName(Session session,
-			String lastName, String firstName) throws RepositoryException {
-		QueryObjectModelFactory factory = session.getWorkspace()
-				.getQueryManager().getQOMFactory();
+	public static Node getPersonWithLastAndFirstName(Session session, String lastName, String firstName)
+			throws RepositoryException {
+		QueryObjectModelFactory factory = session.getWorkspace().getQueryManager().getQOMFactory();
 		final String typeSelector = "person";
-		Selector source = factory.selector(PeopleTypes.PEOPLE_PERSON,
-				typeSelector);
-		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
-				PEOPLE_LAST_NAME);
-		DynamicOperand dynOp2 = factory.propertyValue(source.getSelectorName(),
-				PEOPLE_FIRST_NAME);
-		StaticOperand statOp = factory.literal(session.getValueFactory()
-				.createValue(lastName));
-		StaticOperand statOp2 = factory.literal(session.getValueFactory()
-				.createValue(firstName));
-		Constraint defaultC = factory.comparison(dynOp,
-				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-		Constraint defaultC2 = factory.comparison(dynOp2,
-				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp2);
+		Selector source = factory.selector(PeopleTypes.PEOPLE_PERSON, typeSelector);
+		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(), PEOPLE_LAST_NAME);
+		DynamicOperand dynOp2 = factory.propertyValue(source.getSelectorName(), PEOPLE_FIRST_NAME);
+		StaticOperand statOp = factory.literal(session.getValueFactory().createValue(lastName));
+		StaticOperand statOp2 = factory.literal(session.getValueFactory().createValue(firstName));
+		Constraint defaultC = factory.comparison(dynOp, QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+		Constraint defaultC2 = factory.comparison(dynOp2, QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp2);
 		defaultC = factory.and(defaultC, defaultC2);
 
-		QueryObjectModel query = factory.createQuery(source, defaultC, null,
-				null);
+		QueryObjectModel query = factory.createQuery(source, defaultC, null, null);
 		QueryResult result = query.execute();
 		NodeIterator ni = result.getNodes();
 		// TODO clean this to handle multiple result
@@ -123,23 +115,20 @@ public class PersonJcrUtils implements PeopleNames {
 	 * @param title
 	 *            OPTIONAL: the nature of the subject in this relation, for
 	 *            instance "Actor" or "Engineer" - Not yet implemented
-	 * */
-	public static Node addJob(Node person, Node org, String department,
-			String role, String title, boolean isPrimary, Calendar dateBegin,
-			Calendar dateEnd, Boolean isCurrent) throws RepositoryException {
+	 */
+	public static Node addJob(Node person, Node org, String department, String role, String title, boolean isPrimary,
+			Calendar dateBegin, Calendar dateEnd, Boolean isCurrent) throws RepositoryException {
 
-		Node jobs = JcrUtils.mkdirs(person, PEOPLE_JOBS,
-				NodeType.NT_UNSTRUCTURED);
+		Node jobs = JcrUtils.mkdirs(person, PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
 		Node job = jobs.addNode(org.getName(), PeopleTypes.PEOPLE_JOB);
-		job.setProperty(PEOPLE_REF_UID, org.getProperty(PEOPLE_UID).getString());
+		job.setProperty(PEOPLE_REF_UID, org.getProperty(ConnectNames.CONNECT_UID).getString());
 
 		if (EclipseUiUtils.notEmpty(role))
 			job.setProperty(PEOPLE_ROLE, role);
 		if (EclipseUiUtils.notEmpty(department))
 			job.setProperty(PEOPLE_DEPARTMENT, department);
 		if (EclipseUiUtils.notEmpty(title))
-			throw new PeopleException(
-					"Position Nature: Unimplemented property ");
+			throw new PeopleException("Position Nature: Unimplemented property ");
 		if (dateBegin != null)
 			job.setProperty(PEOPLE_DATE_BEGIN, dateBegin);
 		if (dateEnd != null)
@@ -155,11 +144,10 @@ public class PersonJcrUtils implements PeopleNames {
 	 * 
 	 * @param role
 	 *            the role of the given entity in this group. Cannot be null
-	 * */
-	public static Node addJob(Node person, Node org, String department,
-			String role, boolean isPrimary) throws RepositoryException {
-		return addJob(person, org, department, role, null, isPrimary, null,
-				null, null);
+	 */
+	public static Node addJob(Node person, Node org, String department, String role, boolean isPrimary)
+			throws RepositoryException {
+		return addJob(person, org, department, role, null, isPrimary, null, null, null);
 	}
 
 	/**
@@ -167,23 +155,19 @@ public class PersonJcrUtils implements PeopleNames {
 	 * 
 	 * @param role
 	 *            the role of the given entity in this group. Cannot be null
-	 * */
-	public static Node addJob(Node person, Node org, String role,
-			boolean isPrimary) throws RepositoryException {
-		return addJob(person, org, null, role, null, isPrimary, null, null,
-				null);
+	 */
+	public static Node addJob(Node person, Node org, String role, boolean isPrimary) throws RepositoryException {
+		return addJob(person, org, null, role, null, isPrimary, null, null, null);
 	}
 
-	public static Node getPrimaryJob(Node person)
-			throws RepositoryException {
+	public static Node getPrimaryJob(Node person) throws RepositoryException {
 		// Rather
 		if (person.hasNode(PEOPLE_JOBS)) {
 			NodeIterator ni = person.getNode(PEOPLE_JOBS).getNodes();
 			while (ni.hasNext()) {
 				Node pJob = ni.nextNode();
 				if (pJob.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
-						&& pJob.getProperty(PeopleNames.PEOPLE_IS_PRIMARY)
-								.getBoolean())
+						&& pJob.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean())
 					return pJob;
 			}
 		}

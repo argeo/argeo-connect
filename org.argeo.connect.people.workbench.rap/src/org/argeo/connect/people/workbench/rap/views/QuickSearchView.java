@@ -14,9 +14,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
-import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
@@ -169,7 +169,7 @@ public class QuickSearchView extends ViewPart {
 			QueryManager queryManager = session.getWorkspace().getQueryManager();
 
 			// XPATH Query
-			String xpathQueryStr = "//element(*, " + PeopleTypes.PEOPLE_ENTITY + ")";
+			String xpathQueryStr = "//element(*, " + ConnectTypes.CONNECT_ENTITY + ")";
 			String xpathFilter = XPathUtils.getFreeTextConstraint(filter);
 			if (notEmpty(xpathFilter))
 				xpathQueryStr += "[" + xpathFilter + "]";

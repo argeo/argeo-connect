@@ -11,10 +11,12 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
@@ -56,10 +58,11 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 
 			// Create corresponding node
 			String relPath = getPeopleService().getDefaultRelPath(peopleUid);
-			Node person = JcrUtils.mkdirs(peopleParentNode, relPath, PeopleTypes.PEOPLE_PERSON);
+			Node person = JcrUtils.mkdirs(peopleParentNode, relPath);
+			person.addMixin(PeopleTypes.PEOPLE_PERSON);
 
 			// Mandatory properties
-			person.setProperty(PEOPLE_UID, peopleUid);
+			person.setProperty(ConnectNames.CONNECT_UID, peopleUid);
 			if (notEmpty(lastName))
 				person.setProperty(PEOPLE_LAST_NAME, lastName);
 			if (notEmpty(firstName))
@@ -89,9 +92,9 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			}
 
 			// Tags
-			String tags = line.get(PEOPLE_TAGS);
+			String tags = line.get(ConnectNames.CONNECT_TAGS);
 			if (notEmpty(tags))
-				person.setProperty(PEOPLE_TAGS, ConnectJcrUtils.parseAndClean(tags, ",", true));
+				person.setProperty(ConnectNames.CONNECT_TAGS, ConnectJcrUtils.parseAndClean(tags, ",", true));
 
 			// Mailing lists
 			String mailingLists = line.get(PEOPLE_MAILING_LISTS);

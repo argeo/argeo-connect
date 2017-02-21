@@ -66,7 +66,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 	private UserAdminService userAdminService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -314,7 +314,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		// PeopleTypes.PEOPLE_ORG.equals(nodeType))
 		// return true;
 		// else
-			return false;
+		return false;
 	}
 
 	private void addBtnListener(final Shell parentShell, final Button button, final String tagId,
@@ -333,7 +333,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 					// We assume here we always use xpath query and thus we have
 					// only single node rows
 					Wizard wizard = new TagOrUntagInstancesWizard(button.getDisplay(), actionType, session,
-							resourceService, appWorkbenchService, rows, null, tagId, taggablePropName);
+							resourcesService, appWorkbenchService, rows, null, tagId, taggablePropName);
 					WizardDialog dialog = new WizardDialog(parentShell, wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {
@@ -394,12 +394,10 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 
 		// Small workaround to enable xpath queries
 		String entityType = getEntityType();
-
 		// Xpath queries: only one node by row
 		if (getColumnDefinition(null).get(0).getSelectorName() == null)
 			entityType = null;
-
-		tableViewer.addDoubleClickListener(new JcrViewerDClickListener(entityType, appWorkbenchService));
+		tableViewer.addDoubleClickListener(new JcrViewerDClickListener(entityType));
 	}
 
 	/** Refresh the table viewer based on the free text search field */
@@ -564,7 +562,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 	}
 
 	protected ResourcesService getResourceService() {
-		return resourceService;
+		return resourcesService;
 	}
 
 	protected AppWorkbenchService getPeopleUiService() {
@@ -630,8 +628,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setUserAdminService(UserAdminService userAdminService) {

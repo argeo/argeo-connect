@@ -59,7 +59,6 @@ public class ResourcesServiceImpl implements ResourcesService {
 		return relPath + "/" + cleanedTag;
 	}
 
-
 	@Override
 	public String getItemDefaultEnLabel(String itemId) {
 		return itemId;
@@ -239,8 +238,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 				return session.getNode(path);
 			}
 		} catch (RepositoryException e) {
-			throw new ConnectException(
-					"Unable to retrieve tag like parent " + "at path " + path + " for tagId " + tagId, e);
+			throw new ConnectException("Unable to retrieve tag like parent at path " + path + " for tagId " + tagId, e);
 		}
 		return null;
 	}

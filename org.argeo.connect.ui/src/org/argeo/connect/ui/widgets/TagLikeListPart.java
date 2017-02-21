@@ -159,17 +159,9 @@ public class TagLikeListPart extends Composite {
 						Composite tagCmp = toolkit.createComposite(parentCmp, SWT.NO_FOCUS);
 						tagCmp.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
-
 						CmsUtils.markup(link);
-						if (taggablePropName.equals(ConnectNames.CONNECT_TAGS))
-							link.setText(" #<a>" + tagValue + "</a>");
-						// else if
-						// (taggablePropName.equals(PeopleNames.PEOPLE_MAILING_LISTS))
-						// link.setText(" @<a>" + tagValue + "</a>");
-						else
-							link.setText(" <a>" + tagValue + "</a>");
-
 						CmsUtils.style(link, ConnectUiStyles.ENTITY_HEADER);
+						link.setText(getLinkText(taggablePropName, tagValue));
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
 
@@ -250,10 +242,17 @@ public class TagLikeListPart extends Composite {
 		}
 	}
 
+	protected String getLinkText(String taggablePropName, String value) {
+		if (taggablePropName.equals(ConnectNames.CONNECT_TAGS))
+			return " #<a>" + value + "</a>";
+		else
+			return " <a>" + value + "</a>";
+	}
+
 	private void addDeleteButton(final AbstractFormPart part, Composite parent, final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
 		CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
-		deleteBtn.setLayoutData(new GridData(16, 16));
+		deleteBtn.setLayoutData(new GridData(16, 8));
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 

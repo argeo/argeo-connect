@@ -8,6 +8,7 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.cms.ui.CmsUiProvider;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.web.PeopleWebConstants;
@@ -38,7 +39,7 @@ public class PersonHeaderPart implements CmsUiProvider {
 
 	public PersonHeaderPart(PeopleService peopleService) {
 		this.peopleService = peopleService;
-		tagsPart = new TagLikeValuesPart(PeopleNames.PEOPLE_TAGS);
+		tagsPart = new TagLikeValuesPart(ConnectNames.CONNECT_TAGS);
 		mailingListsPart = new TagLikeValuesPart(PeopleNames.PEOPLE_MAILING_LISTS);
 	}
 

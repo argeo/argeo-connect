@@ -6,6 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsUiProvider;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
@@ -57,7 +58,7 @@ public class PeopleDefaultPage implements CmsUiProvider {
 		// A search on the left and the display on the right
 		populateSearch(leftPannelCmp, context, rightPannelCmp);
 		// default display
-		if (!context.isNodeType(PeopleTypes.PEOPLE_ENTITY))
+		if (!context.isNodeType(ConnectTypes.CONNECT_ENTITY))
 			populateDefaultDisplay(rightPannelCmp, context);
 		else
 			refreshDisplay(rightPannelCmp, context);

@@ -157,7 +157,7 @@ public abstract class MultiValueListWithDDPart extends Composite {
 	private Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT);
 		CmsUtils.style(button, ConnectUiStyles.SMALL_DELETE_BTN);
-		GridData gd = new GridData(16, 16);
+		GridData gd = new GridData(8, 8);
 		button.setLayoutData(gd);
 		return button;
 	}

@@ -6,18 +6,19 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- COMMANDS -->
-	<bean id="openEntityEditor" class="org.argeo.connect.ui.workbench.commands.OpenEntityEditor"
+	<bean id="openEntityEditor"
+		class="org.argeo.connect.ui.workbench.commands.OpenEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
-	<bean id="openSearchEntityEditor" class="org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor"
+	<bean id="openSearchEntityEditor"
+		class="org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor"
 		scope="prototype">
-		<property name="repository" ref="repository" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
-	
+
 	<!-- Entities and links CRUDs -->
 	<bean id="createEntity" class="org.argeo.connect.ui.workbench.commands.CreateEntity"
 		scope="prototype">
@@ -31,23 +32,37 @@
 		<property name="repository" ref="repository" />
 		<property name="appService" ref="appService" />
 	</bean>
-	
-	<!--  Exports  -->
+
+	<!-- Exports -->
 	<bean id="getJxlExport" class="org.argeo.connect.ui.workbench.commands.GetJxlExport"
 		scope="prototype">
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
 	<!-- EDITORS -->
-	
-	<!-- VIEWS -->
-
-	<!--  Manage part state change -->
-	<bean id="partStateChanged"
-		class="org.argeo.connect.ui.workbench.util.PartStateChanged"
+	<!-- Management of tags and static lists -->
+	<bean id="tagEditor" class="org.argeo.connect.ui.workbench.parts.TagEditor"
 		scope="prototype">
-	<!-- <property name="peopleService" ref="peopleService" /> -->
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
+	<bean id="defaultSearchEntityEditor"
+		class="org.argeo.connect.ui.workbench.parts.TagEditor.DefaultSearchEntityEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<!-- <property name="userAdminService" ref="userAdminService" /> -->
+		<!-- <property name="resourcesService" ref="resourcesService" /> -->
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
 
+	<!-- VIEWS -->
+
+	<!-- Manage part state change -->
+	<bean id="partStateChanged" class="org.argeo.connect.ui.workbench.util.PartStateChanged"
+		scope="prototype">
+		<!-- <property name="peopleService" ref="peopleService" /> -->
+	</bean>
 </beans>
