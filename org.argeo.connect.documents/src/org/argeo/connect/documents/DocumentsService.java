@@ -21,6 +21,7 @@ import javax.jcr.query.QueryManager;
 import javax.naming.ldap.LdapName;
 
 import org.argeo.cms.auth.CurrentUser;
+import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -28,13 +29,28 @@ import org.argeo.node.NodeConstants;
 import org.argeo.node.NodeUtils;
 
 /** Default backend for the Argeo Documents App */
-public class DocumentsService {
+public class DocumentsService implements AppService {
 	// private final static String NODE_PREFIX = "node://";
+
+	@Override
+	public String getAppBaseName() {
+		return DocumentsConstants.DOCUMENTS_APP_LBL;
+	}
+
+	@Override
+	public String getDefaultRelPath(Node entity) throws RepositoryException {
+		throw new DocumentsException("No default relpath is defined for the Documents App");
+	}
+
+	@Override
+	public String getDefaultRelPath(String id) {
+		throw new DocumentsException("No default relpath is defined for the Documents App");
+	}
 
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);
 		// Insure the parent node is there.
-		Node documents = JcrUtils.mkdirs(home, DocumentsConstants.DOCUMENTS_APP_LBL, NodeType.NT_FOLDER);
+		Node documents = JcrUtils.mkdirs(home, getAppBaseName(), NodeType.NT_FOLDER);
 		ConnectJcrUtils.saveIfNecessary(documents);
 		Path[] paths = { getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)) };
 
@@ -52,8 +68,7 @@ public class DocumentsService {
 				String cn = (String) ln.getRdn(ln.size() - 1).getValue();
 				Node workgroupHome = NodeUtils.getGroupHome(session, cn);
 				if (workgroupHome != null) {
-					Node documents = JcrUtils.mkdirs(workgroupHome, DocumentsConstants.DOCUMENTS_APP_LBL,
-							NodeType.NT_FOLDER);
+					Node documents = JcrUtils.mkdirs(workgroupHome, getAppBaseName(), NodeType.NT_FOLDER);
 					documents.addMixin(NodeType.MIX_TITLE);
 					if (session.hasPendingChanges()) {
 						documents.setProperty(Property.JCR_TITLE, cn);
@@ -227,9 +242,9 @@ public class DocumentsService {
 			session = CurrentUser.tryAs(() -> repo.login());
 			Node home = NodeUtils.getUserHome(session);
 			// Insure the parent node is there.
-			if (!home.hasNode(DocumentsConstants.DOCUMENTS_APP_LBL))
+			if (!home.hasNode(getAppBaseName()))
 				home.addNode(DocumentsConstants.DOCUMENTS_APP_LBL, NodeType.NT_FOLDER);
-			return home.getPath() + "/" + DocumentsConstants.DOCUMENTS_APP_LBL;
+			return home.getPath() + getDefaultBasePath();
 		} catch (Exception e) {
 			throw new DocumentsException("Cannot retrieve Current User Home Path", e);
 		} finally {

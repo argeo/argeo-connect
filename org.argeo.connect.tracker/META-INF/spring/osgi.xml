@@ -7,14 +7,13 @@
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<!-- REFERENCES -->
-	<!-- TODO we implicitly expect that People repository has been instrumented 
-		with the Tracker cnd, to leave the Tracker data model abstract -->
-	<reference id="trackerRepository" interface="javax.jcr.Repository"
-		filter="(cn=people)" />
-	<!-- <reference id="trackerRepository" interface="javax.jcr.Repository" 
-		filter="(cn=tracker)" /> -->
-
 	<reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" />
-	<reference id="userTransaction" interface="javax.transaction.UserTransaction" />
+	<reference id="repository" interface="javax.jcr.Repository"
+		filter="(cn=home)" />
+	<reference id="userAdminService" interface="org.argeo.connect.UserAdminService" />
+	<reference id="resourcesService" interface="org.argeo.connect.resources.ResourcesService" />
+	<reference id="trackerService" interface="org.argeo.connect.tracker.TrackerService" />
+	<reference id="appWorkbenchService"
+		interface="org.argeo.connect.people.workbench.AppWorkbenchService" />
 
 </beans:beans>

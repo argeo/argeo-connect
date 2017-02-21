@@ -8,7 +8,7 @@
 	<!-- EDITORS -->
 	<bean id="projectEditor" class="org.argeo.connect.tracker.internal.ui.parts.ProjectEditor"
 		scope="prototype">
-		<property name="repository" ref="trackerRepository" />
+		<property name="repository" ref="repository" />
 		<property name="peopleTrackerService" ref="peopleTrackerService" />
 		<property name="trackerWbService" ref="trackerWbService" />
 	</bean>
@@ -33,7 +33,7 @@
 	</bean>
 	<!-- COMMANDS -->
 	<bean id="openTrackerEntityEditor"
-		class="org.argeo.connect.tracker.ui.commands.OpenTrackerEntityEditor"
+		class="org.argeo.connect.tracker.ui.workbench.OpenTrackerEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="trackerRepository" />
 		<property name="peopleService" ref="peopleTrackerService" />

@@ -140,15 +140,14 @@ public class XPathUtils {
 
 	public static Query createQuery(Session session, String queryString) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
-
 		// Localise JCR properties for XPATH
-
+		queryString = localiseJcrItemNames(queryString);
 		return queryManager.createQuery(queryString, ConnectConstants.QUERY_XPATH);
 	}
 
-	private final static String NS_JCR = "{http://www.jcp.org/jcr/1.0}";
-	private final static String NS_NT = "{http://www.jcp.org/jcr/nt/1.0}";
-	private final static String NS_MIX = "{http://www.jcp.org/jcr/mix/1.0}";
+	private final static String NS_JCR = "\\{http://www.jcp.org/jcr/1.0\\}";
+	private final static String NS_NT = "\\{http://www.jcp.org/jcr/nt/1.0\\}";
+	private final static String NS_MIX = "\\{http://www.jcp.org/jcr/mix/1.0\\}";
 
 	/**
 	 * Replace the generic namespace with the local "jcr:", "nt:", "mix:"

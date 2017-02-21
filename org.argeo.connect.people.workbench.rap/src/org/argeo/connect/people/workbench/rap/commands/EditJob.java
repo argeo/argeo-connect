@@ -11,9 +11,9 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.dialogs.EditJobDialog;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -74,8 +74,8 @@ public class EditJob extends AbstractHandler {
 			int result = diag.open();
 			if (result == Window.OK) {
 				IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getActiveEditor();
-				if (iep != null && iep instanceof AbstractPeopleEditor)
-					((AbstractPeopleEditor) iep).forceRefresh();
+				if (iep != null && iep instanceof AbstractConnectEditor)
+					((AbstractConnectEditor) iep).forceRefresh();
 			}
 		} catch (RepositoryException e) {
 			throw new PeopleException("unexpected JCR error while opening " + "editor for newly created programm", e);

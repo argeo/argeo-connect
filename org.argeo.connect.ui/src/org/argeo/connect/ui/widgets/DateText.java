@@ -87,7 +87,7 @@ public class DateText extends Composite {
 				"Enter a date with form \"" + ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT + "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
 		CmsUtils.style(openCalBtn, ConnectUiStyles.OPEN_CALENDAR_BTN);
-		openCalBtn.setLayoutData(new GridData(16, 16));
+		openCalBtn.setLayoutData(new GridData(24, 16));
 
 		openCalBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;

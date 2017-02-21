@@ -7,11 +7,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -39,12 +39,12 @@ public class ContactComposite extends Composite {
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 
-	private final AbstractPeopleEditor editor;
+	private final AbstractConnectEditor editor;
 	private final FormToolkit toolkit;
 	private final AbstractFormPart formPart;
 	private final boolean isCheckedOut;
 
-	public ContactComposite(Composite parent, int style, AbstractPeopleEditor editor, AbstractFormPart formPart,
+	public ContactComposite(Composite parent, int style, AbstractConnectEditor editor, AbstractFormPart formPart,
 			Node contactNode, Node parentVersionableNode, ResourcesService resourceService,
 			AppWorkbenchService appWorkbenchService, PeopleService peopleService) {
 		super(parent, style);

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- COMMANDS -->
+	<bean id="openEntityEditor" class="org.argeo.connect.ui.workbench.commands.OpenEntityEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+
+	<bean id="openSearchEntityEditor" class="org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+	
+	<!-- Entities and links CRUDs -->
+	<bean id="createEntity" class="org.argeo.connect.ui.workbench.commands.CreateEntity"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="appService" ref="appService" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+
+	<bean id="deleteEntity" class="org.argeo.connect.ui.workbench.commands.DeleteEntity"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="appService" ref="appService" />
+	</bean>
+	
+	<!--  Exports  -->
+	<bean id="getJxlExport" class="org.argeo.connect.ui.workbench.commands.GetJxlExport"
+		scope="prototype">
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+
+	<!-- EDITORS -->
+	
+	<!-- VIEWS -->
+
+	<!--  Manage part state change -->
+	<bean id="partStateChanged"
+		class="org.argeo.connect.ui.workbench.util.PartStateChanged"
+		scope="prototype">
+	<!-- <property name="peopleService" ref="peopleService" /> -->
+	</bean>
+
+
+</beans>

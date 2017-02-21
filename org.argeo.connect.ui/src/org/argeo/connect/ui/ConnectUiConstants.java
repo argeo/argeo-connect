@@ -41,4 +41,15 @@ public interface ConnectUiConstants {
 	// the separator used in the various href local values to provide internal
 	// browsing using links in table / label / trees
 	String HREF_SEPARATOR = "/";
+
+	// Various types for list label providers
+	int LIST_TYPE_OVERVIEW_TITLE = 0;
+	// public final static int LIST_TYPE_OVERVIEW_DETAIL = 1;
+	int LIST_TYPE_SMALL = 2;
+	int LIST_TYPE_MEDIUM = 3;
+
+	// Custom styling within table cell that are markup enabled:
+	// we cannot use the CSS class parameter inside of a custom variant control.
+	String ENTITY_HEADER_INNER_CSS_STYLE = "style='font-size:14px;'";
+
 }

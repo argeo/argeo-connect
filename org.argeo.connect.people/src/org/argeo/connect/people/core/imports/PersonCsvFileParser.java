@@ -34,13 +34,16 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 	private final String[] personProps = { PEOPLE_PRIMARY_EMAIL, PEOPLE_SALUTATION, PEOPLE_HONORIFIC_TITLE,
 			PEOPLE_NAME_SUFFIX, PEOPLE_NICKNAME, PEOPLE_MAIDEN_NAME, PEOPLE_LATIN_PHONETIC_SPELLING, PEOPLE_NICKNAME };
 
+	private Node peopleParentNode;
+
 	public PersonCsvFileParser(Session adminSession, ResourcesService resourceService, PeopleService peopleService,
 			Resource images) {
-		super(adminSession, peopleService, resourceService, images);
+		super(adminSession, resourceService, peopleService, images);
+		peopleParentNode = ConnectJcrUtils.getNode(adminSession, peopleService.getDefaultBasePath());
 	}
 
-	public PersonCsvFileParser(Session adminSession, PeopleService peopleService, ResourcesService resourceService) {
-		super(adminSession, peopleService, resourceService);
+	public PersonCsvFileParser(Session adminSession, ResourcesService resourceService, PeopleService peopleService) {
+		this(adminSession, resourceService, peopleService, null);
 	}
 
 	@Override
@@ -52,10 +55,8 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			String peopleUid = UUID.randomUUID().toString();
 
 			// Create corresponding node
-			String path = getPeopleService().getDefaultPath(PeopleTypes.PEOPLE_PERSON, peopleUid);
-			String parPath = JcrUtils.parentPath(path);
-			Node parent = JcrUtils.mkdirs(getSession(), parPath);
-			Node person = parent.addNode(peopleUid, PeopleTypes.PEOPLE_PERSON);
+			String relPath = getPeopleService().getDefaultRelPath(peopleUid);
+			Node person = JcrUtils.mkdirs(peopleParentNode, relPath, PeopleTypes.PEOPLE_PERSON);
 
 			// Mandatory properties
 			person.setProperty(PEOPLE_UID, peopleUid);

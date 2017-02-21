@@ -11,9 +11,9 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.OrgJcrUtils;
 import org.argeo.connect.people.workbench.rap.composites.BankAccountComposite;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
-import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
+import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
@@ -37,7 +37,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 public class OrgAdminInfo extends LazyCTabControl {
 	private static final long serialVersionUID = -7033074223243935324L;
 
-	private final AbstractPeopleEditor editor;
+	private final AbstractConnectEditor editor;
 	private final FormToolkit toolkit;
 	private final Node entity;
 
@@ -46,7 +46,7 @@ public class OrgAdminInfo extends LazyCTabControl {
 	private AbstractFormPart formPart;
 
 	public OrgAdminInfo(Composite parent, int style,
-			AbstractPeopleEditor editor, Node entity) {
+			AbstractConnectEditor editor, Node entity) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();

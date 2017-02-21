@@ -8,11 +8,18 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
 
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
@@ -664,5 +671,49 @@ public class ConnectWorkbenchUtils {
 		formData.right = new FormAttachment(right, 0);
 		formData.bottom = new FormAttachment(bottom, 0);
 		return formData;
+	}
+
+	/**
+	 * Create the text value of a link that enable calling the
+	 * <code>OpenEditor</code> command from a cell of a HTML list
+	 */
+	public static String getOpenEditorSnippet(String commandId, Node relevantNode, String value) {
+		String toEditJcrId = ConnectJcrUtils.getIdentifier(relevantNode);
+		String href = commandId + "/" + OpenEntityEditor.PARAM_JCR_ID + "=" + toEditJcrId;
+		return ConnectUiSnippets.getRWTLink(href, value);
+	}
+
+	/** display clickable tags that are linked to the current entity */
+	public static String getTags(ResourcesService resourceService, AppWorkbenchService appWorkbenchService,
+			Node entity) {
+		try {
+			StringBuilder tags = new StringBuilder();
+			if (entity.hasProperty(ConnectNames.CONNECT_TAGS)) {
+				for (Value value : entity.getProperty((ConnectNames.CONNECT_TAGS)).getValues())
+					tags.append("#").append(ConnectWorkbenchUtils.getTagLink(ConnectJcrUtils.getSession(entity),
+							resourceService, appWorkbenchService, ConnectConstants.RESOURCE_TAG, value.getString()))
+							.append("  ");
+			}
+			return ConnectUiUtils.replaceAmpersand(tags.toString());
+		} catch (RepositoryException e) {
+			throw new ConnectException("Error while getting tags for entity", e);
+		}
+	}
+
+	/**
+	 * Generate a href link that will call the openEntityEditor Command for this
+	 * tag if it is already registered. The corresponding Label / List must have
+	 * a HtmlRWTAdapter to catch when the user click on the link
+	 */
+	public static String getTagLink(Session session, ResourcesService resourceService,
+			AppWorkbenchService appWorkbenchService, String tagId, String value) {
+		String commandId = appWorkbenchService.getOpenEntityEditorCmdId();
+		Node tag = resourceService.getRegisteredTag(session, tagId, value);
+		if (tag == null)
+			return value;
+		String tagJcrId = ConnectJcrUtils.getIdentifier(tag);
+		String href = commandId + ConnectUiConstants.HREF_SEPARATOR;
+		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
+		return ConnectUiSnippets.getRWTLink(href, value);
 	}
 }

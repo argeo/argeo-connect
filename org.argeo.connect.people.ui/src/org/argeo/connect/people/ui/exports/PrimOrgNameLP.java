@@ -52,9 +52,7 @@ public class PrimOrgNameLP extends ColumnLabelProvider {
 						+ "\nThis usually happens when legacy " + "imported address are not correctly defined");
 				return null;
 			}
-
-			Node referencedEntity = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact), refUid);
-
+			Node referencedEntity = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact), null, refUid);
 			if (referencedEntity == null)
 				return "";
 			return ConnectJcrUtils.get(referencedEntity, Property.JCR_TITLE);

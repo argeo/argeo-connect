@@ -2,7 +2,7 @@ package org.argeo.connect.people.workbench.rap.listeners;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
-import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
+import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
@@ -15,16 +15,14 @@ public class OpenEditorAdapter extends SelectionAdapter {
 	/**
 	 * @param jcrId
 	 */
-	public OpenEditorAdapter(PeopleWorkbenchService peopleWorkbenchServcice,
-			String jcrId) {
+	public OpenEditorAdapter(PeopleWorkbenchService peopleWorkbenchServcice, String jcrId) {
 		this.jcrId = jcrId;
 		this.peopleWorkbenchServcice = peopleWorkbenchServcice;
 	}
 
 	@Override
 	public void widgetSelected(final SelectionEvent event) {
-		CommandUtils.callCommand(
-				peopleWorkbenchServcice.getOpenEntityEditorCmdId(),
-				OpenEntityEditor.PARAM_JCR_ID, jcrId);
+		CommandUtils.callCommand(peopleWorkbenchServcice.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+				jcrId);
 	}
 }

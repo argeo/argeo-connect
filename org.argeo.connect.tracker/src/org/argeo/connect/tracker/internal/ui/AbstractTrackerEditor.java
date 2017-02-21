@@ -11,14 +11,14 @@ import javax.jcr.Session;
 import javax.jcr.version.VersionManager;
 
 import org.argeo.cms.ui.CmsEditable;
+import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesService;
-import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerService;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
-import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
+import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,7 +37,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private UserAdminService userAdminService;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 	private ActivitiesService activityService;
 	private TrackerService trackerService;
 	private AppWorkbenchService appWorkbenchService;
@@ -92,7 +92,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	}
 
 	protected ResourcesService getResourceService() {
-		return resourceService;
+		return resourcesService;
 	}
 
 	protected ActivitiesService getActivityService() {
@@ -127,7 +127,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 				vm.checkpoint(path);
 			}
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to perform check point on " + node, re);
+			throw new ConnectException("Unable to perform check point on " + node, re);
 		}
 		firePropertyChange(PROP_DIRTY);
 	}
@@ -170,17 +170,17 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
-
+       
 	public void setUserAdminService(UserAdminService userAdminService) {
 		this.userAdminService = userAdminService;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
-	public void setActivityService(ActivitiesService activityService) {
-		this.activityService = activityService;
+	public void setActivitiesService(ActivitiesService activitiesService) {
+		this.activityService = activitiesService;
 	}
 
 	public void setTrackerService(TrackerService trackerService) {

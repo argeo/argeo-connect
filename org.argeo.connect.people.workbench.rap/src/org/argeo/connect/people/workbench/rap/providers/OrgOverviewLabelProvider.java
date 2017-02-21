@@ -9,11 +9,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
-import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -28,7 +28,6 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 
 	private boolean isSmallList;
 
-	
 	public OrgOverviewLabelProvider(boolean isSmallList, ResourcesService resourceService, PeopleService peopleService,
 			AppWorkbenchService appWorkbenchService) {
 		this.isSmallList = isSmallList;
@@ -45,7 +44,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			if (node.isNodeType(PeopleTypes.PEOPLE_ORG))
 				orga = node;
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-				orga = peopleService.getEntityByUid(node.getSession(),
+				orga = peopleService.getEntityByUid(node.getSession(), null,
 						node.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 				// TODO manage this more cleanly
 				if (orga == null)
@@ -58,7 +57,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			if (isSmallList)
 				builder.append("<span>");
 			else
-				builder.append("<span " + PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER + " >");
+				builder.append("<span " + ConnectUiConstants.ENTITY_HEADER_INNER_CSS_STYLE + " >");
 			builder.append("<big><b>");
 			builder.append(ConnectJcrUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big> ");
@@ -76,7 +75,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			}
 
 			if (isSmallList) {
-				tmpStr = PeopleRapSnippets.getTags(resourceService, appWorkbenchService, orga);
+				tmpStr = ConnectWorkbenchUtils.getTags(resourceService, appWorkbenchService, orga);
 				if (EclipseUiUtils.notEmpty(tmpStr))
 					builder.append(tmpStr);
 			}

@@ -11,7 +11,6 @@ import java.util.Map;
 import javax.jcr.Node;
 import javax.jcr.query.Row;
 
-import org.argeo.cms.ui.workbench.WorkbenchUiPlugin;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.connect.ConnectException;
@@ -21,6 +20,7 @@ import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectUiPlugin;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.OpenFile;
@@ -144,8 +144,7 @@ public class GetJxlExport extends AbstractHandler {
 					});
 				}
 			} catch (Exception e) {
-				return new Status(IStatus.ERROR, WorkbenchUiPlugin.PLUGIN_ID, "Unable to generate export " + exportId,
-						e);
+				return new Status(IStatus.ERROR, ConnectUiPlugin.PLUGIN_ID, "Unable to generate export " + exportId, e);
 			}
 			return Status.OK_STATUS;
 		}

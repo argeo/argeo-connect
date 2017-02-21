@@ -3,8 +3,8 @@ package org.argeo.connect.people.workbench.rap.composites;
 import javax.jcr.Node;
 
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -20,13 +20,13 @@ public class BankAccountComposite extends Composite {
 
 	private final Node currAccount;
 
-	private final AbstractPeopleEditor editor;
+	private final AbstractConnectEditor editor;
 	private final FormToolkit toolkit;
 	private final IManagedForm form;
 	// Don't forget to unregister on dispose
 	private AbstractFormPart formPart;
 
-	public BankAccountComposite(Composite parent, int style, AbstractPeopleEditor editor, Node bankAccount) {
+	public BankAccountComposite(Composite parent, int style, AbstractConnectEditor editor, Node bankAccount) {
 		super(parent, style);
 		this.currAccount = bankAccount;
 		this.editor = editor;

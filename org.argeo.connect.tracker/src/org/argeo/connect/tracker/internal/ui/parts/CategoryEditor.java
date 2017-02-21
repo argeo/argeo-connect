@@ -12,7 +12,6 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.activities.ActivitiesNames;
-import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.core.TrackerUtils;
@@ -21,8 +20,9 @@ import org.argeo.connect.tracker.internal.ui.TrackerImages;
 import org.argeo.connect.tracker.internal.ui.TrackerLps;
 import org.argeo.connect.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewIssueWizard;
-import org.argeo.connect.tracker.ui.TrackerUiPlugin;
+import org.argeo.connect.tracker.ui.workbench.TrackerUiPlugin;
 import org.argeo.connect.ui.workbench.TechnicalInfoPage;
+import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;

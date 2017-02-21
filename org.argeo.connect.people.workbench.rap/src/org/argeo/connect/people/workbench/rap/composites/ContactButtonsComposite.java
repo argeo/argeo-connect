@@ -9,11 +9,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -39,7 +39,7 @@ public class ContactButtonsComposite extends Composite {
 	// private final PeopleImageProvider imageProvider = new
 	// PeopleImageProvider();
 
-	public ContactButtonsComposite(AbstractPeopleEditor editor, AbstractFormPart formPart, Composite parent, int style,
+	public ContactButtonsComposite(AbstractConnectEditor editor, AbstractFormPart formPart, Composite parent, int style,
 			Node contactNode, Node parentVersionableNode, ResourcesService resourceService, PeopleService peopleService,
 			AppWorkbenchService appWorkbenchService) {
 		super(parent, style);

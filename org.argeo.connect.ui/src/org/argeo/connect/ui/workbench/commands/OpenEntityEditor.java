@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
-import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
+import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -91,5 +91,4 @@ public class OpenEntityEditor extends AbstractHandler {
 	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
 		this.appWorkbenchService = appWorkbenchService;
 	}
-
 }

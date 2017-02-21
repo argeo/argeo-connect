@@ -2,8 +2,7 @@ package org.argeo.connect.tracker.internal.ui.dialogs;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.PeopleService;
+import org.argeo.connect.tracker.TrackerService;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -18,12 +17,12 @@ import org.eclipse.swt.widgets.Text;
  * command if needed.
  */
 
-public class NewProspectWizard extends Wizard implements PeopleNames {
+public class NewProspectWizard extends Wizard {
 	// private final static Log log =
 	// LogFactory.getLog(NewProspectWizard.class);
 
 	// Context
-	private PeopleService peopleService;
+	private TrackerService trackerService;
 	private Node prospect;
 
 	// Local cache
@@ -39,8 +38,8 @@ public class NewProspectWizard extends Wizard implements PeopleNames {
 	private Text contactTxt;
 	private Text managerTxt;
 
-	public NewProspectWizard(PeopleService peopleService, Node prospect) {
-		this.peopleService = peopleService;
+	public NewProspectWizard(TrackerService trackerService, Node prospect) {
+		this.trackerService = trackerService;
 		this.prospect = prospect;
 	}
 

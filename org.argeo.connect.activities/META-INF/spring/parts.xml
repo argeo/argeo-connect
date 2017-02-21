@@ -5,28 +5,44 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
+	<!-- COMMANDS -->
+	<bean id="createSimpleTask"
+		class="org.argeo.connect.activities.workbench.commands.CreateSimpleTask"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+
 	<!-- EDITORS -->
-	<bean id="folderEditor" class="org.argeo.connect.activities.workbench.parts.FolderEditor"
+	<bean id="activityEditor"
+		class="org.argeo.connect.activities.workbench.parts.ActivityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="documentsService" ref="documentsService" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
-		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
 	</bean>
-	<bean id="fileEditor" class="org.argeo.connect.activities.workbench.parts.FileEditor"
+
+	<bean id="taskEditor"
+		class="org.argeo.connect.activities.workbench.parts.TaskEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="documentsService" ref="documentsService" />
-		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
-	
+
 	<!-- VIEWS -->
-	<bean id="myFilesView" class="org.argeo.connect.activities.workbench.parts.MyFilesView"
+	<bean id="myTodoListView"
+		class="org.argeo.connect.activities.workbench.parts.MyTodoListView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
-		<property name="documentsService" ref="documentsService" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="activitiesService" ref="activitiesService" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 </beans>

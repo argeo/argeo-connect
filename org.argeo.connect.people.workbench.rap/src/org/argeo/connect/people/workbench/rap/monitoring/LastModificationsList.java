@@ -19,9 +19,9 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleBasicEditor;
-import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
 import org.argeo.connect.people.workbench.rap.providers.SimpleLazyContentProvider;
 import org.argeo.connect.ui.workbench.Refreshable;
+import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
@@ -74,7 +74,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements 
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// The table itself
 		tableViewer = createTableViewer(parent, SWT.READ_ONLY | SWT.VIRTUAL);
-		tableViewer.addDoubleClickListener(new PeopleJcrViewerDClickListener(peopleWorkbenchService));
+		tableViewer.addDoubleClickListener(new JcrViewerDClickListener(peopleWorkbenchService));
 		forceRefresh(null);
 	}
 

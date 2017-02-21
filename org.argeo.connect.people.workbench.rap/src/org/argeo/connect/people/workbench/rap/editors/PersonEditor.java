@@ -11,21 +11,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.activities.ActivitiesService;
+import org.argeo.connect.activities.workbench.parts.ActivityList;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.editors.parts.TagLikeListPart;
-import org.argeo.connect.people.workbench.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.JobList;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
-import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.util.LazyCTabControl;
+import org.argeo.connect.ui.widgets.TagLikeListPart;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -52,11 +55,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Edit a person with corresponding details */
-public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleNames {
+public class PersonEditor extends AbstractConnectCTabEditor implements PeopleNames {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".personEditor";
 
 	// Context
+	private ActivitiesService activitiesService;
+	private PeopleService peopleService;
 	private Node person;
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -138,7 +143,7 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 		final Label readOnlyInfoLbl = getFormToolkit().createLabel(readOnlyPanel, "", SWT.WRAP);
 		CmsUtils.markup(readOnlyInfoLbl);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
-				PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE, getResourcesService(), getPeopleService(),
+				ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE, getResourcesService(), getPeopleService(),
 				getAppWorkbenchService());
 
 		// EDIT
@@ -179,8 +184,8 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 				SWT.CHECK);
 		defineDistinctBtn.setToolTipText("Default is \"Firstname LASTNAME\"");
 
-		final Text salutationTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Salutation", "Mr, Mrs...",
-				60);
+		final Text salutationTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Salutation",
+				"Mr, Mrs...", 60);
 		final Text firstNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "First Name",
 				"Usual first name for this person", 100);
 		final Text middleNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Middle Name",
@@ -192,11 +197,12 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 
 		// final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
 		// 80);
-		final Text titleTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Title", "Doc., Sir...", 60);
+		final Text titleTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Title", "Doc., Sir...",
+				60);
 		final Text maidenNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Maiden Name",
 				"Birth Name before getting maried", 100);
-		final Text nickNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Nickame", "A pseudonym...",
-				100);
+		final Text nickNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Nickame",
+				"A pseudonym...", 100);
 		final Text latinPhoneticTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Latin Phonetic",
 				"A helper to know how to pronounce this name", 100);
 
@@ -351,15 +357,21 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 			}
 		});
 
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, salutationTxt, person, PEOPLE_SALUTATION, PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, middleNameTxt, person, PEOPLE_MIDDLE_NAME, PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, lastNameTxt, person, PEOPLE_LAST_NAME, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, salutationTxt, person, PEOPLE_SALUTATION,
+				PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, middleNameTxt, person, PEOPLE_MIDDLE_NAME,
+				PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, lastNameTxt, person, PEOPLE_LAST_NAME,
+				PropertyType.STRING);
 		ConnectWorkbenchUtils.addTxtModifyListener(editPart, nickNameTxt, person, PEOPLE_NICKNAME, PropertyType.STRING);
 		// entityTK.addTxtModifyListener(editPart, genderTxt, person,
 		// PEOPLE_GENDER, PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, maidenNameTxt, person, PEOPLE_MAIDEN_NAME, PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, titleTxt, person, PEOPLE_HONORIFIC_TITLE, PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, suffixTxt, person, PEOPLE_NAME_SUFFIX, PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, maidenNameTxt, person, PEOPLE_MAIDEN_NAME,
+				PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, titleTxt, person, PEOPLE_HONORIFIC_TITLE,
+				PropertyType.STRING);
+		ConnectWorkbenchUtils.addTxtModifyListener(editPart, suffixTxt, person, PEOPLE_NAME_SUFFIX,
+				PropertyType.STRING);
 		ConnectWorkbenchUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person, PEOPLE_LATIN_PHONETIC_SPELLING,
 				PropertyType.STRING);
 
@@ -448,5 +460,24 @@ public class PersonEditor extends AbstractPeopleCTabEditor implements PeopleName
 		} catch (RepositoryException re) {
 			throw new PeopleException("Error getting polite form property on " + entity, re);
 		}
+	}
+
+	
+	protected ActivitiesService getActivitiesService() {
+		return activitiesService;
+	}
+	protected PeopleService getPeopleService() {
+		return peopleService;
+	}
+
+	
+	
+	/* DEPENDENCY INJECTION */
+	public void setActivitiesService(ActivitiesService activitiesService) {
+		this.activitiesService = activitiesService;
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 }

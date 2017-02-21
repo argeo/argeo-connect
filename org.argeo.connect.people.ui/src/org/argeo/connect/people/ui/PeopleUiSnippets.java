@@ -261,7 +261,7 @@ public class PeopleUiSnippets {
 				person = entity;
 				Node currContact = PeopleJcrUtils.getPrimaryContact(person, PeopleTypes.PEOPLE_ADDRESS);
 				if (!(currContact == null || !currContact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
-					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact),
+					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact),null,
 							ConnectJcrUtils.get(currContact, PeopleNames.PEOPLE_REF_UID));
 				}
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))

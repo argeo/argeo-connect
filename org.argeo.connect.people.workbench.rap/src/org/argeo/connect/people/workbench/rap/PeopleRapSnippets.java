@@ -5,10 +5,7 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
 
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -17,13 +14,12 @@ import org.argeo.connect.people.ui.PeopleUiSnippets;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.commands.EditJob;
-import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.people.workbench.rap.commands.RemoveEntityReference;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 
 /** Some helper methods to generate HTML snippet */
@@ -61,7 +57,7 @@ public class PeopleRapSnippets {
 				person = entity;
 				Node currContact = PeopleJcrUtils.getPrimaryContact(person, PeopleTypes.PEOPLE_ADDRESS);
 				if (!(currContact == null || !currContact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
-					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact),
+					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact), null,
 							ConnectJcrUtils.get(currContact, PeopleNames.PEOPLE_REF_UID));
 				}
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
@@ -74,13 +70,13 @@ public class PeopleRapSnippets {
 				builder.append(label);
 			if (org != null) {
 				String title = ConnectJcrUtils.get(org, Property.JCR_TITLE);
-				String snippet = getOpenEditorSnippet(openCmdId, org, title);
+				String snippet = ConnectWorkbenchUtils.getOpenEditorSnippet(openCmdId, org, title);
 				builder.append(snippet).append("<br/>");
 			}
 			builder.append("</b>");
 			if (person != null) {
 				String title = peopleService.getDisplayName(person);
-				String snippet = getOpenEditorSnippet(openCmdId, person, title);
+				String snippet = ConnectWorkbenchUtils.getOpenEditorSnippet(openCmdId, person, title);
 				builder.append(snippet).append("<br/>");
 			}
 
@@ -93,58 +89,13 @@ public class PeopleRapSnippets {
 		}
 	}
 
-	/**
-	 * Create the text value of a link that enable calling the
-	 * <code>OpenEditor</code> command from a cell of a HTML list
-	 */
-	public static String getOpenEditorSnippet(String commandId, Node relevantNode, String value) {
-		String toEditJcrId = ConnectJcrUtils.getIdentifier(relevantNode);
-		String href = commandId + "/" + OpenEntityEditor.PARAM_JCR_ID + "=" + toEditJcrId;
-		return ConnectUiSnippets.getRWTLink(href, value);
-	}
-
-	/**
-	 * a snippet to display clickable tags that are linked to the current entity
-	 */
-	public static String getTags(ResourcesService resourceService, AppWorkbenchService appWorkbenchService,
-			Node entity) {
-		try {
-			StringBuilder tags = new StringBuilder();
-			if (entity.hasProperty(PeopleNames.PEOPLE_TAGS)) {
-				for (Value value : entity.getProperty((PeopleNames.PEOPLE_TAGS)).getValues())
-					tags.append("#").append(getTagLink(ConnectJcrUtils.getSession(entity), resourceService,
-							appWorkbenchService, ConnectConstants.RESOURCE_TAG, value.getString())).append("  ");
-			}
-			return ConnectUiUtils.replaceAmpersand(tags.toString());
-		} catch (RepositoryException e) {
-			throw new PeopleException("Error while getting tags for entity", e);
-		}
-	}
-
-	/**
-	 * Generate a href link that will call the openEntityEditor Command for this
-	 * tag if it is already registered. The corresponding Label / List must have
-	 * a HtmlRWTAdapter to catch when the user click on the link
-	 */
-	public static String getTagLink(Session session, ResourcesService resourceService,
-			AppWorkbenchService appWorkbenchService, String tagId, String value) {
-		String commandId = appWorkbenchService.getOpenEntityEditorCmdId();
-		Node tag = resourceService.getRegisteredTag(session, tagId, value);
-		if (tag == null)
-			return value;
-		String tagJcrId = ConnectJcrUtils.getIdentifier(tag);
-		String href = commandId + ConnectUiConstants.HREF_SEPARATOR;
-		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
-		return ConnectUiSnippets.getRWTLink(href, value);
-	}
-
 	/** creates the display ReadOnly HTML snippet for a work address */
 	public static String getWorkAddressForList(ResourcesService resourceService,
 			PeopleWorkbenchService peopleWorkbenchService, Node contactNode, Node referencedEntity) {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null) {
-			String label = PeopleRapSnippets.getOpenEditorSnippet(peopleWorkbenchService.getOpenEntityEditorCmdId(),
+			String label = ConnectWorkbenchUtils.getOpenEditorSnippet(peopleWorkbenchService.getOpenEntityEditorCmdId(),
 					referencedEntity, ConnectJcrUtils.get(referencedEntity, Property.JCR_TITLE));
 			builder.append(label);
 		}

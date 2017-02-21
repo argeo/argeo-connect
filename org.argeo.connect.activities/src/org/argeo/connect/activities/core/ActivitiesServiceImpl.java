@@ -16,7 +16,6 @@ import javax.jcr.query.Query;
 
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.activities.ActivitiesException;
 import org.argeo.connect.activities.ActivitiesNames;
@@ -29,30 +28,51 @@ import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
-/** Concrete access to People's {@link ActivitiesService} */
+/** Concrete access to Connect's {@link ActivitiesService} */
 public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames {
 	// private final static Log log =
 	// LogFactory.getLog(ActivityServiceImpl.class);
-
-	// Keeps a local reference to the parent people service,
-	// Among other to rely on its base path policies.
-	// private final PeopleService peopleService;
 
 	/* DEPENDENCY INJECTION */
 	private UserAdminService userAdminService;
 	private ResourcesService resourcesService;
 
-	/**
-	 * Default constructor, caller must then inject a relevant
-	 * {@link userManagementService}
-	 */
-	public ActivitiesServiceImpl() {
-		// this.peopleService = peopleService;
+	@Override
+	public String getAppBaseName() {
+		return ActivitiesNames.ACTIVITIES_APP_BASE_NAME;
 	}
 
 	private String getBasePath() {
-		// FIXME move the parent node to the root of the workspace
-		return "/people/activities";
+		return "/" + getAppBaseName();
+	}
+
+	@Override
+	public String getDefaultRelPath(Node entity) throws RepositoryException {
+		String currentUser = ConnectJcrUtils.getSession(entity).getUserID();
+		Calendar currentTime = GregorianCalendar.getInstance();
+		String path = "/" + getAppBaseName() + "/" + dateAsPath(currentTime) + currentUser;
+		return path;
+	}
+
+	@Override
+	public String getDefaultRelPath(String userId) {
+		Calendar currentTime = GregorianCalendar.getInstance();
+		return dateAsPath(currentTime) + "/" + userId;
+	}
+
+	private String dateAsPath(Calendar cal) {
+		StringBuffer buf = new StringBuffer(9);
+		buf.append('Y');
+		buf.append(cal.get(Calendar.YEAR));
+		buf.append('/');
+
+		int woy = cal.get(Calendar.WEEK_OF_YEAR);
+		buf.append('W');
+		if (woy < 10)
+			buf.append(0);
+		buf.append(woy);
+		buf.append('/');
+		return buf.toString();
 	}
 
 	/* ACTIVITIES */
@@ -60,7 +80,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	public String getActivityParentCanonicalPath(Session session) {
 		String currentUser = session.getUserID();
 		Calendar currentTime = GregorianCalendar.getInstance();
-		String path = getBasePath() + "/" + JcrUtils.dateAsPath(currentTime, true) + currentUser;
+		String path = "/" + getAppBaseName() + "/" + dateAsPath(currentTime) + currentUser;
 		return path;
 	}
 
@@ -192,11 +212,8 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			if (EclipseUiUtils.notEmpty(allCond))
 				builder.append("[").append(allCond).append("]");
 
-			builder.append(" order by @").append(ConnectJcrUtils.getLocalJcrItemName(Property.JCR_LAST_MODIFIED))
-					.append(" descending");
-
-			Query query = session.getWorkspace().getQueryManager().createQuery(builder.toString(),
-					ConnectConstants.QUERY_XPATH);
+			builder.append(" order by @").append(Property.JCR_LAST_MODIFIED).append(" descending");
+			Query query = XPathUtils.createQuery(session, builder.toString());
 			return query.execute().getNodes();
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to get tasks for groups " + roles.toString());
@@ -331,23 +348,16 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			}
 
 			Node taskNode = parentNode.addNode(taskNodeType, taskNodeType);
-
 			if (notEmpty(title))
 				taskNode.setProperty(Property.JCR_TITLE, title);
-
 			if (notEmpty(description))
 				taskNode.setProperty(Property.JCR_DESCRIPTION, description);
-
 			if (EclipseUiUtils.isEmpty(reporterId))
 				reporterId = session.getUserID();
-
 			taskNode.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
 
-			if (notEmpty(assignedTo)) {
-				// String atdn = peopleService.getUserAdminService()
-				// .getDistinguishedName(assignedTo, Role.GROUP);
+			if (notEmpty(assignedTo))
 				taskNode.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, assignedTo);
-			}
 
 			if (relatedTo != null && !relatedTo.isEmpty())
 				ConnectJcrUtils.setMultipleReferences(taskNode, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
@@ -393,8 +403,6 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			poll.addNode(ActivitiesNames.ACTIVITIES_RATES);
 
 			// TODO clean this
-			// Enhance task naming
-			// FIXME use the genereric move strategy
 			Session session = parentNode.getSession();
 			session.move(poll.getPath(), newPath);
 		} catch (RepositoryException e) {

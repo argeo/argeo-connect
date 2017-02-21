@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -25,25 +26,21 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Slightly modifies AbstractPeopleEditor main layout adding a place for an
  * image on the left part of the header
  */
-public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
+public abstract class AbstractPeopleWithImgEditor extends AbstractConnectCTabEditor {
 
 	// A corresponding picture that must be explicitly disposed
 	protected Image itemPicture = null;
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 
 		InputStream is = null;
 		try {
 			if (getNode().hasNode(PeopleNames.PEOPLE_PICTURE)) {
-				Node imageNode = getNode().getNode(PeopleNames.PEOPLE_PICTURE)
-						.getNode(Node.JCR_CONTENT);
-				is = imageNode.getProperty(Property.JCR_DATA).getBinary()
-						.getStream();
-				itemPicture = new Image(this.getSite().getShell().getDisplay(),
-						is);
+				Node imageNode = getNode().getNode(PeopleNames.PEOPLE_PICTURE).getNode(Node.JCR_CONTENT);
+				is = imageNode.getProperty(Property.JCR_DATA).getBinary().getStream();
+				itemPicture = new Image(this.getSite().getShell().getDisplay(), is);
 			} else
 				itemPicture = null;
 		} catch (Exception e) {
@@ -60,8 +57,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 		// Internal main Layout
 		// The header
-		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS
-				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		Composite header = toolkit.createComposite(parent, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 
 		GridLayout gl;
 		if (displayImage())
@@ -77,20 +73,17 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 
 		if (displayImage()) {
 			// the image
-			Composite imgCmp = toolkit.createComposite(header, SWT.NO_FOCUS
-					| SWT.NO_SCROLL | SWT.NO_TRIM);
+			Composite imgCmp = toolkit.createComposite(header, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 			imgCmp.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 			populateImagePart(imgCmp);
 		}
 		// header content
-		Composite left = toolkit.createComposite(header, SWT.NO_FOCUS
-				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		Composite left = toolkit.createComposite(header, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 		left.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateHeader(left);
 
 		// header buttons
-		Composite right = toolkit.createComposite(header, SWT.NO_FOCUS
-				| SWT.NO_SCROLL | SWT.NO_TRIM);
+		Composite right = toolkit.createComposite(header, SWT.NO_FOCUS | SWT.NO_SCROLL | SWT.NO_TRIM);
 		GridData gd = new GridData(SWT.CENTER, SWT.TOP, false, false);
 		gd.verticalIndent = 5;
 		right.setLayoutData(gd);
@@ -111,8 +104,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 		gl.marginBottom = 8;
 		parent.setLayout(gl);
 
-		Label image = getManagedForm().getToolkit().createLabel(parent, "",
-				SWT.NO_FOCUS);
+		Label image = getManagedForm().getToolkit().createLabel(parent, "", SWT.NO_FOCUS);
 		image.setBackground(parent.getBackground());
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		if (getPicture() != null) {
@@ -133,8 +125,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractPeopleEditor {
 	@Override
 	public void dispose() {
 		// Free the resources.
-		if (itemPicture != null
-				&& !itemPicture.equals(PeopleRapImages.NO_PICTURE))
+		if (itemPicture != null && !itemPicture.equals(PeopleRapImages.NO_PICTURE))
 			itemPicture.dispose();
 		super.dispose();
 	}

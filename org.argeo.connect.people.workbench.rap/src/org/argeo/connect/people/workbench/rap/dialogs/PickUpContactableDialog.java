@@ -152,7 +152,6 @@ public class PickUpContactableDialog extends TrayDialog {
 	private void createFilterPart(Composite parent) {
 		// Text Area for the filter
 		filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;

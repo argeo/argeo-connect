@@ -14,8 +14,8 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.ConnectException;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
@@ -60,7 +60,7 @@ public class FilteredOrderableEntityTable extends Composite {
 	{ // By default, it displays only title
 		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Name", 300));
 	};
-	private String nodeType = PeopleTypes.PEOPLE_ENTITY;
+	private String nodeType = ConnectTypes.CONNECT_ENTITY;
 
 	public List<JcrColumnDefinition> getColumnsDef() {
 		return colDefs;
@@ -178,11 +178,10 @@ public class FilteredOrderableEntityTable extends Composite {
 			}
 			return result;
 		} else
-			throw new PeopleException(
-					"Unvalid request: no selection column " + "has been created for the current table");
+			throw new ConnectException("Unvalid request: no selection column  has been created for the current table");
 	}
 
-	/** Returns the User table viewer, typically to add doubleclick listener */
+	/** Returns the User table viewer, typically to add double click listener */
 	public TableViewer getTableViewer() {
 		return entityViewer;
 	}
@@ -314,7 +313,7 @@ public class FilteredOrderableEntityTable extends Composite {
 			nodes = JcrUtils.nodeIteratorToList(listFilteredElements(session, hasFilter ? filterTxt.getText() : null));
 			entityViewer.setInput(nodes.toArray());
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to list users", e);
+			throw new ConnectException("Unable to refresh list", e);
 		}
 	}
 

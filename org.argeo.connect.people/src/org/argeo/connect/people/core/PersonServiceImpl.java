@@ -97,8 +97,8 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			throw new PeopleException(msg);
 		}
 
-		person = peopleService.checkPathAndMoveIfNeeded(person, PeopleTypes.PEOPLE_PERSON);
-		ConnectJcrUtils.saveAndPublish(person, false);
+//		person = peopleService.checkPathAndMoveIfNeeded(person, PeopleTypes.PEOPLE_PERSON);
+//		ConnectJcrUtils.saveAndPublish(person, false);
 
 		// Update cache
 		peopleService.updatePrimaryCache(person);
@@ -124,7 +124,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 					+ "update this organisation.";
 			throw new PeopleException(msg);
 		}
-		org = peopleService.checkPathAndMoveIfNeeded(org, PeopleTypes.PEOPLE_ORG);
+		// org = peopleService.checkPathAndMoveIfNeeded(org, PeopleTypes.PEOPLE_ORG);
 		// Update cache
 		peopleService.updatePrimaryCache(org);
 		// real save

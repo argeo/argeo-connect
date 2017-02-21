@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -34,13 +34,13 @@ public class GroupLabelProvider extends ColumnLabelProvider implements
 		Node entity = (Node) element;
 		String result;
 		switch (listType) {
-		case PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE:
+		case ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE:
 			result = getOverviewTitle(entity);
 			break;
 		// case ConnectUiConstants.LIST_TYPE_OVERVIEW_DETAIL:
 		// result = getOverviewDetails(entity);
 		// break;
-		case PeopleRapConstants.LIST_TYPE_SMALL:
+		case ConnectUiConstants.LIST_TYPE_SMALL:
 			result = getOneLineLabel(entity);
 			break;
 		// case ConnectUiConstants.LIST_TYPE_MEDIUM:

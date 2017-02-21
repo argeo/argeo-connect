@@ -19,12 +19,12 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -144,7 +144,7 @@ public class QuickSearchView extends ViewPart {
 		CmsUtils.setItemHeight(table, 26);
 
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(new PeopleJcrViewerDClickListener(appWorkbenchService));
+		v.addDoubleClickListener(new JcrViewerDClickListener(appWorkbenchService));
 		return v;
 	}
 

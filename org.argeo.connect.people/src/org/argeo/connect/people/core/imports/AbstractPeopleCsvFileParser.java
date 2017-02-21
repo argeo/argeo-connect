@@ -38,12 +38,12 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 	// Enable importing images
 	private Resource images = null;
 
-	public AbstractPeopleCsvFileParser(Session adminSession, PeopleService peopleService,
-			ResourcesService resourceService, Resource images) {
+	public AbstractPeopleCsvFileParser(Session adminSession, ResourcesService resourceService,
+			PeopleService peopleService, Resource images) {
 		super();
 		this.adminSession = adminSession;
-		this.peopleService = peopleService;
 		this.resourceService = resourceService;
+		this.peopleService = peopleService;
 		this.images = images;
 		try {
 			vm = adminSession.getWorkspace().getVersionManager();
@@ -52,9 +52,9 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 		}
 	}
 
-	public AbstractPeopleCsvFileParser(Session adminSession, PeopleService peopleService,
-			ResourcesService resourceService) {
-		this(adminSession, peopleService, resourceService, null);
+	public AbstractPeopleCsvFileParser(Session adminSession, ResourcesService resourceService,
+			PeopleService peopleService) {
+		this(adminSession, resourceService, peopleService, null);
 	}
 
 	@Override
@@ -86,15 +86,15 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 	}
 
 	/* Exposes context */
-	protected PeopleService getPeopleService() {
-		return peopleService;
+	protected Session getSession() {
+		return adminSession;
 	}
 
 	protected ResourcesService getResourceService() {
 		return resourceService;
 	}
 
-	protected Session getSession() {
-		return adminSession;
+	protected PeopleService getPeopleService() {
+		return peopleService;
 	}
 }

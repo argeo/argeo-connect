@@ -26,22 +26,22 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.exports.PrimAddressLP;
 import org.argeo.connect.people.ui.exports.PrimContactValueLP;
 import org.argeo.connect.people.ui.exports.PrimOrgNameLP;
-import org.argeo.connect.people.ui.exports.PrimaryTypeLP;
 import org.argeo.connect.people.util.PeopleJcrUtils;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.dialogs.NoProgressBarWizardDialog;
-import org.argeo.connect.people.workbench.rap.listeners.PeopleJcrViewerDClickListener;
-import org.argeo.connect.people.workbench.rap.providers.TagLabelProvider;
-import org.argeo.connect.people.workbench.rap.wizards.EditTagWizard;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.JcrRowLabelProvider;
+import org.argeo.connect.ui.util.MainNodeTypeLabelProvider;
+import org.argeo.connect.ui.util.TagLabelProvider;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
-import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
+import org.argeo.connect.ui.workbench.commands.EditTagWizard;
+import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;
+import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.ui.workbench.util.TitleIconRowLP;
 import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -164,7 +164,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
 		CmsUtils.markup(titleROLbl);
 
-		mlTitleLP = new TagLabelProvider(resourceService, PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
+		mlTitleLP = new TagLabelProvider(resourceService, ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE);
 		titleROLbl.setText(mlTitleLP.getText(mailingList));
 		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
@@ -202,7 +202,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
 		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
 
-		columns.add(new ConnectColumnDefinition("Type", new PrimaryTypeLP(resourceService, null)));
+		columns.add(new ConnectColumnDefinition("Type", new MainNodeTypeLabelProvider(resourceService, null)));
 		columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
 
 		columns.add(
@@ -271,23 +271,18 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		// Corresponding list
 		Composite tableComp = toolkit.createComposite(parent);
 		tableComp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
 		membersViewer = createTableViewer(tableComp);
 		membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
-		// Double click
-		PeopleJcrViewerDClickListener ndcl = new PeopleJcrViewerDClickListener(null, appWorkbenchService);
-		membersViewer.addDoubleClickListener(ndcl);
-
+		membersViewer.addDoubleClickListener(new JcrViewerDClickListener());
 		addFilterListener(filterTxt, membersViewer);
 		refreshFilteredList();
-
 	}
 
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshFilteredList() {
 		long begin = System.currentTimeMillis();
 		try {
-			String xpathQueryStr = XPathUtils.descendantFrom(peopleService.getBasePath(null)) + "//element(*, "
+			String xpathQueryStr = XPathUtils.descendantFrom(peopleService.getDefaultBasePath()) + "//element(*, "
 					+ PeopleTypes.PEOPLE_ENTITY + ")";
 			String filter = filterTxt.getText();
 			String currVal = ConnectJcrUtils.get(mailingList, Property.JCR_TITLE);
@@ -375,7 +370,6 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 
 	private Text createFilterText(Composite parent) {
 		Text filterTxt = toolkit.createText(parent, "", SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-		filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 		return filterTxt;
 	}

@@ -14,8 +14,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.LabelProvider;
 
 /** Provide a single column label provider for person lists */
-public class PersonListLabelProvider extends LabelProvider implements
-		PeopleNames {
+public class PersonListLabelProvider extends LabelProvider implements PeopleNames {
 
 	private static final long serialVersionUID = 1L;
 	private PeopleService peopleService;
@@ -36,15 +35,13 @@ public class PersonListLabelProvider extends LabelProvider implements
 			while (ni.hasNext()) {
 				Node currNode = ni.nextNode();
 				if (currNode.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-					Node org = peopleService.getEntityByUid(
-							person.getSession(),
+					Node org = peopleService.getEntityByUid(person.getSession(), null,
 							currNode.getProperty(PEOPLE_REF_UID).getString());
 					builder.append(" [");
 					String role = ConnectJcrUtils.get(currNode, PEOPLE_ROLE);
 					if (EclipseUiUtils.notEmpty(role))
 						builder.append(role).append(", ");
-					builder.append(org != null ? ConnectJcrUtils.get(org,
-							Property.JCR_TITLE) : "-");
+					builder.append(org != null ? ConnectJcrUtils.get(org, Property.JCR_TITLE) : "-");
 					builder.append("]");
 				}
 			}

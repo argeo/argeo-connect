@@ -20,8 +20,6 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.activities.ActivitiesNames;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerTypes;
@@ -33,9 +31,10 @@ import org.argeo.connect.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.connect.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.connect.tracker.internal.ui.controls.TagListFormPart;
 import org.argeo.connect.tracker.internal.ui.dialogs.EditFreeTextDialog;
-import org.argeo.connect.tracker.ui.TrackerUiPlugin;
+import org.argeo.connect.tracker.ui.workbench.TrackerUiPlugin;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.TechnicalInfoPage;
+import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.node.ArgeoNames;
@@ -328,7 +327,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 							}
 						}
 					} catch (RepositoryException re) {
-						throw new PeopleException("Unable to change assignation for node " + issue, re);
+						throw new TrackerException("Unable to change assignation for node " + issue, re);
 					}
 				}
 			});
@@ -586,7 +585,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		List<String> values = getResourceService().getTemplateCatalogue(session, TrackerTypes.TRACKER_ISSUE,
 				ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
 		combo.setItems(values.toArray(new String[values.size()]));
-		ConnectWorkbenchUtils.refreshFormCombo(IssueEditor.this, combo, currTask, ActivitiesNames.ACTIVITIES_TASK_STATUS);
+		ConnectWorkbenchUtils.refreshFormCombo(IssueEditor.this, combo, currTask,
+				ActivitiesNames.ACTIVITIES_TASK_STATUS);
 		combo.setEnabled(IssueEditor.this.isEditing());
 	}
 

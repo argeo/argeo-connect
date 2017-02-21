@@ -17,25 +17,25 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.PeopleJcrUtils;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapImages;
 import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.connect.people.workbench.rap.commands.EditJob;
-import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.people.workbench.rap.editors.util.BooleanEditingSupport;
-import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
-import org.argeo.connect.people.workbench.rap.listeners.HtmlListRwtAdapter;
 import org.argeo.connect.people.workbench.rap.listeners.PeopleDoubleClickAdapter;
-import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.providers.BooleanFlagLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.connect.people.workbench.rap.providers.RoleListLabelProvider;
-import org.argeo.connect.people.workbench.rap.util.AbstractPanelFormPart;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.util.BasicNodeListContentProvider;
+import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
+import org.argeo.connect.ui.workbench.util.AbstractPanelFormPart;
+import org.argeo.connect.ui.workbench.util.HtmlListRwtAdapter;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -64,7 +64,7 @@ public class JobList extends LazyCTabControl {
 	private final ResourcesService resourceService;
 	private final PeopleService peopleService;
 	private final AppWorkbenchService peopleWorkbenchService;
-	private final AbstractPeopleEditor editor;
+	private final AbstractConnectEditor editor;
 	private final FormToolkit toolkit;
 	private final Node entity;
 	private final boolean isBackward;
@@ -72,7 +72,7 @@ public class JobList extends LazyCTabControl {
 	// UI Objects
 	private MyFormPart myFormPart;
 
-	public JobList(Composite parent, int style, AbstractPeopleEditor editor, ResourcesService resourceService,
+	public JobList(Composite parent, int style, AbstractConnectEditor editor, ResourcesService resourceService,
 			PeopleService peopleService, AppWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);
 		toolkit = editor.getFormToolkit();
@@ -175,10 +175,11 @@ public class JobList extends LazyCTabControl {
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT, 300);
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(200, 80, true));
 		if (isBackward)
-			col.setLabelProvider(new PersonOverviewLabelProvider(PeopleRapConstants.LIST_TYPE_MEDIUM, resourceService, peopleService,
-					peopleWorkbenchService));
+			col.setLabelProvider(new PersonOverviewLabelProvider(ConnectUiConstants.LIST_TYPE_MEDIUM, resourceService,
+					peopleService, peopleWorkbenchService));
 		else
-			col.setLabelProvider(new OrgOverviewLabelProvider(true, resourceService, peopleService, peopleWorkbenchService));
+			col.setLabelProvider(
+					new OrgOverviewLabelProvider(true, resourceService, peopleService, peopleWorkbenchService));
 
 		// Edit & Remove links
 		if (editor.isEditing()) {
@@ -241,7 +242,7 @@ public class JobList extends LazyCTabControl {
 				if (isBackward) {
 					toOpen = ConnectJcrUtils.getParent(ConnectJcrUtils.getParent(link));
 				} else {
-					toOpen = peopleService.getEntityByUid(ConnectJcrUtils.getSession(entity),
+					toOpen = peopleService.getEntityByUid(ConnectJcrUtils.getSession(entity), null,
 							ConnectJcrUtils.get(link, PeopleNames.PEOPLE_REF_UID));
 				}
 				CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),

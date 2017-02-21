@@ -11,11 +11,9 @@ import javax.jcr.Session;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
-import org.argeo.connect.people.workbench.rap.PeopleRapImages;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
-import org.argeo.connect.people.workbench.rap.providers.BasicNodeListContentProvider;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
+import org.argeo.connect.ui.util.BasicNodeListContentProvider;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
@@ -35,7 +33,6 @@ import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -67,8 +64,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	protected Text filterTxt;
 	protected TableViewer itemsViewer;
 
-	public AddEntityReferenceWizard(Repository repository,
-			PeopleService peopleService,
+	public AddEntityReferenceWizard(Repository repository, PeopleService peopleService,
 			PeopleWorkbenchService peopleUiService, IWorkbench workbench) {
 		this.repository = repository;
 		this.currSession = ConnectJcrUtils.login(repository);
@@ -85,8 +81,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	 * addition of new items to a given Node depending on its nature, dealing
 	 * with duplicate and check out state among others.
 	 */
-	protected abstract boolean addChildren(List<Node> newChildren)
-			throws RepositoryException;
+	protected abstract boolean addChildren(List<Node> newChildren) throws RepositoryException;
 
 	/** performs the effective refresh of the list */
 	protected abstract void refreshFilteredList();
@@ -173,16 +168,15 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 		public SelectChildrenPage(String pageName) {
 			super(pageName);
 			setMessage(getCurrDescription());
-			setDescription("HINT: Double clic on a given item "
-					+ "directly adds it without closing the current wizard.");
+			setDescription(
+					"HINT: Double clic on a given item " + "directly adds it without closing the current wizard.");
 		}
 
 		public void createControl(Composite parent) {
 			parent.setLayout(new GridLayout(1, false));
 			Composite composite = new Composite(parent, SWT.NONE);
 			composite.setLayout(new GridLayout(1, false));
-			composite
-					.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			addFilterPanel(composite);
 			createItemsViewer(composite);
 			// Don't forget this.
@@ -210,48 +204,25 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 				@Override
 				public void doubleClick(DoubleClickEvent event) {
 					// same as itemsViewer
-					Node selectedNode = (Node) ((IStructuredSelection) ((TableViewer) event
-							.getSource()).getSelection()).getFirstElement();
+					Node selectedNode = (Node) ((IStructuredSelection) ((TableViewer) event.getSource()).getSelection())
+							.getFirstElement();
 					List<Node> nodes = new ArrayList<Node>();
 					nodes.add(selectedNode);
 					try {
 						addChildren(nodes);
 					} catch (RepositoryException re) {
-						throw new PeopleException(
-								"Unable to add node by double click");
+						throw new PeopleException("Unable to add node by double click");
 					}
-					IEditorPart iep = workbench.getActiveWorkbenchWindow()
-							.getActivePage().getActiveEditor();
-					if (iep != null && iep instanceof AbstractPeopleCTabEditor)
-						((AbstractPeopleCTabEditor) iep).forceRefresh();
+					IEditorPart iep = workbench.getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+					if (iep != null && iep instanceof AbstractConnectCTabEditor)
+						((AbstractConnectCTabEditor) iep).forceRefresh();
 				}
 			});
 
 			// The columns
-			TableViewerColumn col = ViewerUtils.createTableViewerColumn(
-					itemsViewer, "selected", SWT.NONE, 25);
+			TableViewerColumn col = ViewerUtils.createTableViewerColumn(itemsViewer, "selected", SWT.NONE, 25);
 			col.setEditingSupport(new SelectedEditingSupport(itemsViewer));
-
-			col.setLabelProvider(new ColumnLabelProvider() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public String getText(Object element) {
-					return null;
-				}
-
-				@Override
-				public Image getImage(Object element) {
-					if (selectedItems.contains(element)) {
-						return PeopleRapImages.CHECK_SELECTED;
-					} else {
-						return PeopleRapImages.CHECK_UNSELECTED;
-					}
-				}
-			});
-
-			col = ViewerUtils.createTableViewerColumn(itemsViewer, "Entities",
-					SWT.NONE, 400);
+			col = ViewerUtils.createTableViewerColumn(itemsViewer, "Entities", SWT.NONE, 400);
 			col.setLabelProvider(getCurrentLabelProvider());
 		}
 
@@ -309,11 +280,8 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 
 		public void addFilterPanel(Composite parent) {
 			// Text Area for the filter
-			filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH
-					| SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-			filterTxt.setMessage(PeopleRapConstants.FILTER_HELP_MSG);
-			filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL
-					| GridData.HORIZONTAL_ALIGN_FILL));
+			filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+			filterTxt.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 5003010530960334977L;
 

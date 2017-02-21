@@ -13,9 +13,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
+import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.people.ContactValueCatalogs;
-import org.argeo.connect.people.PeopleConstants;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
@@ -24,7 +24,6 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeUtils;
 
 /**
  * Static utility methods to manage generic CRM concepts within JCR. Rather use
@@ -264,8 +263,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * 
 	 * Updated cache properties depend on the primary node type
 	 */
-	public static void updatePrimaryCache(ResourcesService resourcesService, PeopleService peopleService, Node parentNode,
-			Node primaryChild, boolean isPrimary) {
+	public static void updatePrimaryCache(ResourcesService resourcesService, PeopleService peopleService,
+			Node parentNode, Node primaryChild, boolean isPrimary) {
 		try {
 			if (primaryChild.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
 				if (isPrimary) {
@@ -646,37 +645,40 @@ public class PeopleJcrUtils implements PeopleNames {
 		return string.replace(' ', '_');
 	}
 
-	// TODO Clean and generalize this
-	public static Node getDraftParent(Session session, PeopleService peopleService) {
+	// // TODO Clean and generalize this
+	// public static Node getDraftParent(Session session, PeopleService
+	// peopleService) {
+	//
+	// // private String getCurrentHomePath(Session callingSession) {
+	// // Session session = null;
+	// // try {
+	// // // tryAs is compulsory when not calling from the workbench
+	// // Repository repo = callingSession.getRepository();
+	// // session = CurrentUser.tryAs(() -> repo.login());
+	// // String homepath = NodeUtils.getUserHome(session).getPath();
+	// // return homepath;
+	// // } catch (Exception e) {
+	// // throw new DocumentsException("Cannot retrieve Current User Home
+	// // Path",
+	// // e);
+	// // } finally {
+	// // JcrUtils.logoutQuietly(session);
+	// // }
+	// // }
+	// // String draftPath = peopleService.getTmpPath();
+	// Node home = NodeUtils.getUserHome(session);
+	// String draftRelPath = ConnectConstants.HOME_APP_SYS_RELPARPATH + "/" +
+	// PeopleConstants.PEOPLE_APP_BASE_NAME
+	// + "/" + PeopleConstants.PEOPLE_DRAFT;
+	// String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), false);
+	// draftRelPath += "/" + datePath;
+	// return JcrUtils.mkdirs(home, draftRelPath, NodeType.NT_UNSTRUCTURED);
+	// }
 
-		// private String getCurrentHomePath(Session callingSession) {
-		// Session session = null;
-		// try {
-		// // tryAs is compulsory when not calling from the workbench
-		// Repository repo = callingSession.getRepository();
-		// session = CurrentUser.tryAs(() -> repo.login());
-		// String homepath = NodeUtils.getUserHome(session).getPath();
-		// return homepath;
-		// } catch (Exception e) {
-		// throw new DocumentsException("Cannot retrieve Current User Home
-		// Path",
-		// e);
-		// } finally {
-		// JcrUtils.logoutQuietly(session);
-		// }
-		// }
-		// String draftPath = peopleService.getTmpPath();
-		Node home = NodeUtils.getUserHome(session);
-		String draftRelPath = ConnectConstants.HOME_APP_SYS_RELPARPATH + "/" + PeopleConstants.PEOPLE_APP_BASE_NAME
-				+ "/" + PeopleConstants.PEOPLE_DRAFT;
-		String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), false);
-		draftRelPath += "/" + datePath;
-		return JcrUtils.mkdirs(home, draftRelPath, NodeType.NT_UNSTRUCTURED);
-	}
-
-	public static Node getImportTmpParent(Session session, PeopleService peopleService) {
-		String draftPath = peopleService.getTmpPath();
-		String datePath = JcrUtils.dateAsPath(Calendar.getInstance(), true);
-		return JcrUtils.mkdirs(session, draftPath + "/" + datePath + "imports");
+	public static Node createImportTmpParent(Session session, AppService appService) throws RepositoryException {
+		Node peopleDraftParent = appService.getDraftParent(session);
+		String relPath = "imports/" + appService.getDefaultRelPath(session.getUserID());
+		Node parent = JcrUtils.mkdirs(peopleDraftParent, ConnectJcrUtils.parentRelPath(relPath));
+		return parent.addNode(session.getUserID());
 	}
 }

@@ -10,9 +10,8 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleNames;
-import org.argeo.connect.people.workbench.rap.PeopleRapImages;
+import org.argeo.connect.ConnectException;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.internal.ui.AbstractTrackerEditor;
 import org.argeo.connect.ui.ConnectUiStyles;
@@ -146,7 +145,7 @@ public abstract class TagListFormPart extends Composite {
 						tagCmp.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 						CmsUtils.markup(link);
-						if (taggablePropName.equals(PeopleNames.PEOPLE_TAGS))
+						if (taggablePropName.equals(ConnectNames.CONNECT_TAGS))
 							link.setText(" #<a>" + tagValue + "</a>");
 						else
 							link.setText(" <a>" + tagValue + "</a>");
@@ -213,7 +212,7 @@ public abstract class TagListFormPart extends Composite {
 				}
 				parentCmp.getParent().getParent().layout(true, true);
 			} catch (RepositoryException re) {
-				throw new PeopleException("Error while refreshing tag like list for " + taggable, re);
+				throw new ConnectException("Error while refreshing tag like list for " + taggable, re);
 			}
 			super.refresh();
 		}
@@ -222,9 +221,8 @@ public abstract class TagListFormPart extends Composite {
 
 	private void addDeleteButton(final AbstractFormPart part, Composite parent, final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		CmsUtils.style(deleteBtn, ConnectUiStyles.FLAT_BTN);
+		CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
 		deleteBtn.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		deleteBtn.setImage(PeopleRapImages.DELETE_BTN_LEFT);
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -243,7 +241,7 @@ public abstract class TagListFormPart extends Composite {
 					part.refresh();
 					part.markDirty();
 				} catch (RepositoryException e) {
-					throw new PeopleException("unable to initialise deletion", e);
+					throw new ConnectException("unable to initialise deletion", e);
 				}
 			}
 		});

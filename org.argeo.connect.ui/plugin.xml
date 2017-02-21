@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.6"?>
+<plugin>
+	<!-- VIEWS --> 
+	<extension
+		point="org.eclipse.ui.views">
+	</extension>
+	
+	<!-- EDITORS --> 
+	<extension point="org.eclipse.ui.editors">
+	</extension>
+	
+	<!-- COMMANDS --> 
+	<extension point="org.eclipse.ui.commands">
+		<command
+			id="org.argeo.connect.ui.openEntityEditor"
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			name="Open Editor">
+			<commandParameter
+         		id="param.nodeURI"
+         		name="The jcr identifier">
+         	</commandParameter>
+			<commandParameter
+         		id="param.jcrId"
+         		name="The jcr identifier">
+         	</commandParameter>
+			<commandParameter
+				id="param.openForEdit"
+				name="A flag to try to open the corresponding entity for edition">
+			</commandParameter>
+			<commandParameter
+				id="param.cTabId"
+				name="The id of the tab to open if such a tab exists">
+			</commandParameter>
+			<!-- Still used to open editor with the linked list (employees...) -->
+			<commandParameter
+				id="param.entityUid"
+				name="The Model Specific Entity Uid">
+			</commandParameter>
+		</command>    
+		
+		<!-- Search entities by type -->
+		<command
+			id="org.argeo.connect.ui.openSearchEntityEditor"
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			name="Open Search Entity Editor">
+			<commandParameter
+				id="param.nodeType"
+				name="Node Type">
+			</commandParameter>
+			<commandParameter
+				id="param.editorName"
+				name="Editor Name">
+			</commandParameter>
+			<commandParameter
+				id="param.basePath"
+				name="Parent base path">
+			</commandParameter>
+		</command>
+
+		<!-- Exports -->
+		<command
+      		id="org.argeo.connect.ui.getJxlExport"
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+            name="Generate a spreadsheet export">
+            <commandParameter
+         		id="param.exportId"
+         		name="An export ID">
+  	 		</commandParameter>
+    	</command>
+    	
+    	
+    	 <!-- Add global life cycle on Editors  -->
+		<!-- Note: corresponding handler could also be defined below in the startup part -->
+		<command
+      		defaultHandler="org.argeo.connect.ui.workbench.commands.ChangeEditingState"
+			id="org.argeo.connect.ui.changeEditingState"
+            name="changeEditingState">
+			<commandParameter
+         		id="param.newEditingState"
+         		name="The new global editing state">
+  	 		</commandParameter>
+  	 		<commandParameter
+         		id="param.priorAction"
+         		name="checkout, save or cancel">
+  	 		</commandParameter>
+    	</command>
+    	
+    	<!-- Entity CRUD --> 
+		<command
+      		id="org.argeo.connect.ui.createEntity"
+			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+            name="createEntity">
+            <commandParameter
+         		id="param.targetNodeType"
+         		name="Target Node Type">
+  	 		</commandParameter>
+    	</command>
+    	
+		<command
+			id="org.argeo.connect.ui.deleteEntity"
+            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		name="deleteEntity">
+            <commandParameter
+         		id="param.toRemoveJcrId"
+         		name="Jcr ID of the node to remove">
+  	 		</commandParameter>
+            <commandParameter
+         		id="param.removeParent"
+         		name="Indicates whether parent node should also be deleted">
+  	 		</commandParameter>
+    	</command>
+
+  		<!-- Miscelleanous -->
+  		<command
+			id="org.argeo.connect.ui.forceRefresh"
+			defaultHandler="org.argeo.connect.ui.workbench.commands.ForceRefresh"
+			name="Force refresh of the current active part if such an action is possible">
+			<commandParameter
+					id="param.viewId"
+					name="optionnaly, the id of the view to refresh">
+ 			</commandParameter>
+  		</command>
+ 	</extension>
+	
+	<!-- MENU CONTRIBUTION --> 
+	<extension
+		id="menu:org.eclipse.ui.main.menu"
+		point="org.eclipse.ui.menus">
+		
+		<!-- Generic commands provided by the people app --> 
+		<menuContribution
+			locationURI="toolbar:org.argeo.cms.ui.workbench.rap.userToolbar?before=org.eclipse.ui.file.save"> 
+			<!-- Force resfresh if possible --> 
+			<command
+				commandId="org.argeo.connect.ui.forceRefresh"
+				icon="theme/icons/actions/refresh.png"
+				label="Force refresh of the current active part"
+				style="push"
+				tooltip="Force refresh of the current active part">
+				<visibleWhen>
+					<with variable="activePart">
+						<instanceof value="org.argeo.connect.ui.workbench.Refreshable" />
+					</with>
+				</visibleWhen>
+			</command>
+		</menuContribution>
+		
+		<menuContribution
+			locationURI="toolbar:org.argeo.cms.ui.workbench.rap.userToolbar?after=org.eclipse.ui.file.saveAll"> 
+			<!-- Check in and out management --> 
+ 			<command
+				commandId="org.argeo.connect.ui.changeEditingState"
+				icon="theme/icons/actions/checkout.gif"
+				label="Check Out"
+				style="push"
+				tooltip="Check Out item for edit">
+				<visibleWhen>
+					<and>
+						<with variable="activePart">
+							<instanceof value="org.argeo.cms.ui.CmsEditable" />
+						</with>
+						<with variable="org.argeo.connect.ui.editingState">
+							<equals value="notEditing" />
+						</with>
+			    	</and>
+				</visibleWhen>
+				<parameter name="param.newEditingState" value="editing" />
+  	 			<parameter name="param.priorAction" value="checkout" />
+			</command>
+			
+			<!-- Add global life cycle on Editors  -->
+			<command
+				commandId="org.argeo.connect.ui.changeEditingState"
+				icon="theme/icons/actions/cancelEdit.gif"
+				label="Cancel edit"
+				style="push"
+				tooltip="Abandon changes and check back in">
+				<visibleWhen>
+					<and>
+						<with variable="activePart">
+							<instanceof value="org.argeo.cms.ui.CmsEditable" />
+						</with>
+						<with variable="org.argeo.connect.ui.editingState">
+							<equals value="editing" />
+						</with>
+			    	</and>
+				</visibleWhen>
+				<parameter name="param.newEditingState" value="notEditing" />
+  	 			<parameter name="param.priorAction" value="cancel" />
+    		</command>
+		</menuContribution>
+		
+		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.rap.userToolbar">
+			<toolbar id="org.argeo.connect.ui.dropDownsToolbar">
+				<!-- Create entity dropdown menu --> 
+				<command
+					id="org.argeo.connect.ui.addEntityToolbar"
+					style="pulldown"
+					label="Create"
+					tooltip="Create a new object"
+					icon="theme/icons/actions/add.gif"
+					commandId="org.argeo.cms.ui.workbench.doNothing">
+				</command>
+				<!-- Search entity dropdown menu --> 
+				<command
+					id="org.argeo.connect.ui.openSearchToolbar"
+					style="pulldown"
+					label="Search"
+					tooltip="Open a detailed search page"
+					icon="theme/icons/actions/search.png"
+					commandId="org.argeo.cms.ui.workbench.doNothing">
+<!--					<visibleWhen checkEnabled="false">
+						<with variable="roles">
+		    				<iterate ifEmpty="false" operator="or">
+		      					<equals value="cn=org.argeo.suite.coworker,ou=roles,ou=node" />
+			      			</iterate>
+		    			</with>
+					</visibleWhen> -->
+				</command>
+				
+				<!-- Spreadsheet extracts --> 
+				<command
+					commandId="org.argeo.connect.ui.getJxlExport"
+					icon="theme/icons/actions/jxlExport.gif"
+					label="Generate extract"
+					style="push"
+					tooltip="Generate a spreadsheet export of the current active filtered list">
+					<visibleWhen>
+						<and>
+							<with variable="activePart">
+								<instanceof value="org.argeo.connect.ui.IJcrTableViewer" />
+							</with>
+						</and>
+					</visibleWhen>
+				</command>
+			</toolbar>
+		</menuContribution>	
+	</extension>
+	
+	<!-- Workbench listeners --> 
+	<extension point="org.eclipse.ui.startup">
+   		<startup class="org.argeo.eclipse.spring.SpringExtensionFactory"
+   			        id="org.argeo.connect.ui.partStateChanged">
+   		</startup>
+	</extension>
+
+	<!-- Services -->
+	<extension
+      	point="org.eclipse.ui.services">
+	   	<sourceProvider
+	        provider="org.argeo.connect.ui.workbench.util.EditionSourceProvider">
+	     	<variable
+	            name="org.argeo.connect.ui.editingState"
+	            priorityLevel="workbench">
+	      	</variable>
+	   	</sourceProvider>
+	</extension>
+	
+</plugin>

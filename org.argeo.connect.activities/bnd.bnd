@@ -11,10 +11,13 @@ javax.servlet.http,\
 org.argeo.cms.ui.fs,\
 org.argeo.connect,\
 org.argeo.connect.ui,\
+org.argeo.connect.ui.util,\
+org.argeo.connect.ui.workbench.commands,\
 org.argeo.eclipse.spring,\
 org.argeo.eclipse.ui.specific,\
 org.argeo.node,\
 org.eclipse.core.commands,\
+org.eclipse.jface.window,\
 org.eclipse.swt,\
 org.eclipse.ui;ui.workbench=split,\
 org.eclipse.ui.browser;ui.workbench=split,\

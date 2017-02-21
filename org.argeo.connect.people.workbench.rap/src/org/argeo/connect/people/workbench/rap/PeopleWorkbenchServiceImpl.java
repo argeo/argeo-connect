@@ -8,14 +8,12 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.PeopleWorkbenchService;
-import org.argeo.connect.people.workbench.rap.commands.OpenEntityEditor;
-import org.argeo.connect.people.workbench.rap.editors.DefaultSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.editors.MailingListEditor;
 import org.argeo.connect.people.workbench.rap.editors.OrgEditor;
+import org.argeo.connect.people.workbench.rap.editors.PeopleSearchEntityEditor;
 import org.argeo.connect.people.workbench.rap.editors.PersonEditor;
 import org.argeo.connect.people.workbench.rap.wizards.NewOrgWizard;
 import org.argeo.connect.people.workbench.rap.wizards.NewPersonWizard;
-import org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
@@ -54,7 +52,10 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 
 	@Override
 	public String getSearchEntityEditorId(String nodeType) {
-		return DefaultSearchEntityEditor.ID;
+		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType) || PeopleTypes.PEOPLE_ORG.equals(nodeType)
+				|| PeopleTypes.PEOPLE_MAILING_LIST.equals(nodeType))
+			return PeopleSearchEntityEditor.ID;
+		return null;
 	}
 
 	@Override
@@ -89,14 +90,14 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	 * Provide the plugin specific ID of the {@code OpenEntityEditor} command
 	 * and thus enable the opening plugin specific editors
 	 */
-	public String getOpenEntityEditorCmdId() {
-		return OpenEntityEditor.ID;
-	}
+	// public String getOpenEntityEditorCmdId() {
+	// return OpenEntityEditor.ID;
+	// }
 
-	@Override
-	public String getOpenSearchEntityEditorCmdId() {
-		return OpenSearchEntityEditor.ID;
-	}
+	// @Override
+	// public String getOpenSearchEntityEditorCmdId() {
+	// return OpenSearchEntityEditor.ID;
+	// }
 
 	@Override
 	public String getDefaultEditorId() {

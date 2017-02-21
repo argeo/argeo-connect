@@ -18,15 +18,15 @@ import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.workbench.rap.composites.ContactAddressComposite;
 import org.argeo.connect.people.workbench.rap.composites.ContactComposite;
-import org.argeo.connect.people.workbench.rap.composites.dropdowns.TagLikeDropDown;
 import org.argeo.connect.people.workbench.rap.dialogs.PickUpOrgDialog;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
-import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.util.LazyCTabControl;
+import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -60,14 +60,14 @@ public class ContactList extends LazyCTabControl {
 	private final Node entity;
 
 	// UI Objects
-	private final AbstractPeopleEditor editor;
+	private final AbstractConnectEditor editor;
 	private final FormToolkit toolkit;
 	private ContactFormPart myFormPart;
 	private Composite innerCmp;
 	// Caches the add new contact combo
 	private Combo addContactCmb;
 
-	public ContactList(Composite parent, int style, AbstractPeopleEditor editor, Node entityNode,
+	public ContactList(Composite parent, int style, AbstractConnectEditor editor, Node entityNode,
 			ResourcesService resourcesService, PeopleService peopleService, AppWorkbenchService appWorkbenchService) {
 		super(parent, style);
 		this.editor = editor;

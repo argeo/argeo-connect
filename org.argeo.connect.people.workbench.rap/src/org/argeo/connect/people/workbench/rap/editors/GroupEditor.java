@@ -7,12 +7,12 @@ import javax.jcr.PropertyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 import org.argeo.connect.people.workbench.rap.providers.GroupLabelProvider;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -29,7 +29,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 /**
  * Editor page that display a group with corresponding details
  */
-public abstract class GroupEditor extends AbstractPeopleCTabEditor {
+public abstract class GroupEditor extends AbstractConnectCTabEditor {
 	final static Log log = LogFactory.getLog(GroupEditor.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".groupEditor";
@@ -59,7 +59,7 @@ public abstract class GroupEditor extends AbstractPeopleCTabEditor {
 					"", SWT.WRAP);
 			titleROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 			final ColumnLabelProvider groupTitleLP = new GroupLabelProvider(
-					PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE);
+					ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE);
 
 			// EDIT PANEL
 			final Composite editPanel = getFormToolkit().createComposite(

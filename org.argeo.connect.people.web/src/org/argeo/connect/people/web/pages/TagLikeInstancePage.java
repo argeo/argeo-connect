@@ -126,7 +126,7 @@ public class TagLikeInstancePage implements CmsUiProvider {
 			Session session = context.getSession();
 			QueryManager queryManager = session.getWorkspace().getQueryManager();
 			QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			String path = peopleService.getBasePath(null);
+			String path = peopleService.getDefaultBasePath();
 			String value = context.getProperty(Property.JCR_TITLE).getString();
 
 			Selector source = factory.selector(PeopleTypes.PEOPLE_ENTITY, PeopleTypes.PEOPLE_ENTITY);

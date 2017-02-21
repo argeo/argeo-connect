@@ -1,16 +1,28 @@
+Bundle-Activator: org.argeo.connect.ui.workbench.ConnectUiPlugin
+Bundle-SymbolicName: org.argeo.connect.ui;singleton:=true
+Require-Bundle: org.eclipse.core.runtime
+
+Require-Capability: cms.datamodel; filter:="(name=connect)"
+
 Import-Package: javax.jcr.nodetype,\
 javax.jcr.query,\
+javax.jcr.security,\
+javax.servlet.http,\
+org.argeo.cms.ui.fs,\
 org.argeo.connect,\
-org.argeo.cms.maintenance,\
-org.argeo.cms.ui.workbench,\
+org.argeo.connect.resources,\
+org.argeo.eclipse.spring,\
 org.argeo.eclipse.ui.specific,\
-org.argeo.eclipse.ui.utils,\
+org.argeo.node,\
 org.eclipse.core.commands,\
 org.eclipse.jface.resource,\
 org.eclipse.jface.window,\
 org.eclipse.swt,\
+org.eclipse.rap.rwt;resolution:=optional,\
 org.eclipse.ui.browser;ui.workbench=split,\
+org.eclipse.ui.forms,\
 org.eclipse.ui.part;ui.workbench=split,\
+org.eclipse.ui.services,\
 org.eclipse.ui;ui.workbench=split,\
 jxl;resolution:=optional,\
 jxl.biff;resolution:=optional,\
@@ -18,3 +30,16 @@ jxl.format;resolution:=optional,\
 jxl.write;resolution:=optional,\
 jxl.write.biff;resolution:=optional,\
 *
+
+
+#Import-Package: javax.jcr.nodetype,\
+#org.argeo.connect,\
+#org.argeo.cms.maintenance,\
+#org.argeo.cms.ui.workbench,\
+#org.argeo.eclipse.ui.specific,\
+#org.argeo.eclipse.ui.utils,\
+#org.eclipse.core.commands,\
+#org.eclipse.swt,\
+#org.eclipse.ui.browser;ui.workbench=split,\
+#org.eclipse.ui.part;ui.workbench=split,\
+#*

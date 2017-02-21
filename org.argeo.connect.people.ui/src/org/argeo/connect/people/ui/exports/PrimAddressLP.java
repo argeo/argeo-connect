@@ -52,7 +52,8 @@ public class PrimAddressLP extends SimpleJcrNodeLabelProvider {
 					else
 						return "";
 				}
-				Node referencedEntity = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact), refUid);
+				Node referencedEntity = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact), null,
+						refUid);
 				if (referencedEntity == null)
 					return "";
 				Node referencedContact = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_ADDRESS);

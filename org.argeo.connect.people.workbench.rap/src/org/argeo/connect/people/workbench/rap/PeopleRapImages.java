@@ -13,7 +13,7 @@ public class PeopleRapImages {
 
 	// Various entity types
 	public final static Image ICON_PERSON = createImg(TYPE_PATH, "person.gif");
-	public final static Image ICON_ORG = createImg(TYPE_PATH, "company.png");
+	public final static Image ICON_ORG = createImg(TYPE_PATH, "organisation.png");
 	public final static Image ICON_MAILING_LIST = createImg(TYPE_PATH, "mailingList.gif");
 	public final static Image ICON_TAG = createImg(TYPE_PATH, "tag.png");
 
@@ -24,14 +24,18 @@ public class PeopleRapImages {
 	public final static Image MERGE_BTN = createImg(ACTION_PATH, "merge.gif");
 
 	// Miscellaneous
-	public final static Image LOGO_SMALL = createImg(IMG_PATH, "argeo-smallLogo.png");
+	// public final static Image LOGO_SMALL = createImg(IMG_PATH,
+	// "argeo-smallLogo.png");
 	public final static Image NO_PICTURE = createImg(IMG_PATH, "noPicture.gif");
 	public final static Image PRIMARY_BTN = createImg(BASE_PATH, "primary.gif");
 	public final static Image PRIMARY_NOT_BTN = createImg(BASE_PATH, "primaryNOT.gif");
 	public final static Image ORIGINAL_BTN = createImg(BASE_PATH, "first.png");
-	public final static Image CALENDAR_BTN = createImg(BASE_PATH, "calendar.gif");
-	public final static Image CHECK_SELECTED = createImg(BASE_PATH, "check-selected.png");
-	public final static Image CHECK_UNSELECTED = createImg(BASE_PATH, "check-unselected.png");
+	// public final static Image CALENDAR_BTN = createImg(BASE_PATH,
+	// "calendar.gif");
+	// public final static Image CHECK_SELECTED = createImg(BASE_PATH,
+	// "check-selected.png");
+	// public final static Image CHECK_UNSELECTED = createImg(BASE_PATH,
+	// "check-unselected.png");
 
 	private static Image createImg(String prefix, String fileName) {
 		return PeopleRapPlugin.getImageDescriptor(prefix + fileName).createImage();

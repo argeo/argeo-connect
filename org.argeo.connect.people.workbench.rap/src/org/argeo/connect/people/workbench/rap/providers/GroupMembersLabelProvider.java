@@ -14,8 +14,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 /**
  * Provide a label provider for group members
  */
-public class GroupMembersLabelProvider extends ColumnLabelProvider implements
-		PeopleNames {
+public class GroupMembersLabelProvider extends ColumnLabelProvider implements PeopleNames {
 	private static final long serialVersionUID = -7480621656515913263L;
 
 	private PeopleService peopleService;
@@ -30,8 +29,7 @@ public class GroupMembersLabelProvider extends ColumnLabelProvider implements
 			// Initialisation
 			Node position = (Node) element;
 			// Get referenced entity
-			Node referencedEntity = peopleService.getEntityByUid(
-					position.getSession(),
+			Node referencedEntity = peopleService.getEntityByUid(position.getSession(), null,
 					ConnectJcrUtils.get(position, PEOPLE_REF_UID));
 
 			// Create HTML snippet
@@ -46,6 +44,5 @@ public class GroupMembersLabelProvider extends ColumnLabelProvider implements
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to get text for link", e);
 		}
-
 	}
 }

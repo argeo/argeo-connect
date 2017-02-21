@@ -1,9 +1,7 @@
 package org.argeo.connect.resources.core;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.jcr.Node;
@@ -38,30 +36,33 @@ import org.argeo.jcr.JcrUtils;
 public class ResourcesServiceImpl implements ResourcesService {
 	private final static Log log = LogFactory.getLog(ResourcesServiceImpl.class);
 
-	public ResourcesServiceImpl() {
+	@Override
+	public String getAppBaseName() {
+		return ResourcesNames.RESOURCES_BASE_NAME;
 	}
 
-	/* LABEL FOR NODE TYPES AND PROPERTY NAMES */
-
-	// Maps the used item types with some English labels.
-	// TODO internationalise and generalise.
-	private final static Map<String, String> PEOPLE_ITEM_LABELS = new HashMap<String, String>() {
-		private static final long serialVersionUID = 1L;
-		{
-			// put(PeopleTypes.PEOPLE_PERSON, "Person");
-			// put(PeopleTypes.PEOPLE_ORG, "Organisation");
-			// put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
-			// put(PeopleTypes.PEOPLE_GROUP, "Group");
-			// put(PeopleTypes.PEOPLE_TASK, "Task");
-		}
-	};
+	@Override
+	public String getDefaultRelPath(Node entity) throws RepositoryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
-	public String getItemDefaultEnLabel(String itemName) {
-		if (PEOPLE_ITEM_LABELS.containsKey(itemName))
-			return PEOPLE_ITEM_LABELS.get(itemName);
-		else
-			return itemName;
+	public String getDefaultRelPath(String tag) {
+		// remove trailing and starting space
+		tag = tag.trim();
+		String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
+		// corner case when second character is a space
+		if (cleanedTag.charAt(1) == ' ')
+			cleanedTag = cleanedTag.charAt(0) + ' ' + cleanedTag.substring(2);
+		String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
+		return relPath + "/" + cleanedTag;
+	}
+
+
+	@Override
+	public String getItemDefaultEnLabel(String itemId) {
+		return itemId;
 	}
 
 	@Override
@@ -292,7 +293,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 	@Override
 	public Node getRegisteredTag(Node tagParent, String instanceKey) {
 		try {
-			String relPath = getTagRelPath(instanceKey);
+			String relPath = getDefaultRelPath(instanceKey);
 			if (tagParent.hasNode(relPath)) {
 				Node existing = tagParent.getNode(relPath);
 				String existingValue = ConnectJcrUtils.get(existing, getTagKeyPropName(tagParent));
@@ -381,7 +382,6 @@ public class ResourcesServiceImpl implements ResourcesService {
 	@Override
 	public NodeIterator getTaggedEntities(Node tagParent, String key) {
 		try {
-
 			String nodeType = tagParent.getProperty(ResourcesNames.CONNECT_TAGGABLE_NODE_TYPE).getString();
 			String parentPath = tagParent.getProperty(ResourcesNames.CONNECT_TAGGABLE_PARENT_PATH).getString();
 			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent,
@@ -527,7 +527,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 		while (nit.hasNext())
 			updateOneTag(nit.nextNode(), propName, oldValue, newValue);
 
-		String newRelPath = "/" + getTagRelPath(newValue);
+		String newRelPath = "/" + getDefaultRelPath(newValue);
 		// Insure the parent node is already existing
 		// Rather use the parent node than the abs path: we might have not the
 		// right on the full workspace
@@ -609,7 +609,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 	private Node createTagInstanceInternal(Node tagParent, String tagKey) {
 		try {
 			// retrieve parameters for this tag
-			String relPath = getTagRelPath(tagKey);
+			String relPath = getDefaultRelPath(tagKey);
 			String instanceType = tagParent.getProperty(ResourcesNames.CONNECT_TAG_INSTANCE_TYPE).getString();
 			// create and set props
 			Node newTag = JcrUtils.mkdirs(tagParent, relPath, instanceType);
@@ -622,17 +622,6 @@ public class ResourcesServiceImpl implements ResourcesService {
 		} catch (RepositoryException e) {
 			throw new ConnectException("Unable to create tag instance " + tagKey + " for tag " + tagParent, e);
 		}
-	}
-
-	protected String getTagRelPath(String tag) {
-		// remove trailing and starting space
-		tag = tag.trim();
-		String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
-		// corner case when second character is a space
-		if (cleanedTag.charAt(1) == ' ')
-			cleanedTag = cleanedTag.charAt(0) + ' ' + cleanedTag.substring(2);
-		String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
-		return relPath + "/" + cleanedTag;
 	}
 
 	protected Node retrieveTagParentFromTag(Node tag) {

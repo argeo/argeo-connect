@@ -21,6 +21,8 @@ public class ConnectUiSnippets {
 	 * specific format of the value of this href attribute
 	 */
 	public static String getRWTLink(String href, String value) {
+		// We formerly used to add " style='color:#383838; text-decoration:none;' "
+		// Check if still necessary
 		return "<a href=\"" + href + "\" target=\"_rwt\">" + value + "</a>";
 	}
 

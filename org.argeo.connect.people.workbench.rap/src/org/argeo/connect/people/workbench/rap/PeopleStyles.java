@@ -9,6 +9,5 @@ public interface PeopleStyles {
 	String LOGO_BOX = "people_logoBox";
 
 	// Overview styles
-	String PEOPLE_CLASS_ENTITY_HEADER = "people_entity_header";
 	String SMALL_TEXT = "people_small_text";
 }

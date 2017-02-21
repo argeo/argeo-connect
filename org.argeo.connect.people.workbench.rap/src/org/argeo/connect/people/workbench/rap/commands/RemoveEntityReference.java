@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -79,8 +79,8 @@ public class RemoveEntityReference extends AbstractHandler {
 			JcrUtils.logoutQuietly(session);
 		}
 		IEditorPart iep = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().getActiveEditor();
-		if (iep != null && iep instanceof AbstractPeopleCTabEditor)
-			((AbstractPeopleCTabEditor) iep).forceRefresh();
+		if (iep != null && iep instanceof AbstractConnectCTabEditor)
+			((AbstractConnectCTabEditor) iep).forceRefresh();
 		return null;
 	}
 

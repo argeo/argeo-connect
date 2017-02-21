@@ -15,16 +15,16 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.activities.ActivitiesException;
 import org.argeo.connect.activities.ActivitiesNames;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.core.ActivityUtils;
-import org.argeo.connect.people.PeopleException;
-import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.editors.parts.LinkListPart;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.widgets.LinkListPart;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.ui.workbench.parts.EntityEditorInput;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
+import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
@@ -45,12 +45,13 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * Default People rate editor: display a rate and an optional comment. Only the
  * manager can edit an existing rate, the business admin can yet delete it
  */
-public class RateEditor extends AbstractPeopleEditor {
+public class RateEditor extends AbstractConnectEditor {
 	final static Log log = LogFactory.getLog(RateEditor.class);
 
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".rateEditor";
 
 	// Context
+	private ActivitiesService activitiesService;
 	private Node rate;
 
 	// Workaround to align first column of header and body.
@@ -78,8 +79,7 @@ public class RateEditor extends AbstractPeopleEditor {
 
 	protected void populateHeader(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite headerCmp = new RateHeader(getFormToolkit(), getManagedForm(), parent, SWT.NO_FOCUS,
-				getPeopleService(), rate);
+		Composite headerCmp = new RateHeader(getFormToolkit(), getManagedForm(), parent, SWT.NO_FOCUS, rate);
 		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
@@ -149,8 +149,7 @@ public class RateEditor extends AbstractPeopleEditor {
 		// private DateTextPart dateComposite;
 		private LinkListPart relatedCmp;
 
-		public RateHeader(FormToolkit toolkit, IManagedForm form, Composite parent, int style,
-				PeopleService peopleService, Node activity) {
+		public RateHeader(FormToolkit toolkit, IManagedForm form, Composite parent, int style, Node activity) {
 			super(parent, style);
 			this.toolkit = toolkit;
 			this.activity = activity;
@@ -184,7 +183,7 @@ public class RateEditor extends AbstractPeopleEditor {
 						dateLbl.setText(dateFormat.format(cal.getTime()));
 					}
 				} catch (RepositoryException e) {
-					throw new PeopleException("unable to refresh " + "rating date for " + activity, e);
+					throw new ActivitiesException("unable to refresh " + "rating date for " + activity, e);
 				}
 
 				// We force full refresh with this workaround at each refresh to
@@ -239,5 +238,14 @@ public class RateEditor extends AbstractPeopleEditor {
 				relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(5));
 			}
 		}
+	}
+
+	protected ActivitiesService getActivitiesService() {
+		return activitiesService;
+	}
+
+	/* DEPENDENCY INNJECTION */
+	public void setActivitiesService(ActivitiesService activitiesService) {
+		this.activitiesService = activitiesService;
 	}
 }

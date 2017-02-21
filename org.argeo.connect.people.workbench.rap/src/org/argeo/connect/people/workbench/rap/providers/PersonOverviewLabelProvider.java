@@ -11,11 +11,11 @@ import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.ui.PeopleUiSnippets;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
-import org.argeo.connect.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -48,18 +48,19 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 			else if (node.isNodeType(PeopleTypes.PEOPLE_JOB))
 				entity = node.getParent().getParent();
 			else if (node.isNodeType(PeopleTypes.PEOPLE_POSITION)) {
-				entity = peopleService.getEntityByUid(node.getSession(), node.getProperty(PEOPLE_REF_UID).getString());
+				entity = peopleService.getEntityByUid(node.getSession(), null,
+						node.getProperty(PEOPLE_REF_UID).getString());
 			} else
 				throw new PeopleException("Unvalid node type. " + "Cannot display film information");
 			String result;
 			switch (listType) {
-			case PeopleRapConstants.LIST_TYPE_OVERVIEW_TITLE:
+			case ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE:
 				result = getOverviewTitle(entity);
 				break;
-			case PeopleRapConstants.LIST_TYPE_SMALL:
+			case ConnectUiConstants.LIST_TYPE_SMALL:
 				result = getOverviewForList(entity, true);
 				break;
-			case PeopleRapConstants.LIST_TYPE_MEDIUM:
+			case ConnectUiConstants.LIST_TYPE_MEDIUM:
 				result = getOverviewForList(entity, false);
 				break;
 			default:
@@ -73,7 +74,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 
 	private String getOverviewTitle(Node person) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		builder.append("<span " + PeopleRapConstants.PEOPLE_STYLE_ENTITY_HEADER + " >");
+		builder.append("<span " + ConnectUiConstants.ENTITY_HEADER_INNER_CSS_STYLE + " >");
 		// first line
 		builder.append("<b><big> ");
 		String displayName = peopleService.getDisplayName(person);
@@ -131,7 +132,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 			builder.append(primContactsStr).append("<br/>");
 
 		// Tags
-		String clickableTags = PeopleRapSnippets.getTags(resourceService, appWorkbenchService, person);
+		String clickableTags = ConnectWorkbenchUtils.getTags(resourceService, appWorkbenchService, person);
 		if (EclipseUiUtils.notEmpty(clickableTags))
 			builder.append(clickableTags).append("<br/>");
 

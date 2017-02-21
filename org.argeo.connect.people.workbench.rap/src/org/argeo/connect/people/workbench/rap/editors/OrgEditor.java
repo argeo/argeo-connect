@@ -7,21 +7,23 @@ import javax.jcr.PropertyType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.activities.ActivitiesService;
+import org.argeo.connect.activities.workbench.parts.ActivityList;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
+import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.people.workbench.rap.editors.parts.TagLikeListPart;
-import org.argeo.connect.people.workbench.rap.editors.tabs.ActivityList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.ContactList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.JobList;
 import org.argeo.connect.people.workbench.rap.editors.tabs.OrgAdminInfo;
-import org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
-import org.argeo.connect.people.workbench.rap.editors.util.LazyCTabControl;
 import org.argeo.connect.people.workbench.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.util.LazyCTabControl;
+import org.argeo.connect.ui.widgets.TagLikeListPart;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -44,12 +46,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Display an organisation with corresponding details */
-public class OrgEditor extends AbstractPeopleCTabEditor {
+public class OrgEditor extends AbstractConnectCTabEditor {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".orgEditor";
 
 	final static Log log = LogFactory.getLog(OrgEditor.class);
 
 	// Context
+	private ActivitiesService activitiesService;
+	private PeopleService peopleService;
 	private Node org;
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -106,8 +110,8 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 
 		// Employees
 		tooltip = "Known employees of " + JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		LazyCTabControl employeesCmp = new JobList(folder, SWT.NO_FOCUS, this, getResourcesService(), getPeopleService(),
-				getAppWorkbenchService(), org);
+		LazyCTabControl employeesCmp = new JobList(folder, SWT.NO_FOCUS, this, getResourcesService(),
+				getPeopleService(), getAppWorkbenchService(), org);
 		employeesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, employeesCmp, "Team", PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 
@@ -138,8 +142,8 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
 			// Create edit text
-			final Text displayNameTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(), editPanelCmp, "Display name",
-					"Display name used for this organisation", 300, 1);
+			final Text displayNameTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(), editPanelCmp,
+					"Display name", "Display name used for this organisation", 300, 1);
 			final Button useDistinctDisplayBtn = getFormToolkit().createButton(editPanelCmp,
 					"Use a specific display name", SWT.CHECK);
 			useDistinctDisplayBtn.setToolTipText("Use a display name that is not the legal name");
@@ -149,8 +153,8 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					boolean useDistinct = ConnectWorkbenchUtils.refreshFormCheckBox(OrgEditor.this, useDistinctDisplayBtn, org,
-							PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+					boolean useDistinct = ConnectWorkbenchUtils.refreshFormCheckBox(OrgEditor.this,
+							useDistinctDisplayBtn, org, PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
 
 					if (useDistinct) {
 						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, Property.JCR_TITLE);
@@ -199,5 +203,22 @@ public class OrgEditor extends AbstractPeopleCTabEditor {
 		} catch (Exception e) {
 			throw new PeopleException("Cannot create main info section", e);
 		}
+	}
+
+	protected ActivitiesService getActivitiesService() {
+		return activitiesService;
+	}
+
+	protected PeopleService getPeopleService() {
+		return peopleService;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setActivitiesService(ActivitiesService activitiesService) {
+		this.activitiesService = activitiesService;
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 }

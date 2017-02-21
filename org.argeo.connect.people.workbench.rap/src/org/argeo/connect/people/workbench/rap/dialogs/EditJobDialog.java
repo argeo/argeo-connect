@@ -15,8 +15,6 @@
  */
 package org.argeo.connect.people.workbench.rap.dialogs;
 
-import static org.argeo.connect.people.workbench.rap.PeopleRapConstants.SEARCH_TEXT_DELAY;
-
 import java.util.List;
 
 import javax.jcr.Node;
@@ -36,6 +34,7 @@ import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
 import org.argeo.connect.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -170,7 +169,7 @@ public class EditJobDialog extends TrayDialog {
 					wasPrimary = tmp;
 
 				oldReferencing = oldLink.getParent().getParent();
-				oldReferenced = peopleService.getEntityByUid(session,
+				oldReferenced = peopleService.getEntityByUid(session, null,
 						oldLink.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 			} catch (RepositoryException e) {
 				throw new PeopleException("unable to initialize link edition", e);
@@ -339,7 +338,7 @@ public class EditJobDialog extends TrayDialog {
 		boolean isDyn = appWorkbenchService.queryWhenTyping();
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
 		if (isDyn)
-			filterTxt = new DelayedText(parent, style, SEARCH_TEXT_DELAY);
+			filterTxt = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
 		else
 			filterTxt = new Text(parent, style);
 		filterTxt.setMessage("Search and choose a corresponding entity");

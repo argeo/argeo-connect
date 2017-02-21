@@ -7,6 +7,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.connect.AppService;
+
 /**
  * Provides method interfaces to manage resources like Labels, Catalogues or Tag
  * like multi value properties in a People repository.
@@ -14,7 +16,7 @@ import javax.jcr.Session;
  * The correct instance of this interface must be acquired through the
  * peopleService.
  */
-public interface ResourcesService {
+public interface ResourcesService extends AppService {
 
 	/* LABEL FOR NODE TYPES AND PROPERTY NAMES MANAGEMENT */
 	/**

@@ -7,9 +7,10 @@ import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.rap.PeopleRapConstants;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.util.TagLabelProvider;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -25,7 +26,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements Pe
 
 	private OrgListLabelProvider orgLp;
 	private PersonListLabelProvider personLp;
-	private GroupLabelProvider groupLp = new GroupLabelProvider(PeopleRapConstants.LIST_TYPE_SMALL);
+	private GroupLabelProvider groupLp = new GroupLabelProvider(ConnectUiConstants.LIST_TYPE_SMALL);
 	private TagLabelProvider mlInstanceLp;
 
 	public EntitySingleColumnLabelProvider(ResourcesService resourceService, PeopleService peopleService,
@@ -33,7 +34,7 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements Pe
 		this.appWorkbenchService = appWorkbenchService;
 		personLp = new PersonListLabelProvider(peopleService);
 		orgLp = new OrgListLabelProvider(resourceService, peopleService);
-		mlInstanceLp = new TagLabelProvider(resourceService, PeopleRapConstants.LIST_TYPE_SMALL);
+		mlInstanceLp = new TagLabelProvider(resourceService, ConnectUiConstants.LIST_TYPE_SMALL);
 	}
 
 	@Override

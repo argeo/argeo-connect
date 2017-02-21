@@ -12,6 +12,9 @@ public interface ConnectUiStyles {
 	String SMALL_DELETE_BTN = "small_delete_btn";
 	String POPUP_SHELL = "popup_shell";
 	
+	// Basic Editor styling
+	String ENTITY_HEADER = "entity_header";
+	
 	// Gadgets (typically in the home page)
 	String GADGET_HEADER = "gadget_header";
 	String GADGET_BOX = "gadget_box";
