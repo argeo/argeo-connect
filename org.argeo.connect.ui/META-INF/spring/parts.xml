@@ -30,7 +30,6 @@
 	<bean id="deleteEntity" class="org.argeo.connect.ui.workbench.commands.DeleteEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="appService" ref="appService" />
 	</bean>
 
 	<!-- Exports -->
@@ -41,22 +40,31 @@
 
 	<!-- EDITORS -->
 	<!-- Management of tags and static lists -->
-	<bean id="tagEditor" class="org.argeo.connect.ui.workbench.parts.TagEditor"
+	<bean id="tagEditor" class="org.argeo.connect.resources.workbench.TagEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
+		<property name="appService" ref="appService" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
 	<bean id="defaultSearchEntityEditor"
-		class="org.argeo.connect.ui.workbench.parts.TagEditor.DefaultSearchEntityEditor"
+		class="org.argeo.connect.ui.workbench.parts.DefaultSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<!-- <property name="userAdminService" ref="userAdminService" /> -->
 		<!-- <property name="resourcesService" ref="resourcesService" /> -->
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
+
+	<bean id="searchTagsEditor" class="org.argeo.connect.resources.workbench.SearchTagsEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+
+
 
 	<!-- VIEWS -->
 

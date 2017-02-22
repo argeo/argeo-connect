@@ -29,7 +29,6 @@ import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.commands.ChangeEditingState;
 import org.argeo.connect.ui.workbench.commands.DeleteEntity;
-import org.argeo.connect.ui.workbench.util.CompositeManagedForm;
 import org.argeo.connect.ui.workbench.util.EditionSourceProvider;
 import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -93,7 +92,7 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 	private Node node;
 
 	// UI Context
-	private PeopleManagedForm mForm;
+	private ConnectManagedForm mForm;
 	private FormToolkit toolkit;
 	private Composite main;
 
@@ -119,7 +118,7 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 		// Initialize main UI objects
 		toolkit = new FormToolkit(parent.getDisplay());
 		Form form = toolkit.createForm(parent);
-		mForm = new PeopleManagedForm(parent, toolkit);
+		mForm = new ConnectManagedForm(parent, toolkit);
 		mForm.setContainer(AbstractConnectEditor.this);
 		main = form.getBody();
 		createMainLayout(main);
@@ -320,7 +319,7 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 		return toolkit;
 	}
 
-	public PeopleManagedForm getManagedForm() {
+	public ConnectManagedForm getManagedForm() {
 		return mForm;
 	}
 
@@ -505,8 +504,8 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 		return false;
 	}
 
-	public class PeopleManagedForm extends CompositeManagedForm {
-		public PeopleManagedForm(Composite parent, FormToolkit toolkit) {
+	public class ConnectManagedForm extends CompositeManagedForm {
+		public ConnectManagedForm(Composite parent, FormToolkit toolkit) {
 			super(parent, toolkit);
 		}
 

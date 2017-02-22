@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.workbench.parts;
+package org.argeo.connect.resources.workbench;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +108,7 @@ public class TemplateList extends EditorPart implements Refreshable {
 
 		// Name
 		col = ViewerUtils.createTableViewerColumn(tableViewer, "", SWT.LEFT, bounds[0]);
-		col.setLabelProvider(new NodeTypeLabelProvider(ResourcesNames.CONNECT_TEMPLATE_ID));
+		col.setLabelProvider(new NodeTypeLabelProvider(ResourcesNames.RESOURCES_TEMPLATE_ID));
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(100, 150, true));
 
 		// Providers and listeners

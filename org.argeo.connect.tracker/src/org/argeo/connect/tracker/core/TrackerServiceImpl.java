@@ -20,8 +20,9 @@ import org.argeo.cms.CmsTypes;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.ActivitiesTypes;
-import org.argeo.connect.activities.core.ActivitiesServiceImpl;
+import org.argeo.connect.tracker.TrackerConstants;
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerService;
@@ -32,8 +33,28 @@ import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
-public class TrackerServiceImpl extends ActivitiesServiceImpl implements TrackerService {
+public class TrackerServiceImpl implements TrackerService {
 
+	private ActivitiesService activitiesService;
+
+	@Override
+	public String getAppBaseName() {
+		return TrackerConstants.TRACKER_APP_BASE_NAME;
+	}
+
+	@Override
+	public String getDefaultRelPath(Node entity) throws RepositoryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDefaultRelPath(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	// extends ActivitiesServiceImpl
 	/**
 	 * Centralises the management of known types to provide corresponding base
 	 * path
@@ -85,7 +106,7 @@ public class TrackerServiceImpl extends ActivitiesServiceImpl implements Tracker
 			int priority, int importance, String managerId) throws RepositoryException {
 		Node issue = createTask(parentIssue, title, description, managerId);
 		issue.addMixin(TrackerTypes.TRACKER_ISSUE);
-		setTaskDefaultStatus(issue, TrackerTypes.TRACKER_ISSUE);
+		activitiesService.setTaskDefaultStatus(issue, TrackerTypes.TRACKER_ISSUE);
 		issue.setProperty(Property.JCR_TITLE, title);
 		issue.setProperty(TrackerNames.TRACKER_PRIORITY, priority);
 		issue.setProperty(TrackerNames.TRACKER_IMPORTANCE, importance);
@@ -128,9 +149,10 @@ public class TrackerServiceImpl extends ActivitiesServiceImpl implements Tracker
 	}
 
 	/** Encapsulate the activity service create task to enhance read-ability */
-	private Node createTask(Node parentNode, String title, String description, String assignedTo) {
-		return createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_TASK, null, title, description, assignedTo, null,
-				null, null, null);
+	private Node createTask(Node parentNode, String title, String description, String assignedTo)
+			throws RepositoryException {
+		return activitiesService.createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_TASK, null, title, description,
+				assignedTo, null, null, null, null);
 	}
 
 	@Override
@@ -206,5 +228,10 @@ public class TrackerServiceImpl extends ActivitiesServiceImpl implements Tracker
 	private static String cleanTitle(String title) {
 		String name = title.replaceAll("[^a-zA-Z0-9]", "");
 		return name;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setActivitiesService(ActivitiesService activitiesService) {
+		this.activitiesService = activitiesService;
 	}
 }

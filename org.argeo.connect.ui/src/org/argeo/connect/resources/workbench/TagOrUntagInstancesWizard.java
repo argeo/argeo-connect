@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.workbench.parts;
+package org.argeo.connect.resources.workbench;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +15,11 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.widgets.SimpleJcrTableComposite;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectUiPlugin;
 import org.argeo.connect.ui.workbench.util.TitleIconRowLP;
-import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -108,7 +108,7 @@ public class TagOrUntagInstancesWizard extends Wizard {
 		this.actionType = actionType;
 
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAG_INSTANCE_TYPE);
+		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE);
 	}
 
 	@Override

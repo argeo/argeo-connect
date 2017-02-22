@@ -20,10 +20,10 @@ public interface AppUiService {
 
 	/* CONFIGURE QUERIES */
 	default public boolean lazyLoadLists() {
-		return true;
+		return false;
 	}
 
 	default public boolean queryWhenTyping() {
-		return false;
+		return true;
 	}
 }

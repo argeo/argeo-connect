@@ -100,8 +100,8 @@ public class TagLikeListSmallPart extends Composite {
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
 
 		try {
-			if (tagParent.hasProperty(ResourcesNames.CONNECT_TAG_CODE_PROP_NAME))
-				tagCodePropName = tagParent.getProperty(ResourcesNames.CONNECT_TAG_CODE_PROP_NAME).getString();
+			if (tagParent.hasProperty(ResourcesNames.RESOURCES_TAG_CODE_PROP_NAME))
+				tagCodePropName = tagParent.getProperty(ResourcesNames.RESOURCES_TAG_CODE_PROP_NAME).getString();
 		} catch (RepositoryException e) {
 			throw new ConnectException("unable to get tag prop name for " + tagParent, e);
 		}

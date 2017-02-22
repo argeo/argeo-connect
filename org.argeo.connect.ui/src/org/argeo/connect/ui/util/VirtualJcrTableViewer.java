@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.workbench.util;
+package org.argeo.connect.ui.util;
 
 import java.util.ArrayList;
 import java.util.List;

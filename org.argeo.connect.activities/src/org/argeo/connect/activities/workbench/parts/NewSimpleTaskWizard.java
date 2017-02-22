@@ -5,10 +5,12 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.activities.ActivitiesException;
 import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DateText;
@@ -105,8 +107,13 @@ public class NewSimpleTaskWizard extends Wizard {
 			MessageDialog.openError(getShell(), "Uncomplete information", msg);
 			return false;
 		}
-		createdTask = activityService.createTask(currSession, null, titleTxt.getText(), descTxt.getText(),
-				assignedToGroupId, relatedTo, dueDateCmp.getCalendar(), wakeUpDateCmp.getCalendar());
+
+		try {
+			createdTask = activityService.createTask(currSession, null, titleTxt.getText(), descTxt.getText(),
+					assignedToGroupId, relatedTo, dueDateCmp.getCalendar(), wakeUpDateCmp.getCalendar());
+		} catch (RepositoryException e) {
+			throw new ActivitiesException("Unable to create simple task with title " + titleTxt.getText(), e);
+		}
 
 		return true;
 	}

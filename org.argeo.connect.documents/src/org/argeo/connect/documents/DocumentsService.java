@@ -28,7 +28,7 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
 import org.argeo.node.NodeUtils;
 
-/** Default backend for the Argeo Documents App */
+/** Default backend for the Documents App */
 public class DocumentsService implements AppService {
 	// private final static String NODE_PREFIX = "node://";
 
@@ -235,20 +235,4 @@ public class DocumentsService implements AppService {
 		}
 	}
 
-	private String getMyDocumentsNodePath(Session callingSession) {
-		Session session = null;
-		try {
-			Repository repo = callingSession.getRepository();
-			session = CurrentUser.tryAs(() -> repo.login());
-			Node home = NodeUtils.getUserHome(session);
-			// Insure the parent node is there.
-			if (!home.hasNode(getAppBaseName()))
-				home.addNode(DocumentsConstants.DOCUMENTS_APP_LBL, NodeType.NT_FOLDER);
-			return home.getPath() + getDefaultBasePath();
-		} catch (Exception e) {
-			throw new DocumentsException("Cannot retrieve Current User Home Path", e);
-		} finally {
-			JcrUtils.logoutQuietly(session);
-		}
-	}
 }

@@ -33,7 +33,8 @@ public interface ActivitiesService extends AppService {
 	 * Creates a new simple activity using the default path with default manager
 	 * (the current logged in user) and default date (now)
 	 */
-	public Node createActivity(Session session, String type, String title, String desc, List<Node> relatedTo);
+	public Node createActivity(Session session, String type, String title, String desc, List<Node> relatedTo)
+			throws RepositoryException;
 
 	/**
 	 * Creates a new simple activity using the default path
@@ -44,7 +45,7 @@ public interface ActivitiesService extends AppService {
 	 * import of old tasks
 	 */
 	public Node createActivity(Session session, String reporterId, String type, String title, String desc,
-			List<Node> relatedTo, Calendar date);
+			List<Node> relatedTo, Calendar date) throws RepositoryException;
 
 	/**
 	 * Returns the default activity English Label if defined.
@@ -88,7 +89,7 @@ public interface ActivitiesService extends AppService {
 	 * @return
 	 */
 	public Node createTask(Session session, Node parentNode, String title, String description, String assignedTo,
-			List<Node> relatedTo, Calendar dueDate, Calendar wakeUpDate);
+			List<Node> relatedTo, Calendar dueDate, Calendar wakeUpDate) throws RepositoryException;
 
 	/**
 	 * Creates a new default task given some information. If no parent node is
@@ -111,7 +112,8 @@ public interface ActivitiesService extends AppService {
 	 * @return
 	 */
 	public Node createTask(Session session, Node parentNode, String reporterId, String title, String description,
-			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
+			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate)
+			throws RepositoryException;
 
 	/**
 	 * Creates a new task of given type with some information. If no parent node
@@ -136,16 +138,18 @@ public interface ActivitiesService extends AppService {
 	 */
 	public Node createTask(Session session, Node parentNode, String taskNodeType, String reporterId, String title,
 			String description, String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
-			Calendar wakeUpDate);
+			Calendar wakeUpDate) throws RepositoryException;
+
+	public void setTaskDefaultStatus(Node taskNode, String taskNodeType) throws RepositoryException;
 
 	public Node createPoll(Node parentNode, String reporterId, String pollName, String title, String description,
-			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate);
+			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate)
+			throws RepositoryException;
 
 	/**
 	 * Retrieves tasks assigned to one of the group that contain the username
 	 * retrieved from the current session
 	 */
-	// public List<Node> getMyTasks(Session session, boolean onlyOpenTasks);
 	public NodeIterator getMyTasks(Session session, boolean onlyOpenTasks);
 
 	/**

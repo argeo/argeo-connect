@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.workbench.parts;
+package org.argeo.connect.resources.workbench;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +29,13 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
+import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
-import org.argeo.connect.ui.workbench.util.AbstractPanelFormPart;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
+import org.argeo.connect.ui.workbench.parts.AbstractPanelFormPart;
 import org.argeo.connect.ui.workbench.util.TitleIconRowLP;
-import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;

@@ -130,7 +130,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 									+ "Please fix this before trying to create template " + currId);
 				Node parent = session.getNode(parPath);
 				Node template = parent.addNode(currId, ResourcesTypes.RESOURCES_NODE_TEMPLATE);
-				template.setProperty(ResourcesNames.CONNECT_TEMPLATE_ID, currId);
+				template.setProperty(ResourcesNames.RESOURCES_TEMPLATE_ID, currId);
 				return template;
 			} catch (RepositoryException e) {
 				throw new ConnectException("Unable to create new temaple " + currId + " at path " + path, e);
@@ -213,15 +213,15 @@ public class ResourcesServiceImpl implements ResourcesService {
 							+ "Please fix this before trying to create " + "tag like resource parent " + currId);
 				Node parent = session.getNode(parPath);
 				Node tagLikeParent = parent.addNode(currId, ResourcesTypes.RESOURCES_TAG_PARENT);
-				tagLikeParent.setProperty(ResourcesNames.CONNECT_TAG_ID, currId);
-				tagLikeParent.setProperty(ResourcesNames.CONNECT_TAG_INSTANCE_TYPE, tagInstanceType);
+				tagLikeParent.setProperty(ResourcesNames.RESOURCES_TAG_ID, currId);
+				tagLikeParent.setProperty(ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE, tagInstanceType);
 				// If this property is not set, the key property of the tag
 				// instance is the JCR_TITLE Property
 				if (notEmpty(codePropName))
-					tagLikeParent.setProperty(ResourcesNames.CONNECT_TAG_CODE_PROP_NAME, codePropName);
-				tagLikeParent.setProperty(ResourcesNames.CONNECT_TAGGABLE_PARENT_PATH, taggableParentPath);
-				tagLikeParent.setProperty(ResourcesNames.CONNECT_TAGGABLE_NODE_TYPE, taggableNodeType);
-				tagLikeParent.setProperty(ResourcesNames.CONNECT_TAGGABLE_PROP_NAME,
+					tagLikeParent.setProperty(ResourcesNames.RESOURCES_TAG_CODE_PROP_NAME, codePropName);
+				tagLikeParent.setProperty(ResourcesNames.RESOURCES_TAGGABLE_PARENT_PATH, taggableParentPath);
+				tagLikeParent.setProperty(ResourcesNames.RESOURCES_TAGGABLE_NODE_TYPE, taggableNodeType);
+				tagLikeParent.setProperty(ResourcesNames.RESOURCES_TAGGABLE_PROP_NAME,
 						taggablePropNames.toArray(new String[0]));
 				return tagLikeParent;
 			} catch (RepositoryException e) {
@@ -321,8 +321,8 @@ public class ResourcesServiceImpl implements ResourcesService {
 	public String getEncodedTagCodeFromValue(Session session, String tagId, String value) {
 		try {
 			Node tagParent = getExistingTagLikeParent(session, tagId);
-			String tagNodeType = tagParent.getProperty(ResourcesNames.CONNECT_TAG_INSTANCE_TYPE).getString();
-			String tagCodePropName = tagParent.getProperty(ResourcesNames.CONNECT_TAG_CODE_PROP_NAME).getString();
+			String tagNodeType = tagParent.getProperty(ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE).getString();
+			String tagCodePropName = tagParent.getProperty(ResourcesNames.RESOURCES_TAG_CODE_PROP_NAME).getString();
 			// XPath
 			StringBuilder builder = new StringBuilder();
 			builder.append(XPathUtils.descendantFrom(tagParent.getPath()));
@@ -380,10 +380,10 @@ public class ResourcesServiceImpl implements ResourcesService {
 	@Override
 	public NodeIterator getTaggedEntities(Node tagParent, String key) {
 		try {
-			String nodeType = tagParent.getProperty(ResourcesNames.CONNECT_TAGGABLE_NODE_TYPE).getString();
-			String parentPath = tagParent.getProperty(ResourcesNames.CONNECT_TAGGABLE_PARENT_PATH).getString();
+			String nodeType = tagParent.getProperty(ResourcesNames.RESOURCES_TAGGABLE_NODE_TYPE).getString();
+			String parentPath = tagParent.getProperty(ResourcesNames.RESOURCES_TAGGABLE_PARENT_PATH).getString();
 			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent,
-					ResourcesNames.CONNECT_TAGGABLE_PROP_NAME);
+					ResourcesNames.RESOURCES_TAGGABLE_PROP_NAME);
 
 			// Build xpath for property names;
 			StringBuilder builder = new StringBuilder();
@@ -425,11 +425,11 @@ public class ResourcesServiceImpl implements ResourcesService {
 			if (log.isDebugEnabled())
 				log.debug("Starting known tag refresh for " + tagParent);
 			String keyPropName = getTagKeyPropName(tagParent);
-			String taggableNodeType = tagParent.getProperty(ResourcesNames.CONNECT_TAGGABLE_NODE_TYPE).getString();
-			String taggableParentPath = tagParent.getProperty(ResourcesNames.CONNECT_TAGGABLE_PARENT_PATH).getString();
-			String codeProp = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAG_CODE);
+			String taggableNodeType = tagParent.getProperty(ResourcesNames.RESOURCES_TAGGABLE_NODE_TYPE).getString();
+			String taggableParentPath = tagParent.getProperty(ResourcesNames.RESOURCES_TAGGABLE_PARENT_PATH).getString();
+			String codeProp = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAG_CODE);
 			List<String> propNames = ConnectJcrUtils.getMultiAsList(tagParent,
-					ResourcesNames.CONNECT_TAGGABLE_PROP_NAME);
+					ResourcesNames.RESOURCES_TAGGABLE_PROP_NAME);
 
 			if (log.isTraceEnabled())
 				log.trace("Getting already registered tags");
@@ -509,17 +509,17 @@ public class ResourcesServiceImpl implements ResourcesService {
 
 	@Override
 	public boolean updateTag(Node tagInstance, String newValue) throws RepositoryException {
-		// TODO use a transaction
-		Node tagParent = retrieveTagParentFromTag(tagInstance);
-		Value[] values = tagParent.getProperty(ResourcesNames.CONNECT_TAGGABLE_PROP_NAME).getValues();
+		Node tagParent = TagUtils.retrieveTagParentFromTag(tagInstance);
+		Value[] values = tagParent.getProperty(ResourcesNames.RESOURCES_TAGGABLE_PROP_NAME).getValues();
 		if (values.length > 1)
 			// unimplemented multiple value
 			return false;
 		String propName = values[0].getString();
 		String oldValue = tagInstance.getProperty(Property.JCR_TITLE).getString();
+		
+		// TODO use a transaction
 		ConnectJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
 		Session session = tagInstance.getSession();
-
 		// Retrieve all node that reference this tag and update them
 		NodeIterator nit = getTaggedEntities(tagParent, oldValue);
 		while (nit.hasNext())
@@ -579,7 +579,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 
 	@Override
 	public long countMembers(Node tag) {
-		Node parent = retrieveTagParentFromTag(tag);
+		Node parent = TagUtils.retrieveTagParentFromTag(tag);
 		String keyPropName = getTagKeyPropName(parent);
 		NodeIterator nit = getTaggedEntities(parent, ConnectJcrUtils.get(tag, keyPropName));
 		return nit.getSize();
@@ -608,7 +608,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 		try {
 			// retrieve parameters for this tag
 			String relPath = getDefaultRelPath(tagKey);
-			String instanceType = tagParent.getProperty(ResourcesNames.CONNECT_TAG_INSTANCE_TYPE).getString();
+			String instanceType = tagParent.getProperty(ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE).getString();
 			// create and set props
 			Node newTag = JcrUtils.mkdirs(tagParent, relPath, instanceType);
 			newTag.setProperty(getTagKeyPropName(tagParent), tagKey);
@@ -622,17 +622,12 @@ public class ResourcesServiceImpl implements ResourcesService {
 		}
 	}
 
-	protected Node retrieveTagParentFromTag(Node tag) {
-		Node parent = tag;
-		while (!ConnectJcrUtils.isNodeType(parent, ResourcesTypes.RESOURCES_TAG_PARENT))
-			parent = ConnectJcrUtils.getParent(parent);
-		return parent;
-	}
+	
 
 	protected String getTagKeyPropName(Node tagParent) {
 		try {
-			if (tagParent.hasProperty(ResourcesNames.CONNECT_TAG_CODE_PROP_NAME))
-				return tagParent.getProperty(ResourcesNames.CONNECT_TAG_CODE_PROP_NAME).getString();
+			if (tagParent.hasProperty(ResourcesNames.RESOURCES_TAG_CODE_PROP_NAME))
+				return tagParent.getProperty(ResourcesNames.RESOURCES_TAG_CODE_PROP_NAME).getString();
 			else
 				return ConnectJcrUtils.getLocalJcrItemName(Property.JCR_TITLE);
 		} catch (RepositoryException e) {
@@ -652,7 +647,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 
 	private NodeIterator getRegisteredTags(Node tagParent, String filter) {
 		try {
-			String nodeType = tagParent.getProperty(ResourcesNames.CONNECT_TAG_INSTANCE_TYPE).getString();
+			String nodeType = tagParent.getProperty(ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE).getString();
 			String queryStr = "select * from [" + nodeType + "] as nodes where ISDESCENDANTNODE('" + tagParent.getPath()
 					+ "')";
 			if (notEmpty(filter))

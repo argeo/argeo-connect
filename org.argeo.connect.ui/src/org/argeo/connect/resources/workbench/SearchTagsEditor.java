@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.workbench.parts;
+package org.argeo.connect.resources.workbench;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +21,15 @@ import org.argeo.connect.resources.ResourcesRole;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiSnippets;
+import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectUiPlugin;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.commands.EditTagWizard;
+import org.argeo.connect.ui.workbench.parts.AskTitleDescriptionDialog;
 import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.ui.workbench.util.SearchNodeEditorInput;
-import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -65,7 +66,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 	private AppWorkbenchService appWorkbenchService;
 
 	// Context
@@ -95,8 +96,8 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 			throw new ConnectException(
 					"Unable to retrieve tag parent with path " + basePath + "\nUnable to open search editor.", e);
 		}
-		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAG_INSTANCE_TYPE);
-		tagId = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAG_ID);
+		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE);
+		tagId = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAG_ID);
 
 		// TODO this info should be stored in the parent path
 		if (tagId.equals(ConnectConstants.RESOURCE_TAG)) {
@@ -150,7 +151,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 				AskTitleDescriptionDialog dialog = new AskTitleDescriptionDialog(e.display.getActiveShell(), "Create");
 				if (Dialog.OK == dialog.open()) {
 					try {
-						Node tag = resourceService.registerTag(session, tagId, dialog.getTitle());
+						Node tag = resourcesService.registerTag(session, tagId, dialog.getTitle());
 						String desc = dialog.getDescription();
 						if (EclipseUiUtils.notEmpty(desc))
 							tag.setProperty(Property.JCR_DESCRIPTION, desc);
@@ -179,7 +180,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshStaticFilteredList() {
 		try {
-			String queryStr = XPathUtils.descendantFrom(resourceService.getDefaultBasePath()) + "//element(*, "
+			String queryStr = XPathUtils.descendantFrom(resourcesService.getDefaultBasePath()) + "//element(*, "
 					+ tagInstanceType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt.getText());
 			if (EclipseUiUtils.notEmpty(attrQuery))
@@ -209,7 +210,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 		@Override
 		public String getText(Object element) {
 			Node currNode = ConnectJcrUtils.getNodeFromElement(element, null);
-			long count = resourceService.countMembers(currNode);
+			long count = resourcesService.countMembers(currNode);
 			return "" + count;
 		}
 	}
@@ -242,7 +243,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 	}
 
 	private boolean canDelete(Node currNode) {
-		long currCount = resourceService.countMembers(currNode);
+		long currCount = resourcesService.countMembers(currNode);
 		return canEdit() && currCount == 0;
 	}
 
@@ -257,7 +258,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 					Node node = session.getNodeByIdentifier(token[1]);
 
 					if ("edit".equals(token[0])) {
-						Wizard wizard = new EditTagWizard(resourceService, appWorkbenchService, node, tagId,
+						Wizard wizard = new EditTagWizard(resourcesService, appWorkbenchService, node, tagId,
 								propertyName);
 						WizardDialog dialog = new WizardDialog(event.display.getActiveShell(), wizard);
 						int result = dialog.open();
@@ -323,8 +324,8 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {

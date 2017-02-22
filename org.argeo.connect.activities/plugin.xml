@@ -17,18 +17,24 @@
 	<extension point="org.eclipse.ui.editors">
 		<!-- Types editors -->
 		<editor
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="theme/icons/types/todo.gif"
 			id="org.argeo.connect.activities.activityEditor"
-			name="Activity editor">
+			name="Activity editor"
+			icon="theme/icons/types/todo.gif"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
-			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="theme/icons/types/todo.gif"
+			name="Task editor"
 			id="org.argeo.connect.activities.taskEditor"
-			name="Task editor">
+			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
-	
+		<!-- Search editor -->
+		<editor
+			id="org.argeo.connect.activities.searchActivityEditor"
+			icon="theme/icons/actions/search.png"
+			name="Search task editor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory">
+		</editor>
 	</extension>
 	
 	<!-- COMMANDS --> 
@@ -59,13 +65,13 @@
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
 				icon="theme/icons/types/todo.gif"
 				label="Tasks">
-				<parameter name="param.nodeType" value="people:task" />
+				<parameter name="param.nodeType" value="activities:task" />
 				<parameter name="param.editorName" value="Tasks" />
 			</command>	
 		</menuContribution>		
 		
 		<!-- MyTodoListView tool bar menu --> 
-		<menuContribution
+		<!--<menuContribution
             locationURI="toolbar:org.argeo.connect.activities.myTodoListView">
             <command
 				commandId="org.argeo.connect.activities.createSimpleTask"
@@ -81,6 +87,6 @@
 					name="param.viewId"
 					value="org.argeo.connect.activities.myTodoListView" />
             </command>
-        </menuContribution>
+        </menuContribution>-->
 	</extension>
 </plugin>

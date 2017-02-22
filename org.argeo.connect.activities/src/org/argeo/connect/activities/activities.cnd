@@ -64,6 +64,7 @@ mixin
 
 // Tasks 
 [activities:task] > activities:activity
+mixin
 - activities:taskStatus (String) // the current status of this task
 - activities:assignedTo (String) // the dn of a group or a user
 - activities:dueDate (DATE) 
@@ -78,6 +79,7 @@ mixin
 
 // Gathers user feedback and votes (rates)
 [activities:poll] > activities:task
+mixin
 - activities:pollName (STRING) // a specific name. Useful?
 - activities:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
 // Contains the child rating activities

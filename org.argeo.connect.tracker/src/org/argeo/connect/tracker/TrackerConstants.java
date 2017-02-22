@@ -2,7 +2,7 @@ package org.argeo.connect.tracker;
 
 /** Centralise constants */
 public interface TrackerConstants {
-	String TRACKER_DOMAIN_PREFIX = "org.argeo";
+	// String TRACKER_DOMAIN_PREFIX = "org.argeo";
 
 	String TRACKER_APP_PREFIX = "org.argeo.connect.tracker";
 	String TRACKER_APP_BASE_NAME = "tracker";

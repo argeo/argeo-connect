@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.workbench.parts;
+package org.argeo.connect.resources.workbench;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +21,17 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesRole;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.resources.core.TagUtils;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.MainNodeTypeLabelProvider;
 import org.argeo.connect.ui.util.TagLabelProvider;
+import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectUiPlugin;
 import org.argeo.connect.ui.workbench.Refreshable;
@@ -37,7 +40,6 @@ import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.ui.workbench.util.TitleIconRowLP;
-import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -230,7 +232,10 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 	protected void refreshFilteredList() {
 		long begin = System.currentTimeMillis();
 		try {
-			String xpathQueryStr = XPathUtils.descendantFrom(resourcesService.getDefaultBasePath()) + "//element(*, "
+
+			Node tagParent = TagUtils.retrieveTagParentFromTag(node);
+			String parentPath = tagParent.getProperty(ResourcesNames.RESOURCES_TAGGABLE_PARENT_PATH).getString();
+			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) + "//element(*, "
 					+ ConnectTypes.CONNECT_TAGGABLE + ")";
 
 			String filter = filterTxt.getText();
@@ -352,12 +357,12 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 		this.repository = repository;
 	}
 
-	public void setAppService(AppService appService) {
-		this.appService = appService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourcesService = resourceService;
+	public void setAppService(AppService appService) {
+		this.appService = appService;
 	}
 
 	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {

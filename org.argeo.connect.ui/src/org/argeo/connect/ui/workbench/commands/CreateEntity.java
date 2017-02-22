@@ -10,7 +10,6 @@ import javax.jcr.Session;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectUiPlugin;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
@@ -48,7 +47,8 @@ public class CreateEntity extends AbstractHandler {
 			session = repository.login();
 			Node parent = appService.getDraftParent(session);
 			String uuid = UUID.randomUUID().toString();
-			newNode = parent.addNode(uuid, nodeType);
+			newNode = parent.addNode(uuid);
+			newNode.addMixin(nodeType);
 			newNode.setProperty(ConnectNames.CONNECT_UID, uuid);
 
 			Wizard wizard = appWorkbenchService.getCreationWizard(newNode);
@@ -56,8 +56,8 @@ public class CreateEntity extends AbstractHandler {
 			dialog.setTitle("New...");
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
-				// Save the newly created entity and create a base version
-				newNode = appService.saveEntity(newNode, true);
+				// Save the newly created entity without creating a base version
+				newNode = appService.saveEntity(newNode, false);
 				// Open the corresponding editor
 				String jcrId = newNode.getIdentifier();
 				ConnectWorkbenchUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),

@@ -285,7 +285,7 @@ public class ActivityList extends LazyCTabControl {
 			ConnectJcrUtils.saveAndPublish(activity, true);
 			return activity;
 		} catch (RepositoryException e) {
-			throw new ActivitiesException("Unable to create activity node", e);
+			throw new ActivitiesException("Unable to create activity node related to " + relatedEntity, e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}

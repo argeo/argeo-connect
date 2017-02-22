@@ -1,4 +1,4 @@
-package org.argeo.connect.people.ui.exports;
+package org.argeo.connect.ui.util;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 

@@ -1,4 +1,4 @@
-package org.argeo.connect.ui.workbench.parts;
+package org.argeo.connect.resources.workbench;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -13,6 +13,7 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.workbench.ConnectUiPlugin;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -58,7 +59,7 @@ public class TemplateEditor extends AbstractConnectCTabEditor {
 		}
 
 		String shortName = getResourcesService()
-				.getItemDefaultEnLabel(ConnectJcrUtils.get(nodeTemplate, ResourcesNames.CONNECT_TEMPLATE_ID));
+				.getItemDefaultEnLabel(ConnectJcrUtils.get(nodeTemplate, ResourcesNames.RESOURCES_TEMPLATE_ID));
 		setPartName(shortName);
 	}
 
@@ -80,7 +81,7 @@ public class TemplateEditor extends AbstractConnectCTabEditor {
 				tooltip = "Manage and edit the \"" + propLabel + "\" catalogue";
 				LazyCTabControl oneBusinessPropertyCatalogue = new TemplateValueCatalogue(folder, SWT.NO_FOCUS, this,
 						getResourcesService(), getAppWorkbenchService(), nodeTemplate, propName,
-						ConnectJcrUtils.get(nodeTemplate, ResourcesNames.CONNECT_TEMPLATE_ID));
+						ConnectJcrUtils.get(nodeTemplate, ResourcesNames.RESOURCES_TEMPLATE_ID));
 				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils.fillAll());
 				addLazyTabToFolder(folder, oneBusinessPropertyCatalogue, propLabel,
 						TemplateValueCatalogue.CTAB_ID + "/" + propName, tooltip);
@@ -129,7 +130,7 @@ public class TemplateEditor extends AbstractConnectCTabEditor {
 			StringBuilder builder = new StringBuilder();
 			builder.append("<span style='font-size:15px;'>");
 			builder.append("<b><big>");
-			builder.append(ConnectJcrUtils.get(node, ResourcesNames.CONNECT_TEMPLATE_ID));
+			builder.append(ConnectJcrUtils.get(node, ResourcesNames.RESOURCES_TEMPLATE_ID));
 			builder.append("</big></b> ");
 			builder.append("</span>");
 			return builder.toString();

@@ -10,9 +10,11 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.resources.workbench.TagOrUntagInstancesWizard;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiStyles;
+import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -20,7 +22,6 @@ import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.ui.workbench.util.SearchNodeEditorInput;
-import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -289,7 +290,6 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		}
 
 		protected void populate() {
-
 			Composite parent = DropDownPopup.this;
 			parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
@@ -550,9 +550,20 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		refreshFilteredList();
 	}
 
-	//
 	// Exposes to children classes
-	//
+
+	protected String getEntityType() {
+		return ((SearchNodeEditorInput) getEditorInput()).getNodeType();
+	}
+
+	protected String getBasePath() {
+		return ((SearchNodeEditorInput) getEditorInput()).getBasePath();
+	}
+
+	protected VirtualJcrTableViewer getTableViewer() {
+		return tableCmp;
+	}
+
 	protected Session getSession() {
 		return session;
 	}
@@ -569,21 +580,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		return appWorkbenchService;
 	}
 
-	protected VirtualJcrTableViewer getTableViewer() {
-		return tableCmp;
-	}
-
-	protected String getEntityType() {
-		return ((SearchNodeEditorInput) getEditorInput()).getNodeType();
-	}
-
-	protected String getBasePath() {
-		return ((SearchNodeEditorInput) getEditorInput()).getBasePath();
-	}
-
-	//
-	// Local Methods
-	//
+	// Helpers to create static filters UI
 	protected Text createBoldLT(Composite parent, String title, String message, String tooltip) {
 		return createBoldLT(parent, title, message, tooltip, 1);
 	}
@@ -628,12 +625,12 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		this.repository = repository;
 	}
 
-	public void setResourcesService(ResourcesService resourcesService) {
-		this.resourcesService = resourcesService;
-	}
-
 	public void setUserAdminService(UserAdminService userAdminService) {
 		this.userAdminService = userAdminService;
+	}
+
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {

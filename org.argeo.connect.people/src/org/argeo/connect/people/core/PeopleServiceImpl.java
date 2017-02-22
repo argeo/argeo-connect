@@ -97,8 +97,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
 		try {
-			if (entity.isNodeType(ResourcesTypes.RESOURCES_TAG_ENCODED_INSTANCE)
-					|| entity.isNodeType(ResourcesTypes.RESOURCES_TAG_INSTANCE)
+			if (entity.isNodeType(ResourcesTypes.RESOURCES_ENCODED_TAG)
+					|| entity.isNodeType(ResourcesTypes.RESOURCES_TAG)
 					|| entity.isNodeType(ResourcesTypes.RESOURCES_NODE_TEMPLATE)) {
 				// Known types that does not have a specific save strategy
 				ConnectJcrUtils.saveAndPublish(entity, publish);

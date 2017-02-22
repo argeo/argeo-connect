@@ -722,7 +722,7 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Centralizes management of updating property value. Among other to avoid
+	 * Centralises management of updating property value. Among other to avoid
 	 * infinite loop when the new value is the same as the one that is already
 	 * stored in JCR (typically in UI Text controls that have a listener).
 	 * 
@@ -843,7 +843,7 @@ public class ConnectJcrUtils {
 			if (node.hasProperty(propName)) {
 				values = node.getProperty(propName).getValues();
 
-				// Check dupplicate
+				// Check duplicate
 				for (Value currVal : values) {
 					String curTagUpperCase = currVal.getString().toUpperCase().trim();
 					if (value.toUpperCase().trim().equals(curTagUpperCase)) {

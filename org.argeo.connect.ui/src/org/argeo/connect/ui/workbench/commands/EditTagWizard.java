@@ -29,13 +29,13 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectUiPlugin;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.connect.ui.workbench.util.TitleIconRowLP;
-import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -106,8 +106,8 @@ public class EditTagWizard extends Wizard {
 
 		session = ConnectJcrUtils.getSession(tagInstance);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		taggableNodeType = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAGGABLE_NODE_TYPE);
-		taggableParentPath = ConnectJcrUtils.get(tagParent, ResourcesNames.CONNECT_TAGGABLE_PARENT_PATH);
+		taggableNodeType = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAGGABLE_NODE_TYPE);
+		taggableParentPath = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAGGABLE_PARENT_PATH);
 	}
 
 	@Override

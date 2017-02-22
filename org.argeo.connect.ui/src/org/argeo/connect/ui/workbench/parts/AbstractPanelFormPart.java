@@ -1,10 +1,9 @@
-package org.argeo.connect.ui.workbench.util;
+package org.argeo.connect.ui.workbench.parts;
 
 import javax.jcr.Node;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor.PeopleManagedForm;
+import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor.ConnectManagedForm;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.AbstractFormPart;
 
@@ -31,7 +30,7 @@ public abstract class AbstractPanelFormPart extends AbstractFormPart {
 		if (parent == null || parent.isDisposed())
 			return;
 		if (editor == null)
-			editor = ((PeopleManagedForm) getManagedForm()).getEditor();
+			editor = ((ConnectManagedForm) getManagedForm()).getEditor();
 
 		if ((isEditing == null) || isEditing != editor.isEditing()) {
 			isEditing = editor.isEditing();

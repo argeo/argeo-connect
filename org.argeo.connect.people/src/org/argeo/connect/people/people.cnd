@@ -108,8 +108,7 @@
 // TODO - Enhance to provide additional services like tracking of sent newsletters 
 // The fact that a contactable entity belongs to this mailing list is stored in
 // the corresponding node via the people:mailingLists multi-valued property
-[people:mailingList] > connect:tagInstance, people:entity
-
+[people:mailingList] > connect:tag, people:entity
 
 //
 // LANGUAGES AND COUNTRIES

@@ -26,8 +26,17 @@
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
-	<bean id="taskEditor"
-		class="org.argeo.connect.activities.workbench.parts.TaskEditor"
+	<bean id="taskEditor" class="org.argeo.connect.activities.workbench.parts.TaskEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+
+	<bean id="searchActivityEditor"
+		class="org.argeo.connect.activities.workbench.parts.SearchActivityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />

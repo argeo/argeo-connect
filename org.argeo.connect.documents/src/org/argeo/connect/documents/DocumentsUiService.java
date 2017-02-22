@@ -165,6 +165,7 @@ public class DocumentsUiService {
 		String name = SingleQuestion.ask("Create folder", msg);
 		// TODO enhance check of name validity
 		if (EclipseUiUtils.notEmpty(name)) {
+			name = name.trim();
 			try {
 				Path child = currFolderPath.resolve(name);
 				if (Files.exists(child)) {
@@ -172,7 +173,6 @@ public class DocumentsUiService {
 							+ ", cannot create";
 					MessageDialog.openError(shell, "Creation forbidden: dupplicated name", errMsg);
 					throw new DocumentsException(errMsg);
-
 				} else {
 					Files.createDirectories(child);
 					return true;

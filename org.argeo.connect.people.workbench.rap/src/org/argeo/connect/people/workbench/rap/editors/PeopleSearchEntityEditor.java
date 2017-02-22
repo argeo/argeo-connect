@@ -14,23 +14,23 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.activities.ActivitiesNames;
 import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.ActivitiesTypes;
+import org.argeo.connect.activities.ui.AssignedToLP;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.ui.exports.AssignedToLP;
 import org.argeo.connect.people.ui.exports.CountMemberLP;
 import org.argeo.connect.people.ui.exports.NotPrimContactValueLP;
 import org.argeo.connect.people.ui.exports.PrimAddressLP;
 import org.argeo.connect.people.ui.exports.PrimBankAccountLP;
 import org.argeo.connect.people.ui.exports.PrimContactValueLP;
 import org.argeo.connect.people.ui.exports.PrimOrgNameLP;
-import org.argeo.connect.people.ui.exports.UserNameLP;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.JcrRowLabelProvider;
+import org.argeo.connect.ui.util.UserNameLP;
 import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.ui.workbench.parts.DefaultSearchEntityEditor;
 import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;
@@ -144,7 +144,7 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 						new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY), 120));
 				return columns;
 			} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(currType)
-					|| ResourcesTypes.RESOURCES_TAG_INSTANCE.equals(currType)) {
+					|| ResourcesTypes.RESOURCES_TAG.equals(currType)) {
 				columns.add(new ConnectColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 				columns.add(new ConnectColumnDefinition("Nb of members", new CountMemberLP(getResourceService()), 85));
 

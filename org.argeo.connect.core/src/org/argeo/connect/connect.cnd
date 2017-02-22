@@ -51,7 +51,7 @@ mixin
 - connect:taggableNodeType (STRING) // Node type of the taggable nodes
 
 // DEFAULT TAG TYPES
-[connect:tagInstance] > nt:unstructured, mix:title
+[connect:tag] > nt:unstructured, mix:title
 
-[connect:encodedTagInstance] > nt:unstructured, mix:title
+[connect:encodedTag] > nt:unstructured, mix:title
 - connect:code (STRING) 

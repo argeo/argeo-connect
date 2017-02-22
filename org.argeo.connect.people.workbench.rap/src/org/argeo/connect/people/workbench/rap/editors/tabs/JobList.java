@@ -34,7 +34,7 @@ import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
-import org.argeo.connect.ui.workbench.util.AbstractPanelFormPart;
+import org.argeo.connect.ui.workbench.parts.AbstractPanelFormPart;
 import org.argeo.connect.ui.workbench.util.HtmlListRwtAdapter;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;

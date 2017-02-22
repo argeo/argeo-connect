@@ -38,6 +38,7 @@ import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.MainNodeTypeLabelProvider;
 import org.argeo.connect.ui.util.TagLabelProvider;
+import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.commands.EditTagWizard;
@@ -45,7 +46,6 @@ import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.ui.workbench.util.TitleIconRowLP;
-import org.argeo.connect.ui.workbench.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -84,7 +84,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 	private PeopleService peopleService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -166,7 +166,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
 		CmsUtils.markup(titleROLbl);
 
-		mlTitleLP = new TagLabelProvider(resourceService, ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE);
+		mlTitleLP = new TagLabelProvider(resourcesService, ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE);
 		titleROLbl.setText(mlTitleLP.getText(mailingList));
 		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
@@ -184,7 +184,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 
-					EditTagWizard wizard = new EditTagWizard(resourceService, appWorkbenchService, mailingList,
+					EditTagWizard wizard = new EditTagWizard(resourcesService, appWorkbenchService, mailingList,
 							PeopleTypes.PEOPLE_MAILING_LIST, PeopleNames.PEOPLE_MAILING_LISTS);
 
 					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(titleROLbl.getShell(), wizard);
@@ -204,7 +204,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
 		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
 
-		columns.add(new ConnectColumnDefinition("Type", new MainNodeTypeLabelProvider(resourceService, null)));
+		columns.add(new ConnectColumnDefinition("Type", new MainNodeTypeLabelProvider(resourcesService, null)));
 		columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
 
 		columns.add(
@@ -440,8 +440,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {

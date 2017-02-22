@@ -168,7 +168,6 @@ public class TagLikeListPart extends Composite {
 							@Override
 							public void widgetSelected(final SelectionEvent event) {
 								Node tag = resourceService.getRegisteredTag(tagParent, tagValue);
-
 								try {
 									if (createdTagPath.contains(tag.getPath())) {
 										String msg = "This category is still in a draft state.\n"

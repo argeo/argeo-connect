@@ -60,7 +60,7 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new JcrColumnDefinition(null, ResourcesNames.CONNECT_TAG_CODE, PropertyType.STRING, "Iso Code", 100));
+		colDefs.add(new JcrColumnDefinition(null, ResourcesNames.RESOURCES_TAG_CODE, PropertyType.STRING, "Iso Code", 100));
 		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Label", 240));
 	};
 
@@ -82,7 +82,7 @@ public class PickUpCountryDialog extends TrayDialog {
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session, ConnectJcrUtils.getPath(tagParent),
-				ResourcesTypes.RESOURCES_TAG_ENCODED_INSTANCE, colDefs, true, false);
+				ResourcesTypes.RESOURCES_ENCODED_TAG, colDefs, true, false);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 		// Add listeners
@@ -95,7 +95,7 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	public String getSelected() {
 		if (selectedNode != null)
-			return ConnectJcrUtils.get(selectedNode, ResourcesNames.CONNECT_TAG_CODE);
+			return ConnectJcrUtils.get(selectedNode, ResourcesNames.RESOURCES_TAG_CODE);
 		else
 			return null;
 	}

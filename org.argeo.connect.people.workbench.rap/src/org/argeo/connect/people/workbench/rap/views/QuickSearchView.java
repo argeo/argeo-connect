@@ -24,6 +24,7 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
@@ -47,8 +48,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
-/** A Sample of a list display in a table with a quick search field. */
-public class QuickSearchView extends ViewPart {
+/** A table with a quick search field. */
+public class QuickSearchView extends ViewPart implements Refreshable {
 	private final static Log log = LogFactory.getLog(QuickSearchView.class);
 	public static final String ID = PeopleRapPlugin.PLUGIN_ID + ".quickSearchView";
 
@@ -144,7 +145,7 @@ public class QuickSearchView extends ViewPart {
 		CmsUtils.setItemHeight(table, 26);
 
 		v.setContentProvider(new BasicNodeListContentProvider());
-		v.addDoubleClickListener(new JcrViewerDClickListener(appWorkbenchService));
+		v.addDoubleClickListener(new JcrViewerDClickListener());
 		return v;
 	}
 
@@ -156,6 +157,13 @@ public class QuickSearchView extends ViewPart {
 
 	@Override
 	public void setFocus() {
+		refreshFilteredList();
+		filterTxt.setFocus();
+	}
+
+	@Override
+	public void forceRefresh(Object object) {
+		refreshFilteredList();
 	}
 
 	protected void refreshFilteredList() {

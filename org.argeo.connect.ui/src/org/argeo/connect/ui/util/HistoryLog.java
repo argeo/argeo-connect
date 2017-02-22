@@ -46,7 +46,7 @@ public class HistoryLog extends LazyCTabControl {
 	// private final static Log log = LogFactory.getLog(HistoryLog.class);
 
 	public final static String CTAB_ID = "org.argeo.connect.ui.ctab.history";
-	
+
 	private final AbstractConnectEditor editor;
 	private final FormToolkit toolkit;
 	private final UserAdminService userAdminService;
@@ -76,7 +76,7 @@ public class HistoryLog extends LazyCTabControl {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// Add info to be able to find the node via the data explorer
-		if (CurrentUser.isInRole(NodeConstants.ROLE_DATA_ADMIN)) {
+		if (CurrentUser.isInRole(NodeConstants.ROLE_DATA_ADMIN) || CurrentUser.isInRole(NodeConstants.ROLE_ADMIN)) {
 			Label label = new Label(parent, SWT.WRAP);
 			CmsUtils.markup(label);
 			GridData gd = EclipseUiUtils.fillWidth();

@@ -5,7 +5,8 @@
 //
 // GENERIC MAP PROJECT: Can be a film, a performance, a music album... 
 //
-[map:project] > people:group
+[map:project]
+mixin
 - map:projectId (STRING) // a business specific film ID
 + map:titles (nt:unstructured) // Alternative titles
 + map:synopses (nt:unstructured) // Synopses and log-lines 
@@ -38,31 +39,36 @@
 - map:isStudentProject (BOOLEAN)
 
 // Cache some values to ease rendering
-- map:cachePTitle (STRING) IGNORE
-- map:cachePTitleArticle (STRING) IGNORE
-- map:cachePTitleLatin (STRING) IGNORE
-- map:cacheDirectors (STRING) * IGNORE
+// - map:cachePTitle (STRING) IGNORE
+// - map:cachePTitleArticle (STRING) IGNORE
+// - map:cachePTitleLatin (STRING) IGNORE
+// - map:cacheDirectors (STRING) * IGNORE
 
 
 // GENERIC SUBCONCEPTS FOR MAP
-[map:synopsis] > nt:unstructured, people:language
+[map:synopsis] // > people:language
+mixin
 - map:synopsisContent (STRING)
 - map:synopsisContentShort (STRING)
 - map:logLine (STRING)
 - map:relatedBiography (STRING)
 
-[map:title] > nt:unstructured, people:language, people:orderable
+[map:title]
+mixin
+//  > nt:unstructured, people:language, people:orderable
 - map:titleValue (STRING)
 - map:titleArticle (STRING)
 - map:titleLatinPronunciation (STRING) // Helper to be able to read the original title when it is in a foreign alphabet
 - map:titleIsOrig (BOOLEAN)
 
 // Time stamp
-[map:timestamp] > nt:unstructured, mix:title
+[map:timestamp] > mix:title
+mixin
 - map:timestampValue (DATE)
 
 // Awards 
 [map:award] > map:timestamp
+mixin
 - map:awardCountryIso (STRING)
 
 //
@@ -70,6 +76,7 @@
 //
 
 [map:film] > map:project
+mixin
 - film:shootingFormat (STRING)
 - film:animationTechnique (STRING) // only if animation is in categories
 - film:soundType (STRING)
@@ -81,7 +88,8 @@
 // FILM PRINT
 //
  // Should we rather use a versionable node?
-[film:print] > nt:unstructured, mix:title, mix:referenceable, people:orderable
+[film:print] > mix:title, mix:referenceable
+mixin
 - film:printType (STRING)
 - film:printNumber (STRING)
 - film:printDuration (LONG) // length in seconds
@@ -111,6 +119,7 @@
 
 
 [film:printDcp] > film:print
+mixin
 - film:printFileName (STRING)
 - film:printRes (STRING)
 - film:printEncrypted (BOOLEAN)

@@ -8,7 +8,6 @@ import javax.jcr.Session;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleService;
 import org.argeo.connect.people.PeopleTypes;
-import org.argeo.connect.people.workbench.PeopleWorkbenchService;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.people.workbench.rap.dialogs.EditJobDialog;
 import org.argeo.connect.resources.ResourcesService;
@@ -98,7 +97,7 @@ public class EditJob extends AbstractHandler {
 		this.peopleService = peopleService;
 	}
 
-	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
-		this.appWorkbenchService = peopleWorkbenchService;
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 	}
 }
