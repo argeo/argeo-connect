@@ -5,6 +5,7 @@ import javax.jcr.Node;
 import org.argeo.connect.activities.ActivitiesTypes;
 import org.argeo.connect.activities.workbench.parts.ActivityEditor;
 import org.argeo.connect.activities.workbench.parts.RateEditor;
+import org.argeo.connect.activities.workbench.parts.SearchActivityEditor;
 import org.argeo.connect.activities.workbench.parts.TaskEditor;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -25,6 +26,8 @@ public class ActivitiesWorkbenchService implements AppWorkbenchService {
 
 	@Override
 	public String getSearchEntityEditorId(String nodeType) {
+		if (ActivitiesTypes.ACTIVITIES_TASK.equals(nodeType) || ActivitiesTypes.ACTIVITIES_ACTIVITY.equals(nodeType))
+			return SearchActivityEditor.ID;
 		return null;
 	}
 
