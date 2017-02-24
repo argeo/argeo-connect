@@ -43,6 +43,11 @@ public class TrackerServiceImpl implements TrackerService {
 	}
 
 	@Override
+	public String getDefaultBasePath() {
+		return "/" + TrackerNames.TRACKER_PROJECTS;
+	}
+
+	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
 		// TODO Auto-generated method stub
 		return null;
@@ -85,7 +90,7 @@ public class TrackerServiceImpl implements TrackerService {
 	 */
 	private String getBasePath(String entityType) {
 		if (TrackerTypes.TRACKER_PROJECT.equals(entityType))
-			return "projects";
+			return "/projects";
 		else
 			throw new TrackerException("Unvalid entity type");
 	}

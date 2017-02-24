@@ -46,7 +46,7 @@ mixin
 - tracker:id (STRING) 
 
 
-[tracker:managed] 
+[tracker:managed] > mix:referenceable
 mixin
 - tracker:manager (STRING) //  DN of the user or group that is responsible for this business object
 // - tracker:defaultAssignee (STRING) //  Children business objects will be assigned to this user or group's DN by default

@@ -6,7 +6,7 @@ import javax.jcr.security.Privilege;
 
 import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.tracker.TrackerConstants;
+import org.argeo.connect.tracker.TrackerNames;
 import org.argeo.connect.tracker.TrackerRole;
 import org.argeo.jcr.JcrUtils;
 
@@ -44,6 +44,6 @@ public class TrackerMaintenanceService implements AppMaintenanceService {
 	}
 
 	private String getDefaultBasePath() {
-		return "/" + TrackerConstants.TRACKER_APP_BASE_NAME;
+		return "/" + TrackerNames.TRACKER_PROJECTS;
 	}
 }
