@@ -37,7 +37,7 @@ import org.argeo.connect.ui.workbench.TechnicalInfoPage;
 import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.node.ArgeoNames;
+import org.argeo.cms.ArgeoNames;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;

@@ -37,6 +37,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	private UserAdminService userAdminService;
 	private ResourcesService resourcesService;
 
+	/* API METHODS */
 	@Override
 	public String getAppBaseName() {
 		return ActivitiesNames.ACTIVITIES_APP_BASE_NAME;
@@ -55,10 +56,32 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	}
 
 	@Override
-	public String getDefaultRelPath(String userId) {
-		Calendar currentTime = GregorianCalendar.getInstance();
-		return dateAsPath(currentTime) + "/" + userId;
+	public String getDefaultRelPath(String nodeType, String userId) {
+		if (ActivitiesTypes.ACTIVITIES_ACTIVITY.equals(nodeType)) {
+			Calendar currentTime = GregorianCalendar.getInstance();
+			return dateAsPath(currentTime) + "/" + userId;
+		} else
+			return null;
 	}
+
+	@Override
+	public boolean isKnownType(Node entity) {
+		if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_TASK)
+				|| ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_ACTIVITY))
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public boolean isKnownType(String nodeType) {
+		if (ActivitiesTypes.ACTIVITIES_TASK.equals(nodeType) || ActivitiesTypes.ACTIVITIES_ACTIVITY.equals(nodeType))
+			return true;
+		else
+			return false;
+	}
+
+	/* ACTIVITIES APP SPECIFIC METHODS */
 
 	private String dateAsPath(Calendar cal) {
 		StringBuffer buf = new StringBuffer(9);
@@ -394,7 +417,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		Node poll = createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_POLL, reporterId, title, description,
 				assignedTo, relatedTo, creationDate, dueDate, wakeUpDate);
 
-		String newPath = newPath = parentNode.getPath() + "/" + JcrUtils.replaceInvalidChars(pollName);
+		String newPath = parentNode.getPath() + "/" + JcrUtils.replaceInvalidChars(pollName);
 		poll.setProperty(ActivitiesNames.ACTIVITIES_POLL_NAME, pollName);
 		poll.addNode(ActivitiesNames.ACTIVITIES_RATES);
 

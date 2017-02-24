@@ -16,6 +16,7 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.people.ContactValueCatalogs;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
@@ -678,7 +679,7 @@ public class PeopleJcrUtils implements PeopleNames {
 
 	public static Node createImportTmpParent(Session session, AppService appService) throws RepositoryException {
 		Node peopleDraftParent = appService.getDraftParent(session);
-		String relPath = "imports/" + appService.getDefaultRelPath(session.getUserID());
+		String relPath = "imports/" + appService.getDefaultRelPath(ConnectTypes.CONNECT_ENTITY, session.getUserID());
 		Node parent = JcrUtils.mkdirs(peopleDraftParent, ConnectJcrUtils.parentRelPath(relPath));
 		return parent.addNode(session.getUserID());
 	}

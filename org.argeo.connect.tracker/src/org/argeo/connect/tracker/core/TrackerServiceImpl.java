@@ -49,12 +49,36 @@ public class TrackerServiceImpl implements TrackerService {
 	}
 
 	@Override
-	public String getDefaultRelPath(String id) {
+	public String getDefaultRelPath(String nodeType, String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	// extends ActivitiesServiceImpl
+	@Override
+	public boolean isKnownType(Node entity) {
+		if (ConnectJcrUtils.isNodeType(entity, TrackerTypes.TRACKER_PROJECT)
+				|| ConnectJcrUtils.isNodeType(entity, TrackerTypes.TRACKER_IT_PROJECT)
+				|| ConnectJcrUtils.isNodeType(entity, TrackerTypes.TRACKER_ISSUE)
+				|| ConnectJcrUtils.isNodeType(entity, TrackerTypes.TRACKER_COMMENT)
+				|| ConnectJcrUtils.isNodeType(entity, TrackerTypes.TRACKER_VERSION)
+				|| ConnectJcrUtils.isNodeType(entity, TrackerTypes.TRACKER_MILESTONE)
+				|| ConnectJcrUtils.isNodeType(entity, TrackerTypes.TRACKER_COMPONENT))
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public boolean isKnownType(String nodeType) {
+		if (TrackerTypes.TRACKER_PROJECT.equals(nodeType) || TrackerTypes.TRACKER_IT_PROJECT.equals(nodeType)
+				|| TrackerTypes.TRACKER_ISSUE.equals(nodeType) || TrackerTypes.TRACKER_COMMENT.equals(nodeType)
+				|| TrackerTypes.TRACKER_VERSION.equals(nodeType) || TrackerTypes.TRACKER_MILESTONE.equals(nodeType)
+				|| TrackerTypes.TRACKER_COMPONENT.equals(nodeType))
+			return true;
+		else
+			return false;
+	}
+
 	/**
 	 * Centralises the management of known types to provide corresponding base
 	 * path

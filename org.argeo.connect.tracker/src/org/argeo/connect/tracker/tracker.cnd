@@ -1,7 +1,16 @@
 <tracker = 'http://www.argeo.org/ns/tracker'>
 
 // A project for a given account 
-[tracker:project] > mix:title, mix:versionable, tracker:managed
+[tracker:project] > mix:title, tracker:managed
+mixin
+- tracker:cpGroupId (STRING) // ID of the group that contains external users registered for this counterparty
+// + data (nt:folder) 
+//+ spec (cms:text) 
++ milestones (nt:unstructured) // tracks milestones 
++ components (nt:unstructured) // Specific Tasks list or tag 
++ issues (nt:unstructured)
+
+[tracker:itProject] > mix:title, mix:versionable, tracker:managed
 mixin
 - tracker:cpGroupId (STRING) // ID of the group that contains external users registered for this counterparty
 + data (nt:folder) 
@@ -39,5 +48,5 @@ mixin
 
 [tracker:managed] 
 mixin
-- tracker:manager (STRING) * //  DN of the user or group that is responsible for this business object
-
+- tracker:manager (STRING) //  DN of the user or group that is responsible for this business object
+// - tracker:defaultAssignee (STRING) //  Children business objects will be assigned to this user or group's DN by default

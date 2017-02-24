@@ -1,4 +1,4 @@
-package org.argeo.connect.ui;
+package org.argeo.connect.ui.util;
 
 import javax.jcr.Node;
 

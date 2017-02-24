@@ -70,6 +70,13 @@
 			</commandParameter>
 		</command>
 
+		<!-- Open default editor -->
+         <command
+      		id="org.argeo.connect.ui.openDefaultEditor"
+			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
+			name="Open Default Editor">
+    	</command>         
+
 		<!-- Exports -->
 		<command
       		id="org.argeo.connect.ui.getJxlExport"

@@ -18,7 +18,7 @@ import org.argeo.connect.activities.ui.AssignedToLP;
 import org.argeo.connect.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
-import org.argeo.connect.ui.JcrRowLabelProvider;
+import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.UserNameLP;
 import org.argeo.connect.ui.workbench.parts.DefaultSearchEntityEditor;
 import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;

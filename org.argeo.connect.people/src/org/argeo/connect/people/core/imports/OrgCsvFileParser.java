@@ -50,7 +50,7 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 		try {
 
 			String peopleUid = UUID.randomUUID().toString();
-			String relPath = getPeopleService().getDefaultRelPath(peopleUid);
+			String relPath = getPeopleService().getDefaultRelPath(PeopleTypes.PEOPLE_ORG, peopleUid);
 			Node orga = JcrUtils.mkdirs(peopleParentNode, relPath);
 			orga.addMixin(PeopleTypes.PEOPLE_ORG);
 

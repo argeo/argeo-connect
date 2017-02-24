@@ -43,9 +43,28 @@ public class DocumentsService implements AppService {
 	}
 
 	@Override
-	public String getDefaultRelPath(String id) {
+	public String getDefaultRelPath(String nodeType, String id) {
 		throw new DocumentsException("No default relpath is defined for the Documents App");
 	}
+
+	@Override
+	public boolean isKnownType(Node entity) {
+		if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FILE)
+				|| ConnectJcrUtils.isNodeType(entity, NodeType.NT_FOLDER))
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public boolean isKnownType(String nodeType) {
+		if (NodeType.NT_FILE.equals(nodeType) || NodeType.NT_FOLDER.equals(nodeType))
+			return true;
+		else
+			return false;
+	}
+
+	/* DOCUMENTS APP SPECIFIC METHODS */
 
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);

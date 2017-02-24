@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Label;
 /** Default cms page layout for the People apps */
 public class PeopleDefaultPage implements CmsUiProvider {
 
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 	private PeopleService peopleService;
 	private Map<String, String> peopleIconPaths;
 
@@ -37,13 +37,13 @@ public class PeopleDefaultPage implements CmsUiProvider {
 	private CmsUiProvider personPage;
 	// private CmsUiProvider tagLikeInstancePage;
 
-	public PeopleDefaultPage(ResourcesService resourceService, PeopleService peopleService,
+	public PeopleDefaultPage(ResourcesService resourcesService, PeopleService peopleService,
 			Map<String, String> peopleIconPaths) {
 		this.peopleService = peopleService;
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleIconPaths = peopleIconPaths;
-		orgPage = new OrgPage(resourceService, peopleService);
-		personPage = new PersonPage(peopleService, resourceService);
+		orgPage = new OrgPage(resourcesService, peopleService);
+		personPage = new PersonPage(peopleService, resourcesService);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class PeopleDefaultPage implements CmsUiProvider {
 	public Viewer populateSearch(Composite parent, Node context, final Composite targetComposite)
 			throws RepositoryException {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		PeopleSearchCmp searchComp = new PeopleSearchCmp(parent, SWT.NO_FOCUS, resourceService, peopleService,
+		PeopleSearchCmp searchComp = new PeopleSearchCmp(parent, SWT.NO_FOCUS, resourcesService, peopleService,
 				peopleIconPaths);
 		searchComp.populate(context, true);
 		searchComp.setLayoutData(EclipseUiUtils.fillAll());

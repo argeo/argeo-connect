@@ -6,6 +6,12 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- COMMANDS -->
+	<bean id="openDefaultEditor" class="org.argeo.connect.ui.workbench.commands.OpenDefaultEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
+	</bean>
+
 	<bean id="openEntityEditor"
 		class="org.argeo.connect.ui.workbench.commands.OpenEntityEditor"
 		scope="prototype">
@@ -18,6 +24,7 @@
 		scope="prototype">
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
+
 
 	<!-- Entities and links CRUDs -->
 	<bean id="createEntity" class="org.argeo.connect.ui.workbench.commands.CreateEntity"

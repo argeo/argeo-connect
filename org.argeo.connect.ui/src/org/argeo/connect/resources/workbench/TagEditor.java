@@ -28,7 +28,7 @@ import org.argeo.connect.resources.core.TagUtils;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
-import org.argeo.connect.ui.JcrRowLabelProvider;
+import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.MainNodeTypeLabelProvider;
 import org.argeo.connect.ui.util.TagLabelProvider;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;

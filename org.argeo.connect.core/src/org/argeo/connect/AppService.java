@@ -28,7 +28,6 @@ public interface AppService {
 	 */
 	default public String getDisplayName(Node entity) {
 		String defaultDisplayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
-
 		if (defaultDisplayName == null || "".equals(defaultDisplayName.trim()))
 			return ConnectJcrUtils.getName(entity);
 		else
@@ -37,7 +36,7 @@ public interface AppService {
 
 	public String getDefaultRelPath(Node entity) throws RepositoryException;
 
-	public String getDefaultRelPath(String id);
+	public String getDefaultRelPath(String nodeType, String id);
 
 	default public Node saveEntity(Node entity, boolean publish) {
 		try {
@@ -65,6 +64,10 @@ public interface AppService {
 	default public String getMainNodeType(Node node) {
 		return ConnectJcrUtils.get(node, Property.JCR_PRIMARY_TYPE);
 	}
+
+	public boolean isKnownType(Node entity);
+
+	public boolean isKnownType(String nodeType);
 
 	default public String getLabel(String key, String... innerNames) {
 		return key;

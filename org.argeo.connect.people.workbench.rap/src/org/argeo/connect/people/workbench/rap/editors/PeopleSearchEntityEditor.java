@@ -29,7 +29,7 @@ import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
-import org.argeo.connect.ui.JcrRowLabelProvider;
+import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.UserNameLP;
 import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.ui.workbench.parts.DefaultSearchEntityEditor;

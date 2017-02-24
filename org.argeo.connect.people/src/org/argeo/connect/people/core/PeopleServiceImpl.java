@@ -83,16 +83,24 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return displayName;
 	}
 
-	// Map<String, String> PEOPLE_TYPE_LABELS = new HashMap<String, String>() {
-	// private static final long serialVersionUID = 1L;
-	// {
-	// put(PeopleTypes.PEOPLE_PERSON, "Person");
-	// put(PeopleTypes.PEOPLE_ORG, "Organisation");
-	// put(PeopleTypes.PEOPLE_MAILING_LIST, "Mailing list");
-	// put(PeopleTypes.PEOPLE_GROUP, "Group");
-	// put(PeopleTypes.PEOPLE_TASK, "Task");
-	// }
-	// };
+	@Override
+	public boolean isKnownType(Node entity) {
+		if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
+				|| ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG)
+				|| ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_MAILING_LIST))
+			return true;
+		else
+			return false;
+	}
+
+	@Override
+	public boolean isKnownType(String nodeType) {
+		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType) || PeopleTypes.PEOPLE_ORG.equals(nodeType)
+				|| PeopleTypes.PEOPLE_MAILING_LIST.equals(nodeType))
+			return true;
+		else
+			return false;
+	}
 
 	@Override
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
@@ -129,14 +137,16 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			throw new PeopleException(
 					"Unable to define default path for " + entity + ". No property people:uid is defined");
 		else
-			return getDefaultRelPath(peopleUid);
+			return getDefaultRelPath(null, peopleUid);
 	}
 
 	@Override
-	public String getDefaultRelPath(String peopleUid) {
+	public String getDefaultRelPath(String nodeType, String peopleUid) {
 		String path = JcrUtils.firstCharsToPath(peopleUid, 2) + "/" + peopleUid;
 		return path;
 	}
+
+	/* PEOPLE APP SPECIFIC METHODS */
 
 	//
 	// @Override

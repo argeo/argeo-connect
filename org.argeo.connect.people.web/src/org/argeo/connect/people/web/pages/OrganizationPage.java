@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Label;
 public class OrganizationPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 	private PeopleService peopleService;
 
 	@Override
@@ -102,7 +102,7 @@ public class OrganizationPage implements CmsUiProvider {
 
 		final Label readOnlyInfoLbl = new Label(parent, SWT.WRAP);
 		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
-		ILabelProvider labelProvider = new OrgOverviewLP(resourceService, peopleService,
+		ILabelProvider labelProvider = new OrgOverviewLP(resourcesService, peopleService,
 				PeopleWebConstants.OVERVIEW_TYPE_HEADER);
 		readOnlyInfoLbl.setText(labelProvider.getText(context));
 	}
@@ -169,8 +169,8 @@ public class OrganizationPage implements CmsUiProvider {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	public void setPeopleService(PeopleService peopleService) {

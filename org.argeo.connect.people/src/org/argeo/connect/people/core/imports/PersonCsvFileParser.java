@@ -11,7 +11,6 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
@@ -57,7 +56,7 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			String peopleUid = UUID.randomUUID().toString();
 
 			// Create corresponding node
-			String relPath = getPeopleService().getDefaultRelPath(peopleUid);
+			String relPath = getPeopleService().getDefaultRelPath(PeopleTypes.PEOPLE_PERSON, peopleUid);
 			Node person = JcrUtils.mkdirs(peopleParentNode, relPath);
 			person.addMixin(PeopleTypes.PEOPLE_PERSON);
 
