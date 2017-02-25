@@ -5,27 +5,42 @@
 //
 [people:entity] > connect:entity, mix:versionable
  mixin
-+ * (nt:file) // An optional picture for this entity
++ ldap:photo (nt:file) // An optional picture for this entity
 
-//
+
 // PERSON
-//
-[people:person] > people:entity, people:contactable, connect:taggable
+
+// PERSON
+[people:user]
+mixin
+- ldap:uid
+
+[people:ldapPerson]
  mixin
-- people:useDistinctDisplayName (BOOLEAN)  
-- people:firstName (STRING) 
+- ldap:givenName (STRING) 
+- ldap:sn (STRING)
+- ldap:title (STRING)
+- ldap:displayName (BOOLEAN)  
+- ldap:generationQualifier
+
+- ldap:preferredLanguage (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+									// Prefered language must be added first
+- ldap:telephoneNumber (STRING) // Caches primary phone number
+- ldap:mail (STRING)  // Caches primary email
+- ldap:associatedDomain (STRING) // Caches primary website
+- ldap:l (STRING) * // Caches country and country in human readable form
+
+
+
+[people:person] > people:ldapPerson, people:entity, people:contactable, connect:taggable
+ mixin
 - people:middleName (STRING)
-- people:lastName (STRING)
 - people:salutation (STRING)
-- people:honorificTitle (STRING)
-- people:nameSuffix (STRING)
 - people:nickname (STRING)
 - people:maidenName (STRING)
 - people:latinPhoneticSpelling (STRING)
 
 - people:usePoliteForm (BOOLEAN)
-- people:spokenLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
-									// Prefered language must be added first
 
 - people:birthDate (DATE)
 // Enable approximative birth date 
@@ -39,20 +54,22 @@
 + people:jobs (nt:unstructured)
 
 // cache to ease full text search 
-- people:cachePCity  (STRING) IGNORE
-- people:cachePCountry (STRING) IGNORE
 - people:cachePOrg (STRING) IGNORE
-- people:cachePPhone (STRING) IGNORE
-- people:cachePMail (STRING) IGNORE
-- people:cachePWeb (STRING) IGNORE
 
-//
 // ORGANISATION
-//
-[people:org] > people:entity, people:contactable, connect:taggable
+[people:ldapOrg]
  mixin
-- people:useDistinctDisplayName (BOOLEAN) 
-- people:legalName (STRING)
+- ldap:cn (STRING) 
+- ldap:displayName (BOOLEAN)  
+- ldap:telephoneNumber (STRING) // Caches primary phone number
+- ldap:mail (STRING)  // Caches primary email
+- ldap:associatedDomain (STRING) // Caches primary website
+- ldap:l (STRING) * // Caches country and country in human readable form
+
+
+[people:org] > people:entity, people:ldapOrg, people:contactable, connect:taggable
+ mixin
+
 - people:legalForm (STRING)
 - people:vatIdNb (STRING)
 // Departments or organisational units
@@ -62,12 +79,6 @@
 // Subnode for all bank accounts owned by this org
 + people:paymentAccounts (nt:unstructured)
 
-// cache to ease full text search 
-- people:cachePCity  (STRING) IGNORE
-- people:cachePCountry (STRING) IGNORE
-- people:cachePPhone (STRING) IGNORE
-- people:cachePMail (STRING) IGNORE
-- people:cachePWeb (STRING) IGNORE
 
 //
 // GROUP : base type for all groups of persons, organisations and/or other groups 
@@ -81,7 +92,7 @@
 // node with reference to corresponding entities 
 // and some more information if needed.
 
-[people:position] > nt:unstructured, people:orderable
+[people:position] > nt:unstructured
 - people:role (STRING) 
 // OPTIONAL: the nature of the subject in this relation: 
 // For instance "Actor" or "Engineer" 
@@ -127,18 +138,6 @@ mixin
 // jcr:language properties are implementation specific
 
 
-// 
-// ORDERABLE
-//
-// Connect specific mixin to enable definition of order and primary items 
-// when the orderable node mechanism provided by JCR is not enough
-[people:orderable] 
-mixin
-// 1 is the most prefered
-- people:pref (LONG) 
-- people:isPrimary (BOOLEAN) 
-
-//////////////////////
 /////// COMMUNICATION
 
 // 
@@ -153,7 +152,7 @@ mixin
 // 
 // CONTACTS
 // 
-[people:contact] > nt:unstructured, people:orderable
+[people:contact] > nt:unstructured
 - people:contactValue (STRING) 
 - people:contactNature (STRING) // Only for person: Work, Home or Other
 - people:contactCategory (STRING) 	// Category for the given type : for instance a Home phone can be:

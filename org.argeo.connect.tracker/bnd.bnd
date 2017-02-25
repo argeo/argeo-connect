@@ -1,7 +1,7 @@
 Require-Capability: cms.datamodel; filter:="(name=activities)"
 Provide-Capability: cms.datamodel; name=tracker; cnd=/org/argeo/connect/tracker/tracker.cnd; abstract=true
 
-Bundle-Activator: org.argeo.connect.tracker.ui.workbench.TrackerUiPlugin
+Bundle-Activator: org.argeo.connect.tracker.workbench.TrackerUiPlugin
 Bundle-SymbolicName: org.argeo.connect.tracker;singleton:=true
 Require-Bundle: org.eclipse.core.runtime
 

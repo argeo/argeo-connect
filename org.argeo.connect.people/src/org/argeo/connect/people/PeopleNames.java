@@ -1,5 +1,7 @@
 package org.argeo.connect.people;
 
+import org.argeo.naming.LdapAttrs;
+
 /** People specific JCR names. */
 public interface PeopleNames {
 
@@ -42,71 +44,37 @@ public interface PeopleNames {
 	String PEOPLE_EXTERNAL_UID = "people:externalUid";
 
 	/* PERSONS */
-	String PEOPLE_FIRST_NAME = "people:firstName";
+	String PEOPLE_FIRST_NAME = LdapAttrs.givenName.property();
+	String PEOPLE_LAST_NAME = LdapAttrs.sn.property();
+	String PEOPLE_PRIMARY_EMAIL = LdapAttrs.mail.property();
+	String PEOPLE_HONORIFIC_TITLE = LdapAttrs.title.property();
+	String PEOPLE_NAME_SUFFIX = LdapAttrs.generationQualifier.property();
+	String PEOPLE_DISPLAY_NAME = LdapAttrs.displayName.property();
+	String PEOPLE_SPOKEN_LANGUAGES = LdapAttrs.preferredLanguage.property(); // *
+	
 	String PEOPLE_MIDDLE_NAME = "people:middleName";
-	String PEOPLE_LAST_NAME = "people:lastName";
-	String PEOPLE_PRIMARY_EMAIL = "people:primaryEmail";
 	String PEOPLE_BIRTH_DATE = "people:birthDate";
 	String PEOPLE_SALUTATION = "people:salutation";
 	String PEOPLE_GENDER = "people:gender";
-	String PEOPLE_HONORIFIC_TITLE = "people:honorificTitle";
-	String PEOPLE_NAME_SUFFIX = "people:nameSuffix";
 	String PEOPLE_NICKNAME = "people:nickname";
 	String PEOPLE_MAIDEN_NAME = "people:maidenName";
-	String PEOPLE_USE_DISTINCT_DISPLAY_NAME = "people:useDistinctDisplayName";// (BOOLEAN)
 	String PEOPLE_USE_POLITE_FORM = "people:usePoliteForm"; // (BOOLEAN)
-	String PEOPLE_SPOKEN_LANGUAGES = "people:spokenLanguages"; // STRING*
 
 	/* ORGANIZATIONS */
-	String PEOPLE_LEGAL_NAME = "people:legalName";
+	String PEOPLE_LEGAL_NAME = LdapAttrs.cn.property();
 	String PEOPLE_LEGAL_FORM = "people:legalForm";
 	String PEOPLE_VAT_ID_NB = "people:vatIdNb";
 
-	/* USER MANAGEMENT */
-	// Lists groups for current user
-	// String PEOPLE_USER_GROUPS = "people:userGroups"; // REFERENCE*
-	// String PEOPLE_GROUP_ID = "people:groupId";
-	// String PEOPLE_IS_SINGLE_USER_GROUP = "people:isSingleUserGroup";
+	/* CACHE */
+	// following properties are all "on parent version" ignore and are used to
+	// store primary information to ease fulltextsearch
+	String PEOPLE_CACHE_LOCALISATION =  LdapAttrs.l.property();
+	String PEOPLE_CACHE_PPHONE = LdapAttrs.telephoneNumber.property();
+	String PEOPLE_CACHE_PMAIL = LdapAttrs.mail.property();
+	String PEOPLE_CACHE_PURL = LdapAttrs.associatedDomain.property();
 
-	/* ACTIVITIES AND TASKS */
-	// String PEOPLE_MANAGER = "people:manager";
-	// String PEOPLE_REPORTED_BY = "people:reportedBy";
-	// String PEOPLE_RELATED_TO = "people:relatedTo";
-	// String PEOPLE_BOUND_ACTIVITIES = "people:boundActivities";
-	// String PEOPLE_ATTACHEMENTS = "people:attachments";
-	// String PEOPLE_ACTIVITY_DATE = "people:activityDate";
-	//
-	// // Tasks
-	// String PEOPLE_TASK_STATUS = "people:taskStatus";
-	// // The corresponding groupID - we cannot use references because some
-	// groups
-	// // might be assigned to a lot of tasks
-	// String PEOPLE_ASSIGNED_TO = "people:assignedTo"; // STRING
-	// String PEOPLE_DUE_DATE = "people:dueDate";
-	// String PEOPLE_CLOSE_DATE = "people:closeDate";
-	// String PEOPLE_CLOSED_BY = "people:closedBy";
-	// String PEOPLE_WAKE_UP_DATE = "people:wakeUpDate";
-	// String PEOPLE_DEPENDS_ON = "people:dependsOn";
-	// String PEOPLE_TASKS = "people:tasks";
-	//
-	// // Management of user rating
-	// String PEOPLE_POLL_NAME = "people:pollName"; // (STRING)
-	// String PEOPLE_CACHE_AVG_RATE = "people:cacheAvgRate"; // (STRING)
-	// String PEOPLE_RATES = "people:rates"; // (nt:unstructured)
-	// // a single rate for one of the children people:rate activities
-	// String PEOPLE_RATE = "people:rate"; // (LONG)
-	//
-	// // definition of the task template
-	// String PEOPLE_TASK_CLOSING_STATUSES = "people:closingStatuses";
-	// String PEOPLE_TASK_DEFAULT_STATUS = "people:defaultStatus";
-
-	// Workflow specific
-	String PEOPLE_DATE_BEGIN = "people:dateBegin";
-	String PEOPLE_DATE_END = "people:dateEnd";
-	String PEOPLE_WF_VERSION = "people:wfVersion";
-	String PEOPLE_WF_VERSION_ID = "people:wfId";
-	String PEOPLE_WF_STATUS = "people:wfStatus";
-
+	String PEOPLE_CACHE_PORG = "people:cachePOrg";
+	
 	/* CONTACTS */
 	String PEOPLE_CONTACT_VALUE = "people:contactValue";
 	// Pro or private
@@ -127,16 +95,7 @@ public interface PeopleNames {
 	String PEOPLE_COUNTRY = "people:country";
 	String PEOPLE_GEOPOINT = "people:geoPoint";
 
-	/* CACHE */
-	// following properties are all "on parent version" ignore and are used to
-	// store primary information to ease fulltextsearch
-	String PEOPLE_CACHE_PCITY = "people:cachePCity";
-	String PEOPLE_CACHE_PCOUNTRY = "people:cachePCountry";
-	String PEOPLE_CACHE_PORG = "people:cachePOrg";
-	String PEOPLE_CACHE_PPHONE = "people:cachePPhone";
-	String PEOPLE_CACHE_PMAIL = "people:cachePMail";
-	String PEOPLE_CACHE_PURL = "people:cachePWeb";
-
+	
 	/* MISCENELLANEOUS */
 	String PEOPLE_ALT_LANGS = "people:altLangs";
 
@@ -151,6 +110,9 @@ public interface PeopleNames {
 	// String PEOPLE_TITLE = "jcr:title";
 	String PEOPLE_POSITION = "people:position";
 	String PEOPLE_IS_CURRENT = "people:isCurrent";
+	String PEOPLE_DATE_BEGIN = "people:dateBegin";
+	String PEOPLE_DATE_END = "people:dateEnd";
+	
 	// An additional reference to an organisation when needed
 	// For instance for contacts or mailing list items
 	String PEOPLE_ORG_REF_UID = "people:orgRefUid";

@@ -2,7 +2,6 @@ package org.argeo.connect.people.workbench.rap.editors.tabs;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
-import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
@@ -45,8 +44,7 @@ public class OrgAdminInfo extends LazyCTabControl {
 	private AbstractFormPart notePart;
 	private AbstractFormPart formPart;
 
-	public OrgAdminInfo(Composite parent, int style,
-			AbstractConnectEditor editor, Node entity) {
+	public OrgAdminInfo(Composite parent, int style, AbstractConnectEditor editor, Node entity) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
@@ -79,14 +77,12 @@ public class OrgAdminInfo extends LazyCTabControl {
 		// Legal Name
 		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Legal Name");
 		final Text legalNameTxt = toolkit.createText(parent, "", SWT.BORDER);
-		legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false,
-				3, 1));
+		legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
 		// Legal form
 		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Legal Form");
 		final Text legalFormTxt = toolkit.createText(parent, "", SWT.BORDER);
-		legalFormTxt
-				.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// VAT ID Number
 		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "VAT ID");
@@ -96,20 +92,17 @@ public class OrgAdminInfo extends LazyCTabControl {
 		notePart = new AbstractFormPart() {
 			public void refresh() {
 				super.refresh();
-				ConnectWorkbenchUtils.refreshFormTextWidget(editor, legalNameTxt,
-						entity, PeopleNames.PEOPLE_LEGAL_NAME);
-				ConnectWorkbenchUtils.refreshFormTextWidget(editor, legalFormTxt,
-						entity, PeopleNames.PEOPLE_LEGAL_FORM);
-				ConnectWorkbenchUtils.refreshFormTextWidget(editor, vatIDTxt, entity,
-						PeopleNames.PEOPLE_VAT_ID_NB);
+				ConnectWorkbenchUtils.refreshFormTextWidget(editor, legalNameTxt, entity,
+						PeopleNames.PEOPLE_LEGAL_NAME);
+				ConnectWorkbenchUtils.refreshFormTextWidget(editor, legalFormTxt, entity,
+						PeopleNames.PEOPLE_LEGAL_FORM);
+				ConnectWorkbenchUtils.refreshFormTextWidget(editor, vatIDTxt, entity, PeopleNames.PEOPLE_VAT_ID_NB);
 			}
 		};
 
 		// Listeners
-		ConnectWorkbenchUtils.addModifyListener(legalFormTxt, entity,
-				PeopleNames.PEOPLE_LEGAL_FORM, notePart);
-		ConnectWorkbenchUtils.addModifyListener(vatIDTxt, entity,
-				PeopleNames.PEOPLE_VAT_ID_NB, notePart);
+		ConnectWorkbenchUtils.addModifyListener(legalFormTxt, entity, PeopleNames.PEOPLE_LEGAL_FORM, notePart);
+		ConnectWorkbenchUtils.addModifyListener(vatIDTxt, entity, PeopleNames.PEOPLE_VAT_ID_NB, notePart);
 
 		// Specific listeners to manage correctly display name
 		legalNameTxt.addModifyListener(new ModifyListener() {
@@ -117,21 +110,20 @@ public class OrgAdminInfo extends LazyCTabControl {
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				try {
-					if (ConnectJcrUtils.setJcrProperty(entity,
-							PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
-							legalNameTxt.getText())) {
-						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(
-								entity,
-								PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-						if (defineDistinct == null || !defineDistinct)
-							entity.setProperty(Property.JCR_TITLE,
-									legalNameTxt.getText());
-						notePart.markDirty();
-					}
-				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to update property", e);
+				// try {
+				if (ConnectJcrUtils.setJcrProperty(entity, PeopleNames.PEOPLE_LEGAL_NAME, PropertyType.STRING,
+						legalNameTxt.getText())) {
+					// Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(
+					// entity,
+					// PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+					// if (defineDistinct == null || !defineDistinct)
+					// entity.setProperty(Property.JCR_TITLE,
+					// legalNameTxt.getText());
+					notePart.markDirty();
 				}
+				// } catch (RepositoryException e) {
+				// throw new PeopleException("Unable to update property", e);
+				// }
 			}
 		});
 		notePart.initialize(editor.getManagedForm());
@@ -150,15 +142,12 @@ public class OrgAdminInfo extends LazyCTabControl {
 				// TODO Manage multiple bank account
 				super.refresh();
 				try {
-					if (!entity.hasNode(PeopleNames.PEOPLE_PAYMENT_ACCOUNTS)
-							&& editor.isEditing()) {
-						OrgJcrUtils.createPaymentAccount(entity,
-								PeopleTypes.PEOPLE_BANK_ACCOUNT, "new");
+					if (!entity.hasNode(PeopleNames.PEOPLE_PAYMENT_ACCOUNTS) && editor.isEditing()) {
+						OrgJcrUtils.createPaymentAccount(entity, PeopleTypes.PEOPLE_BANK_ACCOUNT, "new");
 						entity.getSession().save();
 					}
 				} catch (RepositoryException e) {
-					throw new PeopleException(
-							"Unable to create bank account for " + entity, e);
+					throw new PeopleException("Unable to create bank account for " + entity, e);
 				}
 
 				Control[] children = group.getChildren();
@@ -168,10 +157,8 @@ public class OrgAdminInfo extends LazyCTabControl {
 
 				NodeIterator ni = OrgJcrUtils.getPaymentAccounts(entity);
 				while (ni != null && ni.hasNext()) {
-					Composite cmp = new BankAccountComposite(group, 0, editor,
-							ni.nextNode());
-					cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,
-							false));
+					Composite cmp = new BankAccountComposite(group, 0, editor, ni.nextNode());
+					cmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 				}
 				parent.layout(true, true);
 			}

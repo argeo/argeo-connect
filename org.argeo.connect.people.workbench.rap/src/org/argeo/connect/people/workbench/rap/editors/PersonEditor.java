@@ -236,11 +236,8 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 			public void refresh() { // update display value
 				super.refresh();
 				// EDIT PART
+				boolean defineDistinct = EclipseUiUtils.notEmpty(ConnectJcrUtils.get(person, PEOPLE_DISPLAY_NAME));
 				ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, person, Property.JCR_TITLE);
-
-				Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(person, PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-				if (defineDistinct == null)
-					defineDistinct = false;
 				displayNameTxt.setEnabled(defineDistinct);
 				defineDistinctBtn.setSelection(defineDistinct);
 
@@ -284,21 +281,21 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				try {
+//				try {
 					if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME, PropertyType.STRING,
 							firstNameTxt.getText())) {
-						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(person,
-								PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-						if (defineDistinct == null || !defineDistinct) {
-							String displayName = getPeopleService().getDisplayName(person);
-							person.setProperty(Property.JCR_TITLE, displayName);
-							displayNameTxt.setText(displayName);
-						}
+//						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(person,
+//								PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+//						if (defineDistinct == null || !defineDistinct) {
+//							String displayName = getPeopleService().getDisplayName(person);
+//							person.setProperty(Property.JCR_TITLE, displayName);
+//							displayNameTxt.setText(displayName);
+//						}
 						editPart.markDirty();
 					}
-				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to update property", e);
-				}
+//				} catch (RepositoryException e) {
+//					throw new PeopleException("Unable to update property", e);
+//				}
 			}
 		});
 
@@ -307,21 +304,21 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 			@Override
 			public void modifyText(ModifyEvent event) {
-				try {
+//				try {
 					if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME, PropertyType.STRING,
 							lastNameTxt.getText())) {
-						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(person,
-								PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-						if (defineDistinct == null || !defineDistinct) {
-							String displayName = getPeopleService().getDisplayName(person);
-							person.setProperty(Property.JCR_TITLE, displayName);
-							displayNameTxt.setText(displayName);
-						}
+//						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(person,
+//								PEOPLE_USE_DISTINCT_DISPLAY_NAME);
+//						if (defineDistinct == null || !defineDistinct) {
+//							String displayName = getPeopleService().getDisplayName(person);
+//							person.setProperty(Property.JCR_TITLE, displayName);
+//							displayNameTxt.setText(displayName);
+//						}
 						editPart.markDirty();
 					}
-				} catch (RepositoryException e) {
-					throw new PeopleException("Unable to update property", e);
-				}
+//				} catch (RepositoryException e) {
+//					throw new PeopleException("Unable to update property", e);
+//				}
 			}
 		});
 
@@ -344,19 +341,38 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+			try{	
 				boolean defineDistinct = defineDistinctBtn.getSelection();
-				if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_USE_DISTINCT_DISPLAY_NAME, PropertyType.BOOLEAN,
-						defineDistinct)) {
-					if (!defineDistinct) {
-						String displayName = getPeopleService().getDisplayName(person);
-						ConnectJcrUtils.setJcrProperty(person, Property.JCR_TITLE, PropertyType.STRING, displayName);
-						displayNameTxt.setText(displayName);
-						displayNameTxt.setEnabled(false);
-					} else
-						displayNameTxt.setEnabled(true);
-
+				if (defineDistinct) {
+					String displayName = getPeopleService().getDisplayName(person);
+					ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
+							displayName);
+					displayNameTxt.setText(displayName);
+				} else if (person.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
+					person.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
 				}
+				displayNameTxt.setEnabled(defineDistinct);
 				editPart.markDirty();
+				
+			} catch (RepositoryException e1) {
+				throw new PeopleException("Unable to reset display name management for " + person, e1);
+			}
+//
+//				
+//				
+//				boolean defineDistinct = defineDistinctBtn.getSelection();
+//				if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_USE_DISTINCT_DISPLAY_NAME, PropertyType.BOOLEAN,
+//						defineDistinct)) {
+//					if (!defineDistinct) {
+//						String displayName = getPeopleService().getDisplayName(person);
+//						ConnectJcrUtils.setJcrProperty(person, Property.JCR_TITLE, PropertyType.STRING, displayName);
+//						displayNameTxt.setText(displayName);
+//						displayNameTxt.setEnabled(false);
+//					} else
+//						displayNameTxt.setEnabled(true);
+//
+//				}
+//				editPart.markDirty();
 			}
 		});
 

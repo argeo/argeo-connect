@@ -20,7 +20,7 @@ import org.argeo.connect.tracker.internal.ui.TrackerImages;
 import org.argeo.connect.tracker.internal.ui.TrackerLps;
 import org.argeo.connect.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewIssueWizard;
-import org.argeo.connect.tracker.ui.workbench.TrackerUiPlugin;
+import org.argeo.connect.tracker.workbench.TrackerUiPlugin;
 import org.argeo.connect.ui.workbench.TechnicalInfoPage;
 import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;

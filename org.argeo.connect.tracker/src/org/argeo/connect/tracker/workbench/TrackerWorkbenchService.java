@@ -1,4 +1,4 @@
-package org.argeo.connect.tracker.ui.workbench;
+package org.argeo.connect.tracker.workbench;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;

@@ -3,6 +3,7 @@ package org.argeo.connect.people.workbench.rap.editors;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -149,17 +150,18 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 			final Button useDistinctDisplayBtn = getFormToolkit().createButton(editPanelCmp,
 					"Use a specific display name", SWT.CHECK);
 			useDistinctDisplayBtn.setToolTipText("Use a display name that is not the legal name");
+			// Initialise checkbox
+			if (!EclipseUiUtils.isEmpty(ConnectJcrUtils.get(org, PeopleNames.PEOPLE_DISPLAY_NAME)))
+				useDistinctDisplayBtn.setSelection(true);
 
 			final AbstractFormPart editPart = new AbstractFormPart() {
 				// Update values on refresh
 				public void refresh() {
 					super.refresh();
 					// EDIT PART
-					boolean useDistinct = ConnectWorkbenchUtils.refreshFormCheckBox(OrgEditor.this,
-							useDistinctDisplayBtn, org, PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-
+					boolean useDistinct = useDistinctDisplayBtn.getSelection();
 					if (useDistinct) {
-						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, Property.JCR_TITLE);
+						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, PeopleNames.PEOPLE_DISPLAY_NAME);
 						displayNameTxt.setEnabled(true);
 					} else {
 						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, PeopleNames.PEOPLE_LEGAL_NAME);
@@ -185,18 +187,21 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					boolean defineDistinct = useDistinctDisplayBtn.getSelection();
-					if (ConnectJcrUtils.setJcrProperty(org, PeopleNames.PEOPLE_USE_DISTINCT_DISPLAY_NAME,
-							PropertyType.BOOLEAN, defineDistinct)) {
-						if (!defineDistinct) {
-							String displayName = ConnectJcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-							ConnectJcrUtils.setJcrProperty(org, Property.JCR_TITLE, PropertyType.STRING, displayName);
-							displayNameTxt.setText(displayName);
-							displayNameTxt.setEnabled(false);
-						} else
-							displayNameTxt.setEnabled(true);
+					try {
+						boolean defineDistinct = useDistinctDisplayBtn.getSelection();
+						String dName = ConnectJcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
+						if (defineDistinct) {
+							ConnectJcrUtils.setJcrProperty(org, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
+									dName);
+						} else if (org.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
+							org.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
+						}
+						displayNameTxt.setText(dName);
+						displayNameTxt.setEnabled(defineDistinct);
+						editPart.markDirty();
+					} catch (RepositoryException e1) {
+						throw new PeopleException("Unable to reset display name management for " + org, e1);
 					}
-					editPart.markDirty();
 				}
 			});
 

@@ -9,18 +9,19 @@ public interface PeopleTypes {
 	/* COMMON CONCEPTS */
 	// Parent base type
 	// String PEOPLE_BASE = "people:base";
-	// String PEOPLE_ENTITY = "people:entity";
+
+	String PEOPLE_ENTITY = "people:entity";
 	String PEOPLE_EXTERNAL_ID = "people:externalId";
 
 	// Mixins
-	// String PEOPLE_TAGGABLE = "people:taggable";
-	String PEOPLE_ORDERABLE = "people:orderable";
 	String PEOPLE_CONTACTABLE = "people:contactable";
 
 	/* PERSONS */
+	String PEOPLE_LDAP_PERSON = "people:ldapPerson";
 	String PEOPLE_PERSON = "people:person";
 
 	/* ORGANIZATIONS */
+	String PEOPLE_LDAP_ORG = "people:ldapOrg";
 	String PEOPLE_ORG = "people:org";
 
 	/* GROUPS */

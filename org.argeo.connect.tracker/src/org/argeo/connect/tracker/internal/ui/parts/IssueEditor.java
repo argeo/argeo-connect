@@ -31,7 +31,7 @@ import org.argeo.connect.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.connect.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.connect.tracker.internal.ui.controls.TagListFormPart;
 import org.argeo.connect.tracker.internal.ui.dialogs.EditFreeTextDialog;
-import org.argeo.connect.tracker.ui.workbench.TrackerUiPlugin;
+import org.argeo.connect.tracker.workbench.TrackerUiPlugin;
 import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.workbench.TechnicalInfoPage;
 import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;

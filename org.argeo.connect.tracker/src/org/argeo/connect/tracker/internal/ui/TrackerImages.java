@@ -1,6 +1,6 @@
 package org.argeo.connect.tracker.internal.ui;
 
-import org.argeo.connect.tracker.ui.workbench.TrackerUiPlugin;
+import org.argeo.connect.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;

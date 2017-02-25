@@ -7,13 +7,13 @@
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
 	<!-- REFERENCES -->
-	<reference id="userAdmin" interface="org.osgi.service.useradmin.UserAdmin" />
 	<reference id="repository" interface="javax.jcr.Repository"
 		filter="(cn=home)" />
 	<reference id="userAdminService" interface="org.argeo.connect.UserAdminService" />
 	<reference id="resourcesService" interface="org.argeo.connect.resources.ResourcesService" />
+	<reference id="activitiesService"
+		interface="org.argeo.connect.activities.ActivitiesService" />
 	<reference id="trackerService" interface="org.argeo.connect.tracker.TrackerService" />
 	<reference id="appWorkbenchService"
-		interface="org.argeo.connect.people.workbench.AppWorkbenchService" />
-
+		interface="org.argeo.connect.ui.workbench.AppWorkbenchService" />
 </beans:beans>

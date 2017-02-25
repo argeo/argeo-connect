@@ -199,16 +199,15 @@ public class PeopleJcrUtils implements PeopleNames {
 			NodeIterator ni = parent.getNodes();
 			Node firstNode = ni.nextNode();
 			// update primary flag if needed
-			if (primaryChild.isNodeType(PeopleTypes.PEOPLE_ORDERABLE)) {
-				ni = parent.getNodes();
-				while (ni.hasNext()) {
-					Node nextNode = ni.nextNode();
-					if (nextNode.isNodeType(thisNodeType)
-							&& !primaryChild.getIdentifier().equals(nextNode.getIdentifier()))
-						nextNode.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, false);
-				}
-				primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, true);
+			// if (primaryChild.isNodeType(PeopleTypes.PEOPLE_ORDERABLE)) {
+			ni = parent.getNodes();
+			while (ni.hasNext()) {
+				Node nextNode = ni.nextNode();
+				if (nextNode.isNodeType(thisNodeType) && !primaryChild.getIdentifier().equals(nextNode.getIdentifier()))
+					nextNode.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, false);
 			}
+			primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, true);
+			// }
 
 			// move first
 			parent.orderBefore(JcrUtils.lastPathElement(primaryChild.getPath()),
@@ -310,14 +309,18 @@ public class PeopleJcrUtils implements PeopleNames {
 
 					}
 
-					parentNode.setProperty(PEOPLE_CACHE_PCITY, cityStr);
-					parentNode.setProperty(PEOPLE_CACHE_PCOUNTRY, countryStr);
-				} else {
-					if (parentNode.hasProperty(PEOPLE_CACHE_PCITY))
-						parentNode.setProperty(PEOPLE_CACHE_PCITY, "");
-					if (parentNode.hasProperty(PEOPLE_CACHE_PCOUNTRY))
-						parentNode.setProperty(PEOPLE_CACHE_PCOUNTRY, "");
-				}
+					List<String> localisation = new ArrayList<>();
+					if (EclipseUiUtils.notEmpty(cityStr))
+						localisation.add(cityStr);
+					if (EclipseUiUtils.notEmpty(cityStr))
+						localisation.add(cityStr);
+					if (!localisation.isEmpty())
+						parentNode.setProperty(PEOPLE_CACHE_LOCALISATION, localisation.toArray(new String[0]));
+					else if (parentNode.hasProperty(PEOPLE_CACHE_LOCALISATION))
+						parentNode.getProperty(PEOPLE_CACHE_LOCALISATION).remove();
+
+				} else if (parentNode.hasProperty(PEOPLE_CACHE_LOCALISATION))
+					parentNode.getProperty(PEOPLE_CACHE_LOCALISATION).remove();
 			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 				if (isPrimary) {
 					Node linkedOrg = peopleService.getEntityFromNodeReference(primaryChild, PEOPLE_REF_UID);

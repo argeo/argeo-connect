@@ -9,33 +9,33 @@
 	<bean id="projectEditor" class="org.argeo.connect.tracker.internal.ui.parts.ProjectEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="peopleTrackerService" ref="peopleTrackerService" />
-		<property name="trackerWbService" ref="trackerWbService" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="trackerService" ref="trackerService" />
 	</bean>
 	<bean id="categoryEditor" class="org.argeo.connect.tracker.internal.ui.parts.CategoryEditor"
 		scope="prototype">
-		<property name="repository" ref="trackerRepository" />
-		<property name="peopleTrackerService" ref="peopleTrackerService" />
-		<property name="trackerWbService" ref="trackerWbService" />
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="trackerService" ref="trackerService" />
 	</bean>
 	<bean id="issueEditor" class="org.argeo.connect.tracker.internal.ui.parts.IssueEditor"
 		scope="prototype">
-		<property name="repository" ref="trackerRepository" />
-		<property name="peopleTrackerService" ref="peopleTrackerService" />
-		<property name="trackerWbService" ref="trackerWbService" />
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="trackerService" ref="trackerService" />
 	</bean>
 	<bean id="allProjectsEditor"
 		class="org.argeo.connect.tracker.internal.ui.parts.AllProjectsEditor"
 		scope="prototype">
-		<property name="repository" ref="trackerRepository" />
-		<property name="peopleService" ref="peopleTrackerService" />
-		<property name="peopleWorkbenchService" ref="trackerWbService" />
-	</bean>
-	<!-- COMMANDS -->
-	<bean id="openTrackerEntityEditor"
-		class="org.argeo.connect.tracker.ui.workbench.OpenTrackerEntityEditor"
-		scope="prototype">
-		<property name="repository" ref="trackerRepository" />
-		<property name="peopleService" ref="peopleTrackerService" />
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 </beans>

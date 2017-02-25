@@ -27,7 +27,7 @@ import org.argeo.connect.tracker.internal.ui.controls.CategoryOverviewChart;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewComponentWizard;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewIssueWizard;
 import org.argeo.connect.tracker.internal.ui.dialogs.NewVersionWizard;
-import org.argeo.connect.tracker.ui.workbench.TrackerUiPlugin;
+import org.argeo.connect.tracker.workbench.TrackerUiPlugin;
 import org.argeo.connect.ui.workbench.TechnicalInfoPage;
 import org.argeo.connect.ui.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.util.ConnectJcrUtils;

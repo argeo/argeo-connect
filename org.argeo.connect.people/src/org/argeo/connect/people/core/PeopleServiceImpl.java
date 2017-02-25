@@ -65,14 +65,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	public String getDisplayName(Node entity) {
 		String displayName = null;
 		try {
-			boolean defineDistinct = false;
-			if (entity.hasProperty(PEOPLE_USE_DISTINCT_DISPLAY_NAME))
-				defineDistinct = entity.getProperty(PEOPLE_USE_DISTINCT_DISPLAY_NAME).getBoolean();
-			if (defineDistinct)
-				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+			if (entity.hasProperty(PEOPLE_DISPLAY_NAME))
+				displayName = entity.getProperty(PEOPLE_DISPLAY_NAME).getString();
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				displayName = getPersonService().getDisplayName(entity);
-			} else if (entity.isNodeType(NodeType.MIX_TITLE))
+			else if (entity.isNodeType(NodeType.MIX_TITLE))
 				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else
 				throw new PeopleException("Display name not defined for type " + entity.getPrimaryNodeType().getName()

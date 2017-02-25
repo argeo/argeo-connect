@@ -11,7 +11,7 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.connect.tracker.TrackerException;
 import org.argeo.connect.tracker.core.TrackerUtils;
-import org.argeo.connect.tracker.ui.workbench.TrackerUiPlugin;
+import org.argeo.connect.tracker.workbench.TrackerUiPlugin;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.workbench.parts.AbstractSearchEntityEditor;
 import org.argeo.connect.ui.workbench.util.JcrHtmlLabelProvider;

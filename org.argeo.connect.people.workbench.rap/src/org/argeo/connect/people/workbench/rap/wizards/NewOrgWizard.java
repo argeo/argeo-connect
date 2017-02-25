@@ -1,7 +1,6 @@
 package org.argeo.connect.people.workbench.rap.wizards;
 
 import javax.jcr.Node;
-import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
 import org.argeo.connect.people.PeopleException;
@@ -59,31 +58,21 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		String legalName = legalNameTxt.getText();
+		boolean useDistinctDisplayName = useDistinctDisplayNameBtn.getSelection();
+		String legalForm = legalFormTxt.getText();
 		String displayName = displayNameTxt.getText();
 
-		boolean useDistinctDisplayName = useDistinctDisplayNameBtn
-				.getSelection();
-		String legalForm = legalFormTxt.getText();
-
-		if (EclipseUiUtils.isEmpty(legalName)
-				&& EclipseUiUtils.isEmpty(displayName)) {
-			MessageDialog
-					.openError(getShell(), "Non-valid information",
-							"Please enter at least a legal or a display name that is not empty.");
+		if (EclipseUiUtils.isEmpty(legalName) && EclipseUiUtils.isEmpty(displayName)) {
+			MessageDialog.openError(getShell(), "Non-valid information",
+					"Please enter at least a legal or a display name that is not empty.");
 			return false;
 		}
 
-		ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME, PropertyType.STRING,
-				legalName);
-		if (useDistinctDisplayName) {
-			ConnectJcrUtils.setJcrProperty(org, PEOPLE_USE_DISTINCT_DISPLAY_NAME,
-					PropertyType.BOOLEAN, useDistinctDisplayName);
-			ConnectJcrUtils.setJcrProperty(org, Property.JCR_TITLE,
-					PropertyType.STRING, displayName);
-		}
+		ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME, PropertyType.STRING, legalName);
+		if (useDistinctDisplayName)
+			ConnectJcrUtils.setJcrProperty(org, PEOPLE_DISPLAY_NAME, PropertyType.STRING, displayName);
 		if (EclipseUiUtils.notEmpty(legalForm))
-			ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM,
-					PropertyType.STRING, legalForm);
+			ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM, PropertyType.STRING, legalForm);
 		return true;
 	}
 
@@ -113,40 +102,33 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Legal Name");
 			legalNameTxt = new Text(parent, SWT.BORDER);
 			legalNameTxt.setMessage("the legal name");
-			legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-					false));
+			legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// Legal Form
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Legal Form");
 			legalFormTxt = new Text(parent, SWT.BORDER);
 			legalFormTxt.setMessage("the legal name (Ltd, Org, GmbH...) ");
-			legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
-					false));
+			legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// Display Name
 			useDistinctDisplayNameBtn = new Button(parent, SWT.CHECK);
-			useDistinctDisplayNameBtn
-					.setText("Define a display name that is not the legal name");
-			useDistinctDisplayNameBtn.setLayoutData(new GridData(SWT.FILL,
-					SWT.CENTER, true, false, 2, 1));
+			useDistinctDisplayNameBtn.setText("Define a display name that is not the legal name");
+			useDistinctDisplayNameBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Display Name");
 			displayNameTxt = new Text(parent, SWT.BORDER);
 			displayNameTxt.setMessage("an optional display name");
-			displayNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
-					true, false));
+			displayNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			displayNameTxt.setEnabled(false);
 
-			useDistinctDisplayNameBtn
-					.addSelectionListener(new SelectionAdapter() {
-						private static final long serialVersionUID = 1L;
+			useDistinctDisplayNameBtn.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
 
-						@Override
-						public void widgetSelected(SelectionEvent e) {
-							displayNameTxt.setEnabled(useDistinctDisplayNameBtn
-									.getSelection());
-						}
-					});
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					displayNameTxt.setEnabled(useDistinctDisplayNameBtn.getSelection());
+				}
+			});
 
 			// Don't forget this.
 			setControl(legalNameTxt);
