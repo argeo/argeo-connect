@@ -26,7 +26,6 @@ import org.argeo.connect.people.ui.exports.PrimBankAccountLP;
 import org.argeo.connect.people.ui.exports.PrimContactValueLP;
 import org.argeo.connect.people.ui.exports.PrimOrgNameLP;
 import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -143,20 +142,9 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 				columns.add(new ConnectColumnDefinition("Closed by",
 						new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY), 120));
 				return columns;
-			} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(currType)
-					|| ResourcesTypes.RESOURCES_TAG.equals(currType)) {
+			} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(currType)) {
 				columns.add(new ConnectColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 				columns.add(new ConnectColumnDefinition("Nb of members", new CountMemberLP(getResourceService()), 85));
-
-				columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE), 200));
-				columns.add(new ConnectColumnDefinition("Assigned To",
-						new AssignedToLP(activitiesService, null, Property.JCR_DESCRIPTION), 150));
-				columns.add(new ConnectColumnDefinition("Due Date",
-						new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_DUE_DATE), 100));
-				columns.add(new ConnectColumnDefinition("Close Date",
-						new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE), 100));
-				columns.add(new ConnectColumnDefinition("Closed by",
-						new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY), 120));
 				return columns;
 			} else
 				return colDefs;

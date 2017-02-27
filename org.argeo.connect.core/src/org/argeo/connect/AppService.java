@@ -83,7 +83,7 @@ public interface AppService {
 
 	/**
 	 * Returns the App specific main type of a node, that can be its primary
-	 * type or one of its mixin, typically for people
+	 * type or one of its mixin, typically for People App.
 	 */
 	default public String getMainNodeType(Node node) {
 		return ConnectJcrUtils.get(node, Property.JCR_PRIMARY_TYPE);

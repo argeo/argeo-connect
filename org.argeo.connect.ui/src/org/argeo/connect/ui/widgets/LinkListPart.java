@@ -24,6 +24,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -134,7 +135,7 @@ public class LinkListPart extends Composite {
 
 	private Composite createDeletableClickable(Composite parent, final String value, String label, boolean isEditing) {
 		Composite part = new Composite(parent, SWT.NO_FOCUS);
-		part.setLayout(EclipseUiUtils.noSpaceGridLayout());
+		part.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false)));
 		part.setData(VALUE_KEY, value);
 
 		Link relatedLk = new Link(part, SWT.LEFT);
@@ -146,7 +147,9 @@ public class LinkListPart extends Composite {
 			// Display delete button only in edit mode.
 			Button deleteBtn = new Button(part, SWT.FLAT);
 			CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
-			deleteBtn.setLayoutData(new GridData(16, 16));
+			GridData gd = new GridData(8, 8);
+			gd.horizontalIndent=2;
+			deleteBtn.setLayoutData(gd);
 			deleteBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
@@ -161,23 +164,6 @@ public class LinkListPart extends Composite {
 		part.layout();
 		return part;
 	}
-
-	// private FormData deleteFormData() {
-	// FormData formData = new FormData();
-	// formData.width = 16;
-	// formData.height = 16;
-	// formData.right = new FormAttachment(100, 0);
-	// return formData;
-	// }
-	//
-	// private FormData linkFormData(boolean isEditing) {
-	// FormData formData = new FormData();
-	// formData.top = new FormAttachment(0, 0);
-	// formData.left = new FormAttachment(0, 0);
-	// formData.right = new FormAttachment(100, isEditing ? -15 : 0);
-	// formData.bottom = new FormAttachment(100, 0);
-	// return formData;
-	// }
 
 	private boolean relatedHasChanged() {
 		try {

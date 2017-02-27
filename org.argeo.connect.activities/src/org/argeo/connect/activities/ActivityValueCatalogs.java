@@ -9,7 +9,6 @@ import java.util.Map.Entry;
  * Workaround class to define maps for activities before we implement a more
  * clean management of such an issue
  */
-
 public class ActivityValueCatalogs {
 
 	/* ACTIVITY TYPES */

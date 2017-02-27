@@ -2,11 +2,9 @@ package org.argeo.connect.activities.workbench.parts;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
-import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.activities.ActivitiesException;
 import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.connect.ui.util.LazyCTabControl;
@@ -36,12 +34,7 @@ public class TaskEditor extends AbstractConnectCTabEditor {
 	}
 
 	protected String getCurrentTaskType() {
-		try {
-			// we rely on the task primary type.
-			return task.getPrimaryNodeType().getName();
-		} catch (RepositoryException re) {
-			throw new ActivitiesException("Unable to determine task type for " + task, re);
-		}
+		return activitiesService.getMainNodeType(task);
 	}
 
 	protected void populateHeader(Composite parent) {

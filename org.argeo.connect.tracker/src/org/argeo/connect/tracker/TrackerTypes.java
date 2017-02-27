@@ -1,10 +1,10 @@
 package org.argeo.connect.tracker;
 
-/** Types used by the tracker App */
+/** Mixin types used by the Tracker App */
 public interface TrackerTypes {
-	// A project
-	String TRACKER_PROJECT = "tracker:project";
+	// Projects
 	String TRACKER_IT_PROJECT = "tracker:itProject";
+	String TRACKER_PROJECT = "tracker:project";
 	// A Ticket for a given project
 	String TRACKER_ISSUE = "tracker:issue";
 	// A comment on an issue

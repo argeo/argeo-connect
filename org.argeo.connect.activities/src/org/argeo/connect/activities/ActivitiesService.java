@@ -65,9 +65,6 @@ public interface ActivitiesService extends AppService {
 	 */
 	public Calendar getActivityRelevantDate(Node activityNode);
 
-	/** Get the display name for the manager of an activity. */
-	// public String getActivityManagerDisplayName(Node activityNode);
-
 	/* TASKS */
 	/**
 	 * Creates a new default task given some information. If no parent node is

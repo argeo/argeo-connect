@@ -74,6 +74,42 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	}
 
 	@Override
+	public String getMainNodeType(Node entity) {
+		if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_TASK))
+			return ActivitiesTypes.ACTIVITIES_TASK;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_NOTE))
+			return ActivitiesTypes.ACTIVITIES_NOTE;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_MEETING))
+			return ActivitiesTypes.ACTIVITIES_MEETING;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_SENT_EMAIL))
+			return ActivitiesTypes.ACTIVITIES_SENT_EMAIL;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_SENT_FAX))
+			return ActivitiesTypes.ACTIVITIES_SENT_FAX;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_SENT_EMAIL))
+			return ActivitiesTypes.ACTIVITIES_SENT_EMAIL;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_BLOG_POST))
+			return ActivitiesTypes.ACTIVITIES_BLOG_POST;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_CALL))
+			return ActivitiesTypes.ACTIVITIES_CALL;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_CHAT))
+			return ActivitiesTypes.ACTIVITIES_CHAT;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_PAYMENT))
+			return ActivitiesTypes.ACTIVITIES_PAYMENT;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_POLL))
+			return ActivitiesTypes.ACTIVITIES_POLL;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_RATE))
+			return ActivitiesTypes.ACTIVITIES_RATE;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_REVIEW))
+			return ActivitiesTypes.ACTIVITIES_REVIEW;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_TWEET))
+			return ActivitiesTypes.ACTIVITIES_TWEET;
+		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_ACTIVITY))
+			return ActivitiesTypes.ACTIVITIES_ACTIVITY;
+		else
+			return null;
+	}
+
+	@Override
 	public boolean isKnownType(String nodeType) {
 		if (ActivitiesTypes.ACTIVITIES_TASK.equals(nodeType) || ActivitiesTypes.ACTIVITIES_ACTIVITY.equals(nodeType))
 			return true;
@@ -358,7 +394,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			Calendar wakeUpDate) throws RepositoryException {
 		if (session == null && parentNode == null)
 			throw new ActivitiesException(
-					"Define either a session or a parent node. " + "Both cannot be null at the same time.");
+					"Define either a session or a parent node. Both cannot be null at the same time.");
 
 		if (session == null)
 			session = parentNode.getSession();
