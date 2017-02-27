@@ -119,9 +119,9 @@ public class PersonJcrUtils implements PeopleNames {
 	public static Node addJob(Node person, Node org, String department, String role, String title, boolean isPrimary,
 			Calendar dateBegin, Calendar dateEnd, Boolean isCurrent) throws RepositoryException {
 
-		Node jobs = JcrUtils.mkdirs(person, PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
+		Node jobs = JcrUtils.mkdirs(person, PEOPLE_JOBS);
 		Node job = jobs.addNode(org.getName());
-		job.canAddMixin(PeopleTypes.PEOPLE_JOB);
+		job.addMixin(PeopleTypes.PEOPLE_JOB);
 		job.setProperty(PEOPLE_REF_UID, org.getProperty(ConnectNames.CONNECT_UID).getString());
 
 		if (EclipseUiUtils.notEmpty(role))

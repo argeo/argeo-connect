@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 public class ActivityValueCatalogs {
 
 	/* ACTIVITY TYPES */
+	public final static String ACT_LBL_TASK = "Task";
 	public final static String ACT_LBL_NOTE = "Note";
 	public final static String ACT_LBL_SENT_MAIL = "Sent mail";
 	public final static String ACT_LBL_CALL = "Call";
@@ -30,6 +31,7 @@ public class ActivityValueCatalogs {
 	public static final Map<String, String> MAPS_ACTIVITY_TYPES;
 	static {
 		Map<String, String> tmpMap = new HashMap<String, String>();
+		tmpMap.put(ActivitiesTypes.ACTIVITIES_TASK, ACT_LBL_TASK);
 		tmpMap.put(ActivitiesTypes.ACTIVITIES_NOTE, ACT_LBL_NOTE);
 		tmpMap.put(ActivitiesTypes.ACTIVITIES_SENT_EMAIL, ACT_LBL_SENT_MAIL);
 		tmpMap.put(ActivitiesTypes.ACTIVITIES_CALL, ACT_LBL_CALL);

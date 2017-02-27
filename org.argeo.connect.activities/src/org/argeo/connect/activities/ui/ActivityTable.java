@@ -61,7 +61,8 @@ public class ActivityTable extends Composite {
 	private Node entity;
 	private UserAdminService userAdminService;
 	private ResourcesService resourceService;
-	private ActivitiesService activityService;
+	private ActivitiesService activitiesService;
+	// private AppService appService;
 	private AppWorkbenchService appWorkbenchService;
 
 	// CONSTRUCTORS
@@ -75,13 +76,13 @@ public class ActivityTable extends Composite {
 	 * @param session
 	 */
 	public ActivityTable(Composite parent, int style, UserAdminService userAdminService,
-			ResourcesService resourceService, ActivitiesService activityService,
-			AppWorkbenchService appWorkbenchService, Node entity) {
+			ResourcesService resourceService, ActivitiesService activityService, AppWorkbenchService appWorkbenchService,
+			Node entity) {
 		super(parent, SWT.NONE);
 		session = ConnectJcrUtils.getSession(entity);
-		// this.peopleService = peopleService;
+		// this.appService = appService;
 		this.appWorkbenchService = appWorkbenchService;
-		this.activityService = activityService;
+		this.activitiesService = activityService;
 		this.resourceService = resourceService;
 		this.userAdminService = userAdminService;
 		this.entity = entity;
@@ -108,7 +109,7 @@ public class ActivityTable extends Composite {
 		lpMap.put(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, new UsersLabelProvider());
 		lpMap.put(ActivitiesNames.ACTIVITIES_RELATED_TO, new AlsoRelatedToLP());
 
-		ActivityViewerComparator comparator = new ActivityViewerComparator(activityService, lpMap);
+		ActivityViewerComparator comparator = new ActivityViewerComparator(activitiesService, lpMap);
 
 		TableColumn col;
 		TableViewerColumn tvCol;
@@ -215,22 +216,30 @@ public class ActivityTable extends Composite {
 
 			try {
 				StringBuilder builder = new StringBuilder();
-				if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
-					builder.append("<b>");
-					builder.append(resourceService.getItemDefaultEnLabel(currNode.getPrimaryNodeType().getName()));
-					builder.append("</b>");
-					builder.append("<br />");
-					builder.append(ConnectJcrUtils.get(currNode, ActivitiesNames.ACTIVITIES_TASK_STATUS));
+				// if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
+				// builder.append("<b>");
+				// builder.append(resourceService.getItemDefaultEnLabel(currNode.getPrimaryNodeType().getName()));
+				// builder.append("</b>");
+				// builder.append("<br />");
+				// builder.append(ConnectJcrUtils.get(currNode,
+				// ActivitiesNames.ACTIVITIES_TASK_STATUS));
+				//
+				// } else
 
-				} else if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
+				if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
 					builder.append("<b>");
-					builder.append(activityService.getActivityLabel(currNode));
+					builder.append(activitiesService.getActivityLabel(currNode));
+
 					// specific for rate
 					if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_RATE)) {
 						Long rate = ConnectJcrUtils.getLongValue(currNode, ActivitiesNames.ACTIVITIES_RATE);
 						if (rate != null)
-							builder.append(": " + rate);
-					}
+							builder.append(": ").append(rate);
+					} else
+					// specific for tasks
+					if (currNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK))
+						builder.append(": ")
+								.append(ConnectJcrUtils.get(currNode, ActivitiesNames.ACTIVITIES_TASK_STATUS));
 					builder.append("</b>");
 				}
 				return builder.toString();
@@ -349,15 +358,15 @@ public class ActivityTable extends Composite {
 				StringBuilder builder = new StringBuilder();
 				if (activityNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
 					// done task
-					if (activityService.isTaskDone(activityNode)) {
+					if (activitiesService.isTaskDone(activityNode)) {
 						value = getDNameFromProp(activityNode, ActivitiesNames.ACTIVITIES_CLOSED_BY);
 						if (EclipseUiUtils.notEmpty(value))
 							builder.append(value).append(" (Closed by)").append("<br />");
-						value = activityService.getAssignedToDisplayName(activityNode);
+						value = activitiesService.getAssignedToDisplayName(activityNode);
 						if (EclipseUiUtils.notEmpty(value))
 							builder.append(value).append(" (Assignee)").append("<br />");
 					} else {
-						value = activityService.getAssignedToDisplayName(activityNode);
+						value = activitiesService.getAssignedToDisplayName(activityNode);
 						if (EclipseUiUtils.notEmpty(value))
 							builder.append(value).append(" (Assignee)").append("<br />");
 

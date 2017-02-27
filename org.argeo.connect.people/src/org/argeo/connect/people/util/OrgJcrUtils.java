@@ -4,6 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.Constraint;
@@ -16,6 +17,7 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.people.PeopleException;
 import org.argeo.connect.people.PeopleNames;
 import org.argeo.connect.people.PeopleTypes;
+import org.argeo.connect.util.XPathUtils;
 
 /**
  * Static utility methods to manage CRM organisation concepts in JCR. Rather use
@@ -31,8 +33,7 @@ public class OrgJcrUtils implements PeopleNames {
 			else
 				return null;
 		} catch (RepositoryException e) {
-			throw new PeopleException("Error while getting "
-					+ "payment accounts for node " + entity, e);
+			throw new PeopleException("Error while getting " + "payment accounts for node " + entity, e);
 		}
 	}
 
@@ -41,16 +42,13 @@ public class OrgJcrUtils implements PeopleNames {
 		if (nit == null || nit.getSize() == 0)
 			return null;
 		else if (nit.getSize() > 1)
-			throw new PeopleException(
-					"Unable to get primary payment accounts for " + entity
-							+ ". Multiple accounts is not implemented and "
-							+ nit.getSize() + " accounts has been found.");
+			throw new PeopleException("Unable to get primary payment accounts for " + entity
+					+ ". Multiple accounts is not implemented and " + nit.getSize() + " accounts has been found.");
 		else
 			return nit.nextNode();
 	}
 
-	public static Node createPaymentAccount(Node entity, String nodeType,
-			String name) {
+	public static Node createPaymentAccount(Node entity, String nodeType, String name) {
 		try {
 			Node accounts = null;
 			if (entity.hasNode(PEOPLE_PAYMENT_ACCOUNTS))
@@ -59,9 +57,7 @@ public class OrgJcrUtils implements PeopleNames {
 				accounts = entity.addNode(PEOPLE_PAYMENT_ACCOUNTS);
 			return accounts.addNode(name, nodeType);
 		} catch (RepositoryException e) {
-			throw new PeopleException(
-					"Error while creating new payment account for node "
-							+ entity, e);
+			throw new PeopleException("Error while creating new payment account for node " + entity, e);
 		}
 	}
 
@@ -70,25 +66,14 @@ public class OrgJcrUtils implements PeopleNames {
 	 * Mainly used during imports to provide a key to a given organisation. Do
 	 * not rely on this for production purposes. *
 	 */
-	public static Node getOrgWithWebSite(Session session, String website)
-			throws RepositoryException {
-		QueryManager queryManager = session.getWorkspace().getQueryManager();
-		QueryObjectModelFactory factory = queryManager.getQOMFactory();
-		Selector source = factory.selector(PeopleTypes.PEOPLE_URL,
-				PeopleTypes.PEOPLE_URL);
-		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
-				PeopleNames.PEOPLE_CONTACT_VALUE);
-		StaticOperand statOp = factory.literal(session.getValueFactory()
-				.createValue(website));
-		Constraint defaultC = factory.comparison(factory.lowerCase(dynOp),
-				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
-		QueryObjectModel query = factory.createQuery(source, defaultC, null,
-				null);
-		QueryResult result = query.execute();
-		NodeIterator ni = result.getNodes();
+	public static Node getOrgWithWebSite(Session session, String website) throws RepositoryException {
+		String xpathQueryStr = "//element(*, " + PeopleTypes.PEOPLE_ORG + ")";
+		xpathQueryStr += "[" + XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_CACHE_PURL, website) + "]";
+		Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
+		NodeIterator ni = xpathQuery.execute().getNodes();
 		Node orga = null;
 		if (ni.hasNext())
-			orga = ni.nextNode().getParent().getParent();
+			orga = ni.nextNode();
 		return orga;
 	}
 
@@ -96,22 +81,16 @@ public class OrgJcrUtils implements PeopleNames {
 	 * Mainly used during imports to provide a key to a given organisation. Do
 	 * not rely on this for production purposes.
 	 */
-	public static Node getOrgByName(Session session, String name)
-			throws RepositoryException {
+	public static Node getOrgByName(Session session, String name) throws RepositoryException {
 		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		QueryObjectModelFactory factory = queryManager.getQOMFactory();
-		Selector source = factory.selector(PeopleTypes.PEOPLE_ORG,
-				PeopleTypes.PEOPLE_ORG);
+		Selector source = factory.selector(PeopleTypes.PEOPLE_ORG, PeopleTypes.PEOPLE_ORG);
 
-		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(),
-				PeopleNames.PEOPLE_LEGAL_NAME);
-		StaticOperand statOp = factory.literal(session.getValueFactory()
-				.createValue(name));
-		Constraint defaultC = factory.comparison(dynOp,
-				QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(), PeopleNames.PEOPLE_LEGAL_NAME);
+		StaticOperand statOp = factory.literal(session.getValueFactory().createValue(name));
+		Constraint defaultC = factory.comparison(dynOp, QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
 
-		QueryObjectModel query = factory.createQuery(source, defaultC, null,
-				null);
+		QueryObjectModel query = factory.createQuery(source, defaultC, null, null);
 		QueryResult result = query.execute();
 		NodeIterator ni = result.getNodes();
 
@@ -122,7 +101,6 @@ public class OrgJcrUtils implements PeopleNames {
 		else if (resultNb == 1)
 			return ni.nextNode();
 		else
-			throw new PeopleException("More than 1 org with name " + name
-					+ " has been found.");
+			throw new PeopleException("More than 1 org with name " + name + " has been found.");
 	}
 }

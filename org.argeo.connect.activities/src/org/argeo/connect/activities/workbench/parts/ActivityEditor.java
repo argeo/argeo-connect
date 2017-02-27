@@ -36,7 +36,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 
 	// Context
 	private Node activity;
-	private ActivitiesService activityService;
+	private ActivitiesService activitiesService;
 
 	// Workaround to align first column of header and body.
 	private int firstColWHint = 85;
@@ -48,7 +48,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 
 	@Override
 	protected void updatePartName() {
-		String name = activityService.getActivityLabel(getNode());
+		String name = activitiesService.getActivityLabel(getNode());
 		if (EclipseUiUtils.notEmpty(name))
 			setPartName(name);
 	}
@@ -56,7 +56,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 	protected void populateHeader(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite headerCmp = new ActivityHeader(getFormToolkit(), getManagedForm(), parent, SWT.NO_FOCUS,
-				getUserAdminService(), activityService, activity);
+				getUserAdminService(), activitiesService, activity);
 		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
@@ -197,7 +197,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setActivityService(ActivitiesService activityService) {
-		this.activityService = activityService;
+	public void setActivitiesService(ActivitiesService activitiesService) {
+		this.activitiesService = activitiesService;
 	}
 }

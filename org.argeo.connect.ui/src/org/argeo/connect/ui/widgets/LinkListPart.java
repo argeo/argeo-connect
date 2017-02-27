@@ -23,9 +23,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -136,20 +134,19 @@ public class LinkListPart extends Composite {
 
 	private Composite createDeletableClickable(Composite parent, final String value, String label, boolean isEditing) {
 		Composite part = new Composite(parent, SWT.NO_FOCUS);
-		part.setLayout(new FormLayout());
+		part.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		part.setData(VALUE_KEY, value);
 
 		Link relatedLk = new Link(part, SWT.LEFT);
 		relatedLk.setText("<a>" + label + "</a>");
 		CmsUtils.style(relatedLk, ConnectUiStyles.ENTITY_HEADER);
 		relatedLk.addSelectionListener(new OpenEditorAdapter(value));
-		relatedLk.setLayoutData(linkFormData(isEditing));
 
 		if (isEditing) {
 			// Display delete button only in edit mode.
 			Button deleteBtn = new Button(part, SWT.FLAT);
 			CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
-			deleteBtn.setLayoutData(deleteFormData());
+			deleteBtn.setLayoutData(new GridData(16, 16));
 			deleteBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
@@ -165,21 +162,22 @@ public class LinkListPart extends Composite {
 		return part;
 	}
 
-	private FormData deleteFormData() {
-		FormData formData = new FormData();
-		formData.top = new FormAttachment(0, 2);
-		formData.right = new FormAttachment(100, 0);
-		return formData;
-	}
-
-	private FormData linkFormData(boolean isEditing) {
-		FormData formData = new FormData();
-		formData.top = new FormAttachment(0, 0);
-		formData.left = new FormAttachment(0, 0);
-		formData.right = new FormAttachment(100, isEditing ? -15 : 0);
-		formData.bottom = new FormAttachment(100, 0);
-		return formData;
-	}
+	// private FormData deleteFormData() {
+	// FormData formData = new FormData();
+	// formData.width = 16;
+	// formData.height = 16;
+	// formData.right = new FormAttachment(100, 0);
+	// return formData;
+	// }
+	//
+	// private FormData linkFormData(boolean isEditing) {
+	// FormData formData = new FormData();
+	// formData.top = new FormAttachment(0, 0);
+	// formData.left = new FormAttachment(0, 0);
+	// formData.right = new FormAttachment(100, isEditing ? -15 : 0);
+	// formData.bottom = new FormAttachment(100, 0);
+	// return formData;
+	// }
 
 	private boolean relatedHasChanged() {
 		try {

@@ -23,6 +23,7 @@
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
+		<property name="appService" ref="appService" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
@@ -32,6 +33,7 @@
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
+		<property name="appService" ref="appService" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 

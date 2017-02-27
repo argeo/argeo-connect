@@ -17,6 +17,7 @@ import org.argeo.connect.activities.ActivitiesService;
 import org.argeo.connect.activities.ActivitiesTypes;
 import org.argeo.connect.activities.ActivityValueCatalogs;
 import org.argeo.connect.activities.ui.ActivityTable;
+import org.argeo.connect.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.workbench.AppWorkbenchService;
@@ -51,7 +52,7 @@ public class ActivityList extends LazyCTabControl {
 
 	// private final static Log log = LogFactory.getLog(ActivityList.class);
 
-	public final static String CTAB_ID = "org.argeo.connect.activities.ctab.activityList";
+	public final static String CTAB_ID = ActivitiesUiPlugin.PLUGIN_ID + ".ctab.activityList";
 
 	// Context
 	private final UserAdminService userAdminService;

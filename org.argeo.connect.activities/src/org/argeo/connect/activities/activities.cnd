@@ -15,40 +15,40 @@ mixin
 
 
 // Various activity types, we use mixin to be able to later enrich the model
-[activities:note]
+[activities:note] > activities:activity 
 mixin 
 
-[activities:sentEmail] 
+[activities:sentEmail] > activities:activity
 mixin  
 
-[activities:call]
+[activities:call] > activities:activity
 mixin 
 
-[activities:meeting]
+[activities:meeting] > activities:activity
 mixin 
 
-[activities:sentLetter]
+[activities:sentLetter] > activities:activity
 mixin 
 
-[activities:sentFax]
+[activities:sentFax] > activities:activity
 mixin 
 
-[activities:payment]
+[activities:payment] > activities:activity
 mixin 
 
-[activities:review]
+[activities:review] > activities:activity
 mixin 
 
-[activities:chat]
+[activities:chat] > activities:activity
 mixin 
 
-[activities:tweet]
+[activities:tweet] > activities:activity
 mixin 
 
-[activities:blogPost]
+[activities:blogPost] > activities:activity
 mixin 
 
-[activities:rate]
+[activities:rate] > activities:activity
 mixin 
 - activities:rate (LONG) // the note attributed by the current user  
 

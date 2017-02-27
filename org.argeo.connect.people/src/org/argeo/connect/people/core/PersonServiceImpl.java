@@ -169,7 +169,8 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			// Create node if necessary
 			if (newJob == null) {
 				Node parentNode = JcrUtils.mkdirs(person, PeopleNames.PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
-				newJob = parentNode.addNode(newNodeName.trim(), PeopleTypes.PEOPLE_JOB);
+				newJob = parentNode.addNode(newNodeName.trim());
+				newJob.addMixin(PeopleTypes.PEOPLE_JOB);
 			} else if (!newNodeName.equals(newJob.getName())) {
 				Session session = newJob.getSession();
 				String srcAbsPath = newJob.getPath();

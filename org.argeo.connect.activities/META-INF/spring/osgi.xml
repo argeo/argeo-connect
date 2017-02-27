@@ -13,6 +13,8 @@
 	<reference id="resourcesService" interface="org.argeo.connect.resources.ResourcesService" />
 	<reference id="activitiesService"
 		interface="org.argeo.connect.activities.ActivitiesService" />
+	<reference id="appService"
+		interface="org.argeo.connect.AppService" />
 	<reference id="appWorkbenchService"
 		interface="org.argeo.connect.ui.workbench.AppWorkbenchService" />
 </beans:beans>
