@@ -1,21 +1,8 @@
 <people = 'http://www.argeo.org/ns/people'>
 
-//
-// ENTITY TYPE: it is the parent of all people business types.
-//
-[people:entity] > connect:entity, mix:versionable
- mixin
-+ ldap:photo (nt:file) // An optional picture for this entity
 
-
-// PERSON
-
-// PERSON
-[people:user]
-mixin
-- ldap:uid
-
-[people:ldapPerson]
+[ldap:person] 
+// or [people:ldapPerson] ?
  mixin
 - ldap:givenName (STRING) 
 - ldap:sn (STRING)
@@ -23,16 +10,41 @@ mixin
 - ldap:displayName (BOOLEAN)  
 - ldap:generationQualifier
 
-- ldap:preferredLanguage (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+// double check the s. that is not in the RFC
+- ldap:preferredLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
 									// Prefered language must be added first
-- ldap:telephoneNumber (STRING) // Caches primary phone number
-- ldap:mail (STRING)  // Caches primary email
-- ldap:associatedDomain (STRING) // Caches primary website
-- ldap:l (STRING) * // Caches country and country in human readable form
 
 
+[ldap:org] 
+ mixin
+- ldap:cn (STRING) 
+- ldap:displayName (BOOLEAN)
+// - ldap:businessCategory (STRING) *
 
-[people:person] > people:ldapPerson, people:entity, people:contactable, connect:taggable
+[ldap:contactable] 
+mixin
+- ldap:mobile (STRING) // Primary mobile phone number
+- ldap:telephoneNumber (STRING) // Primary land line phone number
+- ldap:mail (STRING)  // Primary email
+- ldap:associatedDomain (STRING) // Primary website
+- ldap:postalAddress (STRING) // The address in human readable form
+
+
+// ENTITY TYPE: it is the parent of all People business types.
+[people:entity] > connect:entity, mix:versionable
+ mixin
++ ldap:photo (nt:file) // An optional picture for this entity
+
+
+[people:contactable] > ldap:contactable 
+mixin
++ people:contacts (nt:unstructured)
+- people:mailingLists (STRING) * // A tag like property to keep a reference to the mailing list this contact is bound to.
+- people:unsubscribedMailingLists (STRING) * // Tag like property to track unsubscribed mailing lists
+
+
+// PERSON
+[people:person] > ldap:person, people:entity, people:contactable, connect:taggable
  mixin
 - people:middleName (STRING)
 - people:salutation (STRING)
@@ -56,20 +68,15 @@ mixin
 // cache to ease full text search 
 - people:cachePOrg (STRING) IGNORE
 
+[people:user]
+mixin
+- ldap:uid
+
+
 // ORGANISATION
-[people:ldapOrg]
+
+[people:org] > people:entity, ldap:org, people:contactable, connect:taggable
  mixin
-- ldap:cn (STRING) 
-- ldap:displayName (BOOLEAN)  
-- ldap:telephoneNumber (STRING) // Caches primary phone number
-- ldap:mail (STRING)  // Caches primary email
-- ldap:associatedDomain (STRING) // Caches primary website
-- ldap:l (STRING) * // Caches country and country in human readable form
-
-
-[people:org] > people:entity, people:ldapOrg, people:contactable, connect:taggable
- mixin
-
 - people:legalForm (STRING)
 - people:vatIdNb (STRING)
 // Departments or organisational units
@@ -80,19 +87,16 @@ mixin
 + people:paymentAccounts (nt:unstructured)
 
 
-//
 // GROUP : base type for all groups of persons, organisations and/or other groups 
-//
 [people:group] > people:entity, connect:taggable
  mixin
-+ people:members (nt:unstructured) =nt:unstructured m a 
++ people:members (nt:unstructured)
 
-// 
 // GROUP MEMBERS
 // node with reference to corresponding entities 
 // and some more information if needed.
-
-[people:position] > nt:unstructured
+[people:position]
+mixin
 - people:role (STRING) 
 // OPTIONAL: the nature of the subject in this relation: 
 // For instance "Actor" or "Engineer" 
@@ -104,15 +108,19 @@ mixin
 // we don't know when it has ended 
 - people:isCurrent (BOOLEAN) ="true" a
 
-// The job or position of a person in an organisation
-[people:job] > people:position
-- people:refUid (STRING) nofulltext // ONLY an organisation
-- people:department (STRING) // An optional department within the org corresponding to the current position
 
 
 // Membership in a group
 [people:member] > people:position
+mixin
 - people:refUid (STRING) nofulltext  // MIGHT BE a person, an organisation or another group
+- people:refTitle (STRING) // Title of the corresponding group in case it is not viewable or has been deleted 
+
+// The job or position of a person in an organisation
+[people:job] > people:member
+mixin
+- people:department (STRING) // An optional department within the org corresponding to the current position
+
 
 
 // MAILING LIST 
@@ -124,16 +132,16 @@ mixin
 //
 // LANGUAGES AND COUNTRIES
 //
-[people:multiLang]
-mixin
+// [people:multiLang]
+// mixin
 // we use nt:unstructured to insure the fact that nodes are orderable
-+ * (nt:unstructured, people:language) *
+// + * (nt:unstructured, people:language) *
 
-[people:language] 
-mixin
+// [people:language] 
+// mixin
 // A single language tag, as defined in http://tools.ietf.org/html/rfc5646
 // We added 2 values: "und" for unknown and "zxx" for No linguistic content  
-- people:lang (STRING) ='und' m a
+// - people:lang (STRING) ='und' m a
 // NOTE: we don't use mix:language for the time being because constraints on the 
 // jcr:language properties are implementation specific
 
@@ -143,15 +151,9 @@ mixin
 // 
 // CONTACTABLE
 //
-[people:contactable] 
-mixin
-+ people:contacts (nt:unstructured)
-- people:mailingLists (STRING) * // A tag like property to keep a reference to the mailing list this contact is bound to.
-- people:unsubscribedMailingLists (STRING) * // Tag like property to track unsubscribed mailing lists
 
-// 
+
 // CONTACTS
-// 
 [people:contact] > nt:unstructured
 - people:contactValue (STRING) 
 - people:contactNature (STRING) // Only for person: Work, Home or Other

@@ -120,7 +120,8 @@ public class PersonJcrUtils implements PeopleNames {
 			Calendar dateBegin, Calendar dateEnd, Boolean isCurrent) throws RepositoryException {
 
 		Node jobs = JcrUtils.mkdirs(person, PEOPLE_JOBS, NodeType.NT_UNSTRUCTURED);
-		Node job = jobs.addNode(org.getName(), PeopleTypes.PEOPLE_JOB);
+		Node job = jobs.addNode(org.getName());
+		job.canAddMixin(PeopleTypes.PEOPLE_JOB);
 		job.setProperty(PEOPLE_REF_UID, org.getProperty(ConnectNames.CONNECT_UID).getString());
 
 		if (EclipseUiUtils.notEmpty(role))

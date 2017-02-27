@@ -1,15 +1,5 @@
 <activities = 'http://www.argeo.org/ns/activities'>
 
-// [projects:project] > mix:title
-// mixin
-
-// [projects:milestone] > mix:title
-// mixin
-
-//[projects:projectInfo] > mix:title
-// mixin
-
-
 // ACTIVITIES AND TASKS
 
 // Activities

@@ -370,7 +370,9 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 					NodeType.NT_UNSTRUCTURED);
 		}
 
-		Node taskNode = parentNode.addNode(taskNodeType, taskNodeType);
+		Node taskNode = parentNode.addNode(taskNodeType);
+		taskNode.addMixin(taskNodeType);
+
 		if (notEmpty(title))
 			taskNode.setProperty(Property.JCR_TITLE, title);
 		if (notEmpty(description))

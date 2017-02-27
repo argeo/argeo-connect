@@ -20,7 +20,7 @@ mixin
 + issues (nt:unstructured)
 
 
-// Mixin for tasks
+// Additional mixin for tasks
 [tracker:issue] > tracker:managed, mix:versionable, mix:title, mix:created, mix:lastModified
 mixin 
 - tracker:id (LONG) 
@@ -33,6 +33,9 @@ mixin
 
 [tracker:comment] > mix:title, mix:created, mix:lastModified
 mixin 
+
+// [tracker:milestone] > mix:title
+// mixin
 
 
 [tracker:version] > mix:title 

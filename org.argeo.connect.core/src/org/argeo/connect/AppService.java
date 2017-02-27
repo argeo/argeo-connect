@@ -13,6 +13,7 @@ import org.argeo.node.NodeUtils;
 /** Minimal interface that an Argeo App must implement */
 public interface AppService {
 
+	/** Returns the current App name */
 	public String getAppBaseName();
 
 	default public String getDefaultBasePath() {
@@ -34,10 +35,33 @@ public interface AppService {
 			return defaultDisplayName;
 	}
 
+	/**
+	 * Computes the App specific relative path for a known type based on
+	 * properties of the passed node
+	 */
 	public String getDefaultRelPath(Node entity) throws RepositoryException;
 
+	/**
+	 * Computes the App specific relative path for this known node type based on
+	 * the passed id
+	 */
 	public String getDefaultRelPath(String nodeType, String id);
 
+	/**
+	 * Try to save and optionally publish a business object after applying
+	 * context specific rules and special behaviours (typically cache updates).
+	 * 
+	 * @return the entity that has been saved (and optionally published): note
+	 *         that is some cases (typically, the first save of a draft node in
+	 *         the business sub tree) the returned node is not the same as the
+	 *         one that has been passed
+	 * @param entity
+	 * @param publish
+	 *            also publish the corresponding node
+	 * @throws PeopleException
+	 *             If one a the rule defined for this type is not respected. Use
+	 *             getMessage to display to the user if needed
+	 */
 	default public Node saveEntity(Node entity, boolean publish) {
 		try {
 			if (entity.getSession().hasPendingChanges())

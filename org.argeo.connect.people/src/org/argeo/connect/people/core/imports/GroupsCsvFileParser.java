@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.UserAdminServiceImpl;
+import org.argeo.connect.core.UserAdminServiceImpl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.naming.LdapAttrs;
@@ -39,14 +39,11 @@ public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 		User existingUser = userAdminWrapper.getUserFromLocalId(cn);
 		Group group = null;
 		if (existingUser != null) {
-			log.warn("Group "
-					+ cn
-					+ " already exists in the system, check if some user must yet be added");
+			log.warn("Group " + cn + " already exists in the system, check if some user must yet be added");
 			group = (Group) existingUser;
 		} else {
 			String dn = userAdminWrapper.buildDefaultDN(cn, Role.GROUP);
-			group = (Group) userAdminWrapper.getUserAdmin().createRole(dn,
-					Role.GROUP);
+			group = (Group) userAdminWrapper.getUserAdmin().createRole(dn, Role.GROUP);
 			Dictionary props = group.getProperties();
 			if (EclipseUiUtils.notEmpty(desc))
 				props.put(LdapAttrs.description.name(), desc);
@@ -58,8 +55,7 @@ public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 			if (user != null)
 				group.addMember(user);
 			else
-				log.warn("Found no role for localId: " + member
-						+ ", cannot add to " + cn);
+				log.warn("Found no role for localId: " + member + ", cannot add to " + cn);
 		}
 	}
 }

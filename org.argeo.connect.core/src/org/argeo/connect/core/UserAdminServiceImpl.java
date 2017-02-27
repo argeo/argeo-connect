@@ -1,4 +1,4 @@
-package org.argeo.connect;
+package org.argeo.connect.core;
 
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -10,6 +10,8 @@ import javax.transaction.UserTransaction;
 
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
+import org.argeo.connect.ConnectException;
+import org.argeo.connect.UserAdminService;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.node.NodeConstants;
 import org.argeo.osgi.useradmin.UserAdminConf;
@@ -43,16 +45,13 @@ public class UserAdminServiceImpl implements UserAdminService {
 		return getUserMail(CurrentUser.getUsername());
 	}
 
-	// protected String getHomeBasePath() {
-	// return "/home";
-	// }
-
 	@Override
 	public Role[] getRoles(String filter) throws InvalidSyntaxException {
 		return userAdmin.getRoles(filter);
 	}
 
 	// ALL USER: WARNING access to this will be later reduced
+
 	/** Retrieve a user given his dn */
 	public User getUser(String dn) {
 		return (User) getUserAdmin().getRole(dn);

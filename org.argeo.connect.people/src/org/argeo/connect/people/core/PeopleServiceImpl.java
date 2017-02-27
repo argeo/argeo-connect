@@ -3,10 +3,6 @@ package org.argeo.connect.people.core;
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,24 +31,18 @@ import org.argeo.connect.people.PersonService;
 import org.argeo.connect.people.util.PeopleJcrUtils;
 import org.argeo.connect.people.util.PersonJcrUtils;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeUtils;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 /** Concrete access to {@link PeopleService} */
 public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
-	// private UserAdminService userAdminService;
 	private ResourcesService resourcesService;
-	// private ActivitiesService activitiesService;
 
-	/* Centralizes the various specific People services */
+	/* Centralises the various specific People services */
 	private PersonService personService;
 	private ContactService contactService = new ContactServiceImpl(this);
 
@@ -102,29 +92,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	@Override
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
 		try {
-			if (entity.isNodeType(ResourcesTypes.RESOURCES_ENCODED_TAG)
-					|| entity.isNodeType(ResourcesTypes.RESOURCES_TAG)
-					|| entity.isNodeType(ResourcesTypes.RESOURCES_NODE_TEMPLATE)) {
-				// Known types that does not have a specific save strategy
-				ConnectJcrUtils.saveAndPublish(entity, publish);
-			} else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON) || entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON) || entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 				entity = getPersonService().saveEntity(entity, publish);
-			// else if (entity.isNodeType(PeopleTypes.PEOPLE_ACTIVITY))
-			// // TODO implement specific behavior for tasks and activities
-			// ConnectJcrUtils.saveAndPublish(entity, publish);
 			else
 				throw new PeopleException("Unknown entity type for " + entity);
 			return entity;
 		} catch (RepositoryException e) {
 			throw new PeopleException("Unable to save " + entity, e);
 		}
-	}
-
-	@Override
-	public Node getDraftParent(Session session) throws RepositoryException {
-		Node home = NodeUtils.getUserHome(session);
-		String draftRelPath = ConnectConstants.HOME_APP_SYS_RELPARPATH + "/" + getAppBaseName();
-		return JcrUtils.mkdirs(home, draftRelPath);
 	}
 
 	@Override
@@ -143,75 +118,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 		return path;
 	}
 
-	/* PEOPLE APP SPECIFIC METHODS */
-
-	//
-	// @Override
-	// public String getTmpPath() {
-	// return PeopleConstants.PEOPLE_TMP_PATH;
-	// }
-
-	// @Override
-	// public String getPublicPath() {
-	// return PeopleConstants.PEOPLE_PUBLIC_PATH;
-	// }
-
-	// @Override
-	// public String getInstanceConfPath() {
-	// return getBasePath(null) + "/" + PeopleNames.PEOPLE_CONF;
-	// }
-	//
-	// @Override
-	// public String getResourceBasePath(String resourceType) {
-	// if (resourceType == null)
-	// return getBasePath(PeopleConstants.PEOPLE_RESOURCE);
-	// else
-	// throw new PeopleException("Undefined type: " + resourceType);
-	// }
-	//
-	// @Override
-	// public String getResourcePath(String resourceType, String resourceId) {
-	// // TODO clean this
-	// return getResourceBasePath(resourceType) + "/" + resourceId;
-	// }
-
-	// Clean this: retrieve a parent node name given a NodeType or a Property
-	// name
-	// protected String getParentNameFromType(String typeId) {
-	// if (typeId.endsWith("y"))
-	// return typeId.substring(0, typeId.length() - 1) + "ies";
-	// else
-	// return typeId + "s";
-	// }
-
-	// /* DEFINITION OF THE PEOPLE DEFAULT TREE STRUCTURE */
-	// /** Creates various useful parent nodes if needed */
-	// protected void initialiseModel(Session adminSession) throws
-	// RepositoryException {
-	//
-	// // Root business node
-	// if (EclipseUiUtils.notEmpty(getBasePath(null)))
-	// JcrUtils.mkdirs(adminSession, getBasePath(null));
-	//
-	// // JcrUtils.mkdirs(adminSession, getTmpPath());// Root tmp node
-	// // JcrUtils.mkdirs(adminSession, getPublicPath());// Root public node
-	//
-	// // Various business parents
-	// JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_PERSON));
-	// JcrUtils.mkdirs(adminSession, getBasePath(PeopleTypes.PEOPLE_ORG));
-	// // JcrUtils.mkdirs(adminSession,
-	// // getBasePath(PeopleTypes.PEOPLE_ACTIVITY));
-	// JcrUtils.mkdirs(adminSession,
-	// getBasePath(PeopleConstants.PEOPLE_RESOURCE)); // Resources
-	//
-	// if (adminSession.hasPendingChanges()) {
-	// adminSession.save();
-	// log.info("Repository has been initialised " + "with default People's
-	// model");
-	// }
-	// }
-
-	//
 	// /**
 	// * Typically used to move temporary import nodes to the main business
 	// * repository
@@ -437,79 +343,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			throw new PeopleException("Unable to retrieve " + linkNodeType + " related "
 					+ (relatedEntityType == null ? "" : relatedEntityType) + " entities for " + entity, e);
 		}
-	}
-
-	/** Do not use this, there is a problem with the checkPoint method */
-	@Deprecated
-	// public long publishAll(Session session, JcrMonitor monitor) {
-	// Query query;
-	// long nodeNb = 0;
-	// try {
-	// query = session.getWorkspace().getQueryManager().createQuery("SELECT *
-	// FROM [" + NodeType.MIX_VERSIONABLE
-	// + "] ORDER BY [" + Property.JCR_LAST_MODIFIED + "] DESC ",
-	// Query.JCR_SQL2);
-	// if (monitor != null && !monitor.isCanceled())
-	// monitor.beginTask("Gathering versionnable items", -1);
-	// NodeIterator nit = query.execute().getNodes();
-	//
-	// if (nit.hasNext() && monitor != null && !monitor.isCanceled()) {
-	// nodeNb = nit.getSize();
-	// int shortNb = (int) nodeNb / 100;
-	// monitor.beginTask("Committing " + nodeNb + " nodes", shortNb);
-	//
-	// }
-	// long i = 0;
-	// VersionManager vm = session.getWorkspace().getVersionManager();
-	// while (nit.hasNext()) {
-	// String currPath = nit.nextNode().getPath();
-	// vm.checkpoint(currPath);
-	// if (i % 100 == 0 && monitor != null && !monitor.isCanceled())
-	// monitor.worked(1);
-	// i++;
-	// }
-	// return nodeNb;
-	// } catch (RepositoryException e) {
-	// throw new PeopleException("Unable to publish the workspace for " +
-	// session, e);
-	// }
-	//
-	// }
-
-	protected void importCatalogue(Session session, Resource resource, String templateId) {
-		InputStream stream = null;
-		// try {
-		// if (resourceService.getNodeTemplate(session, templateId) == null &&
-		// resource != null) {
-		// Node template = resourceService.createTemplateForType(session,
-		// PeopleTypes.PEOPLE_NODE_TEMPLATE,
-		// templateId);
-		// stream = resource.getInputStream();
-		// new TemplateCatalogueCsvFileParser(template).parse(stream, "UTF-8");
-		// }
-		// } catch (IOException ioe) {
-		// throw new PeopleException("Unable to initialise template " +
-		// templateId, ioe);
-		// } finally {
-		// IOUtils.closeQuietly(stream);
-		// }
-	}
-
-	protected InputStream getStreamFromUrl(String url) throws IOException {
-		InputStream inputStream = null;
-		if (url.startsWith("classpath:")) {
-			url = url.substring("classpath:".length());
-			Resource resultbasepath = new ClassPathResource(url);
-			if (resultbasepath.exists())
-				inputStream = resultbasepath.getInputStream();
-		} else if (url.startsWith("file:")) {
-			url = url.substring("file:".length());
-			File file = new File(url);
-			// String tmpPath = file.getAbsolutePath();
-			if (file.exists())
-				inputStream = new FileInputStream(url);
-		}
-		return inputStream;
 	}
 
 	/* EXPOSED SERVICES */
