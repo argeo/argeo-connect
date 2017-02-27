@@ -6,14 +6,14 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- EDITORS -->
-	<bean id="folderEditor" class="org.argeo.connect.documents.workbench.parts.FolderEditor"
+	<bean id="folderEditor" class="org.argeo.documents.workbench.parts.FolderEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="documentsService" ref="documentsService" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
 	</bean>
-	<bean id="fileEditor" class="org.argeo.connect.documents.workbench.parts.FileEditor"
+	<bean id="fileEditor" class="org.argeo.documents.workbench.parts.FileEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="documentsService" ref="documentsService" />
@@ -22,7 +22,7 @@
 	</bean>
 	
 	<!-- VIEWS -->
-	<bean id="myFilesView" class="org.argeo.connect.documents.workbench.parts.MyFilesView"
+	<bean id="myFilesView" class="org.argeo.documents.workbench.parts.MyFilesView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />

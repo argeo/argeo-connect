@@ -5,7 +5,7 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 	<!-- COMMANDS -->
-	<bean id="editJob" class="org.argeo.connect.people.workbench.rap.commands.EditJob"
+	<bean id="editJob" class="org.argeo.people.workbench.rap.commands.EditJob"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
@@ -14,14 +14,14 @@
 	</bean>
 
 	<bean id="removeEntityReference"
-		class="org.argeo.connect.people.workbench.rap.commands.RemoveEntityReference"
+		class="org.argeo.people.workbench.rap.commands.RemoveEntityReference"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
 
 	<!-- VIEWS -->
 	<bean id="quickSearchView"
-		class="org.argeo.connect.people.workbench.rap.views.QuickSearchView"
+		class="org.argeo.people.workbench.rap.views.QuickSearchView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
@@ -33,7 +33,7 @@
 	<!-- EDITORS -->
 	<!-- Default People entity editors -->
 	<bean id="personEditor"
-		class="org.argeo.connect.people.workbench.rap.editors.PersonEditor"
+		class="org.argeo.people.workbench.rap.editors.PersonEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -44,7 +44,7 @@
 	</bean>
 
 	<bean id="orgEditor"
-		class="org.argeo.connect.people.workbench.rap.editors.OrgEditor"
+		class="org.argeo.people.workbench.rap.editors.OrgEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -56,7 +56,7 @@
 
 	<!-- Search editors -->
 	<bean id="peopleSearchEntityEditor"
-		class="org.argeo.connect.people.workbench.rap.editors.PeopleSearchEntityEditor"
+		class="org.argeo.people.workbench.rap.editors.PeopleSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
@@ -66,7 +66,7 @@
 	</bean>
 
 	<bean id="mailingListEditor"
-		class="org.argeo.connect.people.workbench.rap.editors.MailingListEditor"
+		class="org.argeo.people.workbench.rap.editors.MailingListEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
@@ -75,7 +75,7 @@
 	</bean>
 	
 	<bean id="listValuesEditor"
-		class="org.argeo.connect.people.workbench.rap.editors.ListValuesEditor"
+		class="org.argeo.people.workbench.rap.editors.ListValuesEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />

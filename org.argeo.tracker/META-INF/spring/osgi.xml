@@ -12,8 +12,8 @@
 	<reference id="userAdminService" interface="org.argeo.connect.UserAdminService" />
 	<reference id="resourcesService" interface="org.argeo.connect.resources.ResourcesService" />
 	<reference id="activitiesService"
-		interface="org.argeo.connect.activities.ActivitiesService" />
-	<reference id="trackerService" interface="org.argeo.connect.tracker.TrackerService" />
+		interface="org.argeo.activities.ActivitiesService" />
+	<reference id="trackerService" interface="org.argeo.tracker.TrackerService" />
 	<reference id="appWorkbenchService"
 		interface="org.argeo.connect.ui.workbench.AppWorkbenchService" />
 </beans:beans>

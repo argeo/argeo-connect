@@ -6,7 +6,7 @@
 	<extension
 		point="org.eclipse.ui.views">
 		<view
-			id="org.argeo.connect.documents.myFilesView"
+			id="org.argeo.documents.myFilesView"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="theme/icons/documentsBrowser.png"
 			name="Files"
@@ -17,14 +17,14 @@
 	<!-- EDITORS --> 
 	<extension point="org.eclipse.ui.editors">
 		<editor
-			id="org.argeo.connect.documents.folderEditor"
+			id="org.argeo.documents.folderEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Folder Editor"
 			icon="theme/icons/types/folder.gif"
 			default="false">
 		</editor>
 		<editor
-			id="org.argeo.connect.documents.fileEditor"
+			id="org.argeo.documents.fileEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="File Editor"
 			icon="theme/icons/types/file.gif"

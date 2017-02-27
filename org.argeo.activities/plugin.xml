@@ -7,7 +7,7 @@
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="theme/icons/types/todo.gif"
-			id="org.argeo.connect.activities.myTodoListView"
+			id="org.argeo.activities.myTodoListView"
 			name="To Do"
 			restorable="true">
 		</view>
@@ -17,7 +17,7 @@
 	<extension point="org.eclipse.ui.editors">
 		<!-- Types editors -->
 		<editor
-			id="org.argeo.connect.activities.activityEditor"
+			id="org.argeo.activities.activityEditor"
 			name="Activity editor"
 			icon="theme/icons/types/todo.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
@@ -25,12 +25,12 @@
 		<editor
 			icon="theme/icons/types/todo.gif"
 			name="Task editor"
-			id="org.argeo.connect.activities.taskEditor"
+			id="org.argeo.activities.taskEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<!-- Search editor -->
 		<editor
-			id="org.argeo.connect.activities.searchActivityEditor"
+			id="org.argeo.activities.searchActivityEditor"
 			icon="theme/icons/actions/search.png"
 			name="Search task editor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
@@ -40,7 +40,7 @@
 	<!-- COMMANDS --> 
 	<extension point="org.eclipse.ui.commands">
 		<command
-      		id="org.argeo.connect.activities.createSimpleTask"
+      		id="org.argeo.activities.createSimpleTask"
             defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		name="Create simple task">
         </command>
@@ -54,7 +54,7 @@
 		<!-- Corresponding submenus --> 
 		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
 			<command
-				commandId="org.argeo.connect.activities.createSimpleTask"
+				commandId="org.argeo.activities.createSimpleTask"
 				icon="theme/icons/types/todo.gif"
 				label="Task">
 			</command>	
@@ -72,9 +72,9 @@
 		
 		<!-- MyTodoListView tool bar menu --> 
 		<!--<menuContribution
-            locationURI="toolbar:org.argeo.connect.activities.myTodoListView">
+            locationURI="toolbar:org.argeo.activities.myTodoListView">
             <command
-				commandId="org.argeo.connect.activities.createSimpleTask"
+				commandId="org.argeo.activities.createSimpleTask"
 				icon="theme/icons/actions/add.gif"
 				label="Task">
 			</command>	
@@ -85,7 +85,7 @@
 				tooltip="Force task list refresh">
 				<parameter
 					name="param.viewId"
-					value="org.argeo.connect.activities.myTodoListView" />
+					value="org.argeo.activities.myTodoListView" />
             </command>
         </menuContribution>-->
 	</extension>

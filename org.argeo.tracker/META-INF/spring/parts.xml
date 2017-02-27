@@ -6,7 +6,7 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- EDITORS -->
-	<bean id="projectEditor" class="org.argeo.connect.tracker.internal.ui.parts.ProjectEditor"
+	<bean id="projectEditor" class="org.argeo.tracker.internal.ui.parts.ProjectEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -14,7 +14,7 @@
 		<property name="activitiesService" ref="activitiesService" />
 		<property name="trackerService" ref="trackerService" />
 	</bean>
-	<bean id="categoryEditor" class="org.argeo.connect.tracker.internal.ui.parts.CategoryEditor"
+	<bean id="categoryEditor" class="org.argeo.tracker.internal.ui.parts.CategoryEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -22,7 +22,7 @@
 		<property name="activitiesService" ref="activitiesService" />
 		<property name="trackerService" ref="trackerService" />
 	</bean>
-	<bean id="issueEditor" class="org.argeo.connect.tracker.internal.ui.parts.IssueEditor"
+	<bean id="issueEditor" class="org.argeo.tracker.internal.ui.parts.IssueEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -31,7 +31,7 @@
 		<property name="trackerService" ref="trackerService" />
 	</bean>
 	<bean id="allProjectsEditor"
-		class="org.argeo.connect.tracker.internal.ui.parts.AllProjectsEditor"
+		class="org.argeo.tracker.internal.ui.parts.AllProjectsEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />

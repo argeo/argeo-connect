@@ -12,7 +12,7 @@
 	<reference id="userAdminService" interface="org.argeo.connect.UserAdminService" />
 	<reference id="resourcesService" interface="org.argeo.connect.resources.ResourcesService" />
 	<reference id="activitiesService"
-		interface="org.argeo.connect.activities.ActivitiesService" />
+		interface="org.argeo.activities.ActivitiesService" />
 	<reference id="appService"
 		interface="org.argeo.connect.AppService" />
 	<reference id="appWorkbenchService"

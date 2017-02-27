@@ -10,21 +10,21 @@
 	<!-- EDITORS --> 
 	<extension point="org.eclipse.ui.editors">
 		<editor
-			id="org.argeo.connect.tracker.projectEditor"
+			id="org.argeo.tracker.projectEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Project Editor"
 			icon="theme/icons/types/project.gif"
 			default="false">
 		</editor>
 		<editor
-        	id="org.argeo.connect.tracker.categoryEditor"
+        	id="org.argeo.tracker.categoryEditor"
         	class="org.argeo.eclipse.spring.SpringExtensionFactory"
         	default="false"
         	icon="theme/icons/types/category.gif"
         	name="Category Editor">
   		</editor>
 		<editor
-			id="org.argeo.connect.tracker.issueEditor"
+			id="org.argeo.tracker.issueEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Issue Editor"
 			icon="theme/icons/types/issue.png"
@@ -32,7 +32,7 @@
 		</editor>
 		<!-- search editors -->
 		<editor
-			id="org.argeo.connect.tracker.allProjectsEditor"
+			id="org.argeo.tracker.allProjectsEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Search among projects"
 			icon="theme/icons/actions/search.png"
@@ -43,7 +43,7 @@
 	<!-- COMMANDS --> 
 	<extension point="org.eclipse.ui.commands">
 		<command
-	   		id="org.argeo.connect.tracker.openTrackerEntityEditor"
+	   		id="org.argeo.tracker.openTrackerEntityEditor"
    			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
             name="openDefaultEditor">
             <commandParameter

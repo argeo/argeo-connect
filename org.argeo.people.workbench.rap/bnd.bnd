@@ -1,8 +1,8 @@
 Bundle-SymbolicName: org.argeo.people.workbench.rap;singleton:=true
-Bundle-Activator: org.argeo.connect.people.workbench.rap.PeopleRapPlugin
+Bundle-Activator: org.argeo.people.workbench.rap.PeopleRapPlugin
 Require-Bundle: org.eclipse.rap.ui,\
 org.eclipse.rap.ui.workbench
-Import-Package: org.argeo.connect.people,\
+Import-Package: org.argeo.people,\
 org.argeo.node,\
 org.argeo.cms.ui.workbench.commands,\
 org.argeo.connect,\

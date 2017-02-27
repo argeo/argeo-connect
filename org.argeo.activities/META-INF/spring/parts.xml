@@ -7,7 +7,7 @@
 
 	<!-- COMMANDS -->
 	<bean id="createSimpleTask"
-		class="org.argeo.connect.activities.workbench.commands.CreateSimpleTask"
+		class="org.argeo.activities.workbench.commands.CreateSimpleTask"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -17,7 +17,7 @@
 
 	<!-- EDITORS -->
 	<bean id="activityEditor"
-		class="org.argeo.connect.activities.workbench.parts.ActivityEditor"
+		class="org.argeo.activities.workbench.parts.ActivityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -27,7 +27,7 @@
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
-	<bean id="taskEditor" class="org.argeo.connect.activities.workbench.parts.TaskEditor"
+	<bean id="taskEditor" class="org.argeo.activities.workbench.parts.TaskEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -38,7 +38,7 @@
 	</bean>
 
 	<bean id="searchActivityEditor"
-		class="org.argeo.connect.activities.workbench.parts.SearchActivityEditor"
+		class="org.argeo.activities.workbench.parts.SearchActivityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -49,7 +49,7 @@
 
 	<!-- VIEWS -->
 	<bean id="myTodoListView"
-		class="org.argeo.connect.activities.workbench.parts.MyTodoListView"
+		class="org.argeo.activities.workbench.parts.MyTodoListView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />

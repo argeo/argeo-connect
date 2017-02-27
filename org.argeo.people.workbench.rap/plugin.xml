@@ -13,7 +13,7 @@
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="theme/icons/people.gif"
-			id="org.argeo.connect.people.workbench.rap.quickSearchView"
+			id="org.argeo.people.workbench.rap.quickSearchView"
 			name="Contacts"
 			restorable="true">
 		</view>
@@ -24,19 +24,19 @@
 		point="org.eclipse.ui.editors">
 		<!-- Search -->
 		<editor
-			id="org.argeo.connect.people.workbench.rap.peopleSearchEntityEditor"
+			id="org.argeo.people.workbench.rap.peopleSearchEntityEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="theme/icons/actions/search.png"
 			name="Search">
 		</editor>
 		<editor
-			id="org.argeo.connect.people.workbench.rap.listValuesEditor"
+			id="org.argeo.people.workbench.rap.listValuesEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="theme/icons/actions/search.png"
 			name="Search">
 		</editor>
 		<editor
-			id="org.argeo.connect.people.workbench.rap.searchByTagEditor"
+			id="org.argeo.people.workbench.rap.searchByTagEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			icon="theme/icons/actions/search.png"
 			name="Search by Tag">
@@ -44,25 +44,25 @@
 		
 		<!-- Entities -->
 		<editor
-			id="org.argeo.connect.people.workbench.rap.personEditor"
+			id="org.argeo.people.workbench.rap.personEditor"
 			name="Person editor"
 			icon="theme/icons/types/person.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
-			id="org.argeo.connect.people.workbench.rap.orgEditor"
+			id="org.argeo.people.workbench.rap.orgEditor"
 			name="Organisation editor"
 			icon="theme/icons/types/organisation.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
-			id="org.argeo.connect.people.workbench.rap.groupEditor"
+			id="org.argeo.people.workbench.rap.groupEditor"
 			name="Group"
 			icon="theme/icons/types/group.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
-			id="org.argeo.connect.people.workbench.rap.mailingListEditor"
+			id="org.argeo.people.workbench.rap.mailingListEditor"
 			name="Mailing List"
 			icon="theme/icons/types/mailingList.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
@@ -76,7 +76,7 @@
 
 		<!-- Person and organisation management --> 
 		<command
-			id="org.argeo.connect.people.workbench.rap.editJob"
+			id="org.argeo.people.workbench.rap.editJob"
             defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		name="Create or edit a job">
             <commandParameter
@@ -91,7 +91,7 @@
     	
 		<!-- Entity References CRUD --> 
 		<command
-			id="org.argeo.connect.people.workbench.rap.removeEntityReference"
+			id="org.argeo.people.workbench.rap.removeEntityReference"
         	defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       	    name="removeEntityReference">
             <commandParameter
@@ -101,8 +101,8 @@
     	</command>
     	<!-- Utility command to simply open an URL --> 
     	<command
-			defaultHandler="org.argeo.connect.people.workbench.rap.commands.OpenUrl"
-			id="org.argeo.connect.people.workbench.rap.openUrl"
+			defaultHandler="org.argeo.people.workbench.rap.commands.OpenUrl"
+			id="org.argeo.people.workbench.rap.openUrl"
 			name="Open an URL in the end user browser">
 			<commandParameter
      			id="param.urlValue"
@@ -138,7 +138,7 @@
          		value="people:org" />
 			</command>	
 			<!--<command
-				commandId="org.argeo.connect.people.workbench.rap.createEntity"
+				commandId="org.argeo.people.workbench.rap.createEntity"
 				icon="icons/mailingList.gif"
 				label="Mailing List">
 				<parameter
@@ -170,12 +170,12 @@
 		<!-- People specific activities --> 
 		<activity
               description="Generic people app"
-              id="org.argeo.connect.people.workbench.rap.peopleAppActivity"
+              id="org.argeo.people.workbench.rap.peopleAppActivity"
               name="People App Activity">
 		  <enabledWhen>
 		    <with variable="roles">
 		      <iterate ifEmpty="false" operator="or">
-		        <equals value="cn=org.argeo.connect.people.member,ou=roles,ou=node" />
+		        <equals value="cn=org.argeo.people.member,ou=roles,ou=node" />
 		      </iterate>
 		    </with>
 		 </enabledWhen>
@@ -184,12 +184,12 @@
 		<!-- Business admin activities --> 
 		<activity
               description="Business admin activities"
-              id="org.argeo.connect.people.workbench.rap.businessAdminActivity"
+              id="org.argeo.people.workbench.rap.businessAdminActivity"
               name="People Business Admin">
 		  <enabledWhen>
 		    <with variable="roles">
 		      <iterate ifEmpty="false" operator="or">
-		        <equals value="cn=org.argeo.connect.people.admin,ou=roles,ou=node" />
+		        <equals value="cn=org.argeo.people.admin,ou=roles,ou=node" />
 		      </iterate>
 		    </with>
 		  </enabledWhen>
@@ -199,12 +199,12 @@
 		<!-- Technical admin activities --> 
 		<activity
               description="Only for admins"
-              id="org.argeo.connect.people.workbench.rap.adminActivity"
+              id="org.argeo.people.workbench.rap.adminActivity"
               name="People Admin">
 		  <enabledWhen>
 		    <with variable="roles">
 		      <iterate ifEmpty="false" operator="or">
-		        <equals value="cn=org.argeo.connect.people.admin,ou=roles,ou=node" />
+		        <equals value="cn=org.argeo.people.admin,ou=roles,ou=node" />
 		      </iterate>
 		    </with>
 		  </enabledWhen>
