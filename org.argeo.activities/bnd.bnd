@@ -1,0 +1,25 @@
+Bundle-Activator: org.argeo.connect.activities.workbench.ActivitiesUiPlugin
+Bundle-SymbolicName: org.argeo.activities;singleton:=true
+Require-Bundle: org.eclipse.core.runtime
+
+Require-Capability: cms.datamodel; filter:="(name=connect)"
+Provide-Capability: cms.datamodel; name=activities; cnd=/org/argeo/connect/activities/activities.cnd; abstract=true
+
+Import-Package: javax.jcr.nodetype,\
+javax.jcr.security,\
+javax.servlet.http,\
+org.argeo.cms.ui.fs,\
+org.argeo.connect,\
+org.argeo.connect.ui,\
+org.argeo.connect.ui.util,\
+org.argeo.connect.ui.workbench.commands,\
+org.argeo.eclipse.spring,\
+org.argeo.eclipse.ui.specific,\
+org.argeo.node,\
+org.eclipse.core.commands,\
+org.eclipse.jface.window,\
+org.eclipse.swt,\
+org.eclipse.ui;ui.workbench=split,\
+org.eclipse.ui.browser;ui.workbench=split,\
+org.eclipse.ui.part;ui.workbench=split,\
+*

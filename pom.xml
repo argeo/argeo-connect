@@ -19,25 +19,25 @@
 		<module>org.argeo.connect.core</module>
 		<module>org.argeo.connect.ui</module>
 
-		<module>org.argeo.connect.activities</module>
+		<module>org.argeo.activities</module>
 
-		<module>org.argeo.connect.documents</module>
+		<module>org.argeo.documents</module>
 	
-		<module>org.argeo.connect.people</module>
-		<module>org.argeo.connect.people.ui</module>
-		<module>org.argeo.connect.people.web</module>
-		<module>org.argeo.connect.people.workbench.rap</module>
+		<module>org.argeo.people.core</module>
+		<module>org.argeo.people.ui</module>
+		<module>org.argeo.people.web</module>
+		<module>org.argeo.people.workbench.rap</module>
 
-		<module>org.argeo.connect.media</module>
+		<module>org.argeo.media</module>
 
-		<module>org.argeo.connect.tracker</module>
+		<module>org.argeo.tracker</module>
 
 		<!-- Depends on org.eclipse.ui.form that must be added to eclipse RCP repo -->
 		<!-- <module>org.argeo.photo.manager.ui</module> -->
-		<module>org.argeo.connect.payment</module>
+		<module>org.argeo.payment</module>
 		<!-- Depends on com.sun.syndication that must be added to argeo-extras 
 			repo -->
-		<!-- <module>org.argeo.connect.streams</module> -->
+		<!-- <module>org.argeo.streams</module> -->
 		<module>dep</module>
 	</modules>
 	<url>${site.urlBase}/${developmentCycle.connect}</url>
