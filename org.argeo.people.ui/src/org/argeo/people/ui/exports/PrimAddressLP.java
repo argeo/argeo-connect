@@ -35,7 +35,7 @@ public class PrimAddressLP extends SimpleJcrNodeLabelProvider {
 	public String getText(Object element) {
 		try {
 			Node currNode = ConnectJcrUtils.getNodeFromElement(element, selectorName);
-			Node currContact = PeopleJcrUtils.getPrimaryContact(currNode, PeopleTypes.PEOPLE_ADDRESS);
+			Node currContact = PeopleJcrUtils.getPrimaryContact(currNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 
 			// Sanity check
 			if (currContact == null)
@@ -56,7 +56,7 @@ public class PrimAddressLP extends SimpleJcrNodeLabelProvider {
 						refUid);
 				if (referencedEntity == null)
 					return "";
-				Node referencedContact = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
+				Node referencedContact = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 				if (referencedContact == null)
 					return "";
 				else

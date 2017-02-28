@@ -55,7 +55,7 @@ public class PeopleRapSnippets {
 
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				person = entity;
-				Node currContact = PeopleJcrUtils.getPrimaryContact(person, PeopleTypes.PEOPLE_ADDRESS);
+				Node currContact = PeopleJcrUtils.getPrimaryContact(person, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 				if (!(currContact == null || !currContact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
 					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact), null,
 							ConnectJcrUtils.get(currContact, PeopleNames.PEOPLE_REF_UID));
@@ -103,7 +103,7 @@ public class PeopleRapSnippets {
 		builder.append(PeopleUiSnippets.getContactMetaData(contactNode));
 		// Referenced org primary address
 		if (referencedEntity != null) {
-			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
+			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 			if (primaryAddress != null) {
 				builder.append("<br />");
 				builder.append(PeopleUiSnippets.getAddressDisplayValue(resourceService, primaryAddress));

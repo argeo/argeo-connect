@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.parts.ActivityList;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.widgets.TagLikeListPart;
@@ -83,7 +83,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 
 		// Tag Management
 		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, ConnectNames.CONNECT_TAGS,
+				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, ResourcesNames.CONNECT_TAGS,
 				"Enter a new tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));

@@ -13,7 +13,7 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.parts.ActivityList;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -97,7 +97,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		// Tag Management
 		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, ConnectNames.CONNECT_TAGS,
+				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, ResourcesNames.CONNECT_TAGS,
 				"Add a tag");
 
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));

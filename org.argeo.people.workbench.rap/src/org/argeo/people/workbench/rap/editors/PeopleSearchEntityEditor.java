@@ -14,7 +14,7 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -65,7 +65,7 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 		super.init(site, input);
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ConnectNames.CONNECT_TAGS), 300));
+		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ResourcesNames.CONNECT_TAGS), 300));
 	}
 
 	/** Override this to provide type specific static filters */
@@ -106,7 +106,7 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 			StringBuilder builder = new StringBuilder();
 			builder.append("//element(*, ").append(getEntityType()).append(")");
 			String attrQuery = XPathUtils.localAnd(XPathUtils.getFreeTextConstraint(getFilterText().getText()),
-					XPathUtils.getPropertyEquals(ConnectNames.CONNECT_TAGS, tagDD.getText()));
+					XPathUtils.getPropertyEquals(ResourcesNames.CONNECT_TAGS, tagDD.getText()));
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				builder.append("[").append(attrQuery).append("]");
 			builder.append(" order by @").append(Property.JCR_TITLE).append(" ascending");
@@ -174,13 +174,13 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 			columns.add(new ConnectColumnDefinition("Primary Phone",
 					new PrimContactValueLP(null, PeopleTypes.PEOPLE_PHONE)));
 			columns.add(new ConnectColumnDefinition("Primary Email",
-					new PrimContactValueLP(null, PeopleTypes.PEOPLE_EMAIL)));
+					new PrimContactValueLP(null, PeopleTypes.PEOPLE_MAIL)));
 			columns.add(new ConnectColumnDefinition("Other Emails",
-					new NotPrimContactValueLP(null, PeopleTypes.PEOPLE_EMAIL)));
+					new NotPrimContactValueLP(null, PeopleTypes.PEOPLE_MAIL)));
 			columns.add(new ConnectColumnDefinition("Primary Website",
 					new PrimContactValueLP(null, PeopleTypes.PEOPLE_URL)));
 			columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
-			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ConnectNames.CONNECT_TAGS)));
+			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ResourcesNames.CONNECT_TAGS)));
 			columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
 		} else if (PeopleTypes.PEOPLE_ORG.equals(currType)) {
 
@@ -205,9 +205,9 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 			columns.add(
 					new ConnectColumnDefinition("Primary Phone", new PrimContactValueLP("", PeopleTypes.PEOPLE_PHONE)));
 			columns.add(
-					new ConnectColumnDefinition("Primary Email", new PrimContactValueLP("", PeopleTypes.PEOPLE_EMAIL)));
+					new ConnectColumnDefinition("Primary Email", new PrimContactValueLP("", PeopleTypes.PEOPLE_MAIL)));
 			columns.add(new ConnectColumnDefinition("Other Emails",
-					new NotPrimContactValueLP("", PeopleTypes.PEOPLE_EMAIL)));
+					new NotPrimContactValueLP("", PeopleTypes.PEOPLE_MAIL)));
 			columns.add(new ConnectColumnDefinition("Primary Website",
 					new PrimContactValueLP("", PeopleTypes.PEOPLE_URL), 100));
 
@@ -228,7 +228,7 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 
 			// Tags, notes and mailing list
 			columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
-			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ConnectNames.CONNECT_TAGS)));
+			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ResourcesNames.CONNECT_TAGS)));
 			columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
 		} else if (ActivitiesTypes.ACTIVITIES_TASK.equals(currType)) {
 			columns.add(new ConnectColumnDefinition("Status",

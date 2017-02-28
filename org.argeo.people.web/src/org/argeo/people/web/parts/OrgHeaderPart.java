@@ -9,6 +9,7 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.io.IOUtils;
 import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleNames;
@@ -40,7 +41,7 @@ public class OrgHeaderPart implements CmsUiProvider {
 	public OrgHeaderPart(ResourcesService resourceService, PeopleService peopleService) {
 		this.resourcesService = resourceService;
 		this.peopleService = peopleService;
-		tagsPart = new TagLikeValuesPart(ConnectNames.CONNECT_TAGS);
+		tagsPart = new TagLikeValuesPart(ResourcesNames.CONNECT_TAGS);
 		mailingListsPart = new TagLikeValuesPart(PeopleNames.PEOPLE_MAILING_LISTS);
 	}
 
@@ -50,8 +51,8 @@ public class OrgHeaderPart implements CmsUiProvider {
 		Image itemPicture = null;
 		// Initialize image
 		try {
-			if (context.hasNode(PeopleNames.PEOPLE_PICTURE)) {
-				Node imageNode = context.getNode(PeopleNames.PEOPLE_PICTURE).getNode(Node.JCR_CONTENT);
+			if (context.hasNode(ConnectNames.CONNECT_PHOTO)) {
+				Node imageNode = context.getNode(ConnectNames.CONNECT_PHOTO).getNode(Node.JCR_CONTENT);
 				is = imageNode.getProperty(Property.JCR_DATA).getBinary().getStream();
 				itemPicture = new Image(parent.getShell().getDisplay(), is);
 			} else

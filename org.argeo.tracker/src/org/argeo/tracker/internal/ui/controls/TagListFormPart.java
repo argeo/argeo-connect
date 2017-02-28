@@ -11,7 +11,7 @@ import javax.jcr.Value;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
@@ -145,7 +145,7 @@ public abstract class TagListFormPart extends Composite {
 						tagCmp.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
 						CmsUtils.markup(link);
-						if (taggablePropName.equals(ConnectNames.CONNECT_TAGS))
+						if (taggablePropName.equals(ResourcesNames.CONNECT_TAGS))
 							link.setText(" #<a>" + tagValue + "</a>");
 						else
 							link.setText(" <a>" + tagValue + "</a>");

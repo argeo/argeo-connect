@@ -73,13 +73,13 @@ public class PeopleUiSnippets {
 		try {
 			StringBuilder builder = new StringBuilder();
 
-			if (node.isNodeType(PeopleTypes.PEOPLE_ADDRESS))
+			if (node.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS))
 				builder.append(getAddressDisplayValue(resourceService, node));
 			else {
 				String value = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_VALUE);
 				if (node.isNodeType(PeopleTypes.PEOPLE_URL) || node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
 					builder.append(ConnectUiSnippets.getUrlLink(value));
-				else if (node.isNodeType(PeopleTypes.PEOPLE_EMAIL))
+				else if (node.isNodeType(PeopleTypes.PEOPLE_MAIL))
 					builder.append(ConnectUiSnippets.getMailLink(value));
 				else if (node.isNodeType(PeopleTypes.PEOPLE_PHONE))
 					builder.append(ConnectUiSnippets.getPhoneLink(value));
@@ -105,7 +105,7 @@ public class PeopleUiSnippets {
 		builder.append(getContactMetaData(contactNode));
 		// Referenced org primary address
 		if (referencedEntity != null) {
-			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_ADDRESS);
+			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 			if (primaryAddress != null) {
 				builder.append("<br />");
 				builder.append(getAddressDisplayValue(resourceService, primaryAddress));
@@ -231,7 +231,7 @@ public class PeopleUiSnippets {
 			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(ConnectUiConstants.NB_DOUBLE_SPACE);
 		}
 
-		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_EMAIL);
+		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MAIL);
 		if (notEmpty(tmpStr))
 			builder.append(ConnectUiSnippets.getMailLink(tmpStr)).append(ConnectUiConstants.NB_DOUBLE_SPACE);
 
@@ -259,7 +259,7 @@ public class PeopleUiSnippets {
 
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				person = entity;
-				Node currContact = PeopleJcrUtils.getPrimaryContact(person, PeopleTypes.PEOPLE_ADDRESS);
+				Node currContact = PeopleJcrUtils.getPrimaryContact(person, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 				if (!(currContact == null || !currContact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
 					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact),null,
 							ConnectJcrUtils.get(currContact, PeopleNames.PEOPLE_REF_UID));
@@ -295,7 +295,7 @@ public class PeopleUiSnippets {
 			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("<br/>");
 
 		// mail
-		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_EMAIL);
+		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MAIL);
 		if (notEmpty(tmpStr))
 			builder.append(ConnectUiSnippets.getMailLink(tmpStr)).append("<br/>");
 		return ConnectUiUtils.replaceAmpersand(builder.toString());
@@ -315,7 +315,7 @@ public class PeopleUiSnippets {
 			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("<br/>");
 
 		// mail
-		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_EMAIL);
+		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MAIL);
 		if (notEmpty(tmpStr))
 			builder.append(ConnectUiSnippets.getMailLink(tmpStr)).append("<br/>");
 		return ConnectUiUtils.replaceAmpersand(builder.toString());

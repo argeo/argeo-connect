@@ -1,5 +1,4 @@
-Require-Capability: cms.datamodel; filter:="(name=activities)",\
-cms.datamodel;filter:="(name=node)
+Require-Capability: cms.datamodel; filter:="(name=activities)"
 
 Provide-Capability: cms.datamodel; name=people; cnd=/org/argeo/people/people.cnd; abstract=true
 Import-Package: javax.jcr.nodetype,\

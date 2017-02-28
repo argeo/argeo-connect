@@ -12,32 +12,22 @@ public interface ConnectNames {
 	 */
 	String CONNECT_UID = "connect:uid";
 
-	String CONNECT_TAGS = "connect:tags";
-	String CONNECT_EXTERNAL_IDS = "connect:externalIds";
-
-	// Widely used property names
-	String CONNECT_LANG = "connect:lang";
-	// Reference an other entity using the business specific UID
-	String CONNECT_REF_UID = "connect:refUid";
-	// Primary flag
-	String CONNECT_IS_PRIMARY = "connect:isPrimary";
-
+	String CONNECT_PHOTO = "photo";
+	
 	/* EXTERNAL IDS */
+	String CONNECT_EXTERNAL_IDS = "externalIds"; // parent node for external ids
+	String CONNECT_SOURCE_URI = "connect:sourceUri";
 	String CONNECT_SOURCE_ID = "connect:sourceId";
 	String CONNECT_EXTERNAL_UID = "connect:externalUid";
 
-	/* RESOURCES */
-	// // Generally the corresponding node type. Might be something else.
-	// String CONNECT_TEMPLATE_ID = "connect:templateId";
-	// String CONNECT_TAG_ID = "connect:tagId";
-	// String CONNECT_TAG_INSTANCE_TYPE = "connect:tagInstanceType";
-	// String CONNECT_TAG_CODE_PROP_NAME = "connect:codePropName";
-	// String CONNECT_CODE = "connect:code";
-	// String CONNECT_TAGGABLE_PARENT_PATH = "connect:taggableParentPath";
-	// String CONNECT_TAGGABLE_NODE_TYPE = "connect:taggableNodeType";
-	// String CONNECT_TAGGABLE_PROP_NAME = "connect:taggablePropNames";
-
-	// Various
+	// Defines various standard property names
 	String CONNECT_DATE_BEGIN = "connect:dateBegin";
 	String CONNECT_DATE_END = "connect:dateEnd";
+
+	// Widely used property names
+	// String CONNECT_LANG = "connect:lang";
+	// Reference an other entity using the business specific UID
+	// String CONNECT_REF_UID = "connect:refUid";
+	// Primary flag
+	// String CONNECT_IS_PRIMARY = "connect:isPrimary";
 }

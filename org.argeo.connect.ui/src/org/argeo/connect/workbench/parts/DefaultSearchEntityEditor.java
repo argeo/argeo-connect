@@ -11,7 +11,7 @@ import javax.jcr.query.Row;
 
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.widgets.TagLikeDropDown;
@@ -45,7 +45,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 		super.init(site, input);
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ConnectNames.CONNECT_TAGS), 300));
+		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ResourcesNames.CONNECT_TAGS), 300));
 	}
 
 	/** Override this to provide type specific static filters */
@@ -86,7 +86,7 @@ public class DefaultSearchEntityEditor extends AbstractSearchEntityEditor implem
 			StringBuilder builder = new StringBuilder();
 			builder.append("//element(*, ").append(getEntityType()).append(")");
 			String attrQuery = XPathUtils.localAnd(XPathUtils.getFreeTextConstraint(getFilterText().getText()),
-					XPathUtils.getPropertyEquals(ConnectNames.CONNECT_TAGS, tagDD.getText()));
+					XPathUtils.getPropertyEquals(ResourcesNames.CONNECT_TAGS, tagDD.getText()));
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				builder.append("[").append(attrQuery).append("]");
 			builder.append(" order by @").append(Property.JCR_TITLE).append(" ascending");

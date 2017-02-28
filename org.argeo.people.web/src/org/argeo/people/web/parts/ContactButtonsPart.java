@@ -53,7 +53,7 @@ public class ContactButtonsPart implements CmsUiProvider {
 		String nature = ConnectJcrUtils.get(entity,
 				PeopleNames.PEOPLE_CONTACT_NATURE);
 		// EMAIL
-		if (entity.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
+		if (entity.isNodeType(PeopleTypes.PEOPLE_MAIL)) {
 			return "people_icon_email";
 		}
 		// PHONE
@@ -67,7 +67,7 @@ public class ContactButtonsPart implements CmsUiProvider {
 
 		}
 		// ADDRESS
-		else if (entity.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				if (ContactValueCatalogs.CONTACT_NATURE_PRO.equals(nature))
 					return "people_icon_work";

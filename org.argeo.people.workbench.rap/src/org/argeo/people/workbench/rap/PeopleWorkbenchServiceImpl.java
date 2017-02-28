@@ -114,20 +114,18 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 		String nature = ConnectJcrUtils.get(entity, PeopleNames.PEOPLE_CONTACT_NATURE);
 
 		// EMAIL
-		if (entity.isNodeType(PeopleTypes.PEOPLE_EMAIL)) {
+		if (entity.isNodeType(PeopleTypes.PEOPLE_MAIL)) {
 			return ContactImages.DEFAULT_MAIL;
 		}
 		// PHONE
-		else if (entity.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
-			if (ContactValueCatalogs.CONTACT_CAT_MOBILE.equals(category))
-				return ContactImages.MOBILE;
-			else if (ContactValueCatalogs.CONTACT_CAT_FAX.equals(category))
-				return ContactImages.FAX;
-			else
-				return ContactImages.DEFAULT_PHONE;
-		}
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_PHONE)) 
+			return ContactImages.DEFAULT_PHONE;
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_MOBILE)) 
+			return ContactImages.MOBILE;
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_FAX)) 
+			return ContactImages.FAX;
 		// ADDRESS
-		else if (entity.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				if (ContactValueCatalogs.CONTACT_NATURE_PRO.equals(nature))
 					return ContactImages.WORK;

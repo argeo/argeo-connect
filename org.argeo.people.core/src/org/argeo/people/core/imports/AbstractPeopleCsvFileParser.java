@@ -90,7 +90,7 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 		return adminSession;
 	}
 
-	protected ResourcesService getResourceService() {
+	protected ResourcesService getResourcesService() {
 		return resourceService;
 	}
 

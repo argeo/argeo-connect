@@ -41,7 +41,7 @@ public class PrimOrgNameLP extends ColumnLabelProvider {
 	public String getText(Object element) {
 		Node currNode = ConnectJcrUtils.getNodeFromElement(element, selectorName);
 		try {
-			Node currContact = PeopleJcrUtils.getPrimaryContact(currNode, PeopleTypes.PEOPLE_ADDRESS);
+			Node currContact = PeopleJcrUtils.getPrimaryContact(currNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 			// Sanity check
 			if (currContact == null || !currContact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))
 				return "";

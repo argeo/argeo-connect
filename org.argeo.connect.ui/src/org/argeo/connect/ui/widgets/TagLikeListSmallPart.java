@@ -16,7 +16,6 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ConnectNames;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
@@ -186,7 +185,7 @@ public class TagLikeListSmallPart extends Composite {
 						Link link = new Link(tagCmp, SWT.NONE);
 						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 
-						if (taggablePropName.equals(ConnectNames.CONNECT_TAGS)) {
+						if (taggablePropName.equals(ResourcesNames.CONNECT_TAGS)) {
 							link.setText(" #<a>" + tagValue + "</a>");
 							// } else if
 							// (taggablePropName.equals(PeopleNames.PEOPLE_MAILING_LISTS))

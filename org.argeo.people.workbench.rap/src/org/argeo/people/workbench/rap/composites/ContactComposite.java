@@ -97,7 +97,7 @@ public class ContactComposite extends Composite {
 		parent.setLayout(rl);
 
 		boolean hasCat = !(ConnectJcrUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_URL)
-				|| ConnectJcrUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_EMAIL));
+				|| ConnectJcrUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_MAIL));
 
 		// The widgets
 		final Text valueTxt = createAddressTxt(parent, "Value", 150);

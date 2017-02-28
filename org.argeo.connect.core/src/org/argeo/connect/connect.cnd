@@ -2,30 +2,63 @@
 
 // Base mixin for all connect concept to ease requests in the repository
 [connect:base] > mix:title, mix:created, mix:lastModified
-mixin 
+ mixin 
 
 // ENTITY TYPE: it is the parent of all connect business types.
 [connect:entity] > connect:base, mix:referenceable
-mixin
+ mixin
 - connect:uid (String) m nofulltext // An implementation dependent UID for each entity
 + connect:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
++ photo (nt:file) // An optional picture for this entity
 
 // External ID instances
 [connect:externalId] > nt:unstructured
-//- connect:source (URI) // an optional URI
+//- connect:sourceUri (URI) // an optional URI
 - connect:sourceId (String) nofulltext // The external source ID, this must be cleanly handled in a later version
 - connect:externalUid (String) nofulltext // This entity's unique ID in the external system
 										 // Might be the FN value of a vCard
 
-//
-// RESOURCE MANAGEMENT
-// 
+[connect:person] 
+ mixin
+- ldap:givenName (STRING) 
+- ldap:sn (STRING)
+- ldap:title (STRING)
+- ldap:displayName (BOOLEAN)  
+- ldap:generationQualifier
 
-// TAGGABLE
+[connect:org] 
+ mixin
+- ldap:cn (STRING) 
+- ldap:displayName (BOOLEAN)
+
+[connect:contactable] 
+ mixin
+- ldap:mobile (STRING) // Primary mobile phone number
+- ldap:mail (STRING)  // Primary email
+- ldap:postalAddress (STRING) // The address in human readable form
+- ldap:telephoneNumber (STRING) // Primary land line phone number
+- ldap:associatedDomain (STRING) // Primary website
+
+[connect:postalAddress]  
+ mixin
+- ldap:street (STRING)
+- ldap:postalCode (STRING)
+- ldap:l (STRING) // city
+- ldap:st (STRING) // state
+- ldap:c (STRING) // country
+
+
+
+// RESOURCE MANAGEMENT
+
 [connect:taggable] 
-mixin
+ mixin
 - connect:tags (STRING) *
 
+[connect:tag] > nt:unstructured, mix:title
+
+[connect:encodedTag] > nt:unstructured, mix:title
+- connect:tagCode (STRING) 
 
 // Defines the template of a given type of node in the system, with, 
 // among others, the various catalogues of pre-defined possible values 
@@ -35,7 +68,7 @@ mixin
 - connect:templateId (STRING) // Generally the corresponding node type but might something else if necessary.
 
 
-// Defines the parent of a sub tree that enable definition of a nomenclature for a tag like property 
+// Defines the parent of a sub tree that provides a catalogue of known values for a tag-like property 
 [connect:tagParent] > nt:unstructured, mix:title
 - connect:tagId (STRING) // Generally the corresponding node type but might something else if necessary
 - connect:tagInstanceType (STRING) // The node type of the corresponding resources
@@ -43,15 +76,8 @@ mixin
 								// that is stored  in the tagged node ("connect:code" for default encode tag  instance type)
 								// if not present, then we use the JCR_TITLE that is the name and the label at the same time
 
-// The 3 below properties enable to narrow the taggable part of the whole repo and
-// thus, among others, fasten the requests, 
+// The 3 below properties enable to narrow the taggable part of the workspace subtree and ease querying 
 - connect:taggablePropNames (STRING) * // Names of the multi value property of the taggable node in which the corresponding tag is stored
-// Should also the 2 below property be multiple ?
+// Should the 2 below property be also multiple?
 - connect:taggableParentPath (STRING) // Absolute path of the parent of the taggable nodes
 - connect:taggableNodeType (STRING) // Node type of the taggable nodes
-
-// DEFAULT TAG TYPES
-[connect:tag] > nt:unstructured, mix:title
-
-[connect:encodedTag] > nt:unstructured, mix:title
-- connect:code (STRING) 

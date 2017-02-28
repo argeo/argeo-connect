@@ -187,7 +187,7 @@ public class ContactList extends LazyCTabControl {
 						Node currNode = ni.nextNode();
 						if (!currNode.isNodeType(currType))
 							continue loop;
-						if (ConnectJcrUtils.isNodeType(currNode, PeopleTypes.PEOPLE_ADDRESS))
+						if (ConnectJcrUtils.isNodeType(currNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS))
 							new ContactAddressComposite(parent, SWT.NO_FOCUS, editor, myFormPart, resourcesService,
 									peopleService, appWorkbenchService, currNode, entity);
 						else
@@ -324,9 +324,9 @@ public class ContactList extends LazyCTabControl {
 	private Control populateNewContactComposite(Composite parent, final Node entity, final String contactType,
 			final String nature, Combo addContactCombo) throws RepositoryException {
 
-		if (contactType.equals(PeopleTypes.PEOPLE_URL) || contactType.equals(PeopleTypes.PEOPLE_EMAIL)) {
+		if (contactType.equals(PeopleTypes.PEOPLE_URL) || contactType.equals(PeopleTypes.PEOPLE_MAIL)) {
 			return createMailWidgets(parent, entity, contactType, nature, addContactCombo);
-		} else if (contactType.equals(PeopleTypes.PEOPLE_ADDRESS)) {
+		} else if (contactType.equals(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 			if (nature != null && nature.equals(ContactValueCatalogs.CONTACT_NATURE_PRO))
 				return createWorkAddressWidgets(parent, entity, contactType, nature, addContactCombo);
 			else
@@ -387,7 +387,7 @@ public class ContactList extends LazyCTabControl {
 		final Text valueTxt = createRowDataLT(parent, "Contact value", 200);
 
 		final Combo catCmb = new Combo(parent, SWT.READ_ONLY);
-		catCmb.setItems(peopleService.getContactService().getContactCategories(entity.getPrimaryNodeType().getName(),
+		catCmb.setItems(peopleService.getContactService().getContactCategories(peopleService.getMainNodeType(entity),
 				contactType, nature));
 		catCmb.select(0);
 
@@ -447,13 +447,9 @@ public class ContactList extends LazyCTabControl {
 			final Combo addContactCombo) {
 
 		final Combo catCmb = new Combo(parent, SWT.NONE);
-		try {
-			ContactService contactService = peopleService.getContactService();
-			String entityType = entity.getPrimaryNodeType().getName();
-			catCmb.setItems(contactService.getContactCategories(entityType, contactType, nature));
-		} catch (RepositoryException e1) {
-			throw new PeopleException("unable to get category list for " + contactType + " & " + nature, e1);
-		}
+		ContactService contactService = peopleService.getContactService();
+		String entityType = peopleService.getMainNodeType(entity);
+		catCmb.setItems(contactService.getContactCategories(entityType, contactType, nature));
 		catCmb.select(0);
 
 		final Text streetTxt = createRowDataLT(parent, "Street", 150);
@@ -485,7 +481,7 @@ public class ContactList extends LazyCTabControl {
 				Node node = PeopleJcrUtils.createAddress(peopleService, resourcesService, entity, streetTxt.getText(),
 						street2Txt.getText(), zipTxt.getText(), cityTxt.getText(), stateTxt.getText(),
 						countryDD.getText(), geoPointTxt.getText(), isPrimary, nature, cat, label);
-				PeopleJcrUtils.updateDisplayAddress(node);
+				PeopleJcrUtils.updateDisplayAddress(resourcesService, node);
 				myFormPart.markDirty();
 				myFormPart.refresh();
 			}
@@ -507,7 +503,7 @@ public class ContactList extends LazyCTabControl {
 							streetTxt.getText(), street2Txt.getText(), zipTxt.getText(), cityTxt.getText(),
 							stateTxt.getText(), countryDD.getText(), geoPointTxt.getText(), isPrimary, nature, cat,
 							label);
-					PeopleJcrUtils.updateDisplayAddress(node);
+					PeopleJcrUtils.updateDisplayAddress(resourcesService, node);
 					myFormPart.markDirty();
 					myFormPart.refresh();
 				}
@@ -532,7 +528,7 @@ public class ContactList extends LazyCTabControl {
 		try {
 			final Combo catCmb = new Combo(parent, SWT.NONE);
 			catCmb.setItems(peopleService.getContactService()
-					.getContactCategories(entity.getPrimaryNodeType().getName(), contactType, nature));
+					.getContactCategories(peopleService.getMainNodeType(entity), contactType, nature));
 			catCmb.select(0);
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
@@ -579,7 +575,7 @@ public class ContactList extends LazyCTabControl {
 					boolean isPrimary = primaryChk.getSelection();
 					Node node = PeopleJcrUtils.createWorkAddress(peopleService, resourcesService, entity, selected,
 							isPrimary, cat, label);
-					PeopleJcrUtils.updateDisplayAddress(node);
+					PeopleJcrUtils.updateDisplayAddress(resourcesService, node);
 					myFormPart.markDirty();
 					myFormPart.refresh();
 				}

@@ -1,96 +1,71 @@
 <people = 'http://www.argeo.org/ns/people'>
 
-
-[ldap:person] 
-// or [people:ldapPerson] ?
- mixin
-- ldap:givenName (STRING) 
-- ldap:sn (STRING)
-- ldap:title (STRING)
-- ldap:displayName (BOOLEAN)  
-- ldap:generationQualifier
-
-// double check the s. that is not in the RFC
-- ldap:preferredLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
-									// Prefered language must be added first
-
-
-[ldap:org] 
- mixin
-- ldap:cn (STRING) 
-- ldap:displayName (BOOLEAN)
-// - ldap:businessCategory (STRING) *
-
-[ldap:contactable] 
-mixin
-- ldap:mobile (STRING) // Primary mobile phone number
-- ldap:telephoneNumber (STRING) // Primary land line phone number
-- ldap:mail (STRING)  // Primary email
-- ldap:associatedDomain (STRING) // Primary website
-- ldap:postalAddress (STRING) // The address in human readable form
-
-
 // ENTITY TYPE: it is the parent of all People business types.
 [people:entity] > connect:entity, mix:versionable
  mixin
-+ ldap:photo (nt:file) // An optional picture for this entity
 
-
-[people:contactable] > ldap:contactable 
-mixin
-+ people:contacts (nt:unstructured)
+[people:contactable] > connect:contactable 
+ mixin
 - people:mailingLists (STRING) * // A tag like property to keep a reference to the mailing list this contact is bound to.
 - people:unsubscribedMailingLists (STRING) * // Tag like property to track unsubscribed mailing lists
++ contacts (nt:unstructured)
 
+[people:user]
+ mixin
+- people:username
 
 // PERSON
-[people:person] > ldap:person, people:entity, people:contactable, connect:taggable
+[people:person] > connect:person, people:entity, people:contactable, connect:taggable
  mixin
+  
 - people:middleName (STRING)
 - people:salutation (STRING)
 - people:nickname (STRING)
 - people:maidenName (STRING)
-- people:latinPhoneticSpelling (STRING)
-
-- people:usePoliteForm (BOOLEAN)
 
 - people:birthDate (DATE)
 // Enable approximative birth date 
-- people:birthDateTxt (STRING)
+//- people:birthDateTxt (STRING)
 // Sex component:  A single letter.  M stands for "male", 
 // F stands for "female", O stands for "other", N stands for "none or not
 // applicable", U stands for "unknown".
 // Some free-form text comments might be added after a semicolon separator
 - people:gender (STRING)
-// Positions in the various organisations this person is attached to
-+ people:jobs (nt:unstructured)
+
+- people:preferredLanguages (STRING) * // A list of language tags, as defined in http://tools.ietf.org/html/rfc5646
+									// Prefered language must be added first
+
+- people:latinPhoneticSpelling (STRING)
+- people:usePoliteForm (BOOLEAN)
 
 // cache to ease full text search 
-- people:cachePOrg (STRING) IGNORE
+- people:primaryOrg (STRING) IGNORE
 
-[people:user]
-mixin
-- ldap:uid
+// Positions in the various organisations this person is attached to
++ positions (nt:unstructured)
+
 
 
 // ORGANISATION
 
-[people:org] > people:entity, ldap:org, people:contactable, connect:taggable
+[people:org] > connect:org, people:entity, people:contactable, connect:taggable
  mixin
 - people:legalForm (STRING)
 - people:vatIdNb (STRING)
+// Subnode for all bank accounts owned by this org
++ paymentAccounts (nt:unstructured)
+
+// - people:businessCategories (STRING) *
 // Departments or organisational units
-+ * (people:org) *
+// + * (people:org) *
 // tag like multi-valued properties to add an organisation to a given branch
 // - people:orgBranches (STRING) *
-// Subnode for all bank accounts owned by this org
-+ people:paymentAccounts (nt:unstructured)
 
 
 // GROUP : base type for all groups of persons, organisations and/or other groups 
 [people:group] > people:entity, connect:taggable
  mixin
-+ people:members (nt:unstructured)
++ members (nt:unstructured)
 
 // GROUP MEMBERS
 // node with reference to corresponding entities 
@@ -108,8 +83,6 @@ mixin
 // we don't know when it has ended 
 - people:isCurrent (BOOLEAN) ="true" a
 
-
-
 // Membership in a group
 [people:member] > people:position
 mixin
@@ -122,12 +95,94 @@ mixin
 - people:department (STRING) // An optional department within the org corresponding to the current position
 
 
-
 // MAILING LIST 
 // TODO - Enhance to provide additional services like tracking of sent newsletters 
 // The fact that a contactable entity belongs to this mailing list is stored in
 // the corresponding node via the people:mailingLists multi-valued property
 [people:mailingList] > connect:tag, people:entity
+
+/////// COMMUNICATION
+
+// CONTACTS
+[people:contact] > mix:title
+ mixin
+- people:contactValue (STRING) 
+
+// - people:timeZone (STRING) 	// to display current time for this timezone
+// 							// Stores time offset to UTC as a parseable String for the time being
+
+
+// legacy we rather use the mix:description property. TODO remove
+- people:contactNature (STRING) // Only for person: Work, Home or Other
+- people:contactCategory (STRING) 	// Category for the given type : for instance a Home phone can be:
+									// Mobile, Direct, VoIP, Fax or other
+- people:contactLabel (STRING) // an optional label 
+- people:contactUri (URI) 	// OPTIONNAL an URI translated from the contact value 
+							// to be used directly by the system.
+
+// CONTACT REFERENCE
+// This contact will be the primary contact of the given type of the referenced entity if such a contact exists.
+// Used among other for persons professional addresses
+[people:contactRef]  
+ mixin
+- people:refUid (STRING)
+- people:refTitle (STRING)
+
+
+// TEL
+[people:phone] > people:contact 
+ mixin
+
+[people:mobile] > people:phone
+ mixin
+
+[people:telephoneNumber] > people:phone 
+ mixin
+
+[people:facsimileTelephoneNumber] > people:phone 
+ mixin
+
+// EMAIL
+[people:mail] > people:contact 
+ mixin
+
+// IMPP (Instance messaging and presence protocol)
+[people:impp] > people:contact 
+ mixin
+
+// WEBSITE
+[people:url] > people:contact 
+ mixin
+
+// Social Media
+[people:socialMedia] > people:contact 
+ mixin
+
+// ADDRESS
+[people:postalAddress] > people:contact, connect:postalAddress 
+ mixin
+// Additional properties
+- people:streetComplement (STRING)
+- people:geoPoint (STRING) // Optional Geopoint, Should be refined
+
+
+// PARENT PAYMENT ACCOUNT TYPE 
+// To enable future storing of alternative payment means (bitcoins or internet payment providers...)
+[people:paymentAccount] > mix:title 
+ mixin
+- people:currency (STRING)
+// - people:country (STRING)
+
+// BANK ACCOUNT
+[people:bankAccount] > people:paymentAccount 
+- people:bankName 
+// To be used while passing transaction orders
+- people:accountHolder (STRING)
+- people:accountNb (STRING)
+- people:bankNb (STRING)
+- people:iban (STRING)
+- people:bic (STRING)
+
 
 //
 // LANGUAGES AND COUNTRIES
@@ -144,76 +199,3 @@ mixin
 // - people:lang (STRING) ='und' m a
 // NOTE: we don't use mix:language for the time being because constraints on the 
 // jcr:language properties are implementation specific
-
-
-/////// COMMUNICATION
-
-// 
-// CONTACTABLE
-//
-
-
-// CONTACTS
-[people:contact] > nt:unstructured
-- people:contactValue (STRING) 
-- people:contactNature (STRING) // Only for person: Work, Home or Other
-- people:contactCategory (STRING) 	// Category for the given type : for instance a Home phone can be:
-									// Mobile, Direct, VoIP, Fax or other
-
-- people:contactLabel (STRING) // an optional label 
-- people:contactUri (URI) 	// OPTIONNAL an URI translated from the contact value 
-							// to be used directly by the system.
-
-// CONTACT REFERENCE
-// This contact will be the primary contact of the given type of the referenced entity if such a contact exists.
-// Used among other for persons professional addresses
-[people:contactRef]  
-mixin
-- people:refUid (STRING)
-
-
-// TEL
-[people:phone] > people:contact 
-- people:timeZone (STRING) 	// to display current time for this timezone
-							// Stores time offset to UTC as a parseable String for the time being
-
-// EMAIL
-[people:email] > people:contact 
-
-// IMPP (Instance messaging and presence protocol)
-[people:impp] > people:contact 
-
-// WEBSITE
-[people:url] > people:contact 
-
-// Social Media
-[people:socialMedia] > people:contact 
-
-// ADDRESS
-[people:address] > people:contact 
-// Display address SHOULD be stored in the contactValue property
-// when updating following properties 
-- people:street (STRING)
-- people:streetComplement (STRING)
-- people:zipCode (STRING)
-- people:city (STRING)
-- people:state (STRING)
-- people:country (STRING)
-// An optional Geopoint. Should be refined
-- people:geoPoint (STRING)
-
-
-// PARENT PAYMENT ACCOUNT TYPE 
-// To enable future storing of alternative payment means (bitcoins or internet payment providers...)
-[people:paymentAccount] > people:address, mix:title 
-- people:currency (STRING)
-
-// BANK ACCOUNT
-[people:bankAccount] > people:paymentAccount 
-- people:bankName 
-// To be used while passing transaction orders
-- people:accountHolder (STRING)
-- people:accountNb (STRING)
-- people:bankNb (STRING)
-- people:iban (STRING)
-- people:bic (STRING)

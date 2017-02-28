@@ -7,8 +7,8 @@ import javax.jcr.Session;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.workbench.TagOrUntagInstancesWizard;
 import org.argeo.connect.ui.ConnectColumnDefinition;
@@ -205,7 +205,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		Button addTagBtn = new Button(parent, SWT.TOGGLE);
 		addTagBtn.setText("Tag");
 		// addTagBtn.setImage(PeopleRapImages.ICON_TAG);
-		addToggleStateTagBtnListener(addTagBtn, ConnectConstants.RESOURCE_TAG, ConnectNames.CONNECT_TAGS);
+		addToggleStateTagBtnListener(addTagBtn, ConnectConstants.RESOURCE_TAG, ResourcesNames.CONNECT_TAGS);
 
 		// if (isOrgOrPerson()) {
 		// Button addMLBtn = new Button(parent, SWT.TOGGLE);

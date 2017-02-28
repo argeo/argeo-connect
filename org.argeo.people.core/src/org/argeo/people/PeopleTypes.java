@@ -1,27 +1,19 @@
 package org.argeo.people;
 
-/** JCR node types managed by Connect People */
+/** JCR node types managed by People */
 public interface PeopleTypes {
 
 	// Specific tag like resources instance types.
 	String PEOPLE_MAILING_LIST = "people:mailingList";
 
 	/* COMMON CONCEPTS */
-	// Parent base type
-	// String PEOPLE_BASE = "people:base";
 
 	String PEOPLE_ENTITY = "people:entity";
 	String PEOPLE_EXTERNAL_ID = "people:externalId";
 
-	// Mixins
 	String PEOPLE_CONTACTABLE = "people:contactable";
-
-	/* PERSONS */
-	String PEOPLE_LDAP_PERSON = "people:ldapPerson";
+	String PEOPLE_USER = "people:user";
 	String PEOPLE_PERSON = "people:person";
-
-	/* ORGANIZATIONS */
-	String PEOPLE_LDAP_ORG = "people:ldapOrg";
 	String PEOPLE_ORG = "people:org";
 
 	/* GROUPS */
@@ -35,22 +27,20 @@ public interface PeopleTypes {
 
 	/* CONTACT */
 	String PEOPLE_CONTACT = "people:contact";
+	String PEOPLE_CONTACT_REF = "people:contactRef";
+	
 	String PEOPLE_PHONE = "people:phone";
-	String PEOPLE_EMAIL = "people:email";
-	String PEOPLE_IMPP = "people:impp";
+	String PEOPLE_MOBILE = "people:mobile";
+	String PEOPLE_TELEPHONE_NUMBER = "people:telephoneNumber";
+	String PEOPLE_FAX = "people:facsimileTelephoneNumber";
+	String PEOPLE_MAIL = "people:mail";
+	String PEOPLE_POSTAL_ADDRESS = "people:postalAddress";
 	String PEOPLE_URL = "people:url";
+	String PEOPLE_IMPP = "people:impp";
 	String PEOPLE_SOCIAL_MEDIA = "people:socialMedia";
-	String PEOPLE_ADDRESS = "people:address";
 
 	// A array with the known types that might be defined as primary
-	String[] KNOWN_CONTACT_TYPES = { PEOPLE_PHONE, PEOPLE_EMAIL, PEOPLE_ADDRESS, PEOPLE_URL, PEOPLE_IMPP,
+	String[] KNOWN_CONTACT_TYPES = { PEOPLE_PHONE, PEOPLE_MAIL, PEOPLE_POSTAL_ADDRESS, PEOPLE_URL, PEOPLE_IMPP,
 			PEOPLE_SOCIAL_MEDIA };
 
-	// contact with this mixin will use value(s) of the primary contact of the
-	// given type of the referenced entity if such a contact exists.
-	// Used among other for persons professional addresses
-	String PEOPLE_CONTACT_REF = "people:contactRef";
-
-	// Legacy, TODO remove (used in the proof of concept)
-	String PEOPLE_ANONYMOUS_PERSON = "people:anonymousPerson";
 }

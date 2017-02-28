@@ -15,9 +15,10 @@ public interface ResourcesNames {
 
 	String RESOURCES_TAG_ID = "connect:tagId";
 	String RESOURCES_TAG_INSTANCE_TYPE = "connect:tagInstanceType";
-	String RESOURCES_TAG_CODE = "connect:code";
+	String RESOURCES_TAG_CODE = "connect:tagCode";
 	String RESOURCES_TAG_CODE_PROP_NAME = "connect:codePropName";
 	String RESOURCES_TAGGABLE_PARENT_PATH = "connect:taggableParentPath";
 	String RESOURCES_TAGGABLE_NODE_TYPE = "connect:taggableNodeType";
 	String RESOURCES_TAGGABLE_PROP_NAME = "connect:taggablePropNames";
+	String CONNECT_TAGS = "connect:tags";
 }

@@ -6,10 +6,10 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 
 import org.apache.commons.io.IOUtils;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.people.PeopleNames;
 import org.argeo.people.workbench.rap.PeopleRapImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -37,8 +37,8 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractConnectCTabEdi
 
 		InputStream is = null;
 		try {
-			if (getNode().hasNode(PeopleNames.PEOPLE_PICTURE)) {
-				Node imageNode = getNode().getNode(PeopleNames.PEOPLE_PICTURE).getNode(Node.JCR_CONTENT);
+			if (getNode().hasNode(ConnectNames.CONNECT_PHOTO)) {
+				Node imageNode = getNode().getNode(ConnectNames.CONNECT_PHOTO).getNode(Node.JCR_CONTENT);
 				is = imageNode.getProperty(Property.JCR_DATA).getBinary().getStream();
 				itemPicture = new Image(this.getSite().getShell().getDisplay(), is);
 			} else

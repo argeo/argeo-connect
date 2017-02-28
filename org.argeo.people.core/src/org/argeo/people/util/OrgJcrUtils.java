@@ -68,7 +68,7 @@ public class OrgJcrUtils implements PeopleNames {
 	 */
 	public static Node getOrgWithWebSite(Session session, String website) throws RepositoryException {
 		String xpathQueryStr = "//element(*, " + PeopleTypes.PEOPLE_ORG + ")";
-		xpathQueryStr += "[" + XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_CACHE_PURL, website) + "]";
+		xpathQueryStr += "[" + XPathUtils.getPropertyEquals(PeopleNames.PEOPLE_PURL, website) + "]";
 		Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
 		NodeIterator ni = xpathQuery.execute().getNodes();
 		Node orga = null;

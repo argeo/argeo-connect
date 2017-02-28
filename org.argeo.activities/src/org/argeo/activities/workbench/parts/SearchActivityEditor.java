@@ -15,7 +15,7 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -46,7 +46,7 @@ public class SearchActivityEditor extends DefaultSearchEntityEditor implements I
 		super.init(site, input);
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ConnectNames.CONNECT_TAGS), 300));
+		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ResourcesNames.CONNECT_TAGS), 300));
 	}
 
 	/** Override this to provide type specific static filters */

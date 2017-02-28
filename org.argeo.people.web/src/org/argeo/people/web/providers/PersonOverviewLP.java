@@ -8,7 +8,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -143,7 +143,7 @@ public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 
 		// Tags
 		String tags = PeopleWebSnippets.getTagLikeValues(resourceService, ConnectConstants.RESOURCE_TAG, person,
-				ConnectNames.CONNECT_TAGS, "#");
+				ResourcesNames.CONNECT_TAGS, "#");
 		String mailingLists = PeopleWebSnippets.getTagLikeValues(resourceService, PeopleTypes.PEOPLE_MAILING_LIST,
 				person, PeopleNames.PEOPLE_MAILING_LISTS, "@");
 		if (isSmallList) {

@@ -40,8 +40,8 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 
 	@Override
 	public String[] getKnownContactTypes() {
-		String[] knownTypes = { PeopleTypes.PEOPLE_EMAIL, PeopleTypes.PEOPLE_PHONE, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
-				PeopleTypes.PEOPLE_IMPP, PeopleTypes.PEOPLE_URL, PeopleTypes.PEOPLE_ADDRESS };
+		String[] knownTypes = { PeopleTypes.PEOPLE_MAIL, PeopleTypes.PEOPLE_PHONE, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
+				PeopleTypes.PEOPLE_IMPP, PeopleTypes.PEOPLE_URL, PeopleTypes.PEOPLE_POSTAL_ADDRESS };
 		return knownTypes;
 	}
 
@@ -75,7 +75,7 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 							return ContactValueCatalogs.ARRAY_PERSON_PRO_PHONES;
 					} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 						return ContactValueCatalogs.ARRAY_ORG_PHONES;
-				} else if (contact.isNodeType(PeopleTypes.PEOPLE_ADDRESS)) {
+				} else if (contact.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 					if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
 						if (notEmpty(nature) && nature.equals(ContactValueCatalogs.CONTACT_NATURE_PRO))
 							return ContactValueCatalogs.ARRAY_PERSON_WORK_ADDRESSES;
@@ -105,7 +105,7 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 					return ARRAY_PERSON_PRO_PHONES;
 			} else if (PeopleTypes.PEOPLE_ORG.equals(contactableType))
 				return ARRAY_ORG_PHONES;
-		} else if (PeopleTypes.PEOPLE_ADDRESS.equals(contactType)) {
+		} else if (PeopleTypes.PEOPLE_POSTAL_ADDRESS.equals(contactType)) {
 			if (PeopleTypes.PEOPLE_PERSON.equals(contactableType)) {
 				if (notEmpty(nature) && nature.equals(CONTACT_NATURE_PRO))
 					return ARRAY_PERSON_WORK_ADDRESSES;

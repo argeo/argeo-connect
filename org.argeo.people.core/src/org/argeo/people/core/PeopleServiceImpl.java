@@ -90,6 +90,44 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
+	public String getMainNodeType(Node entity) {
+		if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON))
+			return PeopleTypes.PEOPLE_PERSON;
+		else if (ConnectJcrUtils.isNodeType(entity, ConnectTypes.CONNECT_LDAP_PERSON))
+			return ConnectTypes.CONNECT_LDAP_PERSON;
+		if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_ORG))
+			return PeopleTypes.PEOPLE_ORG;
+		else if (ConnectJcrUtils.isNodeType(entity, ConnectTypes.CONNECT_LDAP_ORG))
+			return ConnectTypes.CONNECT_LDAP_ORG;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_MAILING_LIST))
+			return PeopleTypes.PEOPLE_MAILING_LIST;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_MOBILE))
+			return PeopleTypes.PEOPLE_MOBILE;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_TELEPHONE_NUMBER))
+			return PeopleTypes.PEOPLE_TELEPHONE_NUMBER;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_FAX))
+			return PeopleTypes.PEOPLE_FAX;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PHONE))
+			return PeopleTypes.PEOPLE_PHONE;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_MAIL))
+			return PeopleTypes.PEOPLE_MAIL;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_URL))
+			return PeopleTypes.PEOPLE_URL;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_SOCIAL_MEDIA))
+			return PeopleTypes.PEOPLE_SOCIAL_MEDIA;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_IMPP))
+			return PeopleTypes.PEOPLE_IMPP;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_CONTACT))
+			return PeopleTypes.PEOPLE_CONTACT;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_POSTAL_ADDRESS))
+			return PeopleTypes.PEOPLE_POSTAL_ADDRESS;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_BANK_ACCOUNT))
+			return PeopleTypes.PEOPLE_BANK_ACCOUNT;
+		else
+			return null;
+	}
+
+	@Override
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
 		try {
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON) || entity.isNodeType(PeopleTypes.PEOPLE_ORG))

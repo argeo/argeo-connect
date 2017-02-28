@@ -16,7 +16,7 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
@@ -688,8 +688,8 @@ public class ConnectWorkbenchUtils {
 			Node entity) {
 		try {
 			StringBuilder tags = new StringBuilder();
-			if (entity.hasProperty(ConnectNames.CONNECT_TAGS)) {
-				for (Value value : entity.getProperty((ConnectNames.CONNECT_TAGS)).getValues())
+			if (entity.hasProperty(ResourcesNames.CONNECT_TAGS)) {
+				for (Value value : entity.getProperty((ResourcesNames.CONNECT_TAGS)).getValues())
 					tags.append("#").append(ConnectWorkbenchUtils.getTagLink(ConnectJcrUtils.getSession(entity),
 							resourceService, appWorkbenchService, ConnectConstants.RESOURCE_TAG, value.getString()))
 							.append("  ");

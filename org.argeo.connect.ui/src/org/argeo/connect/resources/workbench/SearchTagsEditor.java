@@ -15,7 +15,6 @@ import javax.jcr.query.Query;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ConnectNames;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesRole;
 import org.argeo.connect.resources.ResourcesService;
@@ -101,7 +100,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 
 		// TODO this info should be stored in the parent path
 		if (tagId.equals(ConnectConstants.RESOURCE_TAG)) {
-			propertyName = ConnectNames.CONNECT_TAGS;
+			propertyName = ResourcesNames.CONNECT_TAGS;
 			// } else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(tagId)) {
 			// propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
 		} else

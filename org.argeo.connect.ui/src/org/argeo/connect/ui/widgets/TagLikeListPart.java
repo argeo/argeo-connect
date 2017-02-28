@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -242,7 +242,7 @@ public class TagLikeListPart extends Composite {
 	}
 
 	protected String getLinkText(String taggablePropName, String value) {
-		if (taggablePropName.equals(ConnectNames.CONNECT_TAGS))
+		if (taggablePropName.equals(ResourcesNames.CONNECT_TAGS))
 			return " #<a>" + value + "</a>";
 		else
 			return " <a>" + value + "</a>";

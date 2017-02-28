@@ -19,7 +19,6 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesRole;
@@ -104,7 +103,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ConnectNames.CONNECT_TAGS), 300));
+		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ResourcesNames.CONNECT_TAGS), 300));
 	}
 
 	protected void afterNameUpdate(String name) {
@@ -169,7 +168,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 					EditTagWizard wizard = new EditTagWizard(resourcesService, appWorkbenchService, getNode(),
-							ConnectConstants.RESOURCE_TAG, ConnectNames.CONNECT_TAGS);
+							ConnectConstants.RESOURCE_TAG, ResourcesNames.CONNECT_TAGS);
 					WizardDialog dialog = new WizardDialog(titleROLbl.getShell(), wizard);
 					// NoProgressBarWizardDialog dialog = new
 					// NoProgressBarWizardDialog(titleROLbl.getShell(), wizard);
@@ -190,7 +189,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
 		columns.add(new ConnectColumnDefinition("Type", new MainNodeTypeLabelProvider(appService)));
 		columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
-		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ConnectNames.CONNECT_TAGS)));
+		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ResourcesNames.CONNECT_TAGS)));
 		columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
 		return columns;
 	}
@@ -241,7 +240,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 			String filter = filterTxt.getText();
 			String currVal = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 			String freeTxtCond = XPathUtils.getFreeTextConstraint(filter);
-			String mlNamecond = XPathUtils.getPropertyEquals(ConnectNames.CONNECT_TAGS, currVal);
+			String mlNamecond = XPathUtils.getPropertyEquals(ResourcesNames.CONNECT_TAGS, currVal);
 			String conditions = XPathUtils.localAnd(freeTxtCond, mlNamecond);
 			if (EclipseUiUtils.notEmpty(conditions))
 				xpathQueryStr += "[" + conditions + "]";

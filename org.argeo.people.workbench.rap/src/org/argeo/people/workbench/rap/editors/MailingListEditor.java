@@ -18,8 +18,8 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
@@ -122,7 +122,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_CACHE_PMAIL), 300));
+		colDefs.add(new ConnectColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_PMAIL), 300));
 		colDefs.add(new ConnectColumnDefinition("Mailing lists", new JcrHtmlLabelProvider(PEOPLE_MAILING_LISTS), 300));
 	}
 
@@ -208,7 +208,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
 
 		columns.add(
-				new ConnectColumnDefinition("Primary Email", new PrimContactValueLP(null, PeopleTypes.PEOPLE_EMAIL)));
+				new ConnectColumnDefinition("Primary Email", new PrimContactValueLP(null, PeopleTypes.PEOPLE_MAIL)));
 		columns.add(
 				new ConnectColumnDefinition("Primary Phone", new PrimContactValueLP(null, PeopleTypes.PEOPLE_PHONE)));
 
@@ -238,7 +238,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 				new ConnectColumnDefinition("Primary Website", new PrimContactValueLP(null, PeopleTypes.PEOPLE_URL)));
 
 		columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
-		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ConnectNames.CONNECT_TAGS)));
+		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ResourcesNames.CONNECT_TAGS)));
 		columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
 
 		return columns;
@@ -360,7 +360,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		try {
 			for (Row row : rows) {
 				Node node = row.getNode(); // PeopleTypes.PEOPLE_ENTITY
-				String mailValue = PeopleJcrUtils.getPrimaryContactValue(node, PeopleTypes.PEOPLE_EMAIL);
+				String mailValue = PeopleJcrUtils.getPrimaryContactValue(node, PeopleTypes.PEOPLE_MAIL);
 				if (EclipseUiUtils.notEmpty(mailValue))
 					builder.append(mailValue).append(",");
 			}
