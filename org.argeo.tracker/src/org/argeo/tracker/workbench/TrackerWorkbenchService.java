@@ -3,14 +3,14 @@ package org.argeo.tracker.workbench;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.internal.ui.TrackerImages;
-import org.argeo.tracker.internal.ui.parts.AllProjectsEditor;
-import org.argeo.tracker.internal.ui.parts.CategoryEditor;
-import org.argeo.tracker.internal.ui.parts.IssueEditor;
-import org.argeo.tracker.internal.ui.parts.ProjectEditor;
+import org.argeo.tracker.internal.workbench.AllProjectsEditor;
+import org.argeo.tracker.internal.workbench.CategoryEditor;
+import org.argeo.tracker.internal.workbench.IssueEditor;
+import org.argeo.tracker.internal.workbench.ProjectEditor;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 

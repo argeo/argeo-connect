@@ -6,9 +6,9 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ui.util.LazyCTabControl;
-import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;

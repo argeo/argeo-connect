@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
-import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerService;

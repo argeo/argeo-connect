@@ -5,8 +5,8 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 
-import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;

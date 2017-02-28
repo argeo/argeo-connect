@@ -10,8 +10,8 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
-import org.argeo.connect.ui.workbench.NodeEditorInput;
+import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.NodeEditorInput;
 import org.argeo.documents.DocumentsException;
 import org.argeo.documents.DocumentsService;
 import org.argeo.jcr.JcrUtils;

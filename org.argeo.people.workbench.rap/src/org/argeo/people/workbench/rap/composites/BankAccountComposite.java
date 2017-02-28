@@ -2,8 +2,8 @@ package org.argeo.people.workbench.rap.composites;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.people.PeopleNames;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

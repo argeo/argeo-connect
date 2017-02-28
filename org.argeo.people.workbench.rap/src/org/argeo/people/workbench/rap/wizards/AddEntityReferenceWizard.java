@@ -9,8 +9,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;

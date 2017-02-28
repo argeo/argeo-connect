@@ -5,7 +5,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.documents.DocumentsException;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;

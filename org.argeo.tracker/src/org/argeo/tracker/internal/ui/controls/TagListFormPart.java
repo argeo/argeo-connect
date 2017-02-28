@@ -18,7 +18,7 @@ import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
-import org.argeo.tracker.internal.ui.AbstractTrackerEditor;
+import org.argeo.tracker.internal.workbench.AbstractTrackerEditor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;

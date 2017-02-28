@@ -5,10 +5,10 @@ import javax.jcr.PropertyType;
 
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
-import org.argeo.connect.ui.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;

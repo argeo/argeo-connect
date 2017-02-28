@@ -15,10 +15,10 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
-import org.argeo.connect.ui.workbench.Refreshable;
-import org.argeo.connect.ui.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
+import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.util.JcrViewerDClickListener;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;

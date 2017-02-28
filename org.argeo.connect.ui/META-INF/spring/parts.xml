@@ -6,41 +6,41 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- COMMANDS -->
-	<bean id="openDefaultEditor" class="org.argeo.connect.ui.workbench.commands.OpenDefaultEditor"
+	<bean id="openDefaultEditor" class="org.argeo.connect.workbench.commands.OpenDefaultEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
 	<bean id="openEntityEditor"
-		class="org.argeo.connect.ui.workbench.commands.OpenEntityEditor"
+		class="org.argeo.connect.workbench.commands.OpenEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
 	<bean id="openSearchEntityEditor"
-		class="org.argeo.connect.ui.workbench.commands.OpenSearchEntityEditor"
+		class="org.argeo.connect.workbench.commands.OpenSearchEntityEditor"
 		scope="prototype">
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
 
 	<!-- Entities and links CRUDs -->
-	<bean id="createEntity" class="org.argeo.connect.ui.workbench.commands.CreateEntity"
+	<bean id="createEntity" class="org.argeo.connect.workbench.commands.CreateEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="appService" ref="appService" />
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
 
-	<bean id="deleteEntity" class="org.argeo.connect.ui.workbench.commands.DeleteEntity"
+	<bean id="deleteEntity" class="org.argeo.connect.workbench.commands.DeleteEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 	</bean>
 
 	<!-- Exports -->
-	<bean id="getJxlExport" class="org.argeo.connect.ui.workbench.commands.GetJxlExport"
+	<bean id="getJxlExport" class="org.argeo.connect.workbench.commands.GetJxlExport"
 		scope="prototype">
 		<property name="appWorkbenchService" ref="appWorkbenchService" />
 	</bean>
@@ -56,7 +56,7 @@
 	</bean>
 
 	<bean id="defaultSearchEntityEditor"
-		class="org.argeo.connect.ui.workbench.parts.DefaultSearchEntityEditor"
+		class="org.argeo.connect.workbench.parts.DefaultSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<!-- <property name="userAdminService" ref="userAdminService" /> -->
@@ -76,7 +76,7 @@
 	<!-- VIEWS -->
 
 	<!-- Manage part state change -->
-	<bean id="partStateChanged" class="org.argeo.connect.ui.workbench.util.PartStateChanged"
+	<bean id="partStateChanged" class="org.argeo.connect.workbench.util.PartStateChanged"
 		scope="prototype">
 		<!-- <property name="peopleService" ref="peopleService" /> -->
 	</bean>

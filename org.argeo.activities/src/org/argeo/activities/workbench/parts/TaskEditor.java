@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.connect.ui.util.LazyCTabControl;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
+import org.argeo.connect.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;

@@ -3,9 +3,9 @@ package org.argeo.connect.resources.workbench;
 import javax.jcr.Node;
 
 import org.argeo.connect.resources.ResourcesTypes;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
-import org.argeo.connect.ui.workbench.ConnectWorkbenchImages;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.ConnectWorkbenchImages;
 import org.eclipse.swt.graphics.Image;
 
 public class ResourcesWorkbenchService implements AppWorkbenchService {

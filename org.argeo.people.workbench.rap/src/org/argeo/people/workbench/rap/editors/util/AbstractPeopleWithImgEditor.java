@@ -7,7 +7,7 @@ import javax.jcr.Property;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectCTabEditor;
+import org.argeo.connect.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.workbench.rap.PeopleRapImages;

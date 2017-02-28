@@ -6,8 +6,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
+import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleService;

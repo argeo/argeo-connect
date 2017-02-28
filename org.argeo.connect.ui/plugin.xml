@@ -92,7 +92,7 @@
     	 <!-- Add global life cycle on Editors  -->
 		<!-- Note: corresponding handler could also be defined below in the startup part -->
 		<command
-      		defaultHandler="org.argeo.connect.ui.workbench.commands.ChangeEditingState"
+      		defaultHandler="org.argeo.connect.workbench.commands.ChangeEditingState"
 			id="org.argeo.connect.ui.changeEditingState"
             name="changeEditingState">
 			<commandParameter
@@ -133,7 +133,7 @@
   		<!-- Miscelleanous -->
   		<command
 			id="org.argeo.connect.ui.forceRefresh"
-			defaultHandler="org.argeo.connect.ui.workbench.commands.ForceRefresh"
+			defaultHandler="org.argeo.connect.workbench.commands.ForceRefresh"
 			name="Force refresh of the current active part if such an action is possible">
 			<commandParameter
 					id="param.viewId"
@@ -159,7 +159,7 @@
 				tooltip="Force refresh of the current active part">
 				<visibleWhen>
 					<with variable="activePart">
-						<instanceof value="org.argeo.connect.ui.workbench.Refreshable" />
+						<instanceof value="org.argeo.connect.workbench.Refreshable" />
 					</with>
 				</visibleWhen>
 			</command>
@@ -268,7 +268,7 @@
 	<extension
       	point="org.eclipse.ui.services">
 	   	<sourceProvider
-	        provider="org.argeo.connect.ui.workbench.util.EditionSourceProvider">
+	        provider="org.argeo.connect.workbench.util.EditionSourceProvider">
 	     	<variable
 	            name="org.argeo.connect.ui.editingState"
 	            priorityLevel="workbench">

@@ -7,7 +7,7 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.TagLabelProvider;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;

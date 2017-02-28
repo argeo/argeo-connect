@@ -4,8 +4,8 @@ import javax.jcr.Node;
 
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.widgets.TagLikeListPart;
-import org.argeo.connect.ui.workbench.AppWorkbenchService;
-import org.argeo.connect.ui.workbench.parts.AbstractConnectEditor;
+import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.people.PeopleNames;
 import org.eclipse.swt.widgets.Composite;
 

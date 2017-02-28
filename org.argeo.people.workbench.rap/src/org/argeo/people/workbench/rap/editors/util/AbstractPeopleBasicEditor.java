@@ -3,8 +3,8 @@ package org.argeo.people.workbench.rap.editors.util;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 
-import org.argeo.connect.ui.workbench.Refreshable;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.Refreshable;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
