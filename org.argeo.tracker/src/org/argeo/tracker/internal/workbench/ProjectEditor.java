@@ -74,7 +74,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor";
 
 	// Context
-	private TrackerService issueService;
+//	private TrackerService trackerService;
 	private Node project;
 
 	// Current pages
@@ -90,7 +90,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	protected void addPages() {
 		// Initialise the nodes
 		project = getNode();
-		issueService = getTrackerService();
+//		trackerService = getTrackerService();
 		try {
 			projectMainPage = new MainPage(this);
 			addPage(projectMainPage);
@@ -430,7 +430,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					NewVersionWizard wizard = new NewVersionWizard(issueService, project);
+					NewVersionWizard wizard = new NewVersionWizard(getTrackerService(), project);
 					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
 					if (dialog.open() == Window.OK) {
 						try {
@@ -521,7 +521,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					NewComponentWizard wizard = new NewComponentWizard(issueService, project);
+					NewComponentWizard wizard = new NewComponentWizard(getTrackerService(), project);
 					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
 					if (dialog.open() == Window.OK) {
 						try {

@@ -38,7 +38,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	private Repository repository;
 	private UserAdminService userAdminService;
 	private ResourcesService resourcesService;
-	private ActivitiesService activityService;
+	private ActivitiesService activitiesService;
 	private TrackerService trackerService;
 	private AppWorkbenchService appWorkbenchService;
 
@@ -91,12 +91,12 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		return userAdminService;
 	}
 
-	protected ResourcesService getResourceService() {
+	protected ResourcesService getResourcesService() {
 		return resourcesService;
 	}
 
-	protected ActivitiesService getActivityService() {
-		return activityService;
+	protected ActivitiesService getActivitiesService() {
+		return activitiesService;
 	}
 
 	protected TrackerService getTrackerService() {
@@ -170,7 +170,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
-       
+
 	public void setUserAdminService(UserAdminService userAdminService) {
 		this.userAdminService = userAdminService;
 	}
@@ -180,7 +180,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	}
 
 	public void setActivitiesService(ActivitiesService activitiesService) {
-		this.activityService = activitiesService;
+		this.activitiesService = activitiesService;
 	}
 
 	public void setTrackerService(TrackerService trackerService) {

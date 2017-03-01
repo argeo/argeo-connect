@@ -255,7 +255,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					// TODO Prevent edition for user that do not have sufficient
 					// rights
 
-					String manager = getActivityService().getAssignedToDisplayName(issue);
+					String manager = getActivitiesService().getAssignedToDisplayName(issue);
 					refreshStatusCombo(statusCmb, issue);
 					if (isEditing()) {
 						manager += " ~ <a>Change</a>";
@@ -530,7 +530,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 				if (index != -1) {
 					String selectedStatus = combo.getItem(index);
 					try {
-						if (getActivityService().updateStatus(TrackerTypes.TRACKER_ISSUE, issue, selectedStatus,
+						if (getActivitiesService().updateStatus(TrackerTypes.TRACKER_ISSUE, issue, selectedStatus,
 								new ArrayList<String>()))
 							part.markDirty();
 					} catch (RepositoryException e1) {
@@ -581,7 +581,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	/** Override this to add specific rights for status change */
 	protected void refreshStatusCombo(Combo combo, Node currTask) {
-		List<String> values = getResourceService().getTemplateCatalogue(session, TrackerTypes.TRACKER_ISSUE,
+		List<String> values = getResourcesService().getTemplateCatalogue(session, TrackerTypes.TRACKER_ISSUE,
 				ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
 		combo.setItems(values.toArray(new String[values.size()]));
 		ConnectWorkbenchUtils.refreshFormCombo(IssueEditor.this, combo, currTask,

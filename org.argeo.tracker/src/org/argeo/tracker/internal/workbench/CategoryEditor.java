@@ -10,6 +10,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.activities.ActivitiesNames;
+import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
@@ -26,8 +28,6 @@ import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.dialogs.NewIssueWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
-import org.argeo.activities.ActivitiesNames;
-import org.argeo.cms.ArgeoNames;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
