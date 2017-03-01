@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors.tabs;
+package org.argeo.people.workbench.rap.parts;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,12 +33,12 @@ import org.argeo.people.util.PeopleJcrUtils;
 import org.argeo.people.workbench.rap.PeopleRapImages;
 import org.argeo.people.workbench.rap.PeopleRapSnippets;
 import org.argeo.people.workbench.rap.commands.EditJob;
-import org.argeo.people.workbench.rap.editors.util.BooleanEditingSupport;
-import org.argeo.people.workbench.rap.listeners.PeopleDoubleClickAdapter;
 import org.argeo.people.workbench.rap.providers.BooleanFlagLabelProvider;
 import org.argeo.people.workbench.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.people.workbench.rap.providers.PersonOverviewLabelProvider;
 import org.argeo.people.workbench.rap.providers.RoleListLabelProvider;
+import org.argeo.people.workbench.rap.util.BooleanEditingSupport;
+import org.argeo.people.workbench.rap.util.PeopleDoubleClickAdapter;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -57,7 +57,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * A composite to include in a form and that displays an editable list of jobs
  * or employees
  */
-public class JobList extends LazyCTabControl {
+public class JobListCTab extends LazyCTabControl {
 	private static final long serialVersionUID = -4736848221960630767L;
 
 	// Context
@@ -72,7 +72,7 @@ public class JobList extends LazyCTabControl {
 	// UI Objects
 	private MyFormPart myFormPart;
 
-	public JobList(Composite parent, int style, AbstractConnectEditor editor, ResourcesService resourceService,
+	public JobListCTab(Composite parent, int style, AbstractConnectEditor editor, ResourcesService resourceService,
 			PeopleService peopleService, AppWorkbenchService peopleWorkbenchService, Node entity) {
 		super(parent, style);
 		toolkit = editor.getFormToolkit();

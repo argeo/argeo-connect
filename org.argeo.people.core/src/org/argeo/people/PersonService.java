@@ -14,7 +14,7 @@ import javax.jcr.RepositoryException;
 public interface PersonService {
 
 	/** Simply returns the display name of the given person or organisation */
-	public String getDisplayName(Node person);
+	public String getDefaultDisplayName(Node person);
 	
 	/**
 	 * Try to save and optionally commit a person or an organisation after applying

@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors.util;
+package org.argeo.people.workbench.rap.util;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
@@ -29,10 +29,6 @@ public abstract class BooleanEditingSupport extends EditingSupport {
 
 	/** Define this depending on the context */
 	protected abstract boolean canEdit(Object element);
-
-	// protected boolean canEdit(Object element) {
-	// return ConnectJcrUtils.isNodeCheckedOutByMe(film);
-	// }
 
 	@Override
 	protected Object getValue(Object element) {

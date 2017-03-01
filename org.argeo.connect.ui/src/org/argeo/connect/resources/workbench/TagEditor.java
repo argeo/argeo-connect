@@ -38,7 +38,6 @@ import org.argeo.connect.workbench.ConnectUiPlugin;
 import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.commands.EditTagWizard;
 import org.argeo.connect.workbench.util.EntityEditorInput;
-import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -103,7 +102,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ResourcesNames.CONNECT_TAGS), 300));
+		colDefs.add(new ConnectColumnDefinition("Other tags", new OtherTagsLabelProvider(node, null), 300));
 	}
 
 	protected void afterNameUpdate(String name) {

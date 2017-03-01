@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors.util;
+package org.argeo.people.workbench.rap.util;
 
 import java.io.InputStream;
 

@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors.util;
+package org.argeo.people.workbench.rap.util;
 
 import javax.jcr.Repository;
 import javax.jcr.Session;

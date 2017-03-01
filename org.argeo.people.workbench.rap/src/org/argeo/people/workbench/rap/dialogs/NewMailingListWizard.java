@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.wizards;
+package org.argeo.people.workbench.rap.dialogs;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 

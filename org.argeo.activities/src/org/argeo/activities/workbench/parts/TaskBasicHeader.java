@@ -273,7 +273,7 @@ public class TaskBasicHeader extends Composite {
 			if (activityService.isTaskDone(task)) {
 				String closeBy = ConnectJcrUtils.get(task, ActivitiesNames.ACTIVITIES_CLOSED_BY);
 				Calendar closedDate = task.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).getDate();
-				builder.append(" - Marked as closed by ").append(closeBy);
+				builder.append(" - Marked as closed by ").append(userAdminService.getUserDisplayName(closeBy));
 				builder.append(" on ").append(dtFormat.format(closedDate.getTime())).append(".");
 				if (EclipseUiUtils.notEmpty(dueDateStr))
 					builder.append(" Due date was ").append(dueDateStr);

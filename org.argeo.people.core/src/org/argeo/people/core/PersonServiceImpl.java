@@ -33,12 +33,10 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	}
 
 	@Override
-	public String getDisplayName(Node entity) {
+	public String getDefaultDisplayName(Node entity) {
 		String displayName = null;
 		try {
-			if (entity.hasProperty(PEOPLE_DISPLAY_NAME))
-				displayName = entity.getProperty(PEOPLE_DISPLAY_NAME).getString();
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				String lastName = ConnectJcrUtils.get(entity, PEOPLE_LAST_NAME);
 				String firstName = ConnectJcrUtils.get(entity, PEOPLE_FIRST_NAME);
 				if (EclipseUiUtils.notEmpty(firstName) || notEmpty(lastName)) {
@@ -88,7 +86,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 
 		// Update display name cache if needed
 		if (EclipseUiUtils.isEmpty(displayName))
-			displayName = getDisplayName(person);
+			displayName = getDefaultDisplayName(person);
 
 		person.setProperty(Property.JCR_TITLE, displayName);
 
@@ -117,7 +115,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 
 		// Update display name cache if needed
 		if (EclipseUiUtils.isEmpty(displayName))
-			displayName = getDisplayName(org);
+			displayName = getDefaultDisplayName(org);
 
 		org.setProperty(Property.JCR_TITLE, displayName);
 

@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.wizards;
+package org.argeo.people.workbench.rap.dialogs;
 
 import java.util.ArrayList;
 import java.util.List;

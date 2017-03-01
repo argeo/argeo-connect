@@ -9,12 +9,12 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.workbench.PeopleWorkbenchService;
-import org.argeo.people.workbench.rap.editors.MailingListEditor;
-import org.argeo.people.workbench.rap.editors.OrgEditor;
-import org.argeo.people.workbench.rap.editors.PeopleSearchEntityEditor;
-import org.argeo.people.workbench.rap.editors.PersonEditor;
-import org.argeo.people.workbench.rap.wizards.NewOrgWizard;
-import org.argeo.people.workbench.rap.wizards.NewPersonWizard;
+import org.argeo.people.workbench.rap.dialogs.NewOrgWizard;
+import org.argeo.people.workbench.rap.dialogs.NewPersonWizard;
+import org.argeo.people.workbench.rap.parts.MailingListEditor;
+import org.argeo.people.workbench.rap.parts.OrgEditor;
+import org.argeo.people.workbench.rap.parts.PeopleSearchEntityEditor;
+import org.argeo.people.workbench.rap.parts.PersonEditor;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 

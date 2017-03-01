@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors;
+package org.argeo.people.workbench.rap.parts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.resources.workbench.OtherTagsLabelProvider;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
@@ -122,7 +123,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_PMAIL), 300));
-		colDefs.add(new ConnectColumnDefinition("Mailing lists", new JcrHtmlLabelProvider(PEOPLE_MAILING_LISTS), 300));
+		colDefs.add(new ConnectColumnDefinition("Other mailing lists", new OtherTagsLabelProvider(mailingList, null), 300));
 	}
 
 	protected void afterNameUpdate(String name) {

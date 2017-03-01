@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.listeners;
+package org.argeo.people.workbench.rap.util;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;

@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors;
+package org.argeo.people.workbench.rap.parts;
 
 import javax.jcr.Node;
 import javax.jcr.Property;

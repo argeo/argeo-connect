@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.views;
+package org.argeo.people.workbench.rap.parts;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 

@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors.util;
+package org.argeo.people.workbench.rap.util;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;

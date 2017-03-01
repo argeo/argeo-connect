@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors;
+package org.argeo.people.workbench.rap.parts;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -25,11 +25,8 @@ import org.argeo.people.PeopleTypes;
 import org.argeo.people.workbench.rap.PeopleRapConstants;
 import org.argeo.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.people.workbench.rap.composites.MailingListListPart;
-import org.argeo.people.workbench.rap.editors.tabs.ContactList;
-import org.argeo.people.workbench.rap.editors.tabs.JobList;
-import org.argeo.people.workbench.rap.editors.tabs.OrgAdminInfo;
-import org.argeo.people.workbench.rap.editors.util.AbstractPeopleWithImgEditor;
 import org.argeo.people.workbench.rap.providers.OrgOverviewLabelProvider;
+import org.argeo.people.workbench.rap.util.AbstractPeopleWithImgEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
@@ -62,8 +59,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		org = getNode();
-
-		String shortName = ConnectJcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
+		String shortName = ConnectJcrUtils.get(org, Property.JCR_TITLE);
 		if (EclipseUiUtils.notEmpty(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1) + "...";
@@ -99,7 +95,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 	protected void populateTabFolder(CTabFolder folder) {
 		// Contact informations
 		String tooltip = "Contact information for " + JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		LazyCTabControl cpc = new ContactList(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
+		LazyCTabControl cpc = new ContactListCTab(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
 				getPeopleService(), getAppWorkbenchService());
 		cpc.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, cpc, "Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
@@ -113,14 +109,14 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 
 		// Employees
 		tooltip = "Known employees of " + JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		LazyCTabControl employeesCmp = new JobList(folder, SWT.NO_FOCUS, this, getResourcesService(),
+		LazyCTabControl employeesCmp = new JobListCTab(folder, SWT.NO_FOCUS, this, getResourcesService(),
 				getPeopleService(), getAppWorkbenchService(), org);
 		employeesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, employeesCmp, "Team", PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 
 		// Legal informations
 		tooltip = "Legal information for " + JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-		LazyCTabControl legalCmp = new OrgAdminInfo(folder, SWT.NO_FOCUS, this, org);
+		LazyCTabControl legalCmp = new OrgAdminInfoCTab(folder, SWT.NO_FOCUS, this, org);
 		legalCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, legalCmp, "Admin.", PeopleRapConstants.CTAB_LEGAL_INFO, tooltip);
 	}
@@ -160,13 +156,10 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 					super.refresh();
 					// EDIT PART
 					boolean useDistinct = useDistinctDisplayBtn.getSelection();
-					if (useDistinct) {
-						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, PeopleNames.PEOPLE_DISPLAY_NAME);
-						displayNameTxt.setEnabled(true);
-					} else {
-						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, PeopleNames.PEOPLE_LEGAL_NAME);
-						displayNameTxt.setEnabled(false);
-					}
+					ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org,
+							useDistinct ? PeopleNames.PEOPLE_DISPLAY_NAME : PeopleNames.PEOPLE_LEGAL_NAME);
+					displayNameTxt.setEnabled(useDistinct);
+					
 					// READ ONLY PART
 					String roText = orgLP.getText(org);
 					orgInfoROLbl.setText(roText);
@@ -180,8 +173,6 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 				}
 			};
 
-			ConnectWorkbenchUtils.addModifyListener(displayNameTxt, org, Property.JCR_TITLE, editPart);
-
 			useDistinctDisplayBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
@@ -194,9 +185,9 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 							ConnectJcrUtils.setJcrProperty(org, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
 									dName);
 						} else if (org.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
+							displayNameTxt.setText(dName);
 							org.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
 						}
-						displayNameTxt.setText(dName);
 						displayNameTxt.setEnabled(defineDistinct);
 						editPart.markDirty();
 					} catch (RepositoryException e1) {
@@ -204,6 +195,8 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 					}
 				}
 			});
+
+			ConnectWorkbenchUtils.addModifyListener(displayNameTxt, org, PeopleNames.PEOPLE_DISPLAY_NAME, editPart);
 
 			editPart.initialize(getManagedForm());
 			getManagedForm().addPart(editPart);

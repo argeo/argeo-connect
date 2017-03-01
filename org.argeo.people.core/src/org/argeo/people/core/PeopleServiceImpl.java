@@ -87,7 +87,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	public String getBaseRelPath(String nodeType) {
 		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType) || ConnectTypes.CONNECT_LDAP_PERSON.equals(nodeType)
 				|| PeopleTypes.PEOPLE_ORG.equals(nodeType) || ConnectTypes.CONNECT_LDAP_ORG.equals(nodeType)
-				|| PeopleTypes.PEOPLE_CONTACTABLE.equals(nodeType))
+				|| PeopleTypes.PEOPLE_ENTITY.equals(nodeType) || PeopleTypes.PEOPLE_CONTACTABLE.equals(nodeType))
 			return getAppBaseName();
 		else
 			return null;
@@ -173,7 +173,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			if (entity.hasProperty(PEOPLE_DISPLAY_NAME))
 				displayName = entity.getProperty(PEOPLE_DISPLAY_NAME).getString();
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				displayName = getPersonService().getDisplayName(entity);
+				displayName = getPersonService().getDefaultDisplayName(entity);
 			else if (entity.isNodeType(NodeType.MIX_TITLE))
 				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else

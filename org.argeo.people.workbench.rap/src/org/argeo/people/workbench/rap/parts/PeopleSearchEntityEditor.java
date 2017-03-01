@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors;
+package org.argeo.people.workbench.rap.parts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.parts.DefaultSearchEntityEditor;
+import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
@@ -67,6 +68,13 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 		colDefs.add(new ConnectColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ResourcesNames.CONNECT_TAGS), 300));
 	}
+
+//	@Override
+//	public void createPartControl(Composite parent) {
+//		super.createPartControl(parent);
+//		if (PeopleTypes.PEOPLE_MAILING_LIST.equals(getEntityType()))
+//			getTableViewer().getTableViewer().getTable().addSelectionListener(new HtmlListRwtAdapter());
+//	}
 
 	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite body) {

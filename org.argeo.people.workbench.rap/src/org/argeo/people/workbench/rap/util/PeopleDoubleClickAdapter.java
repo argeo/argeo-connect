@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.listeners;
+package org.argeo.people.workbench.rap.util;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;

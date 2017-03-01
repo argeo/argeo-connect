@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors.tabs;
+package org.argeo.people.workbench.rap.parts;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -50,7 +50,7 @@ import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** A panel to display contacts */
-public class ContactList extends LazyCTabControl {
+public class ContactListCTab extends LazyCTabControl {
 	private static final long serialVersionUID = 58381532068661087L;
 
 	// Context
@@ -67,7 +67,7 @@ public class ContactList extends LazyCTabControl {
 	// Caches the add new contact combo
 	private Combo addContactCmb;
 
-	public ContactList(Composite parent, int style, AbstractConnectEditor editor, Node entityNode,
+	public ContactListCTab(Composite parent, int style, AbstractConnectEditor editor, Node entityNode,
 			ResourcesService resourcesService, PeopleService peopleService, AppWorkbenchService appWorkbenchService) {
 		super(parent, style);
 		this.editor = editor;
@@ -152,7 +152,7 @@ public class ContactList extends LazyCTabControl {
 				// innerCmp.layout();
 				// innerCmp.getParent().pack(true);
 				// innerCmp.getParent().layout(true, true);
-				ContactList.this.layout(true, true);
+				ContactListCTab.this.layout(true, true);
 			} catch (Exception e) {
 				throw new PeopleException("unexpected error while refreshing node " + entity, e);
 			}
@@ -297,7 +297,7 @@ public class ContactList extends LazyCTabControl {
 			parent.layout(true, true);
 			Control[] controls = new Control[1];
 			controls[0] = parent;
-			ContactList.this.layout(controls);
+			ContactListCTab.this.layout(controls);
 		}
 	}
 

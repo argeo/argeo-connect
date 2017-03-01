@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors.tabs;
+package org.argeo.people.workbench.rap.parts;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -33,7 +33,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  * 
  * TODO Legacy code. Should be reviewed and enhanced.
  */
-public class OrgAdminInfo extends LazyCTabControl {
+public class OrgAdminInfoCTab extends LazyCTabControl {
 	private static final long serialVersionUID = -7033074223243935324L;
 
 	private final AbstractConnectEditor editor;
@@ -44,7 +44,7 @@ public class OrgAdminInfo extends LazyCTabControl {
 	private AbstractFormPart notePart;
 	private AbstractFormPart formPart;
 
-	public OrgAdminInfo(Composite parent, int style, AbstractConnectEditor editor, Node entity) {
+	public OrgAdminInfoCTab(Composite parent, int style, AbstractConnectEditor editor, Node entity) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();

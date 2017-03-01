@@ -30,12 +30,6 @@ public class PeopleRapImages {
 	public final static Image PRIMARY_BTN = createImg(BASE_PATH, "primary.gif");
 	public final static Image PRIMARY_NOT_BTN = createImg(BASE_PATH, "primaryNOT.gif");
 	public final static Image ORIGINAL_BTN = createImg(BASE_PATH, "first.png");
-	// public final static Image CALENDAR_BTN = createImg(BASE_PATH,
-	// "calendar.gif");
-	// public final static Image CHECK_SELECTED = createImg(BASE_PATH,
-	// "check-selected.png");
-	// public final static Image CHECK_UNSELECTED = createImg(BASE_PATH,
-	// "check-unselected.png");
 
 	private static Image createImg(String prefix, String fileName) {
 		return PeopleRapPlugin.getImageDescriptor(prefix + fileName).createImage();

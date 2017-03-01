@@ -21,7 +21,7 @@
 
 	<!-- VIEWS -->
 	<bean id="quickSearchView"
-		class="org.argeo.people.workbench.rap.views.QuickSearchView"
+		class="org.argeo.people.workbench.rap.parts.QuickSearchView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
@@ -33,7 +33,7 @@
 	<!-- EDITORS -->
 	<!-- Default People entity editors -->
 	<bean id="personEditor"
-		class="org.argeo.people.workbench.rap.editors.PersonEditor"
+		class="org.argeo.people.workbench.rap.parts.PersonEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -44,7 +44,7 @@
 	</bean>
 
 	<bean id="orgEditor"
-		class="org.argeo.people.workbench.rap.editors.OrgEditor"
+		class="org.argeo.people.workbench.rap.parts.OrgEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
@@ -56,7 +56,7 @@
 
 	<!-- Search editors -->
 	<bean id="peopleSearchEntityEditor"
-		class="org.argeo.people.workbench.rap.editors.PeopleSearchEntityEditor"
+		class="org.argeo.people.workbench.rap.parts.PeopleSearchEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
@@ -66,7 +66,7 @@
 	</bean>
 
 	<bean id="mailingListEditor"
-		class="org.argeo.people.workbench.rap.editors.MailingListEditor"
+		class="org.argeo.people.workbench.rap.parts.MailingListEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
@@ -75,7 +75,7 @@
 	</bean>
 	
 	<bean id="listValuesEditor"
-		class="org.argeo.people.workbench.rap.editors.ListValuesEditor"
+		class="org.argeo.people.workbench.rap.parts.ListValuesEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />

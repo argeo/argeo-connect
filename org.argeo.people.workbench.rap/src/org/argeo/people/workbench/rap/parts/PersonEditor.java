@@ -1,4 +1,4 @@
-package org.argeo.people.workbench.rap.editors;
+package org.argeo.people.workbench.rap.parts;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -30,10 +30,8 @@ import org.argeo.people.PeopleTypes;
 import org.argeo.people.workbench.rap.PeopleRapConstants;
 import org.argeo.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.people.workbench.rap.composites.MailingListListPart;
-import org.argeo.people.workbench.rap.editors.tabs.ContactList;
-import org.argeo.people.workbench.rap.editors.tabs.JobList;
-import org.argeo.people.workbench.rap.editors.util.AbstractPeopleWithImgEditor;
 import org.argeo.people.workbench.rap.providers.PersonOverviewLabelProvider;
+import org.argeo.people.workbench.rap.util.AbstractPeopleWithImgEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -73,10 +71,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 	@Override
 	protected void updatePartName() {
-		String shortName = ConnectJcrUtils.get(getNode(), PEOPLE_LAST_NAME);
-		if (EclipseUiUtils.isEmpty(shortName)) {
-			shortName = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
-		}
+		String shortName = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 		if (EclipseUiUtils.notEmpty(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1) + "...";
@@ -114,7 +109,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 	protected void populateTabFolder(CTabFolder folder) {
 		// Contact informations
 		String tooltip = "Contact information for " + JcrUtils.get(person, Property.JCR_TITLE);
-		LazyCTabControl cpc = new ContactList(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
+		LazyCTabControl cpc = new ContactListCTab(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
 				getPeopleService(), getAppWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		addLazyTabToFolder(folder, cpc, "Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
@@ -128,7 +123,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		// Jobs panel
 		tooltip = "Organisations linked to " + JcrUtils.get(person, Property.JCR_TITLE);
-		LazyCTabControl crewCmp = new JobList(folder, SWT.NO_FOCUS, this, getResourcesService(), getPeopleService(),
+		LazyCTabControl crewCmp = new JobListCTab(folder, SWT.NO_FOCUS, this, getResourcesService(), getPeopleService(),
 				getAppWorkbenchService(), person);
 		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, crewCmp, "Organisations", PeopleRapConstants.CTAB_JOBS, tooltip);
@@ -185,7 +180,8 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 				"Default display name for this person", 300);
 		final Button defineDistinctBtn = getFormToolkit().createButton(firstCmp, "Define a distinct display name",
 				SWT.CHECK);
-		defineDistinctBtn.setToolTipText("Default is \"Firstname LASTNAME\"");
+		if (!EclipseUiUtils.isEmpty(ConnectJcrUtils.get(person, PeopleNames.PEOPLE_DISPLAY_NAME)))
+			defineDistinctBtn.setSelection(true);
 
 		final Text salutationTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Salutation",
 				"Mr, Mrs...", 60);
@@ -234,20 +230,20 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() { // update display value
-				super.refresh();
 				// EDIT PART
-				boolean defineDistinct = EclipseUiUtils.notEmpty(ConnectJcrUtils.get(person, PEOPLE_DISPLAY_NAME));
-				ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, person, Property.JCR_TITLE);
-				displayNameTxt.setEnabled(defineDistinct);
-				defineDistinctBtn.setSelection(defineDistinct);
+				boolean useDistinct = defineDistinctBtn.getSelection();
+
+				if (useDistinct)
+					ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, person, PeopleNames.PEOPLE_DISPLAY_NAME);
+				else
+					displayNameTxt.setText(getPeopleService().getPersonService().getDefaultDisplayName(person));
+				displayNameTxt.setEnabled(useDistinct);
 
 				ConnectUiUtils.refreshTextWidgetValue(salutationTxt, person, PEOPLE_SALUTATION);
 				ConnectUiUtils.refreshTextWidgetValue(firstNameTxt, person, PEOPLE_FIRST_NAME);
 				ConnectUiUtils.refreshTextWidgetValue(middleNameTxt, person, PEOPLE_MIDDLE_NAME);
 				ConnectUiUtils.refreshTextWidgetValue(lastNameTxt, person, PEOPLE_LAST_NAME);
 				ConnectUiUtils.refreshTextWidgetValue(nickNameTxt, person, PEOPLE_NICKNAME);
-				// ConnectUiUtils.refreshTextValue(genderTxt, person,
-				// PEOPLE_GENDER);
 				ConnectUiUtils.refreshTextWidgetValue(maidenNameTxt, person, PEOPLE_MAIDEN_NAME);
 				ConnectUiUtils.refreshTextWidgetValue(titleTxt, person, PEOPLE_HONORIFIC_TITLE);
 				ConnectUiUtils.refreshTextWidgetValue(suffixTxt, person, PEOPLE_NAME_SUFFIX);
@@ -270,109 +266,36 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 				readOnlyInfoLbl.pack();
 				editPanel.getParent().layout();
+				super.refresh();
 			}
 		};
 
 		// Listeners
 
-		// Specific listeners to manage correctly display name
-		firstNameTxt.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void modifyText(ModifyEvent event) {
-//				try {
-					if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME, PropertyType.STRING,
-							firstNameTxt.getText())) {
-//						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(person,
-//								PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-//						if (defineDistinct == null || !defineDistinct) {
-//							String displayName = getPeopleService().getDisplayName(person);
-//							person.setProperty(Property.JCR_TITLE, displayName);
-//							displayNameTxt.setText(displayName);
-//						}
-						editPart.markDirty();
-					}
-//				} catch (RepositoryException e) {
-//					throw new PeopleException("Unable to update property", e);
-//				}
-			}
-		});
-
-		lastNameTxt.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void modifyText(ModifyEvent event) {
-//				try {
-					if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME, PropertyType.STRING,
-							lastNameTxt.getText())) {
-//						Boolean defineDistinct = ConnectJcrUtils.getBooleanValue(person,
-//								PEOPLE_USE_DISTINCT_DISPLAY_NAME);
-//						if (defineDistinct == null || !defineDistinct) {
-//							String displayName = getPeopleService().getDisplayName(person);
-//							person.setProperty(Property.JCR_TITLE, displayName);
-//							displayNameTxt.setText(displayName);
-//						}
-						editPart.markDirty();
-					}
-//				} catch (RepositoryException e) {
-//					throw new PeopleException("Unable to update property", e);
-//				}
-			}
-		});
-
-		displayNameTxt.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void modifyText(ModifyEvent event) {
-				boolean defineDistinct = defineDistinctBtn.getSelection();
-				if (defineDistinct)
-					if (ConnectJcrUtils.setJcrProperty(person, Property.JCR_TITLE, PropertyType.STRING,
-							displayNameTxt.getText())) {
-						editPart.markDirty();
-					}
-			}
-		});
+		ConnectWorkbenchUtils.addModifyListener(firstNameTxt, person, PeopleNames.PEOPLE_FIRST_NAME, editPart);
+		ConnectWorkbenchUtils.addModifyListener(lastNameTxt, person, PeopleNames.PEOPLE_LAST_NAME, editPart);
+		addDNameModifyListener(displayNameTxt, defineDistinctBtn, person, PeopleNames.PEOPLE_DISPLAY_NAME, editPart);
 
 		defineDistinctBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-			try{	
-				boolean defineDistinct = defineDistinctBtn.getSelection();
-				if (defineDistinct) {
-					String displayName = getPeopleService().getDisplayName(person);
-					ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
-							displayName);
-					displayNameTxt.setText(displayName);
-				} else if (person.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
-					person.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
+				try {
+					boolean defineDistinct = defineDistinctBtn.getSelection();
+					String displayName = getPeopleService().getPersonService().getDefaultDisplayName(person);
+					if (defineDistinct) {
+						ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
+								displayName);
+					} else if (person.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
+						displayNameTxt.setText(displayName);
+						person.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
+					}
+					displayNameTxt.setEnabled(defineDistinct);
+					editPart.markDirty();
+				} catch (RepositoryException e1) {
+					throw new PeopleException("Unable to reset display name management for " + person, e1);
 				}
-				displayNameTxt.setEnabled(defineDistinct);
-				editPart.markDirty();
-				
-			} catch (RepositoryException e1) {
-				throw new PeopleException("Unable to reset display name management for " + person, e1);
-			}
-//
-//				
-//				
-//				boolean defineDistinct = defineDistinctBtn.getSelection();
-//				if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_USE_DISTINCT_DISPLAY_NAME, PropertyType.BOOLEAN,
-//						defineDistinct)) {
-//					if (!defineDistinct) {
-//						String displayName = getPeopleService().getDisplayName(person);
-//						ConnectJcrUtils.setJcrProperty(person, Property.JCR_TITLE, PropertyType.STRING, displayName);
-//						displayNameTxt.setText(displayName);
-//						displayNameTxt.setEnabled(false);
-//					} else
-//						displayNameTxt.setEnabled(true);
-//
-//				}
-//				editPart.markDirty();
 			}
 		});
 
@@ -443,7 +366,21 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		editPart.initialize(getManagedForm());
 		getManagedForm().addPart(editPart);
+	}
 
+	private void addDNameModifyListener(final Text text, final Button useDistinctBtn, final Node node,
+			final String propName, final AbstractFormPart part) {
+		text.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (useDistinctBtn.getSelection()) {
+					if (ConnectJcrUtils.setJcrProperty(node, propName, PropertyType.STRING, text.getText()))
+						part.markDirty();
+				}
+			}
+		});
 	}
 
 	private void refreshFormalRadio(Button button, Node entity) {

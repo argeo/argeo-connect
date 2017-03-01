@@ -1,6 +1,7 @@
 package org.argeo.people.workbench.rap.providers;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -28,7 +29,7 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 		Node orga = (Node) element;
 		StringBuilder builder = new StringBuilder();
 		builder.append("<b>");
-		builder.append(ConnectJcrUtils.get(orga, PEOPLE_LEGAL_NAME));
+		builder.append(ConnectJcrUtils.get(orga, Property.JCR_TITLE));
 		builder.append("</b> ");
 
 		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, orga);
