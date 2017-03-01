@@ -37,15 +37,20 @@ public class TrackerServiceImpl implements TrackerService {
 
 	private ActivitiesService activitiesService;
 
+
+	@Override
+	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+			throws RepositoryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 	@Override
 	public String getAppBaseName() {
 		return TrackerConstants.TRACKER_APP_BASE_NAME;
 	}
 
-	@Override
-	public String getDefaultBasePath() {
-		return "/" + TrackerNames.TRACKER_PROJECTS;
-	}
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {

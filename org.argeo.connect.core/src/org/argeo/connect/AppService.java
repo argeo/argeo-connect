@@ -13,39 +13,12 @@ import org.argeo.node.NodeUtils;
 /** Minimal interface that an Argeo App must implement */
 public interface AppService {
 
-	/** Returns the current App name */
-	public String getAppBaseName();
-
-	default public String getDefaultBasePath() {
-		return "/" + getAppBaseName();
+	default public Node createEntity(Node parent, String nodeType, Node srcNode) throws RepositoryException {
+		return createEntity(parent, nodeType, srcNode, true);
 	}
 
-	/**
-	 * Returns a display name that is app specific and that depends on one or
-	 * more of the entity properties. The user can always set a flag to force
-	 * the value to something else.
-	 * 
-	 * The Display name is usually stored in the JCR_TITLE property.
-	 */
-	default public String getDisplayName(Node entity) {
-		String defaultDisplayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
-		if (defaultDisplayName == null || "".equals(defaultDisplayName.trim()))
-			return ConnectJcrUtils.getName(entity);
-		else
-			return defaultDisplayName;
-	}
-
-	/**
-	 * Computes the App specific relative path for a known type based on
-	 * properties of the passed node
-	 */
-	public String getDefaultRelPath(Node entity) throws RepositoryException;
-
-	/**
-	 * Computes the App specific relative path for this known node type based on
-	 * the passed id
-	 */
-	public String getDefaultRelPath(String nodeType, String id);
+	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+			throws RepositoryException;
 
 	/**
 	 * Try to save and optionally publish a business object after applying
@@ -73,6 +46,44 @@ public interface AppService {
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot save " + entity, e);
 		}
+	}
+
+	default public String getBaseRelPath(String nodeType) {
+		return getAppBaseName();
+	}
+
+	/**
+	 * Computes the App specific relative path for a known type based on
+	 * properties of the passed node
+	 */
+	public String getDefaultRelPath(Node entity) throws RepositoryException;
+
+	/**
+	 * Computes the App specific relative path for this known node type based on
+	 * the passed id
+	 */
+	public String getDefaultRelPath(String nodeType, String id);
+
+	/** Returns the current App name */
+	public String getAppBaseName();
+
+	// default public String getDefaultBasePath() {
+	// return "/" + getAppBaseName();
+	// }
+
+	/**
+	 * Returns a display name that is app specific and that depends on one or
+	 * more of the entity properties. The user can always set a flag to force
+	 * the value to something else.
+	 * 
+	 * The Display name is usually stored in the JCR_TITLE property.
+	 */
+	default public String getDisplayName(Node entity) {
+		String defaultDisplayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
+		if (defaultDisplayName == null || "".equals(defaultDisplayName.trim()))
+			return ConnectJcrUtils.getName(entity);
+		else
+			return defaultDisplayName;
 	}
 
 	default public Node getDraftParent(Session session) throws RepositoryException {

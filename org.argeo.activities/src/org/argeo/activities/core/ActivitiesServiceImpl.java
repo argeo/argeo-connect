@@ -43,25 +43,82 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		return ActivitiesNames.ACTIVITIES_APP_BASE_NAME;
 	}
 
-	private String getBasePath() {
-		return "/" + getAppBaseName();
+	@Override
+	public String getActivityParentCanonicalPath(Session session) {
+		String currentUser = session.getUserID();
+		Calendar currentTime = GregorianCalendar.getInstance();
+		String path = "/" + getAppBaseName() + "/" + dateAsRelPath(currentTime) + currentUser;
+		return path;
 	}
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		String currentUser = ConnectJcrUtils.getSession(entity).getUserID();
-		Calendar currentTime = GregorianCalendar.getInstance();
-		String path = "/" + getAppBaseName() + "/" + dateAsPath(currentTime) + currentUser;
-		return path;
+		if (entity.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
+			String currentUser = ConnectJcrUtils.getSession(entity).getUserID();
+			Calendar currentTime = entity.getProperty(Property.JCR_CREATED).getDate();
+			return dateAsRelPath(currentTime) + "/" + currentUser;
+		}
+		return null;
 	}
 
 	@Override
 	public String getDefaultRelPath(String nodeType, String userId) {
 		if (ActivitiesTypes.ACTIVITIES_ACTIVITY.equals(nodeType)) {
 			Calendar currentTime = GregorianCalendar.getInstance();
-			return dateAsPath(currentTime) + "/" + userId;
+			return dateAsRelPath(currentTime) + "/" + userId;
 		} else
 			return null;
+	}
+
+	public String getActivityParentRelPath(Session session, Calendar date, String managerId) {
+		String path = JcrUtils.dateAsPath(date, true) + managerId;
+		return path;
+	}
+
+	@Override
+	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+			throws RepositoryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Node createActivity(Session session, String type, String title, String desc, List<Node> relatedTo) {
+		return createActivity(session, session.getUserID(), type, title, desc, relatedTo, new GregorianCalendar());
+	}
+
+	@Override
+	public Node createActivity(Session session, String reporterId, String type, String title, String desc,
+			List<Node> relatedTo, Calendar date) {
+		try {
+			Node activityBase = session.getNode(getBasePath());
+			String localId = UserAdminUtils.getUserLocalId(reporterId);
+			Node parent = JcrUtils.mkdirs(activityBase, getActivityParentRelPath(session, date, localId),
+					NodeType.NT_UNSTRUCTURED);
+			Node activity = parent.addNode(type, NodeType.NT_UNSTRUCTURED);
+			activity.addMixin(type);
+			activity.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
+
+			// Activity Date
+			if (date != null)
+				activity.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, date);
+
+			// related to
+			if (relatedTo != null && !relatedTo.isEmpty())
+				ConnectJcrUtils.setMultipleReferences(activity, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
+
+			// Content
+			activity.setProperty(Property.JCR_TITLE, title);
+			activity.setProperty(Property.JCR_DESCRIPTION, desc);
+			JcrUtils.updateLastModified(activity);
+			return activity;
+		} catch (RepositoryException e) {
+			throw new ActivitiesException("Unable to create activity node", e);
+		}
+	}
+
+	private String getBasePath() {
+		return "/" + getAppBaseName();
 	}
 
 	@Override
@@ -119,7 +176,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 
 	/* ACTIVITIES APP SPECIFIC METHODS */
 
-	private String dateAsPath(Calendar cal) {
+	private String dateAsRelPath(Calendar cal) {
 		StringBuffer buf = new StringBuffer(9);
 		buf.append('Y');
 		buf.append(cal.get(Calendar.YEAR));
@@ -130,58 +187,10 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		if (woy < 10)
 			buf.append(0);
 		buf.append(woy);
-		buf.append('/');
 		return buf.toString();
 	}
 
 	/* ACTIVITIES */
-	@Override
-	public String getActivityParentCanonicalPath(Session session) {
-		String currentUser = session.getUserID();
-		Calendar currentTime = GregorianCalendar.getInstance();
-		String path = "/" + getAppBaseName() + "/" + dateAsPath(currentTime) + currentUser;
-		return path;
-	}
-
-	public String getActivityParentRelPath(Session session, Calendar date, String managerId) {
-		String path = JcrUtils.dateAsPath(date, true) + managerId;
-		return path;
-	}
-
-	@Override
-	public Node createActivity(Session session, String type, String title, String desc, List<Node> relatedTo) {
-		return createActivity(session, session.getUserID(), type, title, desc, relatedTo, new GregorianCalendar());
-	}
-
-	@Override
-	public Node createActivity(Session session, String reporterId, String type, String title, String desc,
-			List<Node> relatedTo, Calendar date) {
-		try {
-			Node activityBase = session.getNode(getBasePath());
-			String localId = UserAdminUtils.getUserLocalId(reporterId);
-			Node parent = JcrUtils.mkdirs(activityBase, getActivityParentRelPath(session, date, localId),
-					NodeType.NT_UNSTRUCTURED);
-			Node activity = parent.addNode(type, NodeType.NT_UNSTRUCTURED);
-			activity.addMixin(type);
-			activity.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
-
-			// Activity Date
-			if (date != null)
-				activity.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, date);
-
-			// related to
-			if (relatedTo != null && !relatedTo.isEmpty())
-				ConnectJcrUtils.setMultipleReferences(activity, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
-
-			// Content
-			activity.setProperty(Property.JCR_TITLE, title);
-			activity.setProperty(Property.JCR_DESCRIPTION, desc);
-			JcrUtils.updateLastModified(activity);
-			return activity;
-		} catch (RepositoryException e) {
-			throw new ActivitiesException("Unable to create activity node", e);
-		}
-	}
 
 	@Override
 	public Calendar getActivityRelevantDate(Node activityNode) {
@@ -478,4 +487,5 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	public void setResourcesService(ResourcesService resourcesService) {
 		this.resourcesService = resourcesService;
 	}
+
 }

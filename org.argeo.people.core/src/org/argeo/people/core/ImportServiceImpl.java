@@ -22,6 +22,7 @@ import org.argeo.people.ImportService;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
+import org.argeo.people.PeopleTypes;
 
 /** Default implementation of the import service */
 public class ImportServiceImpl implements ImportService, PeopleNames {
@@ -104,8 +105,8 @@ public class ImportServiceImpl implements ImportService, PeopleNames {
 		String peopleUId = slaveNode.getProperty(ConnectNames.CONNECT_UID).getString();
 		QueryManager qm = slaveNode.getSession().getWorkspace().getQueryManager();
 		Query query = qm.createQuery("select * from [nt:base] as nodes where ISDESCENDANTNODE('"
-				+ peopleService.getDefaultBasePath() + "') AND [" + PEOPLE_REF_UID + "]='" + peopleUId + "'" + " ",
-				Query.JCR_SQL2);
+				+ peopleService.getBaseRelPath(PeopleTypes.PEOPLE_ENTITY) + "') AND [" + PEOPLE_REF_UID + "]='"
+				+ peopleUId + "'" + " ", Query.JCR_SQL2);
 		return query.execute().getNodes();
 	}
 

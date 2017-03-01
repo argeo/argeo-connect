@@ -11,7 +11,7 @@ import org.argeo.people.PeopleConstants;
 import org.argeo.people.PeopleRole;
 
 /**
- * Default implementation of the AppMaintenanceService for the People app
+ * Default implementation of the AppMaintenanceService for the People App
  */
 public class PeopleMaintenanceService implements AppMaintenanceService {
 
@@ -105,5 +105,4 @@ public class PeopleMaintenanceService implements AppMaintenanceService {
 	// }
 	//
 	// }
-
 }

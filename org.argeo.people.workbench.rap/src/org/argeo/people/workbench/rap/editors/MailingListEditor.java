@@ -18,7 +18,6 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
@@ -284,8 +283,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	protected void refreshFilteredList() {
 		long begin = System.currentTimeMillis();
 		try {
-			String xpathQueryStr = XPathUtils.descendantFrom(peopleService.getDefaultBasePath()) + "//element(*, "
-					+ ConnectTypes.CONNECT_ENTITY + ")";
+			String xpathQueryStr = XPathUtils
+					.descendantFrom("/" + peopleService.getBaseRelPath(PeopleTypes.PEOPLE_ENTITY)) + "//element(*, "
+					+ PeopleTypes.PEOPLE_CONTACTABLE + ")";
 			String filter = filterTxt.getText();
 			String currVal = ConnectJcrUtils.get(mailingList, Property.JCR_TITLE);
 

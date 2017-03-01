@@ -35,6 +35,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -548,13 +549,41 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Call {@link Row#getNode()} catching {@link RepositoryException}
+	 * Call {@link Session#getNode()} catching {@link RepositoryException}
 	 */
 	public static Node getNode(Session session, String absPath) {
 		try {
 			return session.getNode(absPath);
 		} catch (RepositoryException re) {
 			throw new ConnectException("Unable to retrieve Node at path " + absPath, re);
+		}
+	}
+
+	/**
+	 * If session.absParentPath exists and is visible, build a relative path
+	 * with the passed relative subpath and returns the node at corresponding
+	 * relative path if it exists
+	 * 
+	 * Call {@link Session#getNode()} catching {@link RepositoryException}
+	 */
+	public static Node getNode(Session session, String absParentPath, String... childRelPath) {
+		try {
+			if (EclipseUiUtils.isEmpty(absParentPath))
+				absParentPath = "/";
+			if (!session.itemExists(absParentPath))
+				throw new ConnectException("Node at " + absParentPath + " does not exist or is not visible");
+			StringBuilder builder = new StringBuilder();
+			for (String rp : childRelPath)
+				builder.append(rp).append("/");
+			String relPath = builder.substring(0, builder.length() - 1);
+			Node parent = session.getNode(absParentPath);
+			if (parent.hasNode(relPath))
+				return parent.getNode(relPath);
+			else
+				return null;
+		} catch (RepositoryException re) {
+			throw new ConnectException(
+					"Unable to retrieve Node at path " + absParentPath + " with child rel path " + childRelPath, re);
 		}
 	}
 

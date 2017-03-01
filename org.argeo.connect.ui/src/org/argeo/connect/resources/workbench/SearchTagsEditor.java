@@ -15,6 +15,7 @@ import javax.jcr.query.Query;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.resources.ResourcesConstants;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesRole;
 import org.argeo.connect.resources.ResourcesService;
@@ -179,8 +180,9 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshStaticFilteredList() {
 		try {
-			String queryStr = XPathUtils.descendantFrom(resourcesService.getDefaultBasePath()) + "//element(*, "
-					+ tagInstanceType + ")";
+			String type = ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE;
+			String queryStr = XPathUtils.descendantFrom(
+					"/" + resourcesService.getBaseRelPath(type) + "//element(*, " + tagInstanceType + ")");
 			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt.getText());
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				queryStr += "[" + attrQuery + "]";

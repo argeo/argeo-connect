@@ -37,6 +37,12 @@ public class ResourcesServiceImpl implements ResourcesService {
 	private final static Log log = LogFactory.getLog(ResourcesServiceImpl.class);
 
 	/* API METHODS */
+	@Override
+	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+			throws RepositoryException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public String getAppBaseName() {
@@ -50,19 +56,42 @@ public class ResourcesServiceImpl implements ResourcesService {
 	}
 
 	@Override
-	public String getDefaultRelPath(String nodeType, String tag) {
-		if (ResourcesTypes.RESOURCES_TAG.equals(nodeType)) {
+	public String getDefaultRelPath(String nodeType, String id) {
+		if (ResourcesTypes.RESOURCES_TAG.equals(nodeType) | ResourcesTypes.RESOURCES_ENCODED_TAG.equals(nodeType)) {
 			// remove trailing and starting space
-			tag = tag.trim();
-			String cleanedTag = JcrUtils.replaceInvalidChars(tag).trim();
+			id = id.trim();
+			String cleanedTag = JcrUtils.replaceInvalidChars(id).trim();
 			// corner case when second character is a space
 			if (cleanedTag.charAt(1) == ' ')
 				cleanedTag = cleanedTag.charAt(0) + ' ' + cleanedTag.substring(2);
 			String relPath = JcrUtils.firstCharsToPath(cleanedTag, 2);
 			return relPath + "/" + cleanedTag;
+		} else if (ResourcesTypes.RESOURCES_NODE_TEMPLATE.equals(nodeType))
+			return ResourcesNames.RESOURCES_TEMPLATES + "/" + id;
+		else if (ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE.equals(nodeType)) {
+			log.warn("Deprecated method argument : " + nodeType);
+			return ResourcesNames.RESOURCES_TEMPLATES + "/" + id;
+		} else if (ResourcesTypes.RESOURCES_TAG_PARENT.equals(nodeType))
+			return ResourcesNames.RESOURCES_TAG_LIKE + "/" + id;
+		else if (ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE.equals(nodeType)) {
+			log.warn("Deprecated method argument : " + nodeType);
+			return ResourcesNames.RESOURCES_TAG_LIKE + "/" + id;
 		} else
 			return null;
 	}
+
+	// private String getPathForId(String resourceType, String id) {
+	// if (ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE.equals(resourceType))
+	// return "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" +
+	// ResourcesNames.RESOURCES_TEMPLATES + "/" + id;
+	// else if
+	// (ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE.equals(resourceType))
+	// return "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" +
+	// ResourcesNames.RESOURCES_TAG_LIKE + "/" + id;
+	// else
+	// throw new ConnectException("Unknown resource type " + resourceType + "
+	// for id " + id);
+	// }
 
 	@Override
 	public boolean isKnownType(Node entity) {
@@ -131,7 +160,8 @@ public class ResourcesServiceImpl implements ResourcesService {
 
 	@Override
 	public Node getNodeTemplate(Session session, String templateId) {
-		String path = getPathForId(ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE, templateId);
+		String path = "/" + getAppBaseName() + "/"
+				+ getDefaultRelPath(ResourcesTypes.RESOURCES_NODE_TEMPLATE, templateId);
 		try {
 			if (session.nodeExists(path)) {
 				return session.getNode(path);
@@ -150,7 +180,8 @@ public class ResourcesServiceImpl implements ResourcesService {
 		if (node != null)
 			return node;
 		else {
-			String path = getPathForId(ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE, currId);
+			String path = "/" + getAppBaseName() + "/"
+					+ getDefaultRelPath(ResourcesTypes.RESOURCES_NODE_TEMPLATE, currId);
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (!session.nodeExists(parPath))
@@ -233,7 +264,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 		if (node != null)
 			return node;
 		else {
-			String path = getPathForId(ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE, currId);
+			String path = "/" + getAppBaseName() + "/" + getDefaultRelPath(ResourcesTypes.RESOURCES_TAG_PARENT, currId);
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (!session.nodeExists(parPath))
@@ -261,7 +292,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 
 	@Override
 	public Node getTagLikeResourceParent(Session session, String tagId) {
-		String path = getPathForId(ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE, tagId);
+		String path = "/" + getAppBaseName() + "/" + getDefaultRelPath(ResourcesTypes.RESOURCES_TAG_PARENT, tagId);
 		try {
 			if (session.nodeExists(path)) {
 				return session.getNode(path);
@@ -687,15 +718,6 @@ public class ResourcesServiceImpl implements ResourcesService {
 		} catch (RepositoryException re) {
 			throw new ConnectException("Unable to get values for " + tagParent + " with filter " + filter, re);
 		}
-	}
-
-	private String getPathForId(String resourceType, String id) {
-		if (ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE.equals(resourceType))
-			return "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" + ResourcesNames.RESOURCES_TEMPLATES + "/" + id;
-		else if (ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE.equals(resourceType))
-			return "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" + ResourcesNames.RESOURCES_TAG_LIKE + "/" + id;
-		else
-			throw new ConnectException("Unknown resource type " + resourceType + " for id " + id);
 	}
 
 	@Override

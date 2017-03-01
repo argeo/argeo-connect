@@ -41,7 +41,8 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 	public PersonCsvFileParser(Session adminSession, ResourcesService resourceService, PeopleService peopleService,
 			Resource images) {
 		super(adminSession, resourceService, peopleService, images);
-		peopleParentNode = ConnectJcrUtils.getNode(adminSession, peopleService.getDefaultBasePath());
+		peopleParentNode = ConnectJcrUtils.getNode(adminSession, null,
+				peopleService.getBaseRelPath(PeopleTypes.PEOPLE_PERSON));
 	}
 
 	public PersonCsvFileParser(Session adminSession, ResourcesService resourceService, PeopleService peopleService) {

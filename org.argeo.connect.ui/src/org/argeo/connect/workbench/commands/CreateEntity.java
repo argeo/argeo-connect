@@ -42,27 +42,28 @@ public class CreateEntity extends AbstractHandler {
 		String nodeType = event.getParameter(PARAM_TARGET_NODE_TYPE);
 
 		Session session = null;
-		Node newNode = null;
+		Node tmpNode = null;
 		try {
 			session = repository.login();
-			Node parent = appService.getDraftParent(session);
+			Node tmpParent = appService.getDraftParent(session);
 			String uuid = UUID.randomUUID().toString();
-			newNode = parent.addNode(uuid);
-			newNode.addMixin(nodeType);
-			newNode.setProperty(ConnectNames.CONNECT_UID, uuid);
+			tmpNode = tmpParent.addNode(uuid);
+			tmpNode.addMixin(nodeType);
+			tmpNode.setProperty(ConnectNames.CONNECT_UID, uuid);
 
-			Wizard wizard = appWorkbenchService.getCreationWizard(newNode);
+			Wizard wizard = appWorkbenchService.getCreationWizard(tmpNode);
 			WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
+				Node parent = session.getNode("/" + appService.getBaseRelPath(nodeType));
+				Node newNode = appService.createEntity(parent, nodeType, tmpNode);
 				// Save the newly created entity without creating a base version
 				newNode = appService.saveEntity(newNode, false);
 				// Open the corresponding editor
 				String jcrId = newNode.getIdentifier();
 				ConnectWorkbenchUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
-
 				return newNode.getPath();
 			} else {
 				// This will try to remove the newly created temporary Node if
@@ -70,7 +71,7 @@ public class CreateEntity extends AbstractHandler {
 				JcrUtils.discardQuietly(session);
 			}
 		} catch (RepositoryException e) {
-			throw new ConnectException("unexpected JCR error while opening " + "editor for newly created programm", e);
+			throw new ConnectException("unexpected JCR error while opening editor for newly created entity", e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}

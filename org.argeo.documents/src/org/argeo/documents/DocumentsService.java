@@ -33,6 +33,12 @@ public class DocumentsService implements AppService {
 	// private final static String NODE_PREFIX = "node://";
 
 	@Override
+	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+			throws RepositoryException {
+		return null;
+	}
+
+	@Override
 	public String getAppBaseName() {
 		return DocumentsConstants.DOCUMENTS_APP_LBL;
 	}
@@ -253,5 +259,4 @@ public class DocumentsService implements AppService {
 			throw new DocumentsException("Badly formatted path " + nodePath, e);
 		}
 	}
-
 }

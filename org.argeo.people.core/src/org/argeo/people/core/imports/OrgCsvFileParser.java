@@ -39,7 +39,8 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 	public OrgCsvFileParser(Session adminSession, ResourcesService resourceService, PeopleService peopleService,
 			Resource images) {
 		super(adminSession, resourceService, peopleService, images);
-		peopleParentNode = ConnectJcrUtils.getNode(adminSession, peopleService.getDefaultBasePath());
+		peopleParentNode = ConnectJcrUtils.getNode(adminSession, null,
+				peopleService.getBaseRelPath(PeopleTypes.PEOPLE_ORG));
 	}
 
 	public OrgCsvFileParser(Session adminSession, PeopleService peopleService, ResourcesService resourceService) {
@@ -63,7 +64,8 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 			// Website and dummy picture
 			String webSite = line.get("people:websiteUrl");
 			if (notEmpty(webSite)) {
-				PeopleJcrUtils.createWebsite(getPeopleService(), getResourcesService(), orga, webSite, true, null, null);
+				PeopleJcrUtils.createWebsite(getPeopleService(), getResourcesService(), orga, webSite, true, null,
+						null);
 
 				// picture
 				InputStream is = null;

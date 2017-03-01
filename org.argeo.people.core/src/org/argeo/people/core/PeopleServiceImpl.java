@@ -23,6 +23,7 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.RemoteJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.ContactService;
@@ -47,27 +48,65 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private ContactService contactService = new ContactServiceImpl(this);
 
 	@Override
+	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrc) throws RepositoryException {
+		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType) || PeopleTypes.PEOPLE_ORG.equals(nodeType)) {
+			String peopleUid = ConnectJcrUtils.get(srcNode, ConnectNames.CONNECT_UID);
+			if (isEmpty(peopleUid))
+				throw new PeopleException(
+						"Unable to define default path for " + srcNode + ". No property people:uid is defined");
+			String relPath = getDefaultRelPath(nodeType, peopleUid);
+			Node createdNode = JcrUtils.mkdirs(parent, relPath);
+			createdNode.addMixin(nodeType);
+			RemoteJcrUtils.copy(srcNode, createdNode, true);
+			if (removeSrc)
+				srcNode.remove();
+			return createdNode;
+		}
+		return null;
+	}
+
+	@Override
+	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
+		try {
+			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON) || entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+				entity = getPersonService().saveEntity(entity, publish);
+			else
+				throw new PeopleException("Unknown entity type for " + entity);
+			return entity;
+		} catch (RepositoryException e) {
+			throw new PeopleException("Unable to save " + entity, e);
+		}
+	}
+
+	@Override
 	public String getAppBaseName() {
 		return PeopleConstants.PEOPLE_APP_BASE_NAME;
 	}
 
 	@Override
-	public String getDisplayName(Node entity) {
-		String displayName = null;
-		try {
-			if (entity.hasProperty(PEOPLE_DISPLAY_NAME))
-				displayName = entity.getProperty(PEOPLE_DISPLAY_NAME).getString();
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				displayName = getPersonService().getDisplayName(entity);
-			else if (entity.isNodeType(NodeType.MIX_TITLE))
-				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
-			else
-				throw new PeopleException("Display name not defined for type " + entity.getPrimaryNodeType().getName()
-						+ " - node: " + entity);
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get display name for node " + entity, e);
-		}
-		return displayName;
+	public String getBaseRelPath(String nodeType) {
+		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType) || ConnectTypes.CONNECT_LDAP_PERSON.equals(nodeType)
+				|| PeopleTypes.PEOPLE_ORG.equals(nodeType) || ConnectTypes.CONNECT_LDAP_ORG.equals(nodeType)
+				|| PeopleTypes.PEOPLE_CONTACTABLE.equals(nodeType))
+			return getAppBaseName();
+		else
+			return null;
+	}
+
+	@Override
+	public String getDefaultRelPath(Node entity) throws RepositoryException {
+		String peopleUid = ConnectJcrUtils.get(entity, ConnectNames.CONNECT_UID);
+		if (isEmpty(peopleUid))
+			throw new PeopleException(
+					"Unable to define default path for " + entity + ". No property people:uid is defined");
+		else
+			return getDefaultRelPath(null, peopleUid);
+	}
+
+	@Override
+	public String getDefaultRelPath(String nodeType, String peopleUid) {
+		String path = JcrUtils.firstCharsToPath(peopleUid, 2) + "/" + peopleUid;
+		return path;
 	}
 
 	@Override
@@ -128,116 +167,27 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	@Override
-	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
+	public String getDisplayName(Node entity) {
+		String displayName = null;
 		try {
-			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON) || entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-				entity = getPersonService().saveEntity(entity, publish);
+			if (entity.hasProperty(PEOPLE_DISPLAY_NAME))
+				displayName = entity.getProperty(PEOPLE_DISPLAY_NAME).getString();
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
+				displayName = getPersonService().getDisplayName(entity);
+			else if (entity.isNodeType(NodeType.MIX_TITLE))
+				displayName = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else
-				throw new PeopleException("Unknown entity type for " + entity);
-			return entity;
+				throw new PeopleException("Display name not defined for type " + entity.getPrimaryNodeType().getName()
+						+ " - node: " + entity);
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to save " + entity, e);
+			throw new PeopleException("Unable to get display name for node " + entity, e);
 		}
+		return displayName;
 	}
-
-	@Override
-	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		String peopleUid = ConnectJcrUtils.get(entity, ConnectNames.CONNECT_UID);
-		if (isEmpty(peopleUid))
-			throw new PeopleException(
-					"Unable to define default path for " + entity + ". No property people:uid is defined");
-		else
-			return getDefaultRelPath(null, peopleUid);
-	}
-
-	@Override
-	public String getDefaultRelPath(String nodeType, String peopleUid) {
-		String path = JcrUtils.firstCharsToPath(peopleUid, 2) + "/" + peopleUid;
-		return path;
-	}
-
-	// /**
-	// * Typically used to move temporary import nodes to the main business
-	// * repository
-	// *
-	// * FIXME: induce the necessity to give JCR_READ right to almost everyone
-	// * that might modify a node in the repository: the mkdir method using the
-	// * session needs having JCR read rights on all nodes from the root node to
-	// * function correctly
-	// */
-	//
-	// @Override
-	// public Node checkPathAndMoveIfNeeded(Node entity, String entityNodeType)
-	// throws RepositoryException {
-	// String destPath = getDefaultPath(entityNodeType, entity);
-	// if (destPath.equals(entity.getPath()))
-	// return entity;
-	// else {
-	// // FIXME there are strange side effects for user that have no read
-	// // access on root if the save is not made regularly on this method.
-	// // Find the bug and fix.
-	// Session session = entity.getSession();
-	// String parPath = JcrUtils.parentPath(destPath);
-	// String typeBasePath = getBasePath(entityNodeType);
-	// String parRelPath = null;
-	// if (parPath.startsWith(typeBasePath))
-	// parRelPath = parPath.substring(typeBasePath.length() + 1);
-	// else
-	// throw new PeopleException("Unable to move entity of type " +
-	// entityNodeType + ", Computed parent path "
-	// + parPath + " does not match.");
-	// session.save();
-	// Node parNode = JcrUtils.mkdirs(session.getNode(typeBasePath), parRelPath,
-	// NodeType.NT_UNSTRUCTURED,
-	// NodeType.NT_UNSTRUCTURED);
-	// session.save();
-	// Node target = parNode.addNode(JcrUtils.lastPathElement(destPath),
-	// entity.getPrimaryNodeType().getName());
-	// RemoteJcrUtils.copy(entity, target, true);
-	// updateReferenceAfterMove(target, entity.getIdentifier(),
-	// target.getIdentifier());
-	// session.save();
-	// entity.remove();
-	// session.save();
-	// return target;
-	// }
-	// }
-	//
-	// protected void updateReferenceAfterMove(Node currentNode, String
-	// oldJcrId, String newJcrId)
-	// throws RepositoryException {
-	// PropertyIterator pit = currentNode.getProperties();
-	// while (pit.hasNext()) {
-	// Property prop = pit.nextProperty();
-	// if (prop.getType() == PropertyType.REFERENCE || prop.getType() ==
-	// PropertyType.WEAKREFERENCE) {
-	// if (prop.isMultiple()) {
-	// Value[] values = prop.getValues();
-	// List<String> newIds = new ArrayList<String>();
-	// boolean hasChanged = false;
-	//
-	// for (Value val : values) {
-	// String currValueStr = val.getString();
-	// if (oldJcrId.equals(currValueStr)) {
-	// newIds.add(newJcrId);
-	// hasChanged = true;
-	// } else
-	// newIds.add(currValueStr);
-	// }
-	// if (hasChanged)
-	// prop.setValue(newIds.toArray(new String[0]));
-	// } else if (oldJcrId.equals(prop.getString()))
-	// prop.setValue(newJcrId);
-	// }
-	// }
-	//
-	// NodeIterator nit = currentNode.getNodes();
-	// while (nit.hasNext())
-	// updateReferenceAfterMove(nit.nextNode(), oldJcrId, newJcrId);
-	// }
 
 	/**
-	 * Simply look for primary information and update primary cache if needed
+	 * Simply looks for primary information and updates the primary cache if
+	 * needed
 	 */
 	@Override
 	public void updatePrimaryCache(Node entity) throws PeopleException, RepositoryException {
