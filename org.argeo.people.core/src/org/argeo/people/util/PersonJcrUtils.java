@@ -15,11 +15,13 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
+import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 
 /**
@@ -115,8 +117,9 @@ public class PersonJcrUtils implements PeopleNames {
 	 *            OPTIONAL: the nature of the subject in this relation, for
 	 *            instance "Actor" or "Engineer" - Not yet implemented
 	 */
-	public static Node addJob(Node person, Node org, String department, String role, String title, boolean isPrimary,
-			Calendar dateBegin, Calendar dateEnd, Boolean isCurrent) throws RepositoryException {
+	public static Node addJob(ResourcesService resourcesService, PeopleService peopleService, Node person, Node org,
+			String department, String role, String title, boolean isPrimary, Calendar dateBegin, Calendar dateEnd,
+			Boolean isCurrent) throws RepositoryException {
 
 		Node jobs = JcrUtils.mkdirs(person, PEOPLE_JOBS);
 		Node job = jobs.addNode(org.getName());
@@ -135,6 +138,9 @@ public class PersonJcrUtils implements PeopleNames {
 			job.setProperty(PEOPLE_DATE_END, dateEnd);
 		if (isCurrent != null)
 			job.setProperty(PEOPLE_IS_CURRENT, isCurrent);
+
+		if (isPrimary)
+			PeopleJcrUtils.markAsPrimary(resourcesService, peopleService, jobs, job);
 		// TODO manage primary concept
 		return job;
 	}
@@ -145,9 +151,10 @@ public class PersonJcrUtils implements PeopleNames {
 	 * @param role
 	 *            the role of the given entity in this group. Cannot be null
 	 */
-	public static Node addJob(Node person, Node org, String department, String role, boolean isPrimary)
-			throws RepositoryException {
-		return addJob(person, org, department, role, null, isPrimary, null, null, null);
+	public static Node addJob(ResourcesService resourcesService, PeopleService peopleService, Node person, Node org,
+			String department, String role, boolean isPrimary) throws RepositoryException {
+		return addJob(resourcesService, peopleService, person, org, department, role, null, isPrimary, null, null,
+				null);
 	}
 
 	/**
@@ -156,8 +163,9 @@ public class PersonJcrUtils implements PeopleNames {
 	 * @param role
 	 *            the role of the given entity in this group. Cannot be null
 	 */
-	public static Node addJob(Node person, Node org, String role, boolean isPrimary) throws RepositoryException {
-		return addJob(person, org, null, role, null, isPrimary, null, null, null);
+	public static Node addJob(ResourcesService resourcesService, PeopleService peopleService, Node person, Node org,
+			String role, boolean isPrimary) throws RepositoryException {
+		return addJob(resourcesService, peopleService, person, org, null, role, null, isPrimary, null, null, null);
 	}
 
 	public static Node getPrimaryJob(Node person) throws RepositoryException {

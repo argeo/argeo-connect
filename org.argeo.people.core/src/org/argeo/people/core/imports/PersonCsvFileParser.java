@@ -150,7 +150,8 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			if (notEmpty(orgWebsite)) {
 				Node orga = OrgJcrUtils.getOrgWithWebSite(getSession(), orgWebsite);
 				if (orga != null) {
-					PersonJcrUtils.addJob(person, orga, line.get(PEOPLE_ROLE), false);
+					PersonJcrUtils.addJob(getResourcesService(), getPeopleService(), person, orga,
+							line.get(PEOPLE_ROLE), false);
 				}
 			}
 
