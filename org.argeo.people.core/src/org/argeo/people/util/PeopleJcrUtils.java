@@ -433,21 +433,21 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * 
 	 * @return
 	 */
-	public static Node createWebsite(PeopleService peopleService, ResourcesService resourceService, Node parentNode,
+	public static Node createWebsite(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			String urlString, boolean primary, String nature, String label) {
-		return createContact(peopleService, resourceService, parentNode, PeopleTypes.PEOPLE_URL,
+		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_URL,
 				JcrUtils.replaceInvalidChars(urlString), urlString, primary, nature, null, label);
 	}
 
-	public static Node createSocialMedia(PeopleService peopleService, ResourcesService resourceService, Node parentNode,
+	public static Node createSocialMedia(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			String urlString, boolean primary, String nature, String category, String label) {
-		return createContact(peopleService, resourceService, parentNode, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
+		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
 				JcrUtils.replaceInvalidChars(urlString), urlString, primary, nature, category, label);
 	}
 
-	public static Node createImpp(PeopleService peopleService, ResourcesService resourceService, Node parentNode,
+	public static Node createImpp(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			String urlString, boolean primary, String nature, String category, String label) {
-		return createContact(peopleService, resourceService, parentNode, PeopleTypes.PEOPLE_IMPP,
+		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_IMPP,
 				JcrUtils.replaceInvalidChars(urlString), urlString, primary, nature, category, label);
 	}
 
@@ -465,7 +465,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 * @return
 	 */
-	public static Node createPhone(PeopleService peopleService, ResourcesService resourceService, Node parentNode,
+	public static Node createPhone(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			String phoneNumber, boolean primary, String nature, String category, String label) {
 		// Dirty work around to address node name issue when some invalid phone
 		// number has been added
@@ -474,7 +474,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		if (EclipseUiUtils.isEmpty(nodeName) || EclipseUiUtils.isEmpty(numbers))
 			return null;
 		else
-			return createContact(peopleService, resourceService, parentNode, PeopleTypes.PEOPLE_PHONE, nodeName,
+			return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_PHONE, nodeName,
 					phoneNumber, primary, nature, category, label);
 	}
 
@@ -497,10 +497,10 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 * @return
 	 */
-	public static Node createAddress(PeopleService peopleService, ResourcesService resourceService, Node parentNode,
+	public static Node createAddress(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			String street1, String street2, String zipCode, String city, String state, String country, boolean primary,
 			String nature, String category, String label) {
-		return createAddress(peopleService, resourceService, parentNode, street1, street2, zipCode, city, state,
+		return createAddress(peopleService, resourcesService, parentNode, street1, street2, zipCode, city, state,
 				country, null, primary, nature, category, label);
 	}
 
@@ -523,10 +523,10 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 * @return
 	 */
-	public static Node createWorkAddress(PeopleService peopleService, ResourcesService resourceService, Node parentNode,
+	public static Node createWorkAddress(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			Node referencedOrg, boolean primary, String category, String label) {
 		try {
-			Node address = createContact(peopleService, resourceService, parentNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS,
+			Node address = createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS,
 					PeopleTypes.PEOPLE_POSTAL_ADDRESS, "", false, ContactValueCatalogs.CONTACT_NATURE_PRO,
 					referencedOrg, category, label);
 			address.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
@@ -535,7 +535,7 @@ public class PeopleJcrUtils implements PeopleNames {
 				address.setProperty(PEOPLE_REF_UID, referencedOrg.getProperty(ConnectNames.CONNECT_UID).getString());
 
 			if (primary)
-				markAsPrimary(resourceService, peopleService, parentNode, address);
+				markAsPrimary(resourcesService, peopleService, parentNode, address);
 
 			return address;
 		} catch (RepositoryException re) {
