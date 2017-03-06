@@ -97,7 +97,7 @@ public class TagLikeListPart extends Composite {
 		// Cache some context object to ease implementation
 		session = ConnectJcrUtils.getSession(taggable);
 		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-
+		
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
 		rl.marginLeft = rl.marginTop = rl.marginBottom = 0;

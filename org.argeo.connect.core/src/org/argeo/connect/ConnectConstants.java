@@ -17,4 +17,8 @@ public interface ConnectConstants {
 
 	// System properties known by the system
 	String SYS_PROP_ID_PREVENT_TAG_ADDITION = "org.argeo.connect.resources.preventTagAddition";
+	
+	// Various
+	String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	String USERNAME_PATTERN = "^[a-zA-Z]+[.a-zA-Z0-9_-]{2,31}$";
 }
