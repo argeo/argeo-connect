@@ -27,7 +27,7 @@ public interface ContactService {
 	 * Returns the list of possible values given the other information we already
 	 * have for this contact instance
 	 */
-	public String[] getContactPossibleValues(Node contact, String property);
+	public String[] getContactPossibleCategories(Node contact);
 
 	/**
 	 * Returns the list of valid categories, depending on the contact type and contact

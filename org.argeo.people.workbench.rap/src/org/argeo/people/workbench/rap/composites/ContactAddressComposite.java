@@ -172,16 +172,15 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					120);
 
 			Combo catCmb = new Combo(parent, SWT.BOTTOM | SWT.READ_ONLY);
-			catCmb.setItems(
-					peopleService.getContactService().getContactPossibleValues(contactNode, PEOPLE_CONTACT_CATEGORY));
+			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));
 
 			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(), "Choose an organisation",
 					contactNode.getSession(), appWorkbenchService, contactNode.getParent().getParent());
 
 			// REFRESH VALUES
-			ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
-					"Label");
-			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY);
+			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, Property.JCR_TITLE);
+			ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, Property.JCR_DESCRIPTION,
+					"Description");
 
 			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_UID)) {
 				Node linkedOrg = peopleService.getEntityByUid(contactNode.getSession(), null,
@@ -193,10 +192,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			}
 
 			// Listeners
-			ConnectWorkbenchUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
-			ConnectWorkbenchUtils.addComboSelectionListener(formPart, catCmb, contactNode,
-					PeopleNames.PEOPLE_CONTACT_CATEGORY, PropertyType.STRING);
+			ConnectWorkbenchUtils.addTxtModifyListener(formPart, catCmb, contactNode, Property.JCR_TITLE,
+					PropertyType.STRING);
+			ConnectWorkbenchUtils.addTxtModifyListener(formPart, labelTxt, contactNode, Property.JCR_DESCRIPTION,
+					PropertyType.STRING);
 
 			chooseOrgLk.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = -7118320199160680131L;
@@ -261,8 +260,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			final Text labelTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "Label", "", 0);
 
 			Combo catCmb = new Combo(parent, SWT.READ_ONLY);
-			catCmb.setItems(
-					peopleService.getContactService().getContactPossibleValues(contactNode, PEOPLE_CONTACT_CATEGORY));
+			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));
 
 			// Refresh
 			ConnectWorkbenchUtils.refreshFormText(editor, streetTxt, contactNode, PeopleNames.PEOPLE_STREET, "Street");
@@ -273,9 +271,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			ConnectWorkbenchUtils.refreshFormText(editor, stateTxt, contactNode, PeopleNames.PEOPLE_STATE, "State");
 			ConnectWorkbenchUtils.refreshFormText(editor, geoPointTxt, contactNode, PeopleNames.PEOPLE_GEOPOINT,
 					"Geo point");
-			ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
-					"Label");
-			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY);
+			ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, Property.JCR_DESCRIPTION,
+					"Description");
+			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, Property.JCR_TITLE);
 
 			// add listeners
 			addAddressTxtModifyListener(formPart, streetTxt, contactNode, PeopleNames.PEOPLE_STREET,
@@ -288,10 +286,10 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			addAddressTxtModifyListener(formPart, stateTxt, contactNode, PeopleNames.PEOPLE_STATE, PropertyType.STRING);
 			ConnectWorkbenchUtils.addTxtModifyListener(formPart, geoPointTxt, contactNode, PeopleNames.PEOPLE_GEOPOINT,
 					PropertyType.STRING);
-			ConnectWorkbenchUtils.addTxtModifyListener(formPart, labelTxt, contactNode,
-					PeopleNames.PEOPLE_CONTACT_LABEL, PropertyType.STRING);
-			ConnectWorkbenchUtils.addComboSelectionListener(formPart, catCmb, contactNode,
-					PeopleNames.PEOPLE_CONTACT_CATEGORY, PropertyType.STRING);
+			ConnectWorkbenchUtils.addTxtModifyListener(formPart, catCmb, contactNode, Property.JCR_TITLE,
+					PropertyType.STRING);
+			ConnectWorkbenchUtils.addTxtModifyListener(formPart, labelTxt, contactNode, Property.JCR_DESCRIPTION,
+					PropertyType.STRING);
 
 			// specific for drop downs
 			String countryIso = ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY);

@@ -106,10 +106,9 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 				PeopleJcrUtils.createPhone(getPeopleService(), getResourcesService(), orga, phone, true, null,
 						ContactValueCatalogs.CONTACT_CAT_MAIN, null);
 			phone = line.get("people:faxNb");
-
 			if (notEmpty(phone))
-				PeopleJcrUtils.createPhone(getPeopleService(), getResourcesService(), orga, phone, true, null,
-						ContactValueCatalogs.CONTACT_CAT_FAX, null);
+				PeopleJcrUtils.createContact(getPeopleService(), getResourcesService(), orga, PeopleTypes.PEOPLE_FAX,
+						phone, true, null, null);
 
 			// Tags
 			String tags = line.get(ResourcesNames.CONNECT_TAGS);

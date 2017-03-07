@@ -53,13 +53,13 @@ public interface PeopleNames {
 	String PEOPLE_PMAIL = LdapAttrs.mail.property();
 	String PEOPLE_PURL = LdapAttrs.associatedDomain.property();
 
-	String PEOPLE_CACHE_PORG = "people:cachePOrg";
+	String PEOPLE_PORG = "people:cachePOrg";
 
 	/* CONTACTS */
 	String PEOPLE_CONTACT_VALUE = "people:contactValue";
-	String PEOPLE_CONTACT_NATURE = "people:contactNature"; // Pro or private
-	String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";
-	String PEOPLE_CONTACT_LABEL = "people:contactLabel";
+//	String PEOPLE_CONTACT_NATURE = "people:contactNature"; // Pro or private
+//	String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";
+//	String PEOPLE_CONTACT_LABEL = "people:contactLabel";
 	// String PEOPLE_CONTACT_URI = "people:contactUri";
 
 	// Phone: enable display of current time for this time zone

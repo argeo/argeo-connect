@@ -107,8 +107,8 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			// CONTACTS
 			String phone = line.get("people:phoneNumber").trim();
 			if (notEmpty(phone)) {
-				PeopleJcrUtils.createPhone(getPeopleService(), getResourcesService(), person, phone, true,
-						ContactValueCatalogs.CONTACT_NATURE_PRO, ContactValueCatalogs.CONTACT_CAT_MOBILE, null);
+				PeopleJcrUtils.createContact(getPeopleService(), getResourcesService(), person,
+						PeopleTypes.PEOPLE_MOBILE, phone, true, ContactValueCatalogs.CONTACT_NATURE_PRO, null);
 			}
 
 			phone = line.get("PhoneDirect").trim();

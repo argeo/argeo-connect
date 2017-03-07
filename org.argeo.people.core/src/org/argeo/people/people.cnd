@@ -113,11 +113,11 @@ mixin
 
 
 // legacy we rather use the mix:description property. TODO remove
-- people:contactNature (STRING) // Only for person: Work, Home or Other
-- people:contactCategory (STRING) 	// Category for the given type : for instance a Home phone can be:
+//- people:contactNature (STRING) // Only for person: Work, Home or Other
+// - people:contactCategory (STRING) 	// Category for the given type : for instance a Home phone can be:
 									// Mobile, Direct, VoIP, Fax or other
-- people:contactLabel (STRING) // an optional label 
-- people:contactUri (URI) 	// OPTIONNAL an URI translated from the contact value 
+// - people:contactLabel (STRING) // an optional label 
+// - people:contactUri (URI) 	// OPTIONNAL an URI translated from the contact value 
 							// to be used directly by the system.
 
 // CONTACT REFERENCE

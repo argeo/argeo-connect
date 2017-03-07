@@ -12,6 +12,7 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
@@ -120,9 +121,10 @@ public class PeopleUiSnippets {
 	public static String getContactMetaData(Node node) {
 		StringBuilder builder = new StringBuilder();
 
-		String nature = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_NATURE);
-		String category = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_CATEGORY);
-		String label = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_LABEL);
+		String nature = ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)
+				? ContactValueCatalogs.CONTACT_CAT_OFFICE : ContactValueCatalogs.CONTACT_CAT_HOME;
+		String category = ConnectJcrUtils.get(node, Property.JCR_TITLE);
+		String label = ConnectJcrUtils.get(node, Property.JCR_DESCRIPTION);
 
 		if (notEmpty(nature) || notEmpty(category) || notEmpty(label)) {
 			builder.append(ConnectUiConstants.NB_DOUBLE_SPACE + "[");
@@ -261,7 +263,7 @@ public class PeopleUiSnippets {
 				person = entity;
 				Node currContact = PeopleJcrUtils.getPrimaryContact(person, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 				if (!(currContact == null || !currContact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))) {
-					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact),null,
+					org = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact), null,
 							ConnectJcrUtils.get(currContact, PeopleNames.PEOPLE_REF_UID));
 				}
 			} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))

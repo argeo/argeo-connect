@@ -8,7 +8,6 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
-import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
@@ -41,22 +40,26 @@ public class PrimAddressLP extends SimpleJcrNodeLabelProvider {
 			if (currContact == null)
 				return "";
 
-			String contactNature = ConnectJcrUtils.get(currContact, PeopleNames.PEOPLE_CONTACT_NATURE);
+			// String contactNature = ConnectJcrUtils.get(currContact,
+			// PeopleNames.PEOPLE_CONTACT_NATURE);
 			if (currContact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF)) {
 				String refUid = ConnectJcrUtils.get(currContact, PeopleNames.PEOPLE_REF_UID);
 				if (EclipseUiUtils.isEmpty(refUid)) {
-					if (EclipseUiUtils.isEmpty(contactNature)
-							|| ContactValueCatalogs.CONTACT_NATURE_PRIVATE.equals(contactNature)
-							|| ContactValueCatalogs.CONTACT_OTHER.equals(contactNature))
-						return ConnectJcrUtils.get(currContact, propertyName);
-					else
-						return "";
+					// if (EclipseUiUtils.isEmpty(contactNature)
+					// ||
+					// ContactValueCatalogs.CONTACT_NATURE_PRIVATE.equals(contactNature)
+					// ||
+					// ContactValueCatalogs.CONTACT_OTHER.equals(contactNature))
+					// return ConnectJcrUtils.get(currContact, propertyName);
+					// else
+					return "";
 				}
 				Node referencedEntity = peopleService.getEntityByUid(ConnectJcrUtils.getSession(currContact), null,
 						refUid);
 				if (referencedEntity == null)
 					return "";
-				Node referencedContact = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
+				Node referencedContact = PeopleJcrUtils.getPrimaryContact(referencedEntity,
+						PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 				if (referencedContact == null)
 					return "";
 				else

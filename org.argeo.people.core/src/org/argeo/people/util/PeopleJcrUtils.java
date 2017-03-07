@@ -49,7 +49,9 @@ public class PeopleJcrUtils implements PeopleNames {
 
 		Node members = JcrUtils.mkdirs(group, PEOPLE_MEMBERS, NodeType.NT_UNSTRUCTURED);
 		Node member = members.addNode(ConnectJcrUtils.get(entity, Property.JCR_TITLE), PeopleTypes.PEOPLE_MEMBER);
+		member.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
 		member.setProperty(PEOPLE_REF_UID, ConnectJcrUtils.get(entity, ConnectNames.CONNECT_UID));
+		member.setProperty(PEOPLE_REF_TITLE, ConnectJcrUtils.get(entity, Property.JCR_TITLE));
 		member.setProperty(PEOPLE_ROLE, role);
 		if (EclipseUiUtils.notEmpty(title))
 			throw new PeopleException("Position Nature: Unimplemented property ");
@@ -64,22 +66,40 @@ public class PeopleJcrUtils implements PeopleNames {
 	}
 
 	// CONTACTS
+	// public static void setContactLabel(Node contactNode, String label) throws
+	// RepositoryException {
+	// if (EclipseUiUtils.notEmpty(label))
+	// contactNode.setProperty(PEOPLE_CONTACT_LABEL, label);
+	// }
 
-	public static void setContactLabel(Node contactNode, String label) throws RepositoryException {
-		if (EclipseUiUtils.notEmpty(label))
-			contactNode.setProperty(PEOPLE_CONTACT_LABEL, label);
+	public static void setContactCategory(Node contactNode, String contactType, String category)
+			throws RepositoryException {
+		if (EclipseUiUtils.isEmpty(category))
+			category = ContactValueCatalogs.MAPS_CONTACT_TYPES.get(contactType);
+		contactNode.setProperty(Property.JCR_TITLE, category);
 	}
 
-	public static void setContactCategory(Node contactNode, String category) throws RepositoryException {
-		if (EclipseUiUtils.notEmpty(category))
-			contactNode.setProperty(PEOPLE_CONTACT_CATEGORY, category);
-	}
-
+	/**
+	 * Marks a contact as pro if orga in not null by adding a mixin and setting
+	 * corresponding values. if orga is null and the contact is marked as pro,
+	 * it will remove the mixin and the corresponding properties
+	 * 
+	 * @param contactNode
+	 * @param category
+	 * @param orga
+	 * @throws RepositoryException
+	 */
 	public static void setContactNature(Node contactNode, String category, Node orga) throws RepositoryException {
-		if (EclipseUiUtils.notEmpty(category)) {
-			contactNode.setProperty(PEOPLE_CONTACT_NATURE, category);
-			if (category.equals(ContactValueCatalogs.CONTACT_NATURE_PRO) && orga != null)
-				contactNode.setProperty(PEOPLE_REF_UID, orga.getPath());
+		if (orga != null) {
+			contactNode.setProperty(PEOPLE_REF_UID, ConnectJcrUtils.get(orga, ConnectNames.CONNECT_UID));
+			contactNode.setProperty(PEOPLE_REF_TITLE, ConnectJcrUtils.get(orga, Property.JCR_TITLE));
+		} else {
+			if (ConnectJcrUtils.isNodeType(contactNode, PeopleTypes.PEOPLE_CONTACT_REF))
+				contactNode.removeMixin(PeopleTypes.PEOPLE_CONTACT_REF);
+			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_UID))
+				contactNode.getProperty(PeopleNames.PEOPLE_REF_UID).remove();
+			if (contactNode.hasProperty(PeopleNames.PEOPLE_REF_TITLE))
+				contactNode.getProperty(PeopleNames.PEOPLE_REF_TITLE).remove();
 		}
 	}
 
@@ -229,13 +249,10 @@ public class PeopleJcrUtils implements PeopleNames {
 
 			return false;
 
-			// TODO use also nodes order in the future
-
-			// init
+			// TODO rather only rely on nodes order
 			// Node parent = primaryChild.getParent();
 			// String thisNodeType =
 			// primaryChild.getPrimaryNodeType().getName();
-
 			// // Check if something must change
 			// NodeIterator ni = parent.getNodes();
 			// while (ni.hasNext()) {
@@ -246,7 +263,6 @@ public class PeopleJcrUtils implements PeopleNames {
 			// else if (nextNode.isNodeType(thisNodeType))
 			// return false;
 			// }
-			//
 			// throw new PeopleException("We should have found current "
 			// + "node and never reach this point");
 		} catch (RepositoryException re) {
@@ -267,32 +283,17 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static void updatePrimaryCache(ResourcesService resourcesService, PeopleService peopleService,
 			Node parentNode, Node primaryChild, boolean isPrimary) {
 		try {
-			if (primaryChild.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
-				if (isPrimary) {
-					parentNode.setProperty(PEOPLE_PTELEPHONE_NUMBER,
-							ConnectJcrUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
-				} else {
-					if (parentNode.hasProperty(PEOPLE_PTELEPHONE_NUMBER))
-						parentNode.setProperty(PEOPLE_PTELEPHONE_NUMBER, "");
-				}
-			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_MAIL)) {
-				if (isPrimary) {
-					parentNode.setProperty(PEOPLE_PMAIL, ConnectJcrUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
-				} else {
-					if (parentNode.hasProperty(PEOPLE_PMAIL))
-						parentNode.setProperty(PEOPLE_PMAIL, "");
-				}
-			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_URL)) {
-				if (isPrimary) {
-					parentNode.setProperty(PEOPLE_PURL, ConnectJcrUtils.get(primaryChild, PEOPLE_CONTACT_VALUE));
-				} else {
-					if (parentNode.hasProperty(PEOPLE_PURL))
-						parentNode.setProperty(PEOPLE_PURL, "");
-				}
-			} else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
+			if (primaryChild.isNodeType(PeopleTypes.PEOPLE_MOBILE))
+				internalUpdatePrimCache(parentNode, primaryChild, PEOPLE_PMOBILE, isPrimary);
+			else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_PHONE))
+				internalUpdatePrimCache(parentNode, primaryChild, PEOPLE_PTELEPHONE_NUMBER, isPrimary);
+			else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_MAIL))
+				internalUpdatePrimCache(parentNode, primaryChild, PEOPLE_PMAIL, isPrimary);
+			else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_URL))
+				internalUpdatePrimCache(parentNode, primaryChild, PEOPLE_PURL, isPrimary);
+			else if (primaryChild.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 				if (isPrimary) {
 					String cityStr = "", countryStr = "";
-
 					if (primaryChild.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF)
 							&& EclipseUiUtils.notEmpty(ConnectJcrUtils.get(primaryChild, PEOPLE_REF_UID))) {
 						Node linkedOrg = peopleService.getEntityFromNodeReference(primaryChild, PEOPLE_REF_UID);
@@ -325,16 +326,29 @@ public class PeopleJcrUtils implements PeopleNames {
 				if (isPrimary) {
 					Node linkedOrg = peopleService.getEntityFromNodeReference(primaryChild, PEOPLE_REF_UID);
 					if (linkedOrg != null) {
-						parentNode.setProperty(PEOPLE_CACHE_PORG, ConnectJcrUtils.get(linkedOrg, Property.JCR_TITLE));
+						parentNode.setProperty(PEOPLE_PORG, ConnectJcrUtils.get(linkedOrg, Property.JCR_TITLE));
 					}
 				} else {
-					if (parentNode.hasProperty(PEOPLE_CACHE_PORG))
-						parentNode.setProperty(PEOPLE_CACHE_PORG, "");
+					if (parentNode.hasProperty(PEOPLE_PORG))
+						parentNode.setProperty(PEOPLE_PORG, "");
 				}
 			}
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to mark " + primaryChild + " as primary", re);
 		}
+	}
+
+	private static void internalUpdatePrimCache(Node parentNode, Node primaryChild, String cachePropertyName,
+			boolean isPrimary) throws RepositoryException {
+		internalUpdatePrimCache(parentNode, primaryChild, PEOPLE_CONTACT_VALUE, cachePropertyName, isPrimary);
+	}
+
+	private static void internalUpdatePrimCache(Node parentNode, Node primaryChild, String valuePropertyName,
+			String cachePropertyName, boolean isPrimary) throws RepositoryException {
+		if (isPrimary)
+			parentNode.setProperty(cachePropertyName, ConnectJcrUtils.get(primaryChild, valuePropertyName));
+		else if (parentNode.hasProperty(cachePropertyName))
+			parentNode.getProperty(cachePropertyName).remove();
 	}
 
 	/**
@@ -345,20 +359,18 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * @param name
 	 * @param value
 	 * @param primary
-	 * @param nature
-	 *            pro or private
 	 * @param category
 	 *            business type of the current contact, for instance for social
 	 *            media, tweeter, linkedin, ... or other
 	 * @param label
-	 *            an optional label
+	 *            an optional description
 	 * @return
 	 */
 
 	public static Node createContact(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
-			String nodeType, String name, String value, boolean primary, String nature, String category, String label) {
-		return createContact(peopleService, resourcesService, parentNode, nodeType, name, value, primary, nature, null,
-				category, label);
+			String nodeType, String value, boolean primary, String category, String label) {
+		return createContact(peopleService, resourcesService, parentNode, nodeType, value, primary, null, category,
+				label);
 	}
 
 	/**
@@ -382,18 +394,19 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * @return
 	 */
 	public static Node createContact(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
-			String nodeType, String name, String value, boolean primary, String nature, Node linkedOrg, String category,
-			String label) {
+			String nodeType, String value, boolean primary, Node linkedOrg, String category, String label) {
 		try {
 			Node contacts = JcrUtils.mkdirs(parentNode, PEOPLE_CONTACTS, NodeType.NT_UNSTRUCTURED);
-			Node contact = contacts.addNode(name.trim());
+			String name2 = ContactValueCatalogs.MAPS_CONTACT_TYPES.get(nodeType);
+			Node contact = contacts.addNode(name2);
 			contact.addMixin(nodeType);
 			contact.setProperty(PEOPLE_CONTACT_VALUE, value);
 			if (primary)
 				markAsPrimary(resourcesService, peopleService, parentNode, contact);
-			setContactLabel(contact, label);
-			setContactCategory(contact, category);
-			setContactNature(contact, nature, linkedOrg);
+			setContactNature(contact, null, linkedOrg);
+			setContactCategory(contact, nodeType, category);
+			if (EclipseUiUtils.notEmpty(label))
+				contact.setProperty(Property.JCR_DESCRIPTION, label);
 			return contact;
 		} catch (RepositoryException re) {
 			throw new PeopleException(
@@ -405,7 +418,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * Create a mail address node. Corresponding nodes are not saved
 	 * 
 	 * @param parentNode
-	 *            the parent item on which we want to add an address
+	 *            the parent item on which we want to add the email
 	 * @param emailAddress
 	 *            the value
 	 * @param contactType
@@ -413,9 +426,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	 */
 	public static Node createEmail(PeopleService peopleService, ResourcesService resourceService, Node parentNode,
 			String emailAddress, boolean primary, String contactNature, String contactCategory, String contactLabel) {
-		return createContact(peopleService, resourceService, parentNode, PeopleTypes.PEOPLE_MAIL,
-				JcrUtils.replaceInvalidChars(emailAddress), emailAddress, primary, contactNature, contactCategory,
-				contactLabel);
+		return createContact(peopleService, resourceService, parentNode, PeopleTypes.PEOPLE_MAIL, emailAddress, primary,
+				contactCategory, contactLabel);
 	}
 
 	/**
@@ -435,20 +447,20 @@ public class PeopleJcrUtils implements PeopleNames {
 	 */
 	public static Node createWebsite(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			String urlString, boolean primary, String nature, String label) {
-		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_URL,
-				JcrUtils.replaceInvalidChars(urlString), urlString, primary, nature, null, label);
+		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_URL, urlString, primary,
+				label, null);
 	}
 
-	public static Node createSocialMedia(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
-			String urlString, boolean primary, String nature, String category, String label) {
-		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
-				JcrUtils.replaceInvalidChars(urlString), urlString, primary, nature, category, label);
+	public static Node createSocialMedia(PeopleService peopleService, ResourcesService resourcesService,
+			Node parentNode, String urlString, boolean primary, String nature, String category, String label) {
+		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_SOCIAL_MEDIA, urlString,
+				primary, category, label);
 	}
 
 	public static Node createImpp(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			String urlString, boolean primary, String nature, String category, String label) {
-		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_IMPP,
-				JcrUtils.replaceInvalidChars(urlString), urlString, primary, nature, category, label);
+		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_IMPP, urlString, primary,
+				category, label);
 	}
 
 	/**
@@ -467,15 +479,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	 */
 	public static Node createPhone(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
 			String phoneNumber, boolean primary, String nature, String category, String label) {
-		// Dirty work around to address node name issue when some invalid phone
-		// number has been added
-		String nodeName = ConnectJcrUtils.cleanNodeName(phoneNumber);
-		String numbers = nodeName.trim().replaceAll("[^0-9]", "");
-		if (EclipseUiUtils.isEmpty(nodeName) || EclipseUiUtils.isEmpty(numbers))
-			return null;
-		else
-			return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_PHONE, nodeName,
-					phoneNumber, primary, nature, category, label);
+		return createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_PHONE, phoneNumber,
+				primary, category, label);
 	}
 
 	/**
@@ -523,24 +528,24 @@ public class PeopleJcrUtils implements PeopleNames {
 	 *            an optional label
 	 * @return
 	 */
-	public static Node createWorkAddress(PeopleService peopleService, ResourcesService resourcesService, Node parentNode,
-			Node referencedOrg, boolean primary, String category, String label) {
-		try {
-			Node address = createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS,
-					PeopleTypes.PEOPLE_POSTAL_ADDRESS, "", false, ContactValueCatalogs.CONTACT_NATURE_PRO,
-					referencedOrg, category, label);
-			address.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
-			// set reference field
-			if (referencedOrg != null)
-				address.setProperty(PEOPLE_REF_UID, referencedOrg.getProperty(ConnectNames.CONNECT_UID).getString());
-
-			if (primary)
-				markAsPrimary(resourcesService, peopleService, parentNode, address);
-
-			return address;
-		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to add a new address node", re);
-		}
+	public static Node createWorkAddress(PeopleService peopleService, ResourcesService resourcesService,
+			Node parentNode, Node referencedOrg, boolean primary, String category, String label) {
+		// try {
+		Node address = createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS, "",
+				false, referencedOrg, category, label);
+		// address.addMixin(PeopleTypes.PEOPLE_CONTACT_REF);
+		// // set reference field
+		// if (referencedOrg != null)
+		// address.setProperty(PEOPLE_REF_UID,
+		// referencedOrg.getProperty(ConnectNames.CONNECT_UID).getString());
+		//
+		// if (primary)
+		// markAsPrimary(resourcesService, peopleService, parentNode, address);
+		//
+		return address;
+		// } catch (RepositoryException re) {
+		// throw new PeopleException("Unable to add a new address node", re);
+		// }
 	}
 
 	/**
@@ -569,7 +574,7 @@ public class PeopleJcrUtils implements PeopleNames {
 
 			// postpone primary flag management
 			Node address = createContact(peopleService, resourcesService, parentNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS,
-					PeopleTypes.PEOPLE_POSTAL_ADDRESS, "", false, nature, category, label);
+					"", false, category, label);
 			// set address fields
 			if (EclipseUiUtils.notEmpty(street1))
 				address.setProperty(PEOPLE_STREET, street1);

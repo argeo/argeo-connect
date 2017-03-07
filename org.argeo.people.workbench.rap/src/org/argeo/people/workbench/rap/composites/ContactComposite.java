@@ -1,6 +1,7 @@
 package org.argeo.people.workbench.rap.composites;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
 import org.argeo.connect.resources.ResourcesService;
@@ -105,23 +106,22 @@ public class ContactComposite extends Composite {
 		final Combo catCmb = hasCat ? new Combo(parent, SWT.READ_ONLY) : null;
 
 		if (catCmb != null) {
-			catCmb.setItems(peopleService.getContactService().getContactPossibleValues(contactNode,
-					PeopleNames.PEOPLE_CONTACT_CATEGORY));
+			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));
 			catCmb.select(0);
 		}
 
-		ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL, "Label");
 		ConnectWorkbenchUtils.refreshFormText(editor, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
+		ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, Property.JCR_DESCRIPTION, "Description");
 		if (catCmb != null)
-			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY);
+			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, Property.JCR_TITLE);
 
 		// Listeners
 		ConnectWorkbenchUtils.addTxtModifyListener(formPart, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE,
 				PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(formPart, labelTxt, contactNode, PeopleNames.PEOPLE_CONTACT_LABEL,
+		ConnectWorkbenchUtils.addTxtModifyListener(formPart, labelTxt, contactNode, Property.JCR_DESCRIPTION,
 				PropertyType.STRING);
 		if (catCmb != null)
-			ConnectWorkbenchUtils.addComboSelectionListener(formPart, catCmb, contactNode, PeopleNames.PEOPLE_CONTACT_CATEGORY,
+			ConnectWorkbenchUtils.addTxtModifyListener(formPart, catCmb, contactNode, Property.JCR_TITLE,
 					PropertyType.STRING);
 	}
 

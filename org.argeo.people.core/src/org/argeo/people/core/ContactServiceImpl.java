@@ -40,8 +40,9 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 
 	@Override
 	public String[] getKnownContactTypes() {
-		String[] knownTypes = { PeopleTypes.PEOPLE_MAIL, PeopleTypes.PEOPLE_PHONE, PeopleTypes.PEOPLE_SOCIAL_MEDIA,
-				PeopleTypes.PEOPLE_IMPP, PeopleTypes.PEOPLE_URL, PeopleTypes.PEOPLE_POSTAL_ADDRESS };
+		String[] knownTypes = { PeopleTypes.PEOPLE_MAIL, PeopleTypes.PEOPLE_MOBILE, PeopleTypes.PEOPLE_PHONE,
+				PeopleTypes.PEOPLE_SOCIAL_MEDIA, PeopleTypes.PEOPLE_IMPP, PeopleTypes.PEOPLE_URL,
+				PeopleTypes.PEOPLE_POSTAL_ADDRESS, PeopleTypes.PEOPLE_FAX };
 		return knownTypes;
 	}
 
@@ -60,37 +61,35 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 	}
 
 	@Override
-	public String[] getContactPossibleValues(Node contact, String property) {
+	public String[] getContactPossibleCategories(Node contact) {
 		try {
 			// Retrieves parent entity to enable decision
 			Node entity = contact.getParent().getParent();
-			String nature = ConnectJcrUtils.get(contact, PEOPLE_CONTACT_NATURE);
-			if (PEOPLE_CONTACT_CATEGORY.equals(property)) {
-				if (contact.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
-					if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
-						if (notEmpty(nature) && (nature.equals(ContactValueCatalogs.CONTACT_NATURE_PRIVATE)
-								|| nature.equals(ContactValueCatalogs.CONTACT_OTHER)))
-							return ContactValueCatalogs.ARRAY_PERSON_PRIVATE_PHONES;
-						else
-							return ContactValueCatalogs.ARRAY_PERSON_PRO_PHONES;
-					} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-						return ContactValueCatalogs.ARRAY_ORG_PHONES;
-				} else if (contact.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
-					if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-						if (notEmpty(nature) && nature.equals(ContactValueCatalogs.CONTACT_NATURE_PRO))
-							return ContactValueCatalogs.ARRAY_PERSON_WORK_ADDRESSES;
-						else
-							return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
-					else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-						return ContactValueCatalogs.ARRAY_ORG_ADDRESSES;
-				} else if (entity.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
-					return ContactValueCatalogs.ARRAY_SOCIAL_MEDIA;
-				else if (entity.isNodeType(PeopleTypes.PEOPLE_IMPP))
-					return ContactValueCatalogs.ARRAY_IMPP;
-			}
+			boolean isPro = contact.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF);
+
+			if (contact.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
+				if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+					if (isPro)
+						return ContactValueCatalogs.ARRAY_PERSON_PRO_PHONES;
+					else
+						return ContactValueCatalogs.ARRAY_PERSON_PRIVATE_PHONES;
+				} else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+					return ContactValueCatalogs.ARRAY_ORG_PHONES;
+			} else if (contact.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
+				if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
+					if (isPro)
+						return ContactValueCatalogs.ARRAY_PERSON_WORK_ADDRESSES;
+					else
+						return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
+				else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
+					return ContactValueCatalogs.ARRAY_ORG_ADDRESSES;
+			} else if (entity.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
+				return ContactValueCatalogs.ARRAY_SOCIAL_MEDIA;
+			else if (entity.isNodeType(PeopleTypes.PEOPLE_IMPP))
+				return ContactValueCatalogs.ARRAY_IMPP;
 			return new String[0];
 		} catch (RepositoryException re) {
-			throw new PeopleException("Unable to get " + property + " value list for " + contact, re);
+			throw new PeopleException("Unable to get category list for " + contact, re);
 		}
 	}
 

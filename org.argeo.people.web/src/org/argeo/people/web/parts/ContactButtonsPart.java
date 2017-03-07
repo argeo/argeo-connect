@@ -1,13 +1,13 @@
 package org.argeo.people.web.parts;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsUiProvider;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.people.ContactValueCatalogs;
-import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.util.PeopleJcrUtils;
 import org.eclipse.rap.rwt.RWT;
@@ -23,8 +23,7 @@ import org.eclipse.swt.widgets.Control;
 public class ContactButtonsPart implements CmsUiProvider {
 
 	@Override
-	public Control createUi(Composite parent, Node context)
-			throws RepositoryException {
+	public Control createUi(Composite parent, Node context) throws RepositoryException {
 		parent.setLayout(new RowLayout(SWT.HORIZONTAL));
 
 		createCategoryButton(parent, context);
@@ -37,8 +36,7 @@ public class ContactButtonsPart implements CmsUiProvider {
 		return parent;
 	}
 
-	private Button createCategoryButton(Composite parent, Node context)
-			throws RepositoryException {
+	private Button createCategoryButton(Composite parent, Node context) throws RepositoryException {
 		Button btn = new Button(parent, SWT.NONE);
 		btn.setLayoutData(CmsUtils.rowData16px());
 		btn.setData(RWT.CUSTOM_VARIANT, getCssStyle(context));
@@ -48,28 +46,21 @@ public class ContactButtonsPart implements CmsUiProvider {
 	private String getCssStyle(Node entity) throws RepositoryException {
 
 		Node contactable = entity.getParent().getParent();
-		String category = ConnectJcrUtils.get(entity,
-				PeopleNames.PEOPLE_CONTACT_CATEGORY);
-		String nature = ConnectJcrUtils.get(entity,
-				PeopleNames.PEOPLE_CONTACT_NATURE);
+		boolean isPro = ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_CONTACT_REF);
 		// EMAIL
 		if (entity.isNodeType(PeopleTypes.PEOPLE_MAIL)) {
 			return "people_icon_email";
 		}
 		// PHONE
-		else if (entity.isNodeType(PeopleTypes.PEOPLE_PHONE)) {
-			if (ContactValueCatalogs.CONTACT_CAT_MOBILE.equals(category))
-				return "people_icon_mobile";
-			else if (ContactValueCatalogs.CONTACT_CAT_FAX.equals(category))
-				return "people_icon_fax";
-			else
-				return "people_icon_phone";
-
-		}
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_PHONE))
+			return "people_icon_phone";
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_MOBILE))
+			return "people_icon_mobile";
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_FAX))
+			return "people_icon_fax";		
 		// ADDRESS
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
-			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				if (ContactValueCatalogs.CONTACT_NATURE_PRO.equals(nature))
+			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON )&& isPro)
 					return "people_icon_work";
 			return "people_icon_address";
 		}
@@ -80,13 +71,15 @@ public class ContactButtonsPart implements CmsUiProvider {
 		}
 		// SOCIAL MEDIA
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
-
+			String category = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			if (ContactValueCatalogs.CONTACT_CAT_GOOGLEPLUS.equals(category))
 				return "people_icon_google_plus";
 			else if (ContactValueCatalogs.CONTACT_CAT_FACEBOOK.equals(category))
 				return "people_icon_facebook";
 			else if (ContactValueCatalogs.CONTACT_CAT_LINKEDIN.equals(category))
 				return "people_icon_linkedin";
+			else if (ContactValueCatalogs.CONTACT_CAT_TWITTER.equals(category))
+				return "people_icon_twitter";
 			else if (ContactValueCatalogs.CONTACT_CAT_XING.equals(category))
 				return "people_icon_xing";
 			return "people_icon_social_media";
@@ -106,13 +99,11 @@ public class ContactButtonsPart implements CmsUiProvider {
 		return btn;
 	}
 
-	private Button createPrimaryButton(Composite parent, Node context)
-			throws RepositoryException {
+	private Button createPrimaryButton(Composite parent, Node context) throws RepositoryException {
 		Button btn = new Button(parent, SWT.NONE);
 		btn.setLayoutData(CmsUtils.rowData16px());
 		// update image
-		boolean isPrimary = PeopleJcrUtils.isPrimary(context.getParent()
-				.getParent(), context);
+		boolean isPrimary = PeopleJcrUtils.isPrimary(context.getParent().getParent(), context);
 
 		if (isPrimary)
 			btn.setData(RWT.CUSTOM_VARIANT, "people_icon_primary");

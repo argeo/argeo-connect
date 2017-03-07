@@ -389,7 +389,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to add a Text Modifylistener that updates a property on a Node
+	 * Shortcut to add a {@code ModifyListener} on a {@code Text} that updates a
+	 * property on a Node
 	 */
 	public static void addTxtModifyListener(final AbstractFormPart part, final Text text, final Node entity,
 			final String propName, final int propType) {
@@ -399,6 +400,23 @@ public class ConnectWorkbenchUtils {
 			@Override
 			public void modifyText(ModifyEvent event) {
 				if (ConnectJcrUtils.setJcrProperty(entity, propName, propType, text.getText()))
+					part.markDirty();
+			}
+		});
+	}
+
+	/**
+	 * Shortcut to add a {@code ModifyListener} on a {@code Combo} that updates
+	 * a property on a Node
+	 */
+	public static void addTxtModifyListener(final AbstractFormPart part, final Combo combo, final Node entity,
+			final String propName, final int propType) {
+		combo.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 1549789407363632491L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (ConnectJcrUtils.setJcrProperty(entity, propName, propType, combo.getText()))
 					part.markDirty();
 			}
 		});

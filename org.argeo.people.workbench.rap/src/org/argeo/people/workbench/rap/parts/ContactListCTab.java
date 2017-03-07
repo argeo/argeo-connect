@@ -436,8 +436,8 @@ public class ContactListCTab extends LazyCTabControl {
 	private void saveAndRefresh(String contactType, String name, String value, boolean isPrimary, String nature,
 			String category, String label) {
 
-		PeopleJcrUtils.createContact(peopleService, resourcesService, entity, contactType, name, value, isPrimary,
-				nature, category, label);
+		PeopleJcrUtils.createContact(peopleService, resourcesService, entity, contactType, value, isPrimary, category,
+				label);
 		addContactCmb.select(0);
 		myFormPart.markDirty();
 		myFormPart.refresh();

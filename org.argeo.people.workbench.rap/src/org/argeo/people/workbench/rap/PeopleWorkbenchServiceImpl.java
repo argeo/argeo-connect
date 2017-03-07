@@ -1,12 +1,12 @@
 package org.argeo.people.workbench.rap;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
-import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.workbench.PeopleWorkbenchService;
 import org.argeo.people.workbench.rap.dialogs.NewOrgWizard;
@@ -110,24 +110,23 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	 */
 	protected Image getContactIcon(Node entity) throws RepositoryException {
 		Node contactable = entity.getParent().getParent();
-		String category = ConnectJcrUtils.get(entity, PeopleNames.PEOPLE_CONTACT_CATEGORY);
-		String nature = ConnectJcrUtils.get(entity, PeopleNames.PEOPLE_CONTACT_NATURE);
+		String category = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 
 		// EMAIL
 		if (entity.isNodeType(PeopleTypes.PEOPLE_MAIL)) {
 			return ContactImages.DEFAULT_MAIL;
 		}
 		// PHONE
-		else if (entity.isNodeType(PeopleTypes.PEOPLE_PHONE)) 
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_PHONE))
 			return ContactImages.DEFAULT_PHONE;
-		else if (entity.isNodeType(PeopleTypes.PEOPLE_MOBILE)) 
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_MOBILE))
 			return ContactImages.MOBILE;
-		else if (entity.isNodeType(PeopleTypes.PEOPLE_FAX)) 
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_FAX))
 			return ContactImages.FAX;
 		// ADDRESS
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				if (ContactValueCatalogs.CONTACT_NATURE_PRO.equals(nature))
+				if (entity.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))
 					return ContactImages.WORK;
 				else
 					return ContactImages.DEFAULT_ADDRESS;
