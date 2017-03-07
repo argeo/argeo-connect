@@ -78,6 +78,14 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 				if (myImg.exists()) {
 					is = myImg.getInputStream();
 					PeopleJcrUtils.setEntityPicture(person, is, imgName);
+				} else {
+					// default person image
+					imgName = "person.jpg";
+					myImg = getPicture(imgName);
+					if (myImg.exists()) {
+						is = myImg.getInputStream();
+						PeopleJcrUtils.setEntityPicture(person, is, imgName);
+					}
 				}
 			} catch (IOException ioe) { // Unable to get image
 				// Silent
