@@ -39,9 +39,9 @@ import org.argeo.connect.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.people.PeopleConstants;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
+import org.argeo.people.PeopleRole;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.ui.exports.PrimAddressLP;
@@ -123,7 +123,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_PMAIL), 300));
-		colDefs.add(new ConnectColumnDefinition("Other mailing lists", new OtherTagsLabelProvider(mailingList, null), 300));
+		colDefs.add(
+				new ConnectColumnDefinition("Other mailing lists", new OtherTagsLabelProvider(mailingList, null), 300));
 	}
 
 	protected void afterNameUpdate(String name) {
@@ -171,7 +172,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		Link editTitleLink = null;
-		if (CurrentUser.isInRole(PeopleConstants.ROLE_BUSINESS_ADMIN)) {
+		if (CurrentUser.isInRole(PeopleRole.editor.dn())) {
 			editTitleLink = new Link(parent, SWT.NONE);
 			editTitleLink.setText("<a>Edit Mailing List</a>");
 		} else

@@ -12,17 +12,16 @@ public class OpenEntityEditor {
 // import org.apache.commons.logging.Log;
 // import org.apache.commons.logging.LogFactory;
 // import org.argeo.cms.ui.CmsEditable;
-// import org.argeo.connect.people.PeopleException;
-// import org.argeo.connect.people.PeopleService;
-// import org.argeo.connect.people.PeopleTypes;
-// import org.argeo.connect.people.workbench.rap.PeopleRapPlugin;
-// import org.argeo.connect.people.workbench.rap.editors.GroupEditor;
-// import org.argeo.connect.people.workbench.rap.editors.MailingListEditor;
-// import org.argeo.connect.people.workbench.rap.editors.OrgEditor;
-// import org.argeo.connect.people.workbench.rap.editors.PersonEditor;
-// import org.argeo.connect.people.workbench.rap.editors.TagEditor;
-// import
-// org.argeo.connect.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
+// import org.argeo.people.PeopleException;
+// import org.argeo.people.PeopleService;
+// import org.argeo.people.PeopleTypes;
+// import org.argeo.people.workbench.rap.PeopleRapPlugin;
+// import org.argeo.people.workbench.rap.editors.GroupEditor;
+// import org.argeo.people.workbench.rap.editors.MailingListEditor;
+// import org.argeo.people.workbench.rap.editors.OrgEditor;
+// import org.argeo.people.workbench.rap.editors.PersonEditor;
+// import org.argeo.people.workbench.rap.editors.TagEditor;
+// import org.argeo.people.workbench.rap.editors.util.AbstractPeopleCTabEditor;
 // import org.argeo.connect.resources.ResourcesTypes;
 // import org.argeo.connect.ui.workbench.util.EntityEditorInput;
 // import org.argeo.eclipse.ui.EclipseUiUtils;
