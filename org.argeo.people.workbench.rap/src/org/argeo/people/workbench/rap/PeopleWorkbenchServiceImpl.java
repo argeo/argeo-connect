@@ -116,13 +116,13 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 		if (entity.isNodeType(PeopleTypes.PEOPLE_MAIL)) {
 			return ContactImages.DEFAULT_MAIL;
 		}
-		// PHONE
-		else if (entity.isNodeType(PeopleTypes.PEOPLE_PHONE))
-			return ContactImages.DEFAULT_PHONE;
+		// PHONES
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_MOBILE))
 			return ContactImages.MOBILE;
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_FAX))
 			return ContactImages.FAX;
+		else if (entity.isNodeType(PeopleTypes.PEOPLE_TELEPHONE_NUMBER) || entity.isNodeType(PeopleTypes.PEOPLE_PHONE))
+			return ContactImages.DEFAULT_PHONE;
 		// ADDRESS
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON))

@@ -228,10 +228,14 @@ public class PeopleUiSnippets {
 	public static String getPrimaryContacts(Node entity) {
 		StringBuilder builder = new StringBuilder();
 
-		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_PHONE);
-		if (notEmpty(tmpStr)) {
+		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MOBILE);
+		if (notEmpty(tmpStr))
 			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(ConnectUiConstants.NB_DOUBLE_SPACE);
-		}
+
+		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_TELEPHONE_NUMBER);
+		if (notEmpty(tmpStr))
+			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(ConnectUiConstants.NB_DOUBLE_SPACE);
+		
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MAIL);
 		if (notEmpty(tmpStr))
@@ -291,10 +295,13 @@ public class PeopleUiSnippets {
 
 	public static String getEntityPhoneAndMailFormatted(Node entity) {
 		StringBuilder builder = new StringBuilder();
-		// phone
-		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_PHONE);
-		if (notEmpty(tmpStr))
-			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("<br/>");
+		// phones
+		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MOBILE);
+		String tmpStr2 = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_TELEPHONE_NUMBER);
+		if (notEmpty(tmpStr) && notEmpty(tmpStr2))
+			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("(Mobile) / ").append(tmpStr2).append("<br/>");
+		else if (notEmpty(tmpStr) || notEmpty(tmpStr2))
+			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(tmpStr2).append("<br/>");
 
 		// mail
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MAIL);
@@ -311,11 +318,14 @@ public class PeopleUiSnippets {
 	 */
 	public static String getPrimaryContacts(PeopleService peopleService, Node entity) {
 		StringBuilder builder = new StringBuilder();
-		// phone
-		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_PHONE);
-		if (notEmpty(tmpStr))
-			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("<br/>");
-
+		// phones
+		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MOBILE);
+		String tmpStr2 = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_TELEPHONE_NUMBER);
+		if (notEmpty(tmpStr) && notEmpty(tmpStr2))
+			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("(Mobile) / ").append(tmpStr2).append("<br/>");
+		else if (notEmpty(tmpStr) || notEmpty(tmpStr2))
+			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(tmpStr2).append("<br/>");
+		
 		// mail
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MAIL);
 		if (notEmpty(tmpStr))

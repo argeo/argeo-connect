@@ -436,7 +436,7 @@ public class ContactListCTab extends LazyCTabControl {
 	private void saveAndRefresh(String contactType, String name, String value, boolean isPrimary, String nature,
 			String category, String label) {
 
-		PeopleJcrUtils.createContact(peopleService, resourcesService, entity, contactType, value, isPrimary, category,
+		PeopleJcrUtils.createContact(resourcesService, peopleService, entity, contactType, value, isPrimary, category,
 				label);
 		addContactCmb.select(0);
 		myFormPart.markDirty();
@@ -478,10 +478,9 @@ public class ContactListCTab extends LazyCTabControl {
 				String label = labelTxt.getText();
 				boolean isPrimary = primaryChk.getSelection();
 
-				Node node = PeopleJcrUtils.createAddress(peopleService, resourcesService, entity, streetTxt.getText(),
+				PeopleJcrUtils.createAddress(resourcesService, peopleService, entity, streetTxt.getText(),
 						street2Txt.getText(), zipTxt.getText(), cityTxt.getText(), stateTxt.getText(),
-						countryDD.getText(), geoPointTxt.getText(), isPrimary, nature, cat, label);
-				PeopleJcrUtils.updateDisplayAddress(resourcesService, node);
+						countryDD.getText(), geoPointTxt.getText(), isPrimary, cat, label);
 				myFormPart.markDirty();
 				myFormPart.refresh();
 			}
@@ -499,11 +498,9 @@ public class ContactListCTab extends LazyCTabControl {
 					String label = labelTxt.getText();
 					boolean isPrimary = primaryChk.getSelection();
 
-					Node node = PeopleJcrUtils.createAddress(peopleService, resourcesService, entity,
-							streetTxt.getText(), street2Txt.getText(), zipTxt.getText(), cityTxt.getText(),
-							stateTxt.getText(), countryDD.getText(), geoPointTxt.getText(), isPrimary, nature, cat,
-							label);
-					PeopleJcrUtils.updateDisplayAddress(resourcesService, node);
+					PeopleJcrUtils.createAddress(resourcesService, peopleService, entity, streetTxt.getText(),
+							street2Txt.getText(), zipTxt.getText(), cityTxt.getText(), stateTxt.getText(),
+							countryDD.getText(), geoPointTxt.getText(), isPrimary, cat, label);
 					myFormPart.markDirty();
 					myFormPart.refresh();
 				}
@@ -573,9 +570,8 @@ public class ContactListCTab extends LazyCTabControl {
 					String label = labelTxt.getText();
 					String cat = catCmb.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					Node node = PeopleJcrUtils.createWorkAddress(peopleService, resourcesService, entity, selected,
-							isPrimary, cat, label);
-					PeopleJcrUtils.updateDisplayAddress(resourcesService, node);
+					PeopleJcrUtils.createWorkAddress(resourcesService, peopleService, entity, isPrimary,
+							selected, cat, label);
 					myFormPart.markDirty();
 					myFormPart.refresh();
 				}

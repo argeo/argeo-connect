@@ -115,32 +115,32 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			// CONTACTS
 			String phone = line.get("people:phoneNumber").trim();
 			if (notEmpty(phone)) {
-				PeopleJcrUtils.createContact(getPeopleService(), getResourcesService(), person,
+				PeopleJcrUtils.createContact(getResourcesService(), getPeopleService(), person,
 						PeopleTypes.PEOPLE_MOBILE, phone, true, ContactValueCatalogs.CONTACT_NATURE_PRO, null);
 			}
 
 			phone = line.get("PhoneDirect").trim();
 			if (notEmpty(phone)) {
-				PeopleJcrUtils.createPhone(getPeopleService(), getResourcesService(), person, phone, false,
-						ContactValueCatalogs.CONTACT_NATURE_PRO, ContactValueCatalogs.CONTACT_CAT_MAIN, null);
+				PeopleJcrUtils.createPhone(getResourcesService(), getPeopleService(), person, phone, false,
+						ContactValueCatalogs.CONTACT_CAT_MAIN, null);
 			}
 
 			String emailAddress = JcrUtils.replaceInvalidChars(line.get("people:emailAddress").trim());
 			if (notEmpty(emailAddress)) {
-				PeopleJcrUtils.createEmail(getPeopleService(), getResourcesService(), person, emailAddress, true,
-						ContactValueCatalogs.CONTACT_NATURE_PRO, null, null);
+				PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), person, emailAddress, true,
+						null, null);
 			}
 
 			emailAddress = JcrUtils.replaceInvalidChars(line.get("people:emailAddressOther").trim());
 			if (notEmpty(emailAddress)) {
-				PeopleJcrUtils.createEmail(getPeopleService(), getResourcesService(), person, emailAddress, false,
-						ContactValueCatalogs.CONTACT_NATURE_PRIVATE, null, null);
+				PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), person, emailAddress, false,
+						null, null);
 			}
 
 			String facebook = line.get("Facebook");
 			if (notEmpty(facebook)) {
-				PeopleJcrUtils.createSocialMedia(getPeopleService(), getResourcesService(), person, facebook, true,
-						ContactValueCatalogs.CONTACT_NATURE_PRIVATE, ContactValueCatalogs.CONTACT_CAT_FACEBOOK, null);
+				PeopleJcrUtils.createSocialMedia(getResourcesService(), getPeopleService(), person, facebook, true,
+						ContactValueCatalogs.CONTACT_CAT_FACEBOOK, null);
 			}
 
 			// Add birth date

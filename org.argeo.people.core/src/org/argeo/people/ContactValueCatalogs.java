@@ -77,7 +77,7 @@ public class ContactValueCatalogs {
 		Map<String, String> tmpMap = new HashMap<String, String>();
 		tmpMap.put(PeopleTypes.PEOPLE_MAIL, CONTACT_TYPE_EMAIL);
 		tmpMap.put(PeopleTypes.PEOPLE_MOBILE, CONTACT_TYPE_MOBILE);
-		tmpMap.put(PeopleTypes.PEOPLE_PHONE, CONTACT_TYPE_PHONE);
+		tmpMap.put(PeopleTypes.PEOPLE_TELEPHONE_NUMBER, CONTACT_TYPE_PHONE);
 		tmpMap.put(PeopleTypes.PEOPLE_POSTAL_ADDRESS, CONTACT_TYPE_ADDRESS);
 		tmpMap.put(PeopleTypes.PEOPLE_URL, CONTACT_TYPE_URL);
 		tmpMap.put(PeopleTypes.PEOPLE_SOCIAL_MEDIA, CONTACT_TYPE_SOCIAL_MEDIA);

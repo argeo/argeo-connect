@@ -64,8 +64,7 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 			// Website and dummy picture
 			String webSite = line.get("people:websiteUrl");
 			if (notEmpty(webSite)) {
-				PeopleJcrUtils.createWebsite(getPeopleService(), getResourcesService(), orga, webSite, true, null,
-						null);
+				PeopleJcrUtils.createWebsite(getResourcesService(), getPeopleService(), orga, webSite, true, null);
 
 				// picture
 				InputStream is = null;
@@ -88,26 +87,25 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 			}
 
 			// address
-			Node address = PeopleJcrUtils.createAddress(getPeopleService(), getResourcesService(), orga,
+			Node address = PeopleJcrUtils.createAddress(getResourcesService(), getPeopleService(), orga,
 					line.get(PEOPLE_STREET), line.get(PEOPLE_STREET_COMPLEMENT), line.get(PEOPLE_ZIP_CODE),
-					line.get(PEOPLE_CITY), line.get(PEOPLE_STATE), line.get(PEOPLE_COUNTRY), true, null,
-					ContactValueCatalogs.CONTACT_CAT_HEADOFFICE, null);
-			PeopleJcrUtils.updateDisplayAddress(getResourcesService(), address);
+					line.get(PEOPLE_CITY), line.get(PEOPLE_STATE), line.get(PEOPLE_COUNTRY), true, ContactValueCatalogs.CONTACT_CAT_HEADOFFICE,
+					null);
 
 			String emailAddress = line.get("people:emailAddress").trim();
 			if (notEmpty(emailAddress)) {
-				PeopleJcrUtils.createEmail(getPeopleService(), getResourcesService(), orga, emailAddress, true, null,
-						null, null);
+				PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), orga, emailAddress, true, null,
+						null);
 			}
 
 			// Phone numbers
 			String phone = line.get("people:phoneNb");
 			if (notEmpty(phone))
-				PeopleJcrUtils.createPhone(getPeopleService(), getResourcesService(), orga, phone, true, null,
-						ContactValueCatalogs.CONTACT_CAT_MAIN, null);
+				PeopleJcrUtils.createPhone(getResourcesService(), getPeopleService(), orga, phone, true, ContactValueCatalogs.CONTACT_CAT_MAIN,
+						null);
 			phone = line.get("people:faxNb");
 			if (notEmpty(phone))
-				PeopleJcrUtils.createContact(getPeopleService(), getResourcesService(), orga, PeopleTypes.PEOPLE_FAX,
+				PeopleJcrUtils.createContact(getResourcesService(), getPeopleService(), orga, PeopleTypes.PEOPLE_FAX,
 						phone, true, null, null);
 
 			// Tags

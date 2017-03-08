@@ -57,9 +57,9 @@ public interface PeopleNames {
 
 	/* CONTACTS */
 	String PEOPLE_CONTACT_VALUE = "people:contactValue";
-//	String PEOPLE_CONTACT_NATURE = "people:contactNature"; // Pro or private
-//	String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";
-//	String PEOPLE_CONTACT_LABEL = "people:contactLabel";
+	// String PEOPLE_CONTACT_NATURE = "people:contactNature"; // Pro or private
+	// String PEOPLE_CONTACT_CATEGORY = "people:contactCategory";
+	// String PEOPLE_CONTACT_LABEL = "people:contactLabel";
 	// String PEOPLE_CONTACT_URI = "people:contactUri";
 
 	// Phone: enable display of current time for this time zone
@@ -73,6 +73,9 @@ public interface PeopleNames {
 	String PEOPLE_COUNTRY = LdapAttrs.c.property();
 	String PEOPLE_STREET_COMPLEMENT = "people:streetComplement";
 	String PEOPLE_GEOPOINT = "people:geoPoint";
+
+	String[] PEOPLE_POSTAL_ADDRESS_PROPS = { PEOPLE_STREET, PEOPLE_STREET_COMPLEMENT, PEOPLE_ZIP_CODE, PEOPLE_CITY,
+			PEOPLE_STATE, PEOPLE_COUNTRY, PEOPLE_GEOPOINT };
 
 	// Groups and jobs
 	// An optional department within the org for the current position

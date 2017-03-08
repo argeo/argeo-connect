@@ -211,7 +211,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		columns.add(
 				new ConnectColumnDefinition("Primary Email", new PrimContactValueLP(null, PeopleTypes.PEOPLE_MAIL)));
 		columns.add(
-				new ConnectColumnDefinition("Primary Phone", new PrimContactValueLP(null, PeopleTypes.PEOPLE_PHONE)));
+				new ConnectColumnDefinition("Primary Mobile", new PrimContactValueLP(null, PeopleTypes.PEOPLE_MOBILE)));
+		columns.add(new ConnectColumnDefinition("Primary Phone",
+				new PrimContactValueLP(null, PeopleTypes.PEOPLE_TELEPHONE_NUMBER)));
 
 		columns.add(new ConnectColumnDefinition("Salutation", new JcrRowLabelProvider(PEOPLE_SALUTATION)));
 		columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(PEOPLE_HONORIFIC_TITLE)));

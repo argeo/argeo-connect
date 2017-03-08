@@ -28,8 +28,8 @@ public interface PeopleTypes {
 	/* CONTACT */
 	String PEOPLE_CONTACT = "people:contact";
 	String PEOPLE_CONTACT_REF = "people:contactRef";
-	
-	String PEOPLE_PHONE = "people:phone";
+
+	String PEOPLE_PHONE = "people:phone";// abstract generic phone
 	String PEOPLE_MOBILE = "people:mobile";
 	String PEOPLE_TELEPHONE_NUMBER = "people:telephoneNumber";
 	String PEOPLE_FAX = "people:facsimileTelephoneNumber";
@@ -39,8 +39,8 @@ public interface PeopleTypes {
 	String PEOPLE_IMPP = "people:impp";
 	String PEOPLE_SOCIAL_MEDIA = "people:socialMedia";
 
-	// A array with the known types that might be defined as primary
-	String[] KNOWN_CONTACT_TYPES = { PEOPLE_PHONE, PEOPLE_MAIL, PEOPLE_POSTAL_ADDRESS, PEOPLE_URL, PEOPLE_IMPP,
-			PEOPLE_SOCIAL_MEDIA };
+	// A array with the known main mixin types
+	String[] KNOWN_CONTACT_TYPES = { PEOPLE_MAIL, PEOPLE_MOBILE, PEOPLE_TELEPHONE_NUMBER, PEOPLE_URL,
+			PEOPLE_SOCIAL_MEDIA, PEOPLE_POSTAL_ADDRESS, PEOPLE_IMPP, PEOPLE_FAX };
 
 }

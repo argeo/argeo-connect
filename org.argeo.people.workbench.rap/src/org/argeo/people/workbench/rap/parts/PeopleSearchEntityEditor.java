@@ -23,7 +23,6 @@ import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.parts.DefaultSearchEntityEditor;
-import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
@@ -69,12 +68,13 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ResourcesNames.CONNECT_TAGS), 300));
 	}
 
-//	@Override
-//	public void createPartControl(Composite parent) {
-//		super.createPartControl(parent);
-//		if (PeopleTypes.PEOPLE_MAILING_LIST.equals(getEntityType()))
-//			getTableViewer().getTableViewer().getTable().addSelectionListener(new HtmlListRwtAdapter());
-//	}
+	// @Override
+	// public void createPartControl(Composite parent) {
+	// super.createPartControl(parent);
+	// if (PeopleTypes.PEOPLE_MAILING_LIST.equals(getEntityType()))
+	// getTableViewer().getTableViewer().getTable().addSelectionListener(new
+	// HtmlListRwtAdapter());
+	// }
 
 	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite body) {
@@ -179,8 +179,10 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 					new ConnectColumnDefinition("Primary State", new PrimAddressLP(peopleService, null, PEOPLE_STATE)));
 			columns.add(new ConnectColumnDefinition("Primary Country ISO",
 					new PrimAddressLP(peopleService, null, PEOPLE_COUNTRY)));
+			columns.add(new ConnectColumnDefinition("Primary Mobile",
+					new PrimContactValueLP(null, PeopleTypes.PEOPLE_MOBILE)));
 			columns.add(new ConnectColumnDefinition("Primary Phone",
-					new PrimContactValueLP(null, PeopleTypes.PEOPLE_PHONE)));
+					new PrimContactValueLP(null, PeopleTypes.PEOPLE_TELEPHONE_NUMBER)));
 			columns.add(new ConnectColumnDefinition("Primary Email",
 					new PrimContactValueLP(null, PeopleTypes.PEOPLE_MAIL)));
 			columns.add(new ConnectColumnDefinition("Other Emails",
@@ -210,8 +212,8 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 					new PrimAddressLP(peopleService, null, PEOPLE_COUNTRY)));
 
 			// PRIMARY CONTACTS
-			columns.add(
-					new ConnectColumnDefinition("Primary Phone", new PrimContactValueLP("", PeopleTypes.PEOPLE_PHONE)));
+			columns.add(new ConnectColumnDefinition("Primary Phone",
+					new PrimContactValueLP("", PeopleTypes.PEOPLE_TELEPHONE_NUMBER)));
 			columns.add(
 					new ConnectColumnDefinition("Primary Email", new PrimContactValueLP("", PeopleTypes.PEOPLE_MAIL)));
 			columns.add(new ConnectColumnDefinition("Other Emails",

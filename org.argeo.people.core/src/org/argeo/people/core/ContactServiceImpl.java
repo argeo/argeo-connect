@@ -40,10 +40,7 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 
 	@Override
 	public String[] getKnownContactTypes() {
-		String[] knownTypes = { PeopleTypes.PEOPLE_MAIL, PeopleTypes.PEOPLE_MOBILE, PeopleTypes.PEOPLE_PHONE,
-				PeopleTypes.PEOPLE_SOCIAL_MEDIA, PeopleTypes.PEOPLE_IMPP, PeopleTypes.PEOPLE_URL,
-				PeopleTypes.PEOPLE_POSTAL_ADDRESS, PeopleTypes.PEOPLE_FAX };
-		return knownTypes;
+		return PeopleTypes.KNOWN_CONTACT_TYPES;
 	}
 
 	@Override
