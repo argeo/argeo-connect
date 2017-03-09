@@ -4,6 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -85,7 +86,7 @@ public class ContactComposite extends Composite {
 	protected void populateReadOnlyPanel(final Composite readOnlyPanel) {
 		readOnlyPanel.setLayout(new GridLayout());
 		final Label readOnlyInfoLbl = toolkit.createLabel(readOnlyPanel, "", SWT.WRAP);
-		readOnlyInfoLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+		CmsUtils.markup(readOnlyInfoLbl);
 		String addressHtml = PeopleUiSnippets.getContactDisplaySnippet(resourcesService, contactNode);
 		readOnlyInfoLbl.setText(addressHtml);
 	}

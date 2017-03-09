@@ -160,8 +160,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			return PeopleTypes.PEOPLE_CONTACT;
 		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_POSTAL_ADDRESS))
 			return PeopleTypes.PEOPLE_POSTAL_ADDRESS;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_JOB))
+			return PeopleTypes.PEOPLE_JOB;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_POSITION))
+			return PeopleTypes.PEOPLE_POSITION;
 		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_BANK_ACCOUNT))
 			return PeopleTypes.PEOPLE_BANK_ACCOUNT;
+		else if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_MEMBER))
+			return PeopleTypes.PEOPLE_MEMBER;
 		else
 			return null;
 	}

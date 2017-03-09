@@ -454,7 +454,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		this.activitiesService = activitiesService;
 	}
 
-	public void setAppWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
 		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

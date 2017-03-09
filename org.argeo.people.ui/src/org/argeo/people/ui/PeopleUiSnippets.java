@@ -121,8 +121,12 @@ public class PeopleUiSnippets {
 	public static String getContactMetaData(Node node) {
 		StringBuilder builder = new StringBuilder();
 
-		String nature = ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)
-				? ContactValueCatalogs.CONTACT_CAT_OFFICE : ContactValueCatalogs.CONTACT_CAT_HOME;
+		// TODO make this more reliable
+		Node contactable = ConnectJcrUtils.getParent(ConnectJcrUtils.getParent(node));
+		String nature = null;
+		if (ConnectJcrUtils.isNodeType(contactable, PeopleTypes.PEOPLE_PERSON))
+			nature = ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_CONTACT_REF)
+					? ContactValueCatalogs.CONTACT_CAT_OFFICE : ContactValueCatalogs.CONTACT_CAT_HOME;
 		String category = ConnectJcrUtils.get(node, Property.JCR_TITLE);
 		String label = ConnectJcrUtils.get(node, Property.JCR_DESCRIPTION);
 
@@ -230,12 +234,13 @@ public class PeopleUiSnippets {
 
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MOBILE);
 		if (notEmpty(tmpStr))
-			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(ConnectUiConstants.NB_DOUBLE_SPACE);
-
-		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_TELEPHONE_NUMBER);
+			tmpStr = ConnectUiSnippets.getPhoneLink(tmpStr) + " (Mobile)";
+		String tmpStr2 = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_TELEPHONE_NUMBER);
+		if (notEmpty(tmpStr2))
+			tmpStr2 = ConnectUiSnippets.getPhoneLink(tmpStr2);
+		tmpStr = ConnectJcrUtils.concatIfNotEmpty(tmpStr, tmpStr2, " / ");
 		if (notEmpty(tmpStr))
-			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(ConnectUiConstants.NB_DOUBLE_SPACE);
-		
+			builder.append(tmpStr).append(ConnectUiConstants.NB_DOUBLE_SPACE);
 
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MAIL);
 		if (notEmpty(tmpStr))
@@ -299,7 +304,8 @@ public class PeopleUiSnippets {
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MOBILE);
 		String tmpStr2 = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_TELEPHONE_NUMBER);
 		if (notEmpty(tmpStr) && notEmpty(tmpStr2))
-			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("(Mobile) / ").append(tmpStr2).append("<br/>");
+			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("(Mobile) / ").append(tmpStr2)
+					.append("<br/>");
 		else if (notEmpty(tmpStr) || notEmpty(tmpStr2))
 			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(tmpStr2).append("<br/>");
 
@@ -322,10 +328,11 @@ public class PeopleUiSnippets {
 		String tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MOBILE);
 		String tmpStr2 = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_TELEPHONE_NUMBER);
 		if (notEmpty(tmpStr) && notEmpty(tmpStr2))
-			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("(Mobile) / ").append(tmpStr2).append("<br/>");
+			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append("(Mobile) / ").append(tmpStr2)
+					.append("<br/>");
 		else if (notEmpty(tmpStr) || notEmpty(tmpStr2))
 			builder.append(ConnectUiSnippets.getPhoneLink(tmpStr)).append(tmpStr2).append("<br/>");
-		
+
 		// mail
 		tmpStr = PeopleJcrUtils.getPrimaryContactValue(entity, PeopleTypes.PEOPLE_MAIL);
 		if (notEmpty(tmpStr))
