@@ -27,7 +27,7 @@ public class PartStateChanged implements IPartListener, IStartup {
 	private final static Log log = LogFactory.getLog(PartStateChanged.class);
 	IContextActivation contextActivation;
 
-	// private PeopleService peopleService;
+	// private SystemAppService systemAppService;
 
 	@Override
 	public void earlyStartup() {
@@ -37,8 +37,8 @@ public class PartStateChanged implements IPartListener, IStartup {
 					IWorkbenchPage iwp = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 					if (iwp != null)
 						iwp.addPartListener(new PartStateChanged());
-					// Display.getCurrent().setData(PeopleRapConstants.KEY_PEOPLE_SERVICE,
-					// peopleService);
+					// Display.getCurrent().setData(ConnectWorkbenchConstants.KEY_SYSTEM_APP_SERVICE,
+					// systemAppService);
 				} catch (Exception e) {
 					throw new ConnectException("Error while registering the PartStateChangedListener", e);
 				}
@@ -114,7 +114,7 @@ public class PartStateChanged implements IPartListener, IStartup {
 	}
 
 	// /* DEPENDENCY INJECTION */
-	// public void setPeopleService(PeopleService peopleService) {
-	// this.peopleService = peopleService;
+	// public void setSystemAppService(SystemAppService systemAppService) {
+	// this.systemAppService = systemAppService;
 	// }
 }

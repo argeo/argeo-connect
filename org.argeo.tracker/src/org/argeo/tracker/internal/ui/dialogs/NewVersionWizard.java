@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-/** Dialog to simply configure a new milestone */
+/** Dialog to simply configure a new milestone or version */
 public class NewVersionWizard extends Wizard implements ModifyListener {
 	private static final long serialVersionUID = -8365425809976445458L;
 
@@ -54,18 +54,15 @@ public class NewVersionWizard extends Wizard implements ModifyListener {
 		// TODO rather use error messages than an error popup
 		Calendar now = new GregorianCalendar();
 		if (EclipseUiUtils.isEmpty(getId())) {
-			MessageDialog.openError(getShell(), "Compulsory ID",
-					"Please define the version ID");
+			MessageDialog.openError(getShell(), "Compulsory ID", "Please define the version ID");
 			return false;
 		} else if (TrackerUtils.getVersionById(project, getId()) != null) {
 			MessageDialog.openError(getShell(), "Already existing version",
-					"A version with ID " + getId()
-							+ " already exists, cannot create");
+					"A version with ID " + getId() + " already exists, cannot create");
 			return false;
 		} else if (getReleaseDate() != null && getReleaseDate().after(now)) {
 			MessageDialog.openError(getShell(), "Non-valid release date",
-					"A release date can only be defined when the release "
-							+ "has already been done, and thus must be "
+					"A release date can only be defined when the release " + "has already been done, and thus must be "
 							+ "in the past.");
 			return false;
 
@@ -78,11 +75,9 @@ public class NewVersionWizard extends Wizard implements ModifyListener {
 		}
 
 		try {
-			issueService.createVersion(project, getId(), getDescription(),
-					getTargetDate(), getReleaseDate());
+			issueService.createVersion(project, getId(), getDescription(), getTargetDate(), getReleaseDate());
 		} catch (RepositoryException e1) {
-			throw new TrackerException("Unable to create" + "version with ID "
-					+ getId() + " on " + project, e1);
+			throw new TrackerException("Unable to create" + "version with ID " + getId() + " on " + project, e1);
 		}
 		return true;
 	}
@@ -122,19 +117,16 @@ public class NewVersionWizard extends Wizard implements ModifyListener {
 
 			createLabel(parent, "Target Date", SWT.CENTER);
 			targetDateCmp = new DateText(parent, SWT.NO_FOCUS);
-			targetDateCmp.setToolTipText("An optional "
-					+ "future date for this milestone");
+			targetDateCmp.setToolTipText("An optional " + "future date for this milestone");
 
 			Label lbl = createLabel(parent, "Release Date ", SWT.CENTER);
 			gd = new GridData();
 			gd.horizontalIndent = 15;
 			lbl.setLayoutData(gd);
 			releaseDateCmp = new DateText(parent, SWT.NO_FOCUS);
-			releaseDateCmp
-					.setToolTipText("Define a past date when "
-							+ "creating a milestone for an already released version,\n "
-							+ "typically in the case of reporting a bug for a version "
-							+ "that was not yet listed.");
+			releaseDateCmp.setToolTipText(
+					"Define a past date when " + "creating a milestone for an already released version,\n "
+							+ "typically in the case of reporting a bug for a version " + "that was not yet listed.");
 
 			createLabel(parent, "Description", SWT.TOP);
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);

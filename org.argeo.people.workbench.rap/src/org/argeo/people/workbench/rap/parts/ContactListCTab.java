@@ -15,8 +15,8 @@ import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -56,7 +56,7 @@ public class ContactListCTab extends LazyCTabControl {
 	// Context
 	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node entity;
 
 	// UI Objects
@@ -68,14 +68,15 @@ public class ContactListCTab extends LazyCTabControl {
 	private Combo addContactCmb;
 
 	public ContactListCTab(Composite parent, int style, AbstractConnectEditor editor, Node entityNode,
-			ResourcesService resourcesService, PeopleService peopleService, AppWorkbenchService appWorkbenchService) {
+			ResourcesService resourcesService, PeopleService peopleService,
+			SystemWorkbenchService systemWorkbenchService) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
 		this.entity = entityNode;
 		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	@Override
@@ -189,10 +190,10 @@ public class ContactListCTab extends LazyCTabControl {
 							continue loop;
 						if (ConnectJcrUtils.isNodeType(currNode, PeopleTypes.PEOPLE_POSTAL_ADDRESS))
 							new ContactAddressComposite(parent, SWT.NO_FOCUS, editor, myFormPart, resourcesService,
-									peopleService, appWorkbenchService, currNode, entity);
+									peopleService, systemWorkbenchService, currNode, entity);
 						else
 							new ContactComposite(parent, SWT.NO_FOCUS, editor, myFormPart, currNode, entity,
-									resourcesService, appWorkbenchService, peopleService);
+									resourcesService, peopleService, systemWorkbenchService);
 					}
 				}
 			}
@@ -321,23 +322,25 @@ public class ContactListCTab extends LazyCTabControl {
 	}
 
 	/** Populate an editable contact composite */
-	private Control populateNewContactComposite(Composite parent, final Node entity, final String contactType,
-			final String nature, Combo addContactCombo) throws RepositoryException {
+	private Control populateNewContactComposite(Composite parent, Node entity, String contactType, String nature,
+			Combo addContactCombo) throws RepositoryException {
+
+		boolean isPro = nature != null && nature.equals(ContactValueCatalogs.CONTACT_NATURE_PRO);
 
 		if (contactType.equals(PeopleTypes.PEOPLE_URL) || contactType.equals(PeopleTypes.PEOPLE_MAIL)) {
 			return createMailWidgets(parent, entity, contactType, nature, addContactCombo);
 		} else if (contactType.equals(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
-			if (nature != null && nature.equals(ContactValueCatalogs.CONTACT_NATURE_PRO))
-				return createWorkAddressWidgets(parent, entity, contactType, nature, addContactCombo);
+			if (isPro)
+				return createWorkAddressWidgets(parent, addContactCombo, entity, contactType);
 			else
-				return createAddressWidgets(parent, contactType, nature, addContactCombo);
-		} else {
-			return createContactWidgets(parent, contactType, nature, addContactCombo);
-		}
+				return createAddressWidgets(parent, addContactCombo, contactType, isPro);
+		} else
+			return createContactWidgets(parent, addContactCombo, contactType, isPro);
+
 	}
 
-	private Control createMailWidgets(Composite parent, final Node entity, final String contactType,
-			final String nature, final Combo addContactCombo) {
+	private Control createMailWidgets(Composite parent, Node entity, String contactType, final String nature,
+			final Combo addContactCombo) {
 
 		final Text valueTxt = createRowDataLT(parent, "Contact value", 200);
 
@@ -356,7 +359,7 @@ public class ContactListCTab extends LazyCTabControl {
 				String value = valueTxt.getText();
 				String label = labelTxt.getText();
 				boolean isPrimary = primaryChk.getSelection();
-				saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary, nature, null, label);
+				saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary, null, label);
 			}
 		});
 
@@ -370,8 +373,7 @@ public class ContactListCTab extends LazyCTabControl {
 					String value = valueTxt.getText();
 					String label = labelTxt.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary, nature, null,
-							label);
+					saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary, null, label);
 				}
 			}
 		};
@@ -381,14 +383,14 @@ public class ContactListCTab extends LazyCTabControl {
 		return valueTxt;
 	}
 
-	private Control createContactWidgets(Composite parent, final String contactType, final String nature,
-			final Combo addContactCombo) throws RepositoryException {
+	private Control createContactWidgets(Composite parent, Combo addContactCombo, String contactType, boolean isPro)
+			throws RepositoryException {
 
 		final Text valueTxt = createRowDataLT(parent, "Contact value", 200);
 
 		final Combo catCmb = new Combo(parent, SWT.READ_ONLY);
 		catCmb.setItems(peopleService.getContactService().getContactCategories(peopleService.getMainNodeType(entity),
-				contactType, nature));
+				contactType, isPro));
 		catCmb.select(0);
 
 		final Text labelTxt = createRowDataLT(parent, "Label", 120);
@@ -406,7 +408,7 @@ public class ContactListCTab extends LazyCTabControl {
 				String label = labelTxt.getText();
 				String cat = catCmb.getText();
 				boolean isPrimary = primaryChk.getSelection();
-				saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary, nature, cat, label);
+				saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary, cat, label);
 			}
 		});
 
@@ -421,8 +423,7 @@ public class ContactListCTab extends LazyCTabControl {
 					String label = labelTxt.getText();
 					String cat = catCmb.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary, nature, cat,
-							label);
+					saveAndRefresh(contactType, JcrUtils.replaceInvalidChars(value), value, isPrimary, cat, label);
 				}
 			}
 		};
@@ -433,8 +434,8 @@ public class ContactListCTab extends LazyCTabControl {
 		return valueTxt;
 	}
 
-	private void saveAndRefresh(String contactType, String name, String value, boolean isPrimary, String nature,
-			String category, String label) {
+	private void saveAndRefresh(String contactType, String name, String value, boolean isPrimary, String category,
+			String label) {
 
 		PeopleJcrUtils.createContact(resourcesService, peopleService, entity, contactType, value, isPrimary, category,
 				label);
@@ -443,13 +444,12 @@ public class ContactListCTab extends LazyCTabControl {
 		myFormPart.refresh();
 	}
 
-	private Control createAddressWidgets(Composite parent, final String contactType, final String nature,
-			final Combo addContactCombo) {
+	private Control createAddressWidgets(Composite parent, Combo addContactCombo, String contactType, boolean isPro) {
 
 		final Combo catCmb = new Combo(parent, SWT.NONE);
 		ContactService contactService = peopleService.getContactService();
 		String entityType = peopleService.getMainNodeType(entity);
-		catCmb.setItems(contactService.getContactCategories(entityType, contactType, nature));
+		catCmb.setItems(contactService.getContactCategories(entityType, contactType, isPro));
 		catCmb.select(0);
 
 		final Text streetTxt = createRowDataLT(parent, "Street", 150);
@@ -520,12 +520,12 @@ public class ContactListCTab extends LazyCTabControl {
 		return catCmb;
 	}
 
-	private Control createWorkAddressWidgets(final Composite parent, final Node entity, final String contactType,
-			final String nature, final Combo addContactCombo) {
+	private Control createWorkAddressWidgets(Composite parent, final Combo addContactCombo, Node entity,
+			String contactType) {
 		try {
 			final Combo catCmb = new Combo(parent, SWT.NONE);
 			catCmb.setItems(peopleService.getContactService()
-					.getContactCategories(peopleService.getMainNodeType(entity), contactType, nature));
+					.getContactCategories(peopleService.getMainNodeType(entity), contactType, true));
 			catCmb.select(0);
 
 			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
@@ -537,7 +537,7 @@ public class ContactListCTab extends LazyCTabControl {
 			toolkit.adapt(chooseOrgLk, false, false);
 			chooseOrgLk.setText("<a>Pick up</a>");
 			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(), "Choose an organisation",
-					entity.getSession(), appWorkbenchService, entity);
+					entity.getSession(), systemWorkbenchService, entity);
 
 			final Text labelTxt = createRowDataLT(parent, "A custom label", 120);
 
@@ -570,16 +570,15 @@ public class ContactListCTab extends LazyCTabControl {
 					String label = labelTxt.getText();
 					String cat = catCmb.getText();
 					boolean isPrimary = primaryChk.getSelection();
-					PeopleJcrUtils.createWorkAddress(resourcesService, peopleService, entity, isPrimary,
-							selected, cat, label);
+					PeopleJcrUtils.createWorkAddress(resourcesService, peopleService, entity, isPrimary, selected, cat,
+							label);
 					myFormPart.markDirty();
 					myFormPart.refresh();
 				}
 			});
 			return catCmb;
 		} catch (RepositoryException e1) {
-			throw new PeopleException(
-					"JCR Error while creating work address widgets for " + contactType + " & " + nature, e1);
+			throw new PeopleException("Cannot create work address widgets for " + entity, e1);
 		}
 	}
 

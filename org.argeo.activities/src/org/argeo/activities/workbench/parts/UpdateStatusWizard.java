@@ -19,7 +19,7 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -60,9 +60,9 @@ public class UpdateStatusWizard extends Wizard {
 
 	// Context
 	private final Session session;
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 	private final ActivitiesService activitiesService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final String taskId;
 	private final Node[] nodes;
 
@@ -76,18 +76,19 @@ public class UpdateStatusWizard extends Wizard {
 	/**
 	 * @param callingDisplay
 	 * @param session
-	 * @param peopleService
-	 * @param appWorkbenchService
+	 * @param resourcesService
+	 * @param activitiesService
+	 * @param systemWorkbenchService
 	 * @param rows
 	 * @param selectorName
 	 * @param taskId
 	 */
-	public UpdateStatusWizard(Session session, ResourcesService resourceService, ActivitiesService activityService,
-			AppWorkbenchService appWorkbenchService, Node[] nodes, String selectorName, String taskId) {
+	public UpdateStatusWizard(Session session, ResourcesService resourcesService, ActivitiesService activitiesService,
+			SystemWorkbenchService systemWorkbenchService, Node[] nodes, String selectorName, String taskId) {
 		this.session = session;
-		this.activitiesService = activityService;
-		this.resourceService = resourceService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.activitiesService = activitiesService;
+		this.resourcesService = resourcesService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.nodes = nodes;
 		this.taskId = taskId;
 	}
@@ -195,7 +196,7 @@ public class UpdateStatusWizard extends Wizard {
 			viewer.addDoubleClickListener(new MyDoubleClickListener());
 
 			box.setLayout(tableColumnLayout);
-			List<String> values = resourceService.getTemplateCatalogue(session, taskId,
+			List<String> values = resourcesService.getTemplateCatalogue(session, taskId,
 					ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
 			viewer.setInput(values.toArray(new String[0]));
 			setControl(body);
@@ -261,7 +262,7 @@ public class UpdateStatusWizard extends Wizard {
 			body.setLayout(layout);
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition("Display Name",
-					new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
+					new TitleIconRowLP(systemWorkbenchService, null, Property.JCR_TITLE), 300));
 
 			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();

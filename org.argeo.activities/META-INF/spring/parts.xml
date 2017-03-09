@@ -12,7 +12,7 @@
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="activitiesService" ref="activitiesService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<!-- EDITORS -->
@@ -23,8 +23,8 @@
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
-		<property name="appService" ref="appService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemAppService" ref="systemAppService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="taskEditor" class="org.argeo.activities.workbench.parts.TaskEditor"
@@ -33,8 +33,8 @@
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
-		<property name="appService" ref="appService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemAppService" ref="systemAppService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="searchActivityEditor"
@@ -44,7 +44,7 @@
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<!-- VIEWS -->
@@ -54,6 +54,6 @@
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="activitiesService" ref="activitiesService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 </beans>

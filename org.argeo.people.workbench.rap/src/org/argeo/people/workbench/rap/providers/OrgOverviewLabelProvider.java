@@ -8,8 +8,8 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -22,18 +22,18 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 	private static final long serialVersionUID = -7687462900742079263L;
 
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
-	private AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 
 	private boolean isSmallList;
 
-	public OrgOverviewLabelProvider(boolean isSmallList, ResourcesService resourceService, PeopleService peopleService,
-			AppWorkbenchService appWorkbenchService) {
+	public OrgOverviewLabelProvider(boolean isSmallList, ResourcesService resourcesService, PeopleService peopleService,
+			SystemWorkbenchService systemWorkbenchService) {
 		this.isSmallList = isSmallList;
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			builder.append(ConnectJcrUtils.get(orga, Property.JCR_TITLE));
 			builder.append("</b></big> ");
 
-			String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, orga);
+			String local = PeopleUiSnippets.getLocalisationInfo(resourcesService, peopleService, orga);
 			if (EclipseUiUtils.notEmpty(local))
 				builder.append(local);
 
@@ -75,7 +75,7 @@ public class OrgOverviewLabelProvider extends ColumnLabelProvider {
 			}
 
 			if (isSmallList) {
-				tmpStr = ConnectWorkbenchUtils.getTags(resourceService, appWorkbenchService, orga);
+				tmpStr = ConnectWorkbenchUtils.getTags(resourcesService, systemWorkbenchService, orga);
 				if (EclipseUiUtils.notEmpty(tmpStr))
 					builder.append(tmpStr);
 			}

@@ -46,13 +46,13 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * Generic page to display a filtered list of entities. TODO check if not
- * dupplicated with PeopleQueryPage
+ * duplicated with PeopleQueryPage
  */
 public class PeopleSearchPage implements CmsUiProvider {
 
 	/* DEPENDENCY INJECTION */
 	private PeopleService peopleService;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 
 	private Map<String, String> iconPathes;
 
@@ -99,7 +99,7 @@ public class PeopleSearchPage implements CmsUiProvider {
 		CmsUtils.markup(table);
 		CmsUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
-		ILabelProvider labelProvider = new SearchEntitiesLP(resourceService, peopleService, table.getDisplay(),
+		ILabelProvider labelProvider = new SearchEntitiesLP(resourcesService, peopleService, table.getDisplay(),
 				iconPathes);
 		v.setLabelProvider(labelProvider);
 		v.addDoubleClickListener(new IDoubleClickListener() {
@@ -167,12 +167,12 @@ public class PeopleSearchPage implements CmsUiProvider {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setPeopleService(PeopleService peopleService) {
-		this.peopleService = peopleService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
 	}
 
 	public void setIconPathes(Map<String, String> iconPathes) {

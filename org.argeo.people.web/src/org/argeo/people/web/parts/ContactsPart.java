@@ -11,9 +11,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-/** Part that display a list of contacts for a people:contactable node */
+/** Display a list of contacts for a people:contactable node */
 public class ContactsPart implements CmsUiProvider {
-	/* dependency injection */
+	
+	/* DEPENDENCY INJECTION */
 	private SingleContactPart singleContactPart;
 
 	public ContactsPart() {

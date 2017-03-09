@@ -12,8 +12,8 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.NodeEditorInput;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -29,8 +29,8 @@ public abstract class AbstractActivityEditor extends EditorPart implements CmsEd
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private AppWorkbenchService appWorkbenchService;
 	private ActivitiesService activitiesService;
+	private SystemWorkbenchService systemWorkbenchService;
 	private FileSystemProvider nodeFileSystemProvider;
 
 	// Context
@@ -85,8 +85,8 @@ public abstract class AbstractActivityEditor extends EditorPart implements CmsEd
 		return activitiesService;
 	}
 
-	protected AppWorkbenchService getAppWorkbenchService() {
-		return appWorkbenchService;
+	protected SystemWorkbenchService getSystemWorkbenchService() {
+		return systemWorkbenchService;
 	}
 
 	public FileSystemProvider getNodeFileSystemProvider() {
@@ -149,8 +149,8 @@ public abstract class AbstractActivityEditor extends EditorPart implements CmsEd
 		this.activitiesService = activitiesService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	public void setNodeFileSystemProvider(FileSystemProvider nodeFileSystemProvider) {

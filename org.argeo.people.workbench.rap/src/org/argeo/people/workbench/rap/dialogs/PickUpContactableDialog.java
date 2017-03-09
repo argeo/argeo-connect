@@ -32,10 +32,10 @@ import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
-import org.argeo.people.workbench.PeopleWorkbenchService;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -73,7 +73,7 @@ public class PickUpContactableDialog extends TrayDialog {
 	private TableViewer tableViewer;
 
 	public PickUpContactableDialog(Shell parentShell, String title, Session session,
-			PeopleWorkbenchService peopleUiService, String nodeType) {
+			SystemWorkbenchService systemWorkbenchService, String nodeType) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
@@ -81,7 +81,7 @@ public class PickUpContactableDialog extends TrayDialog {
 
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
-				new TitleIconRowLP(peopleUiService, null, Property.JCR_TITLE), 300));
+				new TitleIconRowLP(systemWorkbenchService, null, Property.JCR_TITLE), 300));
 	}
 
 	protected Point getInitialSize() {
@@ -185,7 +185,6 @@ public class PickUpContactableDialog extends TrayDialog {
 			// Ordering[] orderings = { order };
 			// QueryObjectModel query = factory.createQuery(source, defaultC,
 			// orderings, null);
-			// // TODO rather implement a virtual viewer
 			// query.setLimit(100);
 			// QueryResult result = query.execute();
 			Row[] rows = ConnectJcrUtils.rowIteratorToArray(result.getRows());

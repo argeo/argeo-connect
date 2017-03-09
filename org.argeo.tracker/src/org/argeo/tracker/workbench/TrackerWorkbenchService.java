@@ -6,16 +6,16 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerTypes;
-import org.argeo.tracker.internal.ui.TrackerImages;
 import org.argeo.tracker.internal.workbench.AllProjectsEditor;
 import org.argeo.tracker.internal.workbench.CategoryEditor;
 import org.argeo.tracker.internal.workbench.IssueEditor;
 import org.argeo.tracker.internal.workbench.ProjectEditor;
+import org.argeo.tracker.internal.workbench.TrackerImages;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Centralize here the definition of context specific parameters (for instance
+ * Centralise here the definition of context specific parameters (for instance
  * the name of the command to open editors so that it is easily extended by
  * specific extensions
  */

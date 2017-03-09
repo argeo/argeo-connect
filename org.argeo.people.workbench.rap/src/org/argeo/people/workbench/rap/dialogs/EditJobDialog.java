@@ -33,7 +33,7 @@ import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleConstants;
@@ -90,9 +90,9 @@ public class EditJobDialog extends TrayDialog {
 
 	// Context
 	private Session session;
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 
 	// The various field
 	private Text positionTxt;
@@ -137,13 +137,13 @@ public class EditJobDialog extends TrayDialog {
 	 *            tells if we must remove referenced (if true) or referencing
 	 *            (if false) node
 	 */
-	public EditJobDialog(Shell parentShell, String title, ResourcesService resourceService, PeopleService peopleService,
-			AppWorkbenchService appWorkbenchService, Node oldLink, Node toUpdateNode, boolean isBackward) {
+	public EditJobDialog(Shell parentShell, String title, ResourcesService resourcesService, PeopleService peopleService,
+			SystemWorkbenchService systemWorkbenchService, Node oldLink, Node toUpdateNode, boolean isBackward) {
 		super(parentShell);
 		this.title = title;
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 
 		this.isBackward = isBackward;
 		if (isBackward)
@@ -232,7 +232,7 @@ public class EditJobDialog extends TrayDialog {
 		gd.heightHint = 290;
 		listCmp.setLayoutData(gd);
 		entityViewer = createListPart(listCmp,
-				new EntitySingleColumnLabelProvider(resourceService, peopleService, appWorkbenchService));
+				new EntitySingleColumnLabelProvider(resourcesService, peopleService, systemWorkbenchService));
 		refreshFilteredList(toSearchNodeType);
 
 		// An empty line to give some air to the dialog
@@ -271,7 +271,7 @@ public class EditJobDialog extends TrayDialog {
 		dialogarea.layout();
 		// Set the focus on the first field.
 		filterTxt.setFocus();
-		if (!appWorkbenchService.lazyLoadLists())
+		if (!systemWorkbenchService.lazyLoadLists())
 			refreshFilteredList(toSearchNodeType);
 		return dialogarea;
 	}
@@ -335,7 +335,7 @@ public class EditJobDialog extends TrayDialog {
 		layout.horizontalSpacing = 5;
 		parent.setLayout(layout);
 
-		boolean isDyn = appWorkbenchService.queryWhenTyping();
+		boolean isDyn = systemWorkbenchService.queryWhenTyping();
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
 		if (isDyn)
 			filterTxt = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);

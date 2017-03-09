@@ -23,7 +23,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.ui.ConnectColumnDefinition;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -52,7 +52,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 
 	// Business objects
 	private final Session session;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final String nodeType;
 	private Node selectedNode;
 	private List<ConnectColumnDefinition> colDefs;
@@ -65,20 +65,20 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 	private Button dummyButton;
 
 	public PickUpByNodeTypeDialog(Shell parentShell, String title, Session session,
-			AppWorkbenchService appWorkbenchService, String nodeType) {
+			SystemWorkbenchService systemWorkbenchService, String nodeType) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.nodeType = nodeType;
 	}
 
 	public PickUpByNodeTypeDialog(Shell parentShell, String title, Session session,
-			AppWorkbenchService appWorkbenchService, String nodeType, List<ConnectColumnDefinition> colDefs) {
+			SystemWorkbenchService systemWorkbenchService, String nodeType, List<ConnectColumnDefinition> colDefs) {
 		super(parentShell);
 		this.title = title;
 		this.session = session;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.nodeType = nodeType;
 		this.colDefs = colDefs;
 	}
@@ -95,7 +95,7 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		main.setLayoutData(EclipseUiUtils.fillAll());
 
 		int style = SWT.V_SCROLL | SWT.SINGLE | SWT.BORDER;
-		tableCmp = new MyFilterEntitiesVirtualTable(main, style, session, appWorkbenchService, nodeType, colDefs);
+		tableCmp = new MyFilterEntitiesVirtualTable(main, style, session, systemWorkbenchService, nodeType, colDefs);
 		GridData gd = EclipseUiUtils.fillAll();
 		tableCmp.setLayoutData(gd);
 
@@ -181,13 +181,13 @@ public class PickUpByNodeTypeDialog extends TrayDialog {
 		private List<ConnectColumnDefinition> colDefs;
 
 		public MyFilterEntitiesVirtualTable(Composite parent, int style, Session session,
-				AppWorkbenchService appWorkbenchService, String nodeType) {
-			super(parent, style, session, appWorkbenchService, nodeType);
+				SystemWorkbenchService systemWorkbenchService, String nodeType) {
+			super(parent, style, session, systemWorkbenchService, nodeType);
 		}
 
 		public MyFilterEntitiesVirtualTable(Composite parent, int style, Session session,
-				AppWorkbenchService appWorkbenchService, String nodeType, List<ConnectColumnDefinition> colDefs) {
-			super(parent, style, session, appWorkbenchService, nodeType, true);
+				SystemWorkbenchService systemWorkbenchService, String nodeType, List<ConnectColumnDefinition> colDefs) {
+			super(parent, style, session, systemWorkbenchService, nodeType, true);
 			this.colDefs = colDefs;
 			populate();
 		}

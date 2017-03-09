@@ -11,7 +11,7 @@
 		filter="(cn=home)" />
 	<reference id="userAdminService" interface="org.argeo.connect.UserAdminService" />
 	<reference id="resourcesService" interface="org.argeo.connect.resources.ResourcesService" />
-	<reference id="appService" interface="org.argeo.connect.AppService" />
-	<reference id="appWorkbenchService"
-		interface="org.argeo.connect.workbench.AppWorkbenchService" />
+	<reference id="systemAppService" interface="org.argeo.connect.SystemAppService" />
+	<reference id="systemWorkbenchService"
+		interface="org.argeo.connect.workbench.SystemWorkbenchService" />
 </beans:beans>

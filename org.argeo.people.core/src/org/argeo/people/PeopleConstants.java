@@ -9,7 +9,7 @@ public interface PeopleConstants {
 
 	// Namespace
 	String PEOPLE_PREFIX = "people";
-	
+
 	String PEOPLE_APP_PREFIX = "org.argeo.people";
 	String PEOPLE_APP_BASE_NAME = "people";
 
@@ -53,9 +53,9 @@ public interface PeopleConstants {
 	long QUERY_DEFAULT_LIMIT = 50;
 
 	// System roles exposed by people
-//	String ROLE_GUEST = "org.argeo.connect.people.guest";
-//	String ROLE_MEMBER = "org.argeo.connect.people.member";
-//	String ROLE_BUSINESS_ADMIN = "cn=businessAdmin,ou=roles,ou=node";
+	// String ROLE_GUEST = "org.argeo.connect.people.guest";
+	// String ROLE_MEMBER = "org.argeo.connect.people.member";
+	// String ROLE_BUSINESS_ADMIN = "cn=businessAdmin,ou=roles,ou=node";
 	// Give access to people specific perspectives
 	// String ROLE_MANAGER =
 	// "org.argeo.connect.people.manager";

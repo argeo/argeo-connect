@@ -3,8 +3,8 @@ package org.argeo.connect.workbench.commands;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.SearchNodeEditorInput;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -22,14 +22,14 @@ public class OpenSearchEntityEditor extends AbstractHandler {
 	public final static String PARAM_EDITOR_NAME = "param.editorName";
 	public final static String PARAM_BASE_PATH = "param.basePath";
 
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String entityType = event.getParameter(PARAM_NODE_TYPE);
 		String basePath = event.getParameter(PARAM_BASE_PATH);
 		String name = event.getParameter(PARAM_EDITOR_NAME);
 
-		String editorId = appWorkbenchService.getSearchEntityEditorId(entityType);
+		String editorId = systemWorkbenchService.getSearchEntityEditorId(entityType);
 		if (editorId == null) {
 			log.warn("No editor ID found for " + entityType);
 			return null;
@@ -43,7 +43,7 @@ public class OpenSearchEntityEditor extends AbstractHandler {
 		return null;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

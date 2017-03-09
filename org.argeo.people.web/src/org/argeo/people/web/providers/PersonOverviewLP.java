@@ -25,7 +25,7 @@ import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
 /**
- * Provides HTML Snippet to display details of a person in various UI contexts
+ * Provide HTML Snippet to display details of a person in various UI contexts
  */
 public class PersonOverviewLP implements ILabelProvider, PeopleNames {
 

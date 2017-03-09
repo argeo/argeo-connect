@@ -6,8 +6,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeUtils;
@@ -24,7 +24,7 @@ public class OpenDefaultEditor extends AbstractHandler {
 	public final static String ID = ConnectUiPlugin.PLUGIN_ID + ".openDefaultEditor";
 
 	private Repository repository;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		Session session = null;
@@ -36,7 +36,7 @@ public class OpenDefaultEditor extends AbstractHandler {
 			EntityEditorInput eei = new EntityEditorInput(homeNode.getIdentifier());
 			IEditorPart iep = iwPage.findEditor(eei);
 			if (iep == null) {
-				iwPage.openEditor(eei, appWorkbenchService.getDefaultEditorId());
+				iwPage.openEditor(eei, systemWorkbenchService.getDefaultEditorId());
 			} else
 				iwPage.activate(iep);
 		} catch (RepositoryException | PartInitException re) {
@@ -52,7 +52,7 @@ public class OpenDefaultEditor extends AbstractHandler {
 		this.repository = repository;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

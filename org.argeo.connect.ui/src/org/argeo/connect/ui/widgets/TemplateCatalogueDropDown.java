@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Text;
 public class TemplateCatalogueDropDown extends ConnectAbstractDropDown {
 
 	private final Session session;
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 	private final String templateId;
 	private final String propertyName;
 
@@ -25,10 +25,10 @@ public class TemplateCatalogueDropDown extends ConnectAbstractDropDown {
 	 * @param propertyName
 	 * @param text
 	 */
-	public TemplateCatalogueDropDown(Session session,
-			ResourcesService resourceService, String templateId, String propertyName, Text text) {
+	public TemplateCatalogueDropDown(Session session, ResourcesService resourceService, String templateId,
+			String propertyName, Text text) {
 		super(text);
-		this.resourceService = resourceService;
+		this.resourcesService = resourceService;
 		this.session = session;
 		this.templateId = templateId;
 		this.propertyName = propertyName;
@@ -37,8 +37,7 @@ public class TemplateCatalogueDropDown extends ConnectAbstractDropDown {
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<String> values = resourceService.getTemplateCatalogue(session,
-				templateId, propertyName, filter);
+		List<String> values = resourcesService.getTemplateCatalogue(session, templateId, propertyName, filter);
 		return values;
 	}
 }

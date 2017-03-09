@@ -54,7 +54,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	private final Repository repository;
 	private Session currSession;
 	private PeopleService peopleService;
-	private PeopleWorkbenchService peopleUiService;
+	private PeopleWorkbenchService peopleWorkbenchService;
 	private IWorkbench workbench;
 
 	// Business objects
@@ -69,12 +69,9 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 		this.repository = repository;
 		this.currSession = ConnectJcrUtils.login(repository);
 		this.peopleService = peopleService;
-		this.peopleUiService = peopleUiService;
+		this.peopleWorkbenchService = peopleUiService;
 		this.workbench = workbench;
 	}
-
-	// //////////////////////////////////////
-	// Generic part to use when Overriding
 
 	/**
 	 * Called by the wizard performFinish() method. Overwrite to perform real
@@ -109,7 +106,7 @@ public abstract class AddEntityReferenceWizard extends Wizard {
 	}
 
 	protected PeopleWorkbenchService getPeopleUiService() {
-		return peopleUiService;
+		return peopleWorkbenchService;
 	}
 
 	protected List<Node> getSelectedItems() {

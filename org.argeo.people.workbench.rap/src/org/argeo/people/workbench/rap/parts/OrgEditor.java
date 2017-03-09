@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.parts.ActivityList;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -28,9 +29,10 @@ import org.argeo.people.workbench.rap.composites.MailingListListPart;
 import org.argeo.people.workbench.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.people.workbench.rap.util.AbstractPeopleWithImgEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormLayout;
@@ -59,7 +61,11 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 		org = getNode();
-		String shortName = ConnectJcrUtils.get(org, Property.JCR_TITLE);
+	}
+
+	@Override
+	protected void updatePartName() {
+		String shortName = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 		if (EclipseUiUtils.notEmpty(shortName)) {
 			if (shortName.length() > SHORT_NAME_LENGHT)
 				shortName = shortName.substring(0, SHORT_NAME_LENGHT - 1) + "...";
@@ -77,18 +83,16 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateTitleComposite(titleCmp);
 
-		// Tag Management
+		// Tags Management
 		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, ResourcesNames.CONNECT_TAGS,
-				"Enter a new tag");
-
+				getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, ResourcesNames.CONNECT_TAGS,
+				"Add a tag");
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		// Mailing list management
+		// Mailing lists management
 		Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getAppWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, org, PeopleNames.PEOPLE_MAILING_LISTS,
+				getSystemWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, org, PeopleNames.PEOPLE_MAILING_LISTS,
 				"Add a mailing");
-
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 
@@ -96,21 +100,21 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 		// Contact informations
 		String tooltip = "Contact information for " + JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		LazyCTabControl cpc = new ContactListCTab(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
-				getPeopleService(), getAppWorkbenchService());
+				getPeopleService(), getSystemWorkbenchService());
 		cpc.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, cpc, "Details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 
 		// Activities and tasks
 		tooltip = "Activities and tasks related to " + JcrUtils.get(org, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourcesService(), getActivitiesService(), getAppWorkbenchService(), org);
+				getResourcesService(), getActivitiesService(), getSystemWorkbenchService(), org);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 
 		// Employees
 		tooltip = "Known employees of " + JcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
 		LazyCTabControl employeesCmp = new JobListCTab(folder, SWT.NO_FOCUS, this, getResourcesService(),
-				getPeopleService(), getAppWorkbenchService(), org);
+				getPeopleService(), getSystemWorkbenchService(), org);
 		employeesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, employeesCmp, "Team", PeopleRapConstants.CTAB_EMPLOYEES, tooltip);
 
@@ -131,9 +135,9 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
 			final Label orgInfoROLbl = getFormToolkit().createLabel(roPanelCmp, "", SWT.WRAP);
-			orgInfoROLbl.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+			CmsUtils.markup(orgInfoROLbl);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(false, getResourcesService(),
-					getPeopleService(), getAppWorkbenchService());
+					getPeopleService(), getSystemWorkbenchService());
 
 			// EDIT
 			final Composite editPanelCmp = getFormToolkit().createComposite(parent, SWT.NONE);
@@ -153,13 +157,14 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 			final AbstractFormPart editPart = new AbstractFormPart() {
 				// Update values on refresh
 				public void refresh() {
-					super.refresh();
 					// EDIT PART
 					boolean useDistinct = useDistinctDisplayBtn.getSelection();
-					ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org,
-							useDistinct ? PeopleNames.PEOPLE_DISPLAY_NAME : PeopleNames.PEOPLE_LEGAL_NAME);
+					if (useDistinct)
+						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, PeopleNames.PEOPLE_DISPLAY_NAME);
+					else
+						displayNameTxt.setText(getPeopleService().getPersonService().getDefaultDisplayName(org));
 					displayNameTxt.setEnabled(useDistinct);
-					
+
 					// READ ONLY PART
 					String roText = orgLP.getText(org);
 					orgInfoROLbl.setText(roText);
@@ -170,6 +175,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 						editPanelCmp.moveBelow(roPanelCmp);
 					orgInfoROLbl.pack();
 					editPanelCmp.getParent().layout();
+					super.refresh();
 				}
 			};
 
@@ -196,13 +202,29 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 				}
 			});
 
-			ConnectWorkbenchUtils.addModifyListener(displayNameTxt, org, PeopleNames.PEOPLE_DISPLAY_NAME, editPart);
+			addDNameModifyListener(displayNameTxt, useDistinctDisplayBtn, org, PeopleNames.PEOPLE_DISPLAY_NAME,
+					editPart);
 
 			editPart.initialize(getManagedForm());
 			getManagedForm().addPart(editPart);
 		} catch (Exception e) {
 			throw new PeopleException("Cannot create main info section", e);
 		}
+	}
+
+	private void addDNameModifyListener(final Text text, final Button useDistinctBtn, final Node node,
+			final String propName, final AbstractFormPart part) {
+		text.addModifyListener(new ModifyListener() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void modifyText(ModifyEvent event) {
+				if (useDistinctBtn.getSelection()) {
+					if (ConnectJcrUtils.setJcrProperty(node, propName, PropertyType.STRING, text.getText()))
+						part.markDirty();
+				}
+			}
+		});
 	}
 
 	protected ActivitiesService getActivitiesService() {
@@ -219,7 +241,6 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 	}
 
 	public void setPeopleService(PeopleService peopleService) {
-		super.setAppService(peopleService);
 		this.peopleService = peopleService;
 	}
 }

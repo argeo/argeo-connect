@@ -9,16 +9,16 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 public class CountMemberLP extends ColumnLabelProvider {
 	private static final long serialVersionUID = 1L;
 
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 
-	public CountMemberLP(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public CountMemberLP(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 
 	@Override
 	public String getText(Object element) {
 		Node currNode = ConnectJcrUtils.getNodeFromElement(element, null);
-		long count = resourceService.countMembers(currNode);
+		long count = resourcesService.countMembers(currNode);
 		return "" + count;
 	}
 }

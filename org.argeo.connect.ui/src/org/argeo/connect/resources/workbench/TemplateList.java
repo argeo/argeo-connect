@@ -15,10 +15,10 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -52,7 +52,7 @@ public class TemplateList extends EditorPart implements Refreshable {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private ResourcesService resourceService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// Context
 	private Session session;
@@ -182,8 +182,8 @@ public class TemplateList extends EditorPart implements Refreshable {
 		this.resourceService = resourceService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	// Unused compulsory methods

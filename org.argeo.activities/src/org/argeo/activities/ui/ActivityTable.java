@@ -35,8 +35,8 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -62,8 +62,7 @@ public class ActivityTable extends Composite {
 	private UserAdminService userAdminService;
 	private ResourcesService resourceService;
 	private ActivitiesService activitiesService;
-	// private AppService appService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// CONSTRUCTORS
 
@@ -76,17 +75,17 @@ public class ActivityTable extends Composite {
 	 * @param session
 	 */
 	public ActivityTable(Composite parent, int style, UserAdminService userAdminService,
-			ResourcesService resourceService, ActivitiesService activityService, AppWorkbenchService appWorkbenchService,
+			ResourcesService resourceService, ActivitiesService activityService,
+			SystemWorkbenchService systemWorkbenchService,
 			Node entity) {
 		super(parent, SWT.NONE);
-		session = ConnectJcrUtils.getSession(entity);
-		// this.appService = appService;
-		this.appWorkbenchService = appWorkbenchService;
-		this.activitiesService = activityService;
-		this.resourceService = resourceService;
-		this.userAdminService = userAdminService;
 		this.entity = entity;
-
+		session = ConnectJcrUtils.getSession(entity);
+		this.userAdminService = userAdminService;
+		this.resourceService = resourceService;
+		this.activitiesService = activityService;
+		this.systemWorkbenchService = systemWorkbenchService;
+		
 		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite tableComp = new Composite(this, SWT.NO_FOCUS);
 		tableViewer = createActivityViewer(tableComp, style);
@@ -412,7 +411,7 @@ public class ActivityTable extends Composite {
 							if (!id.equals(currEntityId)) {
 								Node currReferenced = session.getNodeByIdentifier(id);
 								String label = ConnectWorkbenchUtils.getOpenEditorSnippet(
-										appWorkbenchService.getOpenEntityEditorCmdId(), currReferenced,
+										systemWorkbenchService.getOpenEntityEditorCmdId(), currReferenced,
 										ConnectJcrUtils.get(currReferenced, Property.JCR_TITLE));
 								builder.append(label).append(", ");
 							}

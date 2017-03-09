@@ -24,9 +24,9 @@ import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.EditTagWizard;
 import org.argeo.connect.workbench.parts.AskTitleDescriptionDialog;
 import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
@@ -67,7 +67,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private ResourcesService resourcesService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// Context
 	private Session session;
@@ -259,7 +259,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 					Node node = session.getNodeByIdentifier(token[1]);
 
 					if ("edit".equals(token[0])) {
-						Wizard wizard = new EditTagWizard(resourcesService, appWorkbenchService, node, tagId,
+						Wizard wizard = new EditTagWizard(resourcesService, systemWorkbenchService, node, tagId,
 								propertyName);
 						WizardDialog dialog = new WizardDialog(event.display.getActiveShell(), wizard);
 						int result = dialog.open();
@@ -329,7 +329,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 		this.resourcesService = resourcesService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

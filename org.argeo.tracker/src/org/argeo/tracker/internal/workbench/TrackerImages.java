@@ -1,11 +1,11 @@
-package org.argeo.tracker.internal.ui;
+package org.argeo.tracker.internal.workbench;
 
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 
-/** Shared icons. */
+/** Shared icons in a Workbench context */
 public class TrackerImages {
 	public final static String PATH = "theme/icons/";
 	public final static String ACTION_RELPATH = "actions/";

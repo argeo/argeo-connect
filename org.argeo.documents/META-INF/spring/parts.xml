@@ -9,24 +9,24 @@
 	<bean id="folderEditor" class="org.argeo.documents.workbench.parts.FolderEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="documentsService" ref="documentsService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
 		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
+		<property name="documentsService" ref="documentsService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 	<bean id="fileEditor" class="org.argeo.documents.workbench.parts.FileEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="documentsService" ref="documentsService" />
 		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="documentsService" ref="documentsService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
-	
+
 	<!-- VIEWS -->
 	<bean id="myFilesView" class="org.argeo.documents.workbench.parts.MyFilesView"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="nodeFileSystemProvider" ref="nodeFileSystemProvider" />
 		<property name="documentsService" ref="documentsService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 </beans>

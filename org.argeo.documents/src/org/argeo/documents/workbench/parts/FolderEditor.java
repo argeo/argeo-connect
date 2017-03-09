@@ -38,7 +38,7 @@ public class FolderEditor extends AbstractDocumentsEditor {
 				Node currNode = ConnectJcrUtils.getNode(session, path.toString());
 				String nodeId = ConnectJcrUtils.getIdentifier(currNode);
 				// FIXME hard coded parameter name
-				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(), "param.jcrId", nodeId);
+				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(), "param.jcrId", nodeId);
 			}
 		};
 		dfc.setLayoutData(EclipseUiUtils.fillAll());

@@ -1,16 +1,6 @@
 package org.argeo.people.core;
 
-import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
-import static org.argeo.people.ContactValueCatalogs.ARRAY_IMPP;
-import static org.argeo.people.ContactValueCatalogs.ARRAY_ORG_ADDRESSES;
 import static org.argeo.people.ContactValueCatalogs.ARRAY_ORG_PHONES;
-import static org.argeo.people.ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
-import static org.argeo.people.ContactValueCatalogs.ARRAY_PERSON_PRIVATE_PHONES;
-import static org.argeo.people.ContactValueCatalogs.ARRAY_PERSON_PRO_PHONES;
-import static org.argeo.people.ContactValueCatalogs.ARRAY_PERSON_WORK_ADDRESSES;
-import static org.argeo.people.ContactValueCatalogs.CONTACT_NATURE_PRIVATE;
-import static org.argeo.people.ContactValueCatalogs.CONTACT_NATURE_PRO;
-import static org.argeo.people.ContactValueCatalogs.CONTACT_OTHER;
 
 import java.awt.Image;
 
@@ -22,7 +12,6 @@ import org.argeo.people.ContactService;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
-import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 
 /**
@@ -32,10 +21,7 @@ import org.argeo.people.PeopleTypes;
  */
 public class ContactServiceImpl implements ContactService, PeopleNames {
 
-	// private PeopleService peopleService;
-
-	public ContactServiceImpl(PeopleService peopleService) {
-		// this.peopleService = peopleService;
+	public ContactServiceImpl() {
 	}
 
 	@Override
@@ -91,29 +77,32 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 	}
 
 	@Override
-	public String[] getContactCategories(String contactableType, String contactType, String nature) {
+	public String[] getContactCategories(String contactableType, String contactType, boolean isPro) {
 
-		if (PeopleTypes.PEOPLE_PHONE.equals(contactType)) {
+		if (PeopleTypes.PEOPLE_TELEPHONE_NUMBER.equals(contactType)) {
 			if (PeopleTypes.PEOPLE_PERSON.equals(contactableType)) {
-				if (notEmpty(nature) && (nature.equals(CONTACT_NATURE_PRIVATE) || nature.equals(CONTACT_OTHER)))
-					return ARRAY_PERSON_PRIVATE_PHONES;
+				if (isPro)
+					return ContactValueCatalogs.ARRAY_PERSON_PRO_PHONES;
 				else
-					return ARRAY_PERSON_PRO_PHONES;
+					return ContactValueCatalogs.ARRAY_PERSON_PRIVATE_PHONES;
 			} else if (PeopleTypes.PEOPLE_ORG.equals(contactableType))
 				return ARRAY_ORG_PHONES;
+		} else if (PeopleTypes.PEOPLE_MOBILE.equals(contactType)) {
+			return ContactValueCatalogs.ARRAY_MOBILES;
+		} else if (PeopleTypes.PEOPLE_FAX.equals(contactType)) {
+			return ContactValueCatalogs.ARRAY_FAXES;
 		} else if (PeopleTypes.PEOPLE_POSTAL_ADDRESS.equals(contactType)) {
 			if (PeopleTypes.PEOPLE_PERSON.equals(contactableType)) {
-				if (notEmpty(nature) && nature.equals(CONTACT_NATURE_PRO))
-					return ARRAY_PERSON_WORK_ADDRESSES;
+				if (isPro)
+					return ContactValueCatalogs.ARRAY_PERSON_WORK_ADDRESSES;
 				else
-					return ARRAY_PERSON_HOME_ADDRESSES;
+					return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
 			} else if (PeopleTypes.PEOPLE_ORG.equals(contactableType))
-				return ARRAY_ORG_ADDRESSES;
+				return ContactValueCatalogs.ARRAY_ORG_ADDRESSES;
 		} else if (PeopleTypes.PEOPLE_SOCIAL_MEDIA.equals(contactType))
 			return ContactValueCatalogs.ARRAY_SOCIAL_MEDIA;
 		else if (PeopleTypes.PEOPLE_IMPP.equals(contactType))
-			return ARRAY_IMPP;
-
+			return ContactValueCatalogs.ARRAY_IMPP;
 		return null;
 	}
 

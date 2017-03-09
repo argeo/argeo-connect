@@ -12,11 +12,10 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * Manually register a new prospect in the system. The node must have been
- * created. But the wizard will try to save and commit using the PeopleService
+ * created. But the wizard will try to save and commit using the TackerService
  * before returning SWT.OK. The caller might then call the "open entity editor"
  * command if needed.
  */
-
 public class NewProspectWizard extends Wizard {
 	// private final static Log log =
 	// LogFactory.getLog(NewProspectWizard.class);

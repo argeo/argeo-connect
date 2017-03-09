@@ -14,8 +14,8 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -55,7 +55,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node contactNode;
 	private final Node parentVersionableNode;
 
@@ -63,13 +63,25 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 	private final AbstractFormPart formPart;
 	private final FormToolkit toolkit;
 
+	/**
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param editor
+	 * @param formPart
+	 * @param resourcesService
+	 * @param peopleService
+	 * @param systemWorkbenchService
+	 * @param contactNode
+	 * @param parentVersionableNode
+	 */
 	public ContactAddressComposite(Composite parent, int style, AbstractConnectEditor editor, AbstractFormPart formPart,
-			ResourcesService resourceService, PeopleService peopleService, AppWorkbenchService appWorkbenchService,
-			Node contactNode, Node parentVersionableNode) {
+			ResourcesService resourcesService, PeopleService peopleService,
+			SystemWorkbenchService systemWorkbenchService, Node contactNode, Node parentVersionableNode) {
 		super(parent, style);
-		this.resourcesService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.contactNode = contactNode;
 
 		this.editor = editor;
@@ -86,7 +98,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 
 		// BUTTONS
 		Composite buttCmp = new ContactButtonsComposite(editor, formPart, parent, SWT.NONE, contactNode,
-				parentVersionableNode, resourcesService, peopleService, appWorkbenchService);
+				parentVersionableNode, resourcesService, peopleService, systemWorkbenchService);
 		toolkit.adapt(buttCmp, false, false);
 		buttCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
@@ -175,7 +187,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));
 
 			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(), "Choose an organisation",
-					contactNode.getSession(), appWorkbenchService, contactNode.getParent().getParent());
+					contactNode.getSession(), systemWorkbenchService, contactNode.getParent().getParent());
 
 			// REFRESH VALUES
 			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, Property.JCR_TITLE);
@@ -232,8 +244,8 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
 			if (org != null) {
-				CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
-						ConnectJcrUtils.getIdentifier(org));
+				CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(org));
 			}
 
 		}

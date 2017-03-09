@@ -90,18 +90,16 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateTitleComposite(titleCmp);
 
-		// Tag Management
+		// Tags Management
 		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getAppWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, ResourcesNames.CONNECT_TAGS,
+				getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, ResourcesNames.CONNECT_TAGS,
 				"Add a tag");
-
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		// Mailing list management
+		// Mailing lists management
 		Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getAppWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, person, PEOPLE_MAILING_LISTS,
+				getSystemWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, person, PEOPLE_MAILING_LISTS,
 				"Add a mailing");
-
 		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 
@@ -110,21 +108,21 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		// Contact informations
 		String tooltip = "Contact information for " + JcrUtils.get(person, Property.JCR_TITLE);
 		LazyCTabControl cpc = new ContactListCTab(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
-				getPeopleService(), getAppWorkbenchService());
+				getPeopleService(), getSystemWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		addLazyTabToFolder(folder, cpc, "Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
 
 		// Activities and tasks
 		tooltip = "Activities and tasks related to " + JcrUtils.get(person, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourcesService(), getActivitiesService(), getAppWorkbenchService(), person);
+				getResourcesService(), getActivitiesService(), getSystemWorkbenchService(), person);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 
 		// Jobs panel
 		tooltip = "Organisations linked to " + JcrUtils.get(person, Property.JCR_TITLE);
 		LazyCTabControl crewCmp = new JobListCTab(folder, SWT.NO_FOCUS, this, getResourcesService(), getPeopleService(),
-				getAppWorkbenchService(), person);
+				getSystemWorkbenchService(), person);
 		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, crewCmp, "Organisations", PeopleRapConstants.CTAB_JOBS, tooltip);
 	}
@@ -142,36 +140,36 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		CmsUtils.markup(readOnlyInfoLbl);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
 				ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE, getResourcesService(), getPeopleService(),
-				getAppWorkbenchService());
+				getSystemWorkbenchService());
 
 		// EDIT
-		final Composite editPanel = getFormToolkit().createComposite(parent, SWT.NO_FOCUS);
-		ConnectWorkbenchUtils.setSwitchingFormData(editPanel);
-		editPanel.setLayout(EclipseUiUtils.noSpaceGridLayout());
+		final Composite editPanelCmp = getFormToolkit().createComposite(parent, SWT.NO_FOCUS);
+		ConnectWorkbenchUtils.setSwitchingFormData(editPanelCmp);
+		editPanelCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
-		Composite firstCmp = getFormToolkit().createComposite(editPanel, SWT.NO_FOCUS);
+		Composite firstCmp = getFormToolkit().createComposite(editPanelCmp, SWT.NO_FOCUS);
 		firstCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = false;
 		firstCmp.setLayout(rl);
 
 		// Second Line main names
-		Composite secondCmp = getFormToolkit().createComposite(editPanel, SWT.NO_FOCUS);
+		Composite secondCmp = getFormToolkit().createComposite(editPanelCmp, SWT.NO_FOCUS);
 		secondCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = false;
 		secondCmp.setLayout(rl);
 
 		// Third Line: other Names
-		Composite thirdCmp = getFormToolkit().createComposite(editPanel, SWT.NO_FOCUS);
+		Composite thirdCmp = getFormToolkit().createComposite(editPanelCmp, SWT.NO_FOCUS);
 		thirdCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = false;
 		thirdCmp.setLayout(rl);
 
 		// Fourth Line: Polite form & spoken languages
-		Composite fourthCmp = getFormToolkit().createComposite(editPanel, SWT.NO_FOCUS);
+		Composite fourthCmp = getFormToolkit().createComposite(editPanelCmp, SWT.NO_FOCUS);
 		fourthCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		fourthCmp.setLayout(new GridLayout(4, false));
 
@@ -260,12 +258,12 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 				// Manage switch
 				if (isEditing())
-					editPanel.moveAbove(readOnlyPanel);
+					editPanelCmp.moveAbove(readOnlyPanel);
 				else
-					editPanel.moveBelow(readOnlyPanel);
+					editPanelCmp.moveBelow(readOnlyPanel);
 
 				readOnlyInfoLbl.pack();
-				editPanel.getParent().layout();
+				editPanelCmp.getParent().layout();
 				super.refresh();
 			}
 		};
@@ -432,7 +430,6 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 	}
 
 	public void setPeopleService(PeopleService peopleService) {
-		super.setAppService(peopleService);
 		this.peopleService = peopleService;
 	}
 }

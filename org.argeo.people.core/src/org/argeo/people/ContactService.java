@@ -34,7 +34,7 @@ public interface ContactService {
 	 * nature before the creation of the contact
 	 */
 	public String[] getContactCategories(String contactableType,
-			String contactType, String nature);
+			String contactType, boolean isPro);
 
 	/** Return corresponding icon given a contact instance */
 	public Image getContactIcon(Node contact);

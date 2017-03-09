@@ -18,8 +18,8 @@ import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.widgets.SimpleJcrTableComposite;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -61,7 +61,7 @@ public class TagOrUntagInstancesWizard extends Wizard {
 	public final static int TYPE_REMOVE = 2;
 
 	// Context
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// Enable refresh of the calling editor at the end of the job
 	private Display callingDisplay;
@@ -77,28 +77,28 @@ public class TagOrUntagInstancesWizard extends Wizard {
 
 	// Cache to ease implementation
 	private Session session;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 	private Node tagParent;
 	private String tagInstanceType;
 
 	/**
 	 * @param actionType
 	 * @param session
-	 * @param peopleService
-	 * @param appWorkbenchService
+	 * @param resourcesService
+	 * @param systemWorkbenchService
 	 * @param elements
 	 * @param selectorName
 	 * @param tagId
 	 * @param tagPropName
 	 */
 	public TagOrUntagInstancesWizard(Display callingDisplay, int actionType, Session session,
-			ResourcesService resourceService, AppWorkbenchService appWorkbenchService, Object[] elements,
+			ResourcesService resourcesService, SystemWorkbenchService systemWorkbenchService, Object[] elements,
 			String selectorName, String tagId, String tagPropName) {
 
 		this.callingDisplay = callingDisplay;
 		this.session = session;
-		this.resourceService = resourceService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.resourcesService = resourcesService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.tagId = tagId;
 		this.tagPropName = tagPropName;
 
@@ -107,7 +107,7 @@ public class TagOrUntagInstancesWizard extends Wizard {
 
 		this.actionType = actionType;
 
-		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
+		tagParent = resourcesService.getTagLikeResourceParent(session, tagId);
 		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE);
 	}
 
@@ -177,7 +177,7 @@ public class TagOrUntagInstancesWizard extends Wizard {
 		public void createControl(Composite parent) {
 			Composite body = new Composite(parent, SWT.NONE);
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
-			Node tagParent = resourceService.getTagLikeResourceParent(session, tagId);
+			Node tagParent = resourcesService.getTagLikeResourceParent(session, tagId);
 			int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
 			tableCmp = new SimpleJcrTableComposite(body, style, session, ConnectJcrUtils.getPath(tagParent),
 					tagInstanceType, colDefs, true, false);
@@ -255,7 +255,7 @@ public class TagOrUntagInstancesWizard extends Wizard {
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition("Display Name",
-					new TitleIconRowLP(appWorkbenchService, selectorName, Property.JCR_TITLE), 300));
+					new TitleIconRowLP(systemWorkbenchService, selectorName, Property.JCR_TITLE), 300));
 
 			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();

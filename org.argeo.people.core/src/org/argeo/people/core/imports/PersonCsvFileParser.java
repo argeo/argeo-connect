@@ -38,15 +38,15 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 
 	private Node peopleParentNode;
 
-	public PersonCsvFileParser(Session adminSession, ResourcesService resourceService, PeopleService peopleService,
+	public PersonCsvFileParser(Session adminSession, ResourcesService resourcesService, PeopleService peopleService,
 			Resource images) {
-		super(adminSession, resourceService, peopleService, images);
+		super(adminSession, resourcesService, peopleService, images);
 		peopleParentNode = ConnectJcrUtils.getNode(adminSession, null,
 				peopleService.getBaseRelPath(PeopleTypes.PEOPLE_PERSON));
 	}
 
-	public PersonCsvFileParser(Session adminSession, ResourcesService resourceService, PeopleService peopleService) {
-		this(adminSession, resourceService, peopleService, null);
+	public PersonCsvFileParser(Session adminSession, ResourcesService resourcesService, PeopleService peopleService) {
+		this(adminSession, resourcesService, peopleService, null);
 	}
 
 	@Override

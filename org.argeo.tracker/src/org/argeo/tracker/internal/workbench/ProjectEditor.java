@@ -10,6 +10,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.activities.ActivitiesNames;
+import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -21,10 +23,8 @@ import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
-import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.core.VersionComparator;
-import org.argeo.tracker.internal.ui.TrackerImages;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
@@ -33,8 +33,6 @@ import org.argeo.tracker.internal.ui.dialogs.NewComponentWizard;
 import org.argeo.tracker.internal.ui.dialogs.NewIssueWizard;
 import org.argeo.tracker.internal.ui.dialogs.NewVersionWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
-import org.argeo.activities.ActivitiesNames;
-import org.argeo.cms.ArgeoNames;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -74,7 +72,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor";
 
 	// Context
-//	private TrackerService trackerService;
+	// private TrackerService trackerService;
 	private Node project;
 
 	// Current pages
@@ -90,7 +88,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	protected void addPages() {
 		// Initialise the nodes
 		project = getNode();
-//		trackerService = getTrackerService();
+		// trackerService = getTrackerService();
 		try {
 			projectMainPage = new MainPage(this);
 			addPage(projectMainPage);
@@ -228,7 +226,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String jcrId = ConnectJcrUtils.getIdentifier(milestone);
-				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 			}
 		});
@@ -609,7 +607,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			public void doubleClick(DoubleClickEvent event) {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 			}
 		});

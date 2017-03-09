@@ -39,8 +39,7 @@ public abstract class BooleanEditingSupport extends EditingSupport {
 					&& currNode.getProperty(propertyName).getValue().getType() == PropertyType.BOOLEAN)
 				return currNode.getProperty(propertyName).getBoolean();
 		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to get " + propertyName
-					+ " value for node " + element, e);
+			throw new PeopleException("Unable to get " + propertyName + " value for node " + element, e);
 		}
 		return false;
 	}

@@ -14,8 +14,7 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 /**
  * Provide a single column label provider for person lists
  */
-public class RoleListLabelProvider extends ColumnLabelProvider implements
-		PeopleNames {
+public class RoleListLabelProvider extends ColumnLabelProvider implements PeopleNames {
 	private static final long serialVersionUID = 1L;
 
 	public RoleListLabelProvider() {
@@ -29,8 +28,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 			if (node.isNodeType(PeopleTypes.PEOPLE_POSITION)) {
 				link = node;
 			} else
-				throw new PeopleException("Unvalid node type. "
-						+ "Cannot display role information");
+				throw new PeopleException("Unvalid node type. " + "Cannot display role information");
 
 			String pos = ConnectJcrUtils.get(link, PeopleNames.PEOPLE_ROLE);
 
@@ -41,8 +39,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements
 
 			// DEPARTMENT
 			if (link.isNodeType(PeopleTypes.PEOPLE_JOB)) {
-				String dep = ConnectJcrUtils
-						.get(link, PeopleNames.PEOPLE_DEPARTMENT);
+				String dep = ConnectJcrUtils.get(link, PeopleNames.PEOPLE_DEPARTMENT);
 				if (EclipseUiUtils.notEmpty(dep))
 					builder.append("Department: ").append(dep);
 

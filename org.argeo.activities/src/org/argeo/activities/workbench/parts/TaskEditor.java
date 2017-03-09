@@ -40,7 +40,7 @@ public class TaskEditor extends AbstractConnectCTabEditor {
 	protected void populateHeader(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite headerCmp = new TaskBasicHeader(this, parent, SWT.NO_FOCUS, getUserAdminService(),
-				getResourcesService(), getActivitiesService(), getAppWorkbenchService(), getCurrentTaskType(), task);
+				getResourcesService(), getActivitiesService(), getSystemWorkbenchService(), getCurrentTaskType(), task);
 		headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 	}
 
@@ -49,7 +49,7 @@ public class TaskEditor extends AbstractConnectCTabEditor {
 		// Activities and tasks
 		String tooltip = "Activities and tasks related to " + JcrUtils.get(task, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourcesService(), getActivitiesService(), getAppWorkbenchService(), task);
+				getResourcesService(), getActivitiesService(), getSystemWorkbenchService(), task);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", ActivityList.CTAB_ID, tooltip);
 	}

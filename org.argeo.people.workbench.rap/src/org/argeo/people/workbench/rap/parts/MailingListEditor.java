@@ -30,8 +30,8 @@ import org.argeo.connect.ui.util.TagLabelProvider;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.EditTagWizard;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
@@ -86,7 +86,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	private Repository repository;
 	private ResourcesService resourcesService;
 	private PeopleService peopleService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// Business objects
 	private Node mailingList;
@@ -121,7 +121,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		// injected peopleUiService
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
-				new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
+				new TitleIconRowLP(systemWorkbenchService, null, Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_PMAIL), 300));
 		colDefs.add(
 				new ConnectColumnDefinition("Other mailing lists", new OtherTagsLabelProvider(mailingList, null), 300));
@@ -185,7 +185,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 
-					EditTagWizard wizard = new EditTagWizard(resourcesService, appWorkbenchService, mailingList,
+					EditTagWizard wizard = new EditTagWizard(resourcesService, systemWorkbenchService, mailingList,
 							PeopleTypes.PEOPLE_MAILING_LIST, PeopleNames.PEOPLE_MAILING_LISTS);
 
 					NoProgressBarWizardDialog dialog = new NoProgressBarWizardDialog(titleROLbl.getShell(), wizard);
@@ -412,8 +412,8 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		return peopleService;
 	}
 
-	public AppWorkbenchService getAppWorkbenchService() {
-		return appWorkbenchService;
+	public SystemWorkbenchService getSystemWorkbenchService() {
+		return systemWorkbenchService;
 	}
 
 	public Node getNode() {
@@ -452,7 +452,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		this.peopleService = peopleService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

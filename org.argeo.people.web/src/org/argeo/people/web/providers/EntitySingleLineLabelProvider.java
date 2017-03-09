@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
+/** Simple label provider for Org and Person Viewers */
 public class EntitySingleLineLabelProvider implements ILabelProvider {
 
 	private static final long serialVersionUID = 1L;
@@ -27,10 +28,7 @@ public class EntitySingleLineLabelProvider implements ILabelProvider {
 		orgOLP = new OrgOverviewLP(resourceService, peopleService, PeopleWebConstants.OVERVIEW_TYPE_SINGLE_LINE_LIST);
 	}
 
-	// @Override
-
 	public String getText(Object element) {
-
 		Node entity = (Node) element;
 		if (ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON))
 			return personOLP.getText(entity);

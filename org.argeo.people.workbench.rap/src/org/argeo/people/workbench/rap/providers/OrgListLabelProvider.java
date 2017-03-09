@@ -16,11 +16,16 @@ import org.eclipse.jface.viewers.LabelProvider;
 public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 	private static final long serialVersionUID = -579265588183299317L;
 
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
 
-	public OrgListLabelProvider(ResourcesService resourceService, PeopleService peopleService) {
-		this.resourceService = resourceService;
+	/**
+	 * 
+	 * @param resourcesService
+	 * @param peopleService
+	 */
+	public OrgListLabelProvider(ResourcesService resourcesService, PeopleService peopleService) {
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
 	}
 
@@ -32,7 +37,7 @@ public class OrgListLabelProvider extends LabelProvider implements PeopleNames {
 		builder.append(ConnectJcrUtils.get(orga, Property.JCR_TITLE));
 		builder.append("</b> ");
 
-		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, orga);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourcesService, peopleService, orga);
 		if (EclipseUiUtils.notEmpty(local))
 			builder.append(local);
 		String result = ConnectUiUtils.replaceAmpersand(builder.toString());

@@ -9,6 +9,7 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.people.PeopleException;
 
+/** Methods to ease implementation of People Web UI */
 public class PeopleWebSnippets {
 	/** a snippet to display tags that are linked to the current entity */
 	public static String getTagLikeValues(ResourcesService tagService, String tagId, Node taggableNode,

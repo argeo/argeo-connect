@@ -21,21 +21,25 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-/**
- * Provide a single column label provider for person lists
- */
+/** Single column label provider for Organisation lists */
 public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 
 	private static final long serialVersionUID = 1L;
 	private final int listType;
 
 	private PeopleService peopleService;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 
-	public OrgOverviewLP(ResourcesService resourceService, PeopleService peopleService, int listType) {
+	/**
+	 * 
+	 * @param resourcesService
+	 * @param peopleService
+	 * @param listType
+	 */
+	public OrgOverviewLP(ResourcesService resourcesService, PeopleService peopleService, int listType) {
 		this.listType = listType;
 		this.peopleService = peopleService;
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 	}
 
 	@Override
@@ -70,7 +74,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		builder.append(peopleService.getDisplayName(orga));
 		builder.append("</b></big> ");
 
-		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, orga);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourcesService, peopleService, orga);
 		if (notEmpty(local))
 			builder.append(local);
 
@@ -96,7 +100,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		if (!isSmallList)
 			builder.append("</big>");
 
-		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, orga);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourcesService, peopleService, orga);
 		if (notEmpty(local))
 			builder.append(local);
 
@@ -109,9 +113,9 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 		if (notEmpty(tmpStr))
 			builder.append(tmpStr);
 
-		String tags = PeopleWebSnippets.getTagLikeValues(resourceService, ConnectConstants.RESOURCE_TAG, orga,
+		String tags = PeopleWebSnippets.getTagLikeValues(resourcesService, ConnectConstants.RESOURCE_TAG, orga,
 				ResourcesNames.CONNECT_TAGS, "#");
-		String mailingLists = PeopleWebSnippets.getTagLikeValues(resourceService, PeopleTypes.PEOPLE_MAILING_LIST, orga,
+		String mailingLists = PeopleWebSnippets.getTagLikeValues(resourcesService, PeopleTypes.PEOPLE_MAILING_LIST, orga,
 				PeopleNames.PEOPLE_MAILING_LISTS, "@");
 
 		if (isSmallList) {

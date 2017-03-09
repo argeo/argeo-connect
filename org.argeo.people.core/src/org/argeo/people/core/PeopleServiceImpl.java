@@ -45,7 +45,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 
 	/* Centralises the various specific People services */
 	private PersonService personService;
-	private ContactService contactService = new ContactServiceImpl(this);
+	private ContactService contactService = new ContactServiceImpl();
 
 	@Override
 	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrc) throws RepositoryException {

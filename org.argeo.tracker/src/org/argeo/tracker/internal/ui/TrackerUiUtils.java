@@ -32,7 +32,7 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 
 /** Centralise useful methods to ease implementation of the UI */
 public class TrackerUiUtils {
-	
+
 	public static TableViewer createTableViewer(final Composite parent, int tableStyle,
 			List<ColumnDefinition> columnDefs) {
 
@@ -98,7 +98,6 @@ public class TrackerUiUtils {
 		return label;
 	}
 
-	
 	/** Appends a section with a title in a table wrap layout */
 	public static Section addFormSection(FormToolkit tk, Composite parent, String title) {
 		Section section = tk.createSection(parent, Section.TITLE_BAR);

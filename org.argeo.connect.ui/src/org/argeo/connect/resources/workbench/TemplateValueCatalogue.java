@@ -31,8 +31,8 @@ import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
@@ -79,9 +79,10 @@ import org.eclipse.ui.forms.AbstractFormPart;
 public class TemplateValueCatalogue extends LazyCTabControl {
 	private static final long serialVersionUID = -5018569293721397600L;
 	public final static String CTAB_ID = "org.argeo.connect.ui.ctab.templateValueCatalogue";
+
 	// Context
-	private final ResourcesService resourceService;
-	private final AppWorkbenchService peopleWorkbenchService;
+	private final ResourcesService resourcesService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node templateNode;
 	private final String propertyName;
 	private final String taggableType;
@@ -91,12 +92,12 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	private MyFormPart myFormPart;
 
 	public TemplateValueCatalogue(Composite parent, int style, AbstractConnectEditor editor,
-			ResourcesService resourceService, AppWorkbenchService peopleWorkbenchService, Node templateNode,
+			ResourcesService resourcesService, SystemWorkbenchService systemWorkbenchService, Node templateNode,
 			String propertyName, String taggableType) {
 		super(parent, style);
 		this.editor = editor;
-		this.resourceService = resourceService;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.resourcesService = resourcesService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.templateNode = templateNode;
 		this.propertyName = propertyName;
 		this.taggableType = taggableType;
@@ -329,7 +330,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition(taggableType, Property.JCR_TITLE, PropertyType.STRING, "Instances",
-				new TitleIconRowLP(peopleWorkbenchService, taggableType, Property.JCR_TITLE), 350));
+				new TitleIconRowLP(systemWorkbenchService, taggableType, Property.JCR_TITLE), 350));
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		TableViewer viewer = tableCmp.getTableViewer();
@@ -342,7 +343,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		public void doubleClick(DoubleClickEvent event) {
 			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			Node occurrence = ConnectJcrUtils.getNodeFromElement(obj, taggableType);
-			CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 					ConnectJcrUtils.getIdentifier(occurrence));
 		}
 	}
@@ -447,7 +448,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 			String errMsg = null;
 			String newValue = null;
 
-			List<String> existingValues = resourceService.getTemplateCatalogue(templateNode, propertyName, null);
+			List<String> existingValues = resourcesService.getTemplateCatalogue(templateNode, propertyName, null);
 
 			// Sanity checks for update only
 			if (ConnectUiConstants.CRUD_EDIT.equals(actionType)) {
@@ -465,7 +466,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 				return false;
 			}
 
-			resourceService.updateCatalogueValue(templateNode, taggableType, propertyName, oldValue, newValue);
+			resourcesService.updateCatalogueValue(templateNode, taggableType, propertyName, oldValue, newValue);
 			return true;
 		}
 

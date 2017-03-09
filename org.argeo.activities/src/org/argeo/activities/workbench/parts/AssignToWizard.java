@@ -19,7 +19,7 @@ import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -71,7 +71,7 @@ public class AssignToWizard extends Wizard {
 	// private final PeopleService peopleService;
 	private final UserAdminService userAdminService;
 	private final ActivitiesService activitiesService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 
 	private final Object[] elements;
 	private final String selectorName;
@@ -82,16 +82,16 @@ public class AssignToWizard extends Wizard {
 	/**
 	 * @param userAdminService
 	 * @param activitiesService
-	 * @param appWorkbenchService
+	 * @param systemWorkbenchService
 	 * @param elements
 	 * @param selectorName
 	 * @param taskId
 	 */
 	public AssignToWizard(UserAdminService userAdminService, ActivitiesService activitiesService,
-			AppWorkbenchService appWorkbenchService, Object[] elements, String selectorName) {
+			SystemWorkbenchService systemWorkbenchService, Object[] elements, String selectorName) {
 		this.userAdminService = userAdminService;
 		this.activitiesService = activitiesService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.elements = elements;
 		this.selectorName = selectorName;
 	}
@@ -342,7 +342,7 @@ public class AssignToWizard extends Wizard {
 			body.setLayout(layout);
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition(selectorName, Property.JCR_TITLE, PropertyType.STRING,
-					"Display Name", new TitleIconRowLP(appWorkbenchService, selectorName, Property.JCR_TITLE), 300));
+					"Display Name", new TitleIconRowLP(systemWorkbenchService, selectorName, Property.JCR_TITLE), 300));
 
 			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();

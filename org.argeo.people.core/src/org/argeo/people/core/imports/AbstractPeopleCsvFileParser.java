@@ -29,8 +29,8 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 	private final static Log log = LogFactory.getLog(AbstractPeopleCsvFileParser.class);
 
 	private final Session adminSession;
+	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
-	private final ResourcesService resourceService;
 
 	protected VersionManager vm;
 	protected DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -38,11 +38,18 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 	// Enable importing images
 	private Resource images = null;
 
-	public AbstractPeopleCsvFileParser(Session adminSession, ResourcesService resourceService,
+	/**
+	 * 
+	 * @param adminSession
+	 * @param resourcesService
+	 * @param peopleService
+	 * @param images
+	 */
+	public AbstractPeopleCsvFileParser(Session adminSession, ResourcesService resourcesService,
 			PeopleService peopleService, Resource images) {
 		super();
 		this.adminSession = adminSession;
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
 		this.images = images;
 		try {
@@ -52,9 +59,9 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 		}
 	}
 
-	public AbstractPeopleCsvFileParser(Session adminSession, ResourcesService resourceService,
+	public AbstractPeopleCsvFileParser(Session adminSession, ResourcesService resourcesService,
 			PeopleService peopleService) {
-		this(adminSession, resourceService, peopleService, null);
+		this(adminSession, resourcesService, peopleService, null);
 	}
 
 	@Override
@@ -91,7 +98,7 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 	}
 
 	protected ResourcesService getResourcesService() {
-		return resourceService;
+		return resourcesService;
 	}
 
 	protected PeopleService getPeopleService() {

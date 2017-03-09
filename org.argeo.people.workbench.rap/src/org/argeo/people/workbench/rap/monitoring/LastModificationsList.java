@@ -26,7 +26,6 @@ import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
-import org.argeo.people.workbench.PeopleWorkbenchService;
 import org.argeo.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.people.workbench.rap.providers.SimpleLazyContentProvider;
 import org.argeo.people.workbench.rap.util.AbstractPeopleBasicEditor;
@@ -51,9 +50,6 @@ import org.eclipse.ui.PartInitException;
  */
 public class LastModificationsList extends AbstractPeopleBasicEditor implements Refreshable {
 
-	/* DEPENDENCY INJECTION */
-	private PeopleWorkbenchService peopleWorkbenchService;
-
 	// This page widget
 	private TableViewer tableViewer;
 	private SimpleLazyContentProvider lazyCp;
@@ -74,7 +70,7 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements 
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		// The table itself
 		tableViewer = createTableViewer(parent, SWT.READ_ONLY | SWT.VIRTUAL);
-		tableViewer.addDoubleClickListener(new JcrViewerDClickListener(peopleWorkbenchService));
+		tableViewer.addDoubleClickListener(new JcrViewerDClickListener());
 		forceRefresh(null);
 	}
 
@@ -194,9 +190,5 @@ public class LastModificationsList extends AbstractPeopleBasicEditor implements 
 				throw new PeopleException("Unable to retrieve and " + "format last modif info for " + element, e);
 			}
 		}
-	}
-
-	public void setPeopleWorkbenchService(PeopleWorkbenchService peopleWorkbenchService) {
-		this.peopleWorkbenchService = peopleWorkbenchService;
 	}
 }

@@ -18,9 +18,9 @@ import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.workbench.util.SearchNodeEditorInput;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -69,7 +69,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 	private Session session;
 	private ResourcesService resourcesService;
 	private UserAdminService userAdminService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// This page widgets
 	private VirtualJcrTableViewer tableCmp;
@@ -118,7 +118,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		createListPart(tableCmp);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
-		if (!appWorkbenchService.lazyLoadLists())
+		if (!systemWorkbenchService.lazyLoadLists())
 			// initialize the table
 			refreshFilteredList();
 	}
@@ -333,7 +333,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 					// We assume here we always use xpath query and thus we have
 					// only single node rows
 					Wizard wizard = new TagOrUntagInstancesWizard(button.getDisplay(), actionType, session,
-							resourcesService, appWorkbenchService, rows, null, tagId, taggablePropName);
+							resourcesService, systemWorkbenchService, rows, null, tagId, taggablePropName);
 					WizardDialog dialog = new WizardDialog(parentShell, wizard);
 					int result = dialog.open();
 					if (result == WizardDialog.OK) {
@@ -460,7 +460,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 	/** Refresh the table viewer based on the free text search field */
 	protected void populateSearchPanel(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		boolean isDyn = appWorkbenchService.queryWhenTyping();
+		boolean isDyn = systemWorkbenchService.queryWhenTyping();
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
 		if (isDyn)
 			filterTxt = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
@@ -576,8 +576,8 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		return resourcesService;
 	}
 
-	protected AppWorkbenchService getPeopleUiService() {
-		return appWorkbenchService;
+	protected SystemWorkbenchService getSystemWorkbenchService() {
+		return systemWorkbenchService;
 	}
 
 	// Helpers to create static filters UI
@@ -633,7 +633,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		this.resourcesService = resourcesService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

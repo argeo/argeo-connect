@@ -7,7 +7,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -23,29 +23,38 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.AbstractFormPart;
 
-/** Centralize management of contacts buttons */
+/** Centralise management of contacts buttons */
 public class ContactButtonsComposite extends Composite {
 	private static final long serialVersionUID = 2331713954300845292L;
 
 	// Context
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node contactNode;
 	private final boolean isEditing;
 	private final Node parentVersionableNode;
 	private final AbstractFormPart formPart;
 
-	// private final PeopleImageProvider imageProvider = new
-	// PeopleImageProvider();
-
+	/**
+	 * 
+	 * @param editor
+	 * @param formPart
+	 * @param parent
+	 * @param style
+	 * @param contactNode
+	 * @param parentVersionableNode
+	 * @param resourcesService
+	 * @param peopleService
+	 * @param systemWorkbenchService
+	 */
 	public ContactButtonsComposite(AbstractConnectEditor editor, AbstractFormPart formPart, Composite parent, int style,
-			Node contactNode, Node parentVersionableNode, ResourcesService resourceService, PeopleService peopleService,
-			AppWorkbenchService appWorkbenchService) {
+			Node contactNode, Node parentVersionableNode, ResourcesService resourcesService,
+			PeopleService peopleService, SystemWorkbenchService systemWorkbenchService) {
 		super(parent, style);
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.contactNode = contactNode;
 		this.parentVersionableNode = parentVersionableNode;
 		this.formPart = formPart;
@@ -77,7 +86,7 @@ public class ContactButtonsComposite extends Composite {
 		Button btn = new Button(parent, SWT.FLAT);
 		CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
 
-		btn.setImage(appWorkbenchService.getIconForType(contactNode));
+		btn.setImage(systemWorkbenchService.getIconForType(contactNode));
 		GridData gd = new GridData();
 		gd.widthHint = 16;
 		gd.heightHint = 16;
@@ -130,7 +139,7 @@ public class ContactButtonsComposite extends Composite {
 				try {
 					// update primary cache
 					if (PeopleJcrUtils.isPrimary(parentVersionableNode, contactNode))
-						PeopleJcrUtils.updatePrimaryCache(resourceService, peopleService, parentVersionableNode,
+						PeopleJcrUtils.updatePrimaryCache(resourcesService, peopleService, parentVersionableNode,
 								contactNode, false);
 
 					contactNode.remove();
@@ -149,8 +158,8 @@ public class ContactButtonsComposite extends Composite {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				boolean hasChanged = PeopleJcrUtils.markAsPrimary(resourceService, peopleService, parentVersionableNode,
-						contactNode);
+				boolean hasChanged = PeopleJcrUtils.markAsPrimary(resourcesService, peopleService,
+						parentVersionableNode, contactNode);
 
 				if (hasChanged) {
 					formPart.markDirty();

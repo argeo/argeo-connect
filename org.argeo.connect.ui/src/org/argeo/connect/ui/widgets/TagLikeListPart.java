@@ -21,7 +21,7 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -56,8 +56,8 @@ public class TagLikeListPart extends Composite {
 	private final String newTagMsg;
 
 	// Context
-	private final ResourcesService resourceService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final ResourcesService resourcesService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node taggable;
 	private final Node tagParent;
 	private final String tagId;
@@ -75,20 +75,20 @@ public class TagLikeListPart extends Composite {
 	 * @param style
 	 * @param toolkit
 	 * @param form
-	 * @param peopleService
-	 * @param peopleWorkbenchService
+	 * @param resourcesService
+	 * @param systemWorkbenchService
 	 * @param taggable
 	 * @param tagId
 	 * @param newTagMsg
 	 */
-	public TagLikeListPart(AbstractConnectEditor editor, Composite parent, int style, ResourcesService resourceService,
-			AppWorkbenchService appWorkbenchService, String tagId, Node taggable, String taggablePropName,
+	public TagLikeListPart(AbstractConnectEditor editor, Composite parent, int style, ResourcesService resourcesService,
+			SystemWorkbenchService systemWorkbenchService, String tagId, Node taggable, String taggablePropName,
 			String newTagMsg) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
-		this.resourceService = resourceService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.resourcesService = resourcesService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.tagId = tagId;
 		this.taggable = taggable;
 		this.taggablePropName = taggablePropName;
@@ -96,8 +96,8 @@ public class TagLikeListPart extends Composite {
 
 		// Cache some context object to ease implementation
 		session = ConnectJcrUtils.getSession(taggable);
-		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
-		
+		tagParent = resourcesService.getTagLikeResourceParent(session, tagId);
+
 		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
 		rl.wrap = true;
 		rl.marginLeft = rl.marginTop = rl.marginBottom = 0;
@@ -167,14 +167,14 @@ public class TagLikeListPart extends Composite {
 
 							@Override
 							public void widgetSelected(final SelectionEvent event) {
-								Node tag = resourceService.getRegisteredTag(tagParent, tagValue);
+								Node tag = resourcesService.getRegisteredTag(tagParent, tagValue);
 								try {
 									if (createdTagPath.contains(tag.getPath())) {
 										String msg = "This category is still in a draft state.\n"
 												+ "Please save first.";
 										MessageDialog.openInformation(parentCmp.getShell(), "Forbidden action", msg);
 									} else
-										CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
+										CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
 												OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
 								} catch (RepositoryException e) {
 									throw new ConnectException("unable to get path for resource tag node " + tag
@@ -194,7 +194,7 @@ public class TagLikeListPart extends Composite {
 					RowData rd = new RowData(120, SWT.DEFAULT);
 					tagTxt.setLayoutData(rd);
 
-					final TagLikeDropDown tagDD = new TagLikeDropDown(taggable.getSession(), resourceService, tagId,
+					final TagLikeDropDown tagDD = new TagLikeDropDown(taggable.getSession(), resourcesService, tagId,
 							tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
@@ -282,14 +282,14 @@ public class TagLikeListPart extends Composite {
 		try {
 			Session session = taggable.getSession();
 			// Check if such a tag is already registered
-			Node registered = resourceService.getRegisteredTag(tagParent, newTag);
+			Node registered = resourcesService.getRegisteredTag(tagParent, newTag);
 
 			if (registered == null) {
-				if (resourceService.canCreateTag(session)) {
+				if (resourcesService.canCreateTag(session)) {
 					// Ask end user if we create a new tag
 					msg = "\"" + newTag + "\" is not yet registered.\n Are you sure you want to create it?";
 					if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
-						registered = resourceService.registerTag(session, tagId, newTag);
+						registered = resourcesService.registerTag(session, tagId, newTag);
 						if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
 							createdTagPath.add(registered.getPath());
 

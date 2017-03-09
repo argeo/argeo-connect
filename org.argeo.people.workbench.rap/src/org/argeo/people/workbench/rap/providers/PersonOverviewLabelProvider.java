@@ -10,8 +10,8 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -25,17 +25,17 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 
 	private static final long serialVersionUID = 1L;
 
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final int listType;
 
-	public PersonOverviewLabelProvider(int listType, ResourcesService resourceService, PeopleService peopleService,
-			AppWorkbenchService appWorkbenchService) {
+	public PersonOverviewLabelProvider(int listType, ResourcesService resourcesService, PeopleService peopleService,
+			SystemWorkbenchService systemWorkbenchService) {
 		this.listType = listType;
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 		builder.append(displayName);
 		builder.append("</big></b>");
 		String fmn = PeopleUiSnippets.getLongName(person);
-		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, person);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourcesService, peopleService, person);
 		String primaryContacts = PeopleUiSnippets.getPrimaryContacts(person);
 		Boolean politeFormFlag = ConnectJcrUtils.getBooleanValue(person, PEOPLE_USE_POLITE_FORM);
 		List<String> spokenLanguages = ConnectJcrUtils.getMultiAsList(person, PEOPLE_SPOKEN_LANGUAGES);
@@ -103,7 +103,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 				builder.append(" / ");
 			if (!spokenLanguages.isEmpty()) {
 				for (String str : spokenLanguages) {
-					String language = resourceService.getEncodedTagValue(ConnectJcrUtils.getSession(person),
+					String language = resourcesService.getEncodedTagValue(ConnectJcrUtils.getSession(person),
 							ConnectConstants.RESOURCE_LANG, str);
 					builder.append(language).append(", ");
 				}
@@ -121,7 +121,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 		builder.append("<b><big> ");
 		builder.append(peopleService.getDisplayName(person));
 		builder.append("</big> </b> ");
-		String local = PeopleUiSnippets.getLocalisationInfo(resourceService, peopleService, person);
+		String local = PeopleUiSnippets.getLocalisationInfo(resourcesService, peopleService, person);
 		if (EclipseUiUtils.notEmpty(local))
 			builder.append(local);
 		builder.append("<br/>");
@@ -132,7 +132,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 			builder.append(primContactsStr).append("<br/>");
 
 		// Tags
-		String clickableTags = ConnectWorkbenchUtils.getTags(resourceService, appWorkbenchService, person);
+		String clickableTags = ConnectWorkbenchUtils.getTags(resourcesService, systemWorkbenchService, person);
 		if (EclipseUiUtils.notEmpty(clickableTags))
 			builder.append(clickableTags).append("<br/>");
 

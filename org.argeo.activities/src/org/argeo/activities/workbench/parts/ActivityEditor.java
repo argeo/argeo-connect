@@ -190,7 +190,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 				gd.verticalIndent = 2;
 				label.setLayoutData(gd);
 				relatedCmp = new LinkListPart(ActivityEditor.this, myFormPart, parent, SWT.NO_FOCUS,
-						getAppWorkbenchService(), activity, ActivitiesNames.ACTIVITIES_RELATED_TO);
+						getSystemWorkbenchService(), activity, ActivitiesNames.ACTIVITIES_RELATED_TO);
 				relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(5));
 			}
 		}

@@ -23,7 +23,6 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.internal.ui.TrackerImages;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.dialogs.NewIssueWizard;
@@ -137,7 +136,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 				public void doubleClick(DoubleClickEvent event) {
 					Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 					String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+					CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
 							OpenEntityEditor.PARAM_JCR_ID, jcrId);
 				}
 			});

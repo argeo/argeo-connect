@@ -9,8 +9,8 @@ import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.activities.workbench.parts.NewSimpleTaskWizard;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -28,7 +28,7 @@ public class CreateSimpleTask extends AbstractHandler {
 	private Repository repository;
 	private UserAdminService userAdminService;
 	private ActivitiesService activitiesService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 		Session session = null;
@@ -49,7 +49,7 @@ public class CreateSimpleTask extends AbstractHandler {
 			JcrUtils.logoutQuietly(session);
 		}
 		if (jcrId != null)
-			ConnectWorkbenchUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
+			ConnectWorkbenchUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
 					OpenEntityEditor.PARAM_JCR_ID, jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
 		return null;
 	}
@@ -67,7 +67,7 @@ public class CreateSimpleTask extends AbstractHandler {
 		this.activitiesService = activitiesService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

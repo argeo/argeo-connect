@@ -205,7 +205,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node primaryChild) {
 		try {
 			Node parent = primaryChild.getParent();
-			String thisNodeType = primaryChild.getPrimaryNodeType().getName();
+			String thisNodeType = peopleService.getMainNodeType(primaryChild);
 
 			if (isPrimary(parentNode, primaryChild)) {
 				primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, false);

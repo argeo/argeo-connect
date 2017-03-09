@@ -13,8 +13,7 @@ public abstract class PeopleDoubleClickAdapter implements IDoubleClickListener {
 	public void doubleClick(DoubleClickEvent event) {
 		if (event.getSelection() == null || event.getSelection().isEmpty())
 			return;
-		Object obj = ((IStructuredSelection) event.getSelection())
-				.getFirstElement();
+		Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 		processDoubleClick(obj);
 	}
 

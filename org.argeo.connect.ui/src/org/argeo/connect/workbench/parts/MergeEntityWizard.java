@@ -10,17 +10,17 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Row;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.SystemAppService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -51,15 +51,15 @@ import org.eclipse.ui.IWorkbenchPage;
  */
 
 public class MergeEntityWizard extends Wizard {
-	private final static Log log = LogFactory.getLog(MergeEntityWizard.class);
+//	private final static Log log = LogFactory.getLog(MergeEntityWizard.class);
 
 	// To be cleaned:
 	public final static int TYPE_ADD = 1;
 	public final static int TYPE_REMOVE = 2;
 
 	// Context
-	private AppService peopleService;
-	private AppWorkbenchService peopleWorkbenchService;
+	private SystemAppService systemAppService;
+	private SystemWorkbenchService systemWorkbenchService;
 	private ColumnLabelProvider overviewLP;
 
 	private Node masterNode;
@@ -73,19 +73,19 @@ public class MergeEntityWizard extends Wizard {
 	/**
 	 * @param actionType
 	 * @param session
-	 * @param peopleService
-	 * @param peopleWorkbenchService
+	 * @param systemAppService
+	 * @param systemWorkbenchService
 	 * @param rows
 	 * @param selectorName
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	public MergeEntityWizard(IWorkbenchPage callingPage, AppService peopleService,
-			AppWorkbenchService peopleWorkbenchService, Object[] rows, String selectorName,
+	public MergeEntityWizard(IWorkbenchPage callingPage, SystemAppService systemAppService,
+			SystemWorkbenchService systemWorkbenchService, Object[] rows, String selectorName,
 			ColumnLabelProvider overviewLP) {
 		this.callingPage = callingPage;
-		this.peopleService = peopleService;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.systemAppService = systemAppService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.rows = rows;
 		this.selectorName = selectorName;
 		this.overviewLP = overviewLP;
@@ -122,7 +122,7 @@ public class MergeEntityWizard extends Wizard {
 			MessageDialog.openError(getShell(), "Unvalid information", errMsg);
 			return false;
 		}
-		new MergeEntitiesJob(callingPage, peopleService, masterNode, rows, selectorName).schedule();
+		new MergeEntitiesJob(callingPage, systemAppService, masterNode, rows, selectorName).schedule();
 		return true;
 	}
 
@@ -160,7 +160,7 @@ public class MergeEntityWizard extends Wizard {
 
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition("Display Name",
-					new TitleIconRowLP(peopleWorkbenchService, selectorName, Property.JCR_TITLE), 300));
+					new TitleIconRowLP(systemWorkbenchService, selectorName, Property.JCR_TITLE), 300));
 
 			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.SINGLE, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
@@ -244,7 +244,7 @@ public class MergeEntityWizard extends Wizard {
 
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition("Display Name",
-					new TitleIconRowLP(peopleWorkbenchService, selectorName, Property.JCR_TITLE), 300));
+					new TitleIconRowLP(systemWorkbenchService, selectorName, Property.JCR_TITLE), 300));
 
 			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.READ_ONLY, colDefs);
 			TableViewer membersViewer = tableCmp.getTableViewer();
@@ -319,7 +319,7 @@ public class MergeEntityWizard extends Wizard {
 				Object[] toUpdateElements, String selectorName) {
 			super("Updating");
 			this.callingPage = callingPage;
-			this.appService = peopleService;
+			this.appService = systemAppService;
 			try {
 				this.masterPath = masterNode.getPath();
 				repository = masterNode.getSession().getRepository();

@@ -10,8 +10,8 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.NodeEditorInput;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.documents.DocumentsException;
 import org.argeo.documents.DocumentsService;
 import org.argeo.jcr.JcrUtils;
@@ -22,14 +22,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
 /**
- * Base Editor for a tracker entity. Centralise some methods to ease business
+ * Base Editor for a Documents entity. Centralise methods to ease business
  * specific development
  */
 public abstract class AbstractDocumentsEditor extends EditorPart implements CmsEditable {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 	private DocumentsService documentsService;
 	private FileSystemProvider nodeFileSystemProvider;
 
@@ -85,8 +85,8 @@ public abstract class AbstractDocumentsEditor extends EditorPart implements CmsE
 		return documentsService;
 	}
 
-	protected AppWorkbenchService getAppWorkbenchService() {
-		return appWorkbenchService;
+	protected SystemWorkbenchService getSystemWorkbenchService() {
+		return systemWorkbenchService;
 	}
 
 	public FileSystemProvider getNodeFileSystemProvider() {
@@ -149,8 +149,8 @@ public abstract class AbstractDocumentsEditor extends EditorPart implements CmsE
 		this.documentsService = documentsService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	public void setNodeFileSystemProvider(FileSystemProvider nodeFileSystemProvider) {

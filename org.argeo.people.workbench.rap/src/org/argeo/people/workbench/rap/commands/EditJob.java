@@ -6,7 +6,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
@@ -44,7 +44,7 @@ public class EditJob extends AbstractHandler {
 	private Repository repository;
 	private ResourcesService resourcesService;
 	private PeopleService peopleService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -62,12 +62,12 @@ public class EditJob extends AbstractHandler {
 				// Edit an existing job
 				isBackward = new Boolean(event.getParameter(PARAM_IS_BACKWARD));
 				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit employee information",
-						resourcesService, peopleService, appWorkbenchService, relevantNode, null, isBackward);
+						resourcesService, peopleService, systemWorkbenchService, relevantNode, null, isBackward);
 			} else {
 				// Create a new job
 				isBackward = relevantNode.isNodeType(PeopleTypes.PEOPLE_ORG);
 				diag = new EditJobDialog(HandlerUtil.getActiveShell(event), "Edit position", resourcesService,
-						peopleService, appWorkbenchService, null, relevantNode, isBackward);
+						peopleService, systemWorkbenchService, null, relevantNode, isBackward);
 			}
 
 			int result = diag.open();
@@ -97,7 +97,7 @@ public class EditJob extends AbstractHandler {
 		this.peopleService = peopleService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

@@ -70,12 +70,12 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for various contacts */
-	public static String getContactDisplaySnippet(ResourcesService resourceService, Node node) {
+	public static String getContactDisplaySnippet(ResourcesService resourcesService, Node node) {
 		try {
 			StringBuilder builder = new StringBuilder();
 
 			if (node.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS))
-				builder.append(getAddressDisplayValue(resourceService, node));
+				builder.append(getAddressDisplayValue(resourcesService, node));
 			else {
 				String value = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_CONTACT_VALUE);
 				if (node.isNodeType(PeopleTypes.PEOPLE_URL) || node.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
@@ -97,7 +97,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the display ReadOnly HTML snippet for a work address */
-	public static String getWorkAddress(ResourcesService resourceService, Node contactNode, Node referencedEntity) {
+	public static String getWorkAddress(ResourcesService resourcesService, Node contactNode, Node referencedEntity) {
 		StringBuilder builder = new StringBuilder();
 		// the referenced org
 		if (referencedEntity != null)
@@ -109,7 +109,7 @@ public class PeopleUiSnippets {
 			Node primaryAddress = PeopleJcrUtils.getPrimaryContact(referencedEntity, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
 			if (primaryAddress != null) {
 				builder.append("<br />");
-				builder.append(getAddressDisplayValue(resourceService, primaryAddress));
+				builder.append(getAddressDisplayValue(resourcesService, primaryAddress));
 			}
 		}
 		return ConnectUiUtils.replaceAmpersand(builder.toString());
@@ -147,7 +147,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates an address Display value */
-	public static String getAddressDisplayValue(ResourcesService resourceService, Node node) {
+	public static String getAddressDisplayValue(ResourcesService resourcesService, Node node) {
 		String street = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STREET);
 		String street2 = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_STREET_COMPLEMENT);
 		String zip = ConnectJcrUtils.get(node, PeopleNames.PEOPLE_ZIP_CODE);
@@ -188,7 +188,7 @@ public class PeopleUiSnippets {
 		}
 
 		if (notEmpty(country)) {
-			country = resourceService.getEncodedTagValue(ConnectJcrUtils.getSession(node),
+			country = resourcesService.getEncodedTagValue(ConnectJcrUtils.getSession(node),
 					ConnectConstants.RESOURCE_COUNTRY, country);
 
 			if (builder.length() > 0)
@@ -199,7 +199,7 @@ public class PeopleUiSnippets {
 	}
 
 	/** creates the localisation snippet */
-	public static String getLocalisationInfo(ResourcesService resourceService, PeopleService peopleService,
+	public static String getLocalisationInfo(ResourcesService resourcesService, PeopleService peopleService,
 			Node entity) {
 		String town = PeopleJcrUtils.getTownFromItem(peopleService, entity);
 		String country = PeopleJcrUtils.getCountryFromItem(peopleService, entity);
@@ -212,7 +212,7 @@ public class PeopleUiSnippets {
 					builder.append(", ");
 			}
 			if (notEmpty(country)) {
-				country = resourceService.getEncodedTagValue(ConnectJcrUtils.getSession(entity),
+				country = resourcesService.getEncodedTagValue(ConnectJcrUtils.getSession(entity),
 						ConnectConstants.RESOURCE_COUNTRY, country);
 				builder.append(country);
 			}

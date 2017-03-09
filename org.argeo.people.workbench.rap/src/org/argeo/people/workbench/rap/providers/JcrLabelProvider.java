@@ -27,8 +27,7 @@ public class JcrLabelProvider extends SimpleJcrNodeLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		Node currNode = ConnectJcrUtils.getNodeFromElement(element,
-				selectorName);
+		Node currNode = ConnectJcrUtils.getNodeFromElement(element, selectorName);
 		return super.getText(currNode);
 	}
 }

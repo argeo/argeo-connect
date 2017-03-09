@@ -31,8 +31,8 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.widgets.AbstractConnectContextMenu;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -64,7 +64,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	private Session session;
 	private UserAdminService userAdminService;
 	private ActivitiesService activitiesService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	private TableViewer tableViewer;
 
@@ -329,7 +329,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 				try {
 					String jcrId = ((Node) obj).getIdentifier();
 					String paramName = OpenEntityEditor.PARAM_JCR_ID;
-					CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), paramName, jcrId);
+					CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), paramName, jcrId);
 				} catch (RepositoryException e) {
 					throw new ActivitiesException("Cannot open user editor", e);
 				}
@@ -454,7 +454,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		this.activitiesService = activitiesService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setAppWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

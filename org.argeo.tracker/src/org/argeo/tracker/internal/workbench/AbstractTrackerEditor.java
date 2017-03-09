@@ -16,7 +16,7 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
@@ -40,7 +40,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	private ResourcesService resourcesService;
 	private ActivitiesService activitiesService;
 	private TrackerService trackerService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// Context
 	private Session session;
@@ -103,8 +103,8 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		return trackerService;
 	}
 
-	protected AppWorkbenchService getAppWorkbenchService() {
-		return appWorkbenchService;
+	protected SystemWorkbenchService getSystemWorkbenchService() {
+		return systemWorkbenchService;
 	}
 
 	// Editor life cycle
@@ -187,7 +187,7 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		this.trackerService = trackerService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

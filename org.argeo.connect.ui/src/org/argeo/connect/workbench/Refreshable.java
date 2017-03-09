@@ -1,8 +1,11 @@
 package org.argeo.connect.workbench;
 
 /**
- * WorkbenchPart should implement this interface to enable refresh command to
- * refresh them
+ * Implement this interface to enable being called by the generic Connect
+ * Workbench ForceRefresh command.
+ * 
+ * This command is a workaround to manually trigger the refreshment of a part
+ * when automatic refreshment does not work.
  */
 public interface Refreshable {
 

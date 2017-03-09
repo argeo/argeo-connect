@@ -4,18 +4,19 @@ import javax.jcr.Node;
 
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.widgets.TagLikeListPart;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.people.PeopleNames;
 import org.eclipse.swt.widgets.Composite;
 
+/** Extend {@code TagLikeListPart} to provide specific label */
 public class MailingListListPart extends TagLikeListPart {
 	private static final long serialVersionUID = 6569267624309620699L;
 
 	public MailingListListPart(AbstractConnectEditor editor, Composite parent, int style,
-			ResourcesService resourceService, AppWorkbenchService appWorkbenchService, String tagId, Node taggable,
-			String taggablePropName, String newTagMsg) {
-		super(editor, parent, style, resourceService, appWorkbenchService, tagId, taggable, taggablePropName,
+			ResourcesService resourceService, SystemWorkbenchService systemWorkbenchService, String tagId,
+			Node taggable, String taggablePropName, String newTagMsg) {
+		super(editor, parent, style, resourceService, systemWorkbenchService, tagId, taggable, taggablePropName,
 				newTagMsg);
 	}
 

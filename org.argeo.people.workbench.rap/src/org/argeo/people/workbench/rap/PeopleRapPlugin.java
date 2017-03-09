@@ -4,9 +4,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-/**
- * The activator class controls the plug-in life cycle
- */
+/** The activator class controls the plug-in life cycle */
 public class PeopleRapPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
@@ -14,7 +12,7 @@ public class PeopleRapPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static PeopleRapPlugin plugin;
-	
+
 	/**
 	 * The constructor
 	 */
@@ -23,7 +21,9 @@ public class PeopleRapPlugin extends AbstractUIPlugin {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+	 * 
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.
+	 * BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -32,7 +32,9 @@ public class PeopleRapPlugin extends AbstractUIPlugin {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+	 * 
+	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.
+	 * BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;

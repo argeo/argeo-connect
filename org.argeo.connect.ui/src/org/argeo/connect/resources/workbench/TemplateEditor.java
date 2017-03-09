@@ -80,7 +80,7 @@ public class TemplateEditor extends AbstractConnectCTabEditor {
 
 				tooltip = "Manage and edit the \"" + propLabel + "\" catalogue";
 				LazyCTabControl oneBusinessPropertyCatalogue = new TemplateValueCatalogue(folder, SWT.NO_FOCUS, this,
-						getResourcesService(), getAppWorkbenchService(), nodeTemplate, propName,
+						getResourcesService(), getSystemWorkbenchService(), nodeTemplate, propName,
 						ConnectJcrUtils.get(nodeTemplate, ResourcesNames.RESOURCES_TEMPLATE_ID));
 				oneBusinessPropertyCatalogue.setLayoutData(EclipseUiUtils.fillAll());
 				addLazyTabToFolder(folder, oneBusinessPropertyCatalogue, propLabel,

@@ -3,7 +3,7 @@ package org.argeo.connect.workbench.util;
 import javax.jcr.Node;
 
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -14,18 +14,18 @@ import org.eclipse.swt.graphics.Image;
 public class TitleIconRowLP extends JcrHtmlLabelProvider {
 	private static final long serialVersionUID = 6064779874148619776L;
 
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final String selectorName;
 
-	public TitleIconRowLP(AppWorkbenchService appWbService, String selectorName, String propertyName) {
+	public TitleIconRowLP(SystemWorkbenchService systemWorkbenchService, String selectorName, String propertyName) {
 		super(selectorName, propertyName);
-		this.appWorkbenchService = appWbService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.selectorName = selectorName;
 	}
 
 	@Override
 	public Image getImage(Object element) {
 		Node node = ConnectJcrUtils.getNodeFromElement(element, selectorName);
-		return appWorkbenchService.getIconForType(node);
+		return systemWorkbenchService.getIconForType(node);
 	}
 }

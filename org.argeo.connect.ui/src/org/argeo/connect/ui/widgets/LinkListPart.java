@@ -13,7 +13,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.parts.PickUpRelatedDialog;
@@ -38,7 +38,7 @@ public class LinkListPart extends Composite {
 	private static final long serialVersionUID = -5813631462166187272L;
 
 	// Context
-	private final AppWorkbenchService peopleWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node entity;
 	private final String propName;
 	private final List<String> hiddenItemIds = new ArrayList<String>();
@@ -59,8 +59,8 @@ public class LinkListPart extends Composite {
 	}
 
 	public LinkListPart(AbstractConnectEditor editor, AbstractFormPart formPart, Composite parent, int style,
-			AppWorkbenchService peopleWorkbenchService, Node entity, String propName) {
-		this(editor, formPart, parent, style, peopleWorkbenchService, entity, propName, null);
+			SystemWorkbenchService systemWorkbenchService, Node entity, String propName) {
+		this(editor, formPart, parent, style, systemWorkbenchService, entity, propName, null);
 	}
 
 	/**
@@ -70,17 +70,17 @@ public class LinkListPart extends Composite {
 	 * @param formPart
 	 * @param parent
 	 * @param style
-	 * @param peopleWorkbenchService
+	 * @param systemWorkbenchService
 	 * @param entity
 	 * @param propName
 	 * @param hiddenItemIds
 	 */
 	public LinkListPart(AbstractConnectEditor editor, AbstractFormPart formPart, Composite parent, int style,
-			AppWorkbenchService peopleWorkbenchService, Node entity, String propName, List<String> hiddenItemIds) {
+			SystemWorkbenchService systemWorkbenchService, Node entity, String propName, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.formPart = formPart;
 		this.editor = editor;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.entity = entity;
 		this.propName = propName;
 
@@ -148,7 +148,7 @@ public class LinkListPart extends Composite {
 			Button deleteBtn = new Button(part, SWT.FLAT);
 			CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
 			GridData gd = new GridData(8, 8);
-			gd.horizontalIndent=2;
+			gd.horizontalIndent = 2;
 			deleteBtn.setLayoutData(gd);
 			deleteBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
@@ -208,7 +208,7 @@ public class LinkListPart extends Composite {
 
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
-			CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
 					jcrId);
 		}
 	}
@@ -225,7 +225,7 @@ public class LinkListPart extends Composite {
 			public void widgetSelected(final SelectionEvent event) {
 				try {
 					PickUpRelatedDialog diag = new PickUpRelatedDialog(link.getShell(), "Choose a related item",
-							entity.getSession(), peopleWorkbenchService, entity);
+							entity.getSession(), systemWorkbenchService, entity);
 
 					int result = diag.open();
 					if (Window.OK == result) {

@@ -1,6 +1,6 @@
 /*
  * Argeo Connect - Data management and communications
- * Copyright (C) 2012 Argeo GmbH
+ * Copyright (C) 2012-2017 Argeo GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

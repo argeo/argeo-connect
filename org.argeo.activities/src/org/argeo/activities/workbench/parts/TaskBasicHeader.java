@@ -21,8 +21,8 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.widgets.LinkListPart;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
 import org.argeo.connect.workbench.parts.DateTextPart;
@@ -52,7 +52,7 @@ public class TaskBasicHeader extends Composite {
 	private final UserAdminService userAdminService;
 	private final ResourcesService resourceService;
 	private final ActivitiesService activityService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node task;
 	private final String taskTypeId;
 
@@ -87,21 +87,21 @@ public class TaskBasicHeader extends Composite {
 
 	public TaskBasicHeader(AbstractConnectEditor editor, Composite parent, int style, UserAdminService uas,
 			ResourcesService resourceService, ActivitiesService activityService,
-			AppWorkbenchService peopleWorkbenchService, String taskTypeId, Node task) {
-		this(editor, parent, style, uas, resourceService, activityService, peopleWorkbenchService, taskTypeId, task,
+			SystemWorkbenchService systemWorkbenchService, String taskTypeId, Node task) {
+		this(editor, parent, style, uas, resourceService, activityService, systemWorkbenchService, taskTypeId, task,
 				null);
 	}
 
 	public TaskBasicHeader(AbstractConnectEditor editor, Composite parent, int style, UserAdminService uas,
 			ResourcesService resourceService, ActivitiesService activityService,
-			AppWorkbenchService appWorkbenchService, String taskTypeId, Node task, List<String> hiddenItemIds) {
+			SystemWorkbenchService systemWorkbenchService, String taskTypeId, Node task, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
 		this.resourceService = resourceService;
 		this.activityService = activityService;
 		this.userAdminService = uas;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.taskTypeId = taskTypeId;
 		this.task = task;
 
@@ -190,7 +190,7 @@ public class TaskBasicHeader extends Composite {
 		// RELATED ENTITIES
 		// Label label =
 		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
-		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, appWorkbenchService, task,
+		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, systemWorkbenchService, task,
 				ActivitiesNames.ACTIVITIES_RELATED_TO, hiddenItemIds);
 		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
@@ -233,7 +233,7 @@ public class TaskBasicHeader extends Composite {
 
 		// RELATED ENTITIES
 		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
-		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, appWorkbenchService, task,
+		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, systemWorkbenchService, task,
 				ActivitiesNames.ACTIVITIES_RELATED_TO, hiddenItemIds);
 		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(3));
 		relatedCmp.layout();

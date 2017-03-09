@@ -7,7 +7,7 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.TagLabelProvider;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Image;
 public class EntitySingleColumnLabelProvider extends LabelProvider implements PeopleNames {
 	private static final long serialVersionUID = -2613028516709467900L;
 
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	private OrgListLabelProvider orgLp;
 	private PersonListLabelProvider personLp;
@@ -30,8 +30,8 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements Pe
 	private TagLabelProvider mlInstanceLp;
 
 	public EntitySingleColumnLabelProvider(ResourcesService resourceService, PeopleService peopleService,
-			AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+			SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 		personLp = new PersonListLabelProvider(peopleService);
 		orgLp = new OrgListLabelProvider(resourceService, peopleService);
 		mlInstanceLp = new TagLabelProvider(resourceService, ConnectUiConstants.LIST_TYPE_SMALL);
@@ -61,6 +61,6 @@ public class EntitySingleColumnLabelProvider extends LabelProvider implements Pe
 	/** Overwrite this method to provide project specific images */
 	@Override
 	public Image getImage(Object element) {
-		return appWorkbenchService.getIconForType((Node) element);
+		return systemWorkbenchService.getIconForType((Node) element);
 	}
 }

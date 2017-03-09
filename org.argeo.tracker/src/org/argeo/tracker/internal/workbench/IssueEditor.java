@@ -14,6 +14,8 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.activities.ActivitiesNames;
+import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
@@ -28,15 +30,12 @@ import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.internal.ui.TrackerImages;
 import org.argeo.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.tracker.internal.ui.controls.TagListFormPart;
 import org.argeo.tracker.internal.ui.dialogs.EditFreeTextDialog;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
-import org.argeo.activities.ActivitiesNames;
-import org.argeo.cms.ArgeoNames;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -211,7 +210,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+					CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
 							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(project));
 				}
 			});
@@ -628,7 +627,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		protected void callOpenEditor(String tagKey) {
 			Node node = TrackerUtils.getVersionById(project, tagKey);
 			if (node != null)
-				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
 		}
 
@@ -663,7 +662,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		protected void callOpenEditor(String tagKey) {
 			Node node = TrackerUtils.getComponentById(project, tagKey);
 			if (node != null)
-				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
 		}
 	}

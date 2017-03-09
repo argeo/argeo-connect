@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 /**
- * Displays existing values of a multi-valued String property that has the
+ * Display existing values of a multi-valued String property that has the
  * injected name
  **/
 public class TagLikeValuesPart implements CmsUiProvider {

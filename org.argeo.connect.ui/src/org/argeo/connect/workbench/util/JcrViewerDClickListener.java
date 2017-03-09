@@ -7,7 +7,7 @@ import javax.jcr.query.Row;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -21,7 +21,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 public class JcrViewerDClickListener implements IDoubleClickListener {
 
 	private String selectorName;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	public JcrViewerDClickListener() {
 	}
@@ -32,16 +32,16 @@ public class JcrViewerDClickListener implements IDoubleClickListener {
 	}
 
 	@Deprecated
-	public JcrViewerDClickListener(String selectorName, AppWorkbenchService appWorkbenchService) {
+	public JcrViewerDClickListener(String selectorName, SystemWorkbenchService systemWorkbenchService) {
 		if (EclipseUiUtils.notEmpty(selectorName))
 			this.selectorName = selectorName;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	@Deprecated
-	public JcrViewerDClickListener(AppWorkbenchService appWorkbenchService) {
+	public JcrViewerDClickListener(SystemWorkbenchService systemWorkbenchService) {
 		selectorName = null;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	public void doubleClick(DoubleClickEvent event) {
@@ -54,8 +54,8 @@ public class JcrViewerDClickListener implements IDoubleClickListener {
 				currNode = ConnectJcrUtils.getNodeFromElement(obj, selectorName);
 			if (currNode != null) {
 				String cmdId = OpenEntityEditor.ID;
-				if (appWorkbenchService != null)
-					cmdId = appWorkbenchService.getOpenEntityEditorCmdId();
+				if (systemWorkbenchService != null)
+					cmdId = systemWorkbenchService.getOpenEntityEditorCmdId();
 				CommandUtils.callCommand(cmdId, OpenEntityEditor.PARAM_JCR_ID, currNode.getIdentifier());
 			}
 		} catch (RepositoryException re) {

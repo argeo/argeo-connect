@@ -18,16 +18,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.ChangeEditingState;
 import org.argeo.connect.workbench.commands.DeleteEntity;
 import org.argeo.connect.workbench.util.EditionSourceProvider;
@@ -70,8 +70,8 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 	private Session session; // There is *one* session per editor
 	private UserAdminService userAdminService;
 	private ResourcesService resourcesService;
-	private AppService appService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemAppService systemAppService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// private ResourcesService resourcesService;
 	// private ActivitiesService activitiesService;
@@ -355,7 +355,7 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 				part.commit(onSave);
 		}
 		if (onSave) {
-			appService.saveEntity(node, true);
+			systemAppService.saveEntity(node, true);
 			updatePartName();
 		}
 	}
@@ -549,8 +549,12 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 		return resourcesService;
 	}
 
-	protected AppWorkbenchService getAppWorkbenchService() {
-		return appWorkbenchService;
+	protected SystemAppService getSystemAppService() {
+		return systemAppService;
+	}
+
+	protected SystemWorkbenchService getSystemWorkbenchService() {
+		return systemWorkbenchService;
 	}
 
 	/* DEPENDENCY INJECTION */
@@ -566,11 +570,11 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 		this.resourcesService = resourcesService;
 	}
 
-	public void setAppService(AppService appService) {
-		this.appService = appService;
+	public void setSystemAppService(SystemAppService systemAppService) {
+		this.systemAppService = systemAppService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

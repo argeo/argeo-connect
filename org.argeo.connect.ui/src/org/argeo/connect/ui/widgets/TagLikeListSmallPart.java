@@ -21,7 +21,7 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -57,8 +57,8 @@ public class TagLikeListSmallPart extends Composite {
 	private final String newTagMsg;
 
 	// Context
-	private final ResourcesService resourceService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final ResourcesService resourcesService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node taggable;
 	private final Node tagParent;
 	private final String tagId;
@@ -75,20 +75,20 @@ public class TagLikeListSmallPart extends Composite {
 	 * @param style
 	 * @param toolkit
 	 * @param form
-	 * @param resourceService
-	 * @param appWorkbenchService
+	 * @param resourcesService
+	 * @param systemWorkbenchService
 	 * @param taggable
 	 * @param tagId
 	 * @param newTagMsg
 	 */
 	public TagLikeListSmallPart(AbstractConnectEditor editor, Composite parent, int style,
-			ResourcesService resourceService, AppWorkbenchService appWorkbenchService, String tagId, Node taggable,
+			ResourcesService resourcesService, SystemWorkbenchService systemWorkbenchService, String tagId, Node taggable,
 			String taggablePropName, String newTagMsg) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
-		this.resourceService = resourceService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.resourcesService = resourcesService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.tagId = tagId;
 		this.taggable = taggable;
 		this.taggablePropName = taggablePropName;
@@ -96,7 +96,7 @@ public class TagLikeListSmallPart extends Composite {
 
 		// Cache some context object to ease implementation
 		session = ConnectJcrUtils.getSession(taggable);
-		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
+		tagParent = resourcesService.getTagLikeResourceParent(session, tagId);
 
 		try {
 			if (tagParent.hasProperty(ResourcesNames.RESOURCES_TAG_CODE_PROP_NAME))
@@ -176,7 +176,7 @@ public class TagLikeListSmallPart extends Composite {
 
 						String tagValue;
 						if (tagCodePropName != null)
-							tagValue = resourceService.getEncodedTagValue(session, tagId, tagKey);
+							tagValue = resourcesService.getEncodedTagValue(session, tagId, tagKey);
 						else
 							tagValue = tagKey;
 
@@ -201,7 +201,7 @@ public class TagLikeListSmallPart extends Composite {
 
 							@Override
 							public void widgetSelected(final SelectionEvent event) {
-								Node tag = resourceService.getRegisteredTag(tagParent, tagKey);
+								Node tag = resourcesService.getRegisteredTag(tagParent, tagKey);
 
 								try {
 									if (createdTagPath.contains(tag.getPath())) {
@@ -209,7 +209,7 @@ public class TagLikeListSmallPart extends Composite {
 												+ "Please save first.";
 										MessageDialog.openInformation(parentCmp.getShell(), "Forbidden action", msg);
 									} else
-										CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
+										CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
 												OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
 								} catch (RepositoryException e) {
 									throw new ConnectException("unable to get path for resource tag node " + tag
@@ -229,7 +229,7 @@ public class TagLikeListSmallPart extends Composite {
 					RowData rd = new RowData(80, SWT.DEFAULT);
 					tagTxt.setLayoutData(rd);
 
-					final TagLikeDropDown tagDD = new TagLikeDropDown(session, resourceService, tagId, tagTxt);
+					final TagLikeDropDown tagDD = new TagLikeDropDown(session, resourcesService, tagId, tagTxt);
 
 					tagTxt.addTraverseListener(new TraverseListener() {
 						private static final long serialVersionUID = 1L;
@@ -283,18 +283,18 @@ public class TagLikeListSmallPart extends Composite {
 				Session session = taggable.getSession();
 				// Retrieve code from value
 				if (tagCodePropName != null)
-					newTag = resourceService.getEncodedTagCodeFromValue(session, tagId, newTag);
+					newTag = resourcesService.getEncodedTagCodeFromValue(session, tagId, newTag);
 
 				// Check if a tag with such a key is already registered
-				Node registered = resourceService.getRegisteredTag(tagParent, newTag);
+				Node registered = resourcesService.getRegisteredTag(tagParent, newTag);
 
 				if (registered == null) {
-					if (resourceService.canCreateTag(session)) {
+					if (resourcesService.canCreateTag(session)) {
 
 						// Ask end user if we create a new tag
 						msg = "\"" + newTag + "\" is not yet registered.\n Are you sure you want to create it?";
 						if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
-							registered = resourceService.registerTag(session, tagId, newTag);
+							registered = resourcesService.registerTag(session, tagId, newTag);
 							if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
 								createdTagPath.add(registered.getPath());
 						} else

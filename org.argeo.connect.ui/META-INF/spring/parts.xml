@@ -9,29 +9,27 @@
 	<bean id="openDefaultEditor" class="org.argeo.connect.workbench.commands.OpenDefaultEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
-	<bean id="openEntityEditor"
-		class="org.argeo.connect.workbench.commands.OpenEntityEditor"
+	<bean id="openEntityEditor" class="org.argeo.connect.workbench.commands.OpenEntityEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="openSearchEntityEditor"
 		class="org.argeo.connect.workbench.commands.OpenSearchEntityEditor"
 		scope="prototype">
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
-
 
 	<!-- Entities and links CRUDs -->
 	<bean id="createEntity" class="org.argeo.connect.workbench.commands.CreateEntity"
 		scope="prototype">
 		<property name="repository" ref="repository" />
-		<property name="appService" ref="appService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemAppService" ref="systemAppService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="deleteEntity" class="org.argeo.connect.workbench.commands.DeleteEntity"
@@ -42,7 +40,7 @@
 	<!-- Exports -->
 	<bean id="getJxlExport" class="org.argeo.connect.workbench.commands.GetJxlExport"
 		scope="prototype">
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<!-- EDITORS -->
@@ -51,8 +49,8 @@
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
-		<property name="appService" ref="appService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemAppService" ref="systemAppService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="defaultSearchEntityEditor"
@@ -61,20 +59,17 @@
 		<property name="repository" ref="repository" />
 		<!-- <property name="userAdminService" ref="userAdminService" /> -->
 		<!-- <property name="resourcesService" ref="resourcesService" /> -->
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="searchTagsEditor" class="org.argeo.connect.resources.workbench.SearchTagsEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
-		<property name="appWorkbenchService" ref="appWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
-
-
 	<!-- VIEWS -->
-
 	<!-- Manage part state change -->
 	<bean id="partStateChanged" class="org.argeo.connect.workbench.util.PartStateChanged"
 		scope="prototype">

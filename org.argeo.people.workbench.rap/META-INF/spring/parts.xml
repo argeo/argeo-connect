@@ -10,7 +10,7 @@
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="removeEntityReference"
@@ -26,7 +26,7 @@
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 
@@ -40,7 +40,8 @@
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="systemAppService" ref="systemAppService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="orgEditor"
@@ -51,7 +52,8 @@
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="systemAppService" ref="systemAppService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<!-- Search editors -->
@@ -62,7 +64,7 @@
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 
 	<bean id="mailingListEditor"
@@ -71,7 +73,7 @@
 		<property name="repository" ref="repository" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="peopleService" ref="peopleService" />
-		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 	
 	<bean id="listValuesEditor"
@@ -80,7 +82,7 @@
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
-		<property name="appWorkbenchService" ref="peopleWorkbenchService" />
+		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 	
 	

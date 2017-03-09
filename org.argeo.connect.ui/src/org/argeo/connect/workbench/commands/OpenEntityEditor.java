@@ -9,8 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -39,7 +39,7 @@ public class OpenEntityEditor extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	public final static String PARAM_JCR_ID = "param.jcrId";
 	public final static String PARAM_OPEN_FOR_EDIT = "param.openForEdit";
@@ -61,7 +61,7 @@ public class OpenEntityEditor extends AbstractHandler {
 				return null;
 			}
 
-			String editorId = appWorkbenchService.getEntityEditorId(entity);
+			String editorId = systemWorkbenchService.getEntityEditorId(entity);
 			if (editorId != null) {
 				IWorkbenchWindow iww = HandlerUtil.getActiveWorkbenchWindow(event);
 				IWorkbenchPage iwp = iww.getActivePage();
@@ -89,7 +89,7 @@ public class OpenEntityEditor extends AbstractHandler {
 		this.repository = repository;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

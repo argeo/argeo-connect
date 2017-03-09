@@ -13,16 +13,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
 /** Simplify implementation of basic editor in a people context */
-public abstract class AbstractPeopleBasicEditor extends EditorPart implements
-		Refreshable {
+public abstract class AbstractPeopleBasicEditor extends EditorPart implements Refreshable {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private Session session;
 
 	@Override
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException {
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
 		session = ConnectJcrUtils.login(repository);

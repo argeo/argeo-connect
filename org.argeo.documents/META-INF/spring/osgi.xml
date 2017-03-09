@@ -11,8 +11,8 @@
 		filter="(cn=home)" />
 	<reference id="nodeFileSystemProvider" interface="java.nio.file.spi.FileSystemProvider"
 		filter="(service.pid=org.argeo.node.fsProvider)" />
-	<reference id="appWorkbenchService"
-		interface="org.argeo.connect.workbench.AppWorkbenchService" />
 	<reference id="documentsService" interface="org.argeo.documents.DocumentsService" />
+	<reference id="systemWorkbenchService"
+		interface="org.argeo.connect.workbench.SystemWorkbenchService" />
 
 </beans:beans>

@@ -31,10 +31,10 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
@@ -71,8 +71,8 @@ public class EditTagWizard extends Wizard {
 	private final static Log log = LogFactory.getLog(EditTagWizard.class);
 
 	// Context
-	private ResourcesService resourceService;
-	private AppWorkbenchService appWorkbenchService;
+	private ResourcesService resourcesService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	private String tagId;
 	private Node tagInstance;
@@ -91,21 +91,21 @@ public class EditTagWizard extends Wizard {
 	/**
 	 * 
 	 * @param peopleService
-	 * @param appWorkbenchService
+	 * @param systemWorkbenchService
 	 * @param tagInstanceNode
 	 * @param tagId
 	 * @param tagPropName
 	 */
-	public EditTagWizard(ResourcesService resourceService, AppWorkbenchService appWorkbenchService,
+	public EditTagWizard(ResourcesService resourcesService, SystemWorkbenchService systemWorkbenchService,
 			Node tagInstanceNode, String tagId, String tagPropName) {
-		this.resourceService = resourceService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.resourcesService = resourcesService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.tagId = tagId;
 		this.tagInstance = tagInstanceNode;
 		this.tagPropName = tagPropName;
 
 		session = ConnectJcrUtils.getSession(tagInstance);
-		tagParent = resourceService.getTagLikeResourceParent(session, tagId);
+		tagParent = resourcesService.getTagLikeResourceParent(session, tagId);
 		taggableNodeType = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAGGABLE_NODE_TYPE);
 		taggableParentPath = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAGGABLE_PARENT_PATH);
 	}
@@ -143,7 +143,7 @@ public class EditTagWizard extends Wizard {
 				errMsg = "New value cannot be blank or an empty string";
 			else if (oldTitle.equals(newTitle))
 				errMsg = "New value is the same as old one.\n" + "Either enter a new one or press cancel.";
-			else if (resourceService.getRegisteredTag(tagInstance.getSession(), tagId, newTitle) != null)
+			else if (resourcesService.getRegisteredTag(tagInstance.getSession(), tagId, newTitle) != null)
 				errMsg = "The new chosen value is already used.\n" + "Either enter a new one or press cancel.";
 
 			if (errMsg != null) {
@@ -151,7 +151,7 @@ public class EditTagWizard extends Wizard {
 				return false;
 			}
 
-			new UpdateTagAndInstancesJob(resourceService, tagInstance, newTitle, newDesc).schedule();
+			new UpdateTagAndInstancesJob(resourcesService, tagInstance, newTitle, newDesc).schedule();
 			return true;
 		} catch (RepositoryException re) {
 			throw new ConnectException("unable to update title for tag like resource " + tagInstance, re);
@@ -214,7 +214,7 @@ public class EditTagWizard extends Wizard {
 			body.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition(taggableNodeType, Property.JCR_TITLE, PropertyType.STRING,
-					"Display Name", new TitleIconRowLP(appWorkbenchService, taggableNodeType, Property.JCR_TITLE),
+					"Display Name", new TitleIconRowLP(systemWorkbenchService, taggableNodeType, Property.JCR_TITLE),
 					300));
 
 			VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(body, SWT.MULTI, colDefs);
@@ -289,7 +289,7 @@ public class EditTagWizard extends Wizard {
 	private class UpdateTagAndInstancesJob extends PrivilegedJob {
 
 		private Repository repository;
-		private ResourcesService resourceService;
+		private ResourcesService resourcesService;
 		private String tagPath;
 		private String newTitle, newDesc;
 
@@ -300,7 +300,7 @@ public class EditTagWizard extends Wizard {
 		public UpdateTagAndInstancesJob(ResourcesService resourceService, Node tagInstance, String newTitle,
 				String newDesc) {
 			super("Updating");
-			this.resourceService = resourceService;
+			this.resourcesService = resourceService;
 			this.newTitle = newTitle;
 			this.newDesc = newDesc;
 			try {
@@ -326,7 +326,7 @@ public class EditTagWizard extends Wizard {
 					// Legacy insure the node is checked out before update
 					ConnectJcrUtils.checkCOStatusBeforeUpdate(tagInstance);
 
-					resourceService.updateTag(tagInstance, newTitle);
+					resourcesService.updateTag(tagInstance, newTitle);
 
 					if (EclipseUiUtils.notEmpty(newDesc))
 						tagInstance.setProperty(Property.JCR_DESCRIPTION, newDesc);

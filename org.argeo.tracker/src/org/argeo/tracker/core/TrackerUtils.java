@@ -36,6 +36,7 @@ import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.TrackerTypes;
 
+/** Centralise methods to ease implementation of the Tracker App */
 public class TrackerUtils {
 
 	public static final Map<String, String> DEFAULT_COMPONENTS;

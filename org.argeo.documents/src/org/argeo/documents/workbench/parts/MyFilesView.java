@@ -36,8 +36,8 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.documents.DocumentsException;
 import org.argeo.documents.DocumentsNames;
 import org.argeo.documents.DocumentsService;
@@ -84,7 +84,7 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 
 	private Repository repository;
 	private Session session;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 	private FileSystemProvider nodeFileSystemProvider;
 	private DocumentsService documentsService;
 
@@ -101,7 +101,7 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 		addFilterPanel(parent);
 		searchCmp = new Composite(parent, SWT.NO_FOCUS);
 		searchCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		searchResultsViewer = createListPart(searchCmp, new DocumentsSingleColumnLP(appWorkbenchService));
+		searchResultsViewer = createListPart(searchCmp, new DocumentsSingleColumnLP(systemWorkbenchService));
 		GridData gd = EclipseUiUtils.fillWidth();
 		gd.heightHint = 0;
 		searchCmp.setLayoutData(gd);
@@ -269,7 +269,7 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 
 		appendTitle(parent, "My bookmarks");
 		BookmarksTableViewer bookmarksViewer = new BookmarksTableViewer(parent, SWT.MULTI | SWT.NO_SCROLL,
-				documentsService.getMyBookmarksParent(session), documentsService, appWorkbenchService);
+				documentsService.getMyBookmarksParent(session), documentsService, systemWorkbenchService);
 		table = bookmarksViewer.configureDefaultSingleColumnTable(bookmarkColWith);
 		gd = EclipseUiUtils.fillWidth();
 		gd.horizontalIndent = 10;
@@ -309,7 +309,7 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 				Path curr = ((Path) element);
 				String path = curr.toString();
 				Node currNode = ConnectJcrUtils.getNode(session, path);
-				return appWorkbenchService.getIconForType(currNode);
+				return systemWorkbenchService.getIconForType(currNode);
 			}
 			return null;
 		}
@@ -370,7 +370,7 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 				throw new IllegalArgumentException("Cannot manage " + element + ", only Node and Path are supported.");
 			String nodeId = ConnectJcrUtils.getIdentifier(currNode);
 			// FIXME hard coded parameter name
-			CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), "param.jcrId", nodeId);
+			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), "param.jcrId", nodeId);
 		}
 	}
 
@@ -383,8 +383,8 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 		this.repository = repository;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	public void setNodeFileSystemProvider(FileSystemProvider nodeFileSystemProvider) {

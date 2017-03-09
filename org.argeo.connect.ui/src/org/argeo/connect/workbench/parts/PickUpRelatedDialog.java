@@ -19,7 +19,7 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -44,7 +44,7 @@ public class PickUpRelatedDialog extends TrayDialog {
 
 	// Context
 	private final Session session;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private Node selectedNode;
 
 	// this page widgets and UI objects
@@ -55,12 +55,12 @@ public class PickUpRelatedDialog extends TrayDialog {
 	private Button dummyButton;
 
 	public PickUpRelatedDialog(Shell parentShell, String title, Session session,
-			AppWorkbenchService peopleWorkbenchService, Node referencingNode) {
+			SystemWorkbenchService systemWorkbenchService, Node referencingNode) {
 		super(parentShell);
 		this.title = title;
 		// this.referencingNode = referencingNode;
 		this.session = session;
-		this.appWorkbenchService = peopleWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
 	protected Point getInitialSize() {
@@ -78,7 +78,7 @@ public class PickUpRelatedDialog extends TrayDialog {
 		bodyCmp.setLayout(new GridLayout());
 
 		int style = SWT.BORDER | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new FilterEntitiesVirtualTable(bodyCmp, style, session, appWorkbenchService,
+		tableCmp = new FilterEntitiesVirtualTable(bodyCmp, style, session, systemWorkbenchService,
 				ConnectTypes.CONNECT_ENTITY);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 

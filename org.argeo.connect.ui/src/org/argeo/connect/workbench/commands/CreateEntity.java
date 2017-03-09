@@ -10,9 +10,11 @@ import javax.jcr.Session;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.SystemAppService;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -34,8 +36,8 @@ public class CreateEntity extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private AppService appService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemAppService systemAppService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -45,24 +47,24 @@ public class CreateEntity extends AbstractHandler {
 		Node tmpNode = null;
 		try {
 			session = repository.login();
-			Node tmpParent = appService.getDraftParent(session);
+			Node tmpParent = systemAppService.getDraftParent(session);
 			String uuid = UUID.randomUUID().toString();
 			tmpNode = tmpParent.addNode(uuid);
 			tmpNode.addMixin(nodeType);
 			tmpNode.setProperty(ConnectNames.CONNECT_UID, uuid);
 
-			Wizard wizard = appWorkbenchService.getCreationWizard(tmpNode);
+			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);
 			WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
-				Node parent = session.getNode("/" + appService.getBaseRelPath(nodeType));
-				Node newNode = appService.createEntity(parent, nodeType, tmpNode);
+				Node parent = session.getNode("/" + systemAppService.getBaseRelPath(nodeType));
+				Node newNode = systemAppService.createEntity(parent, nodeType, tmpNode);
 				// Save the newly created entity without creating a base version
-				newNode = appService.saveEntity(newNode, false);
+				newNode = systemAppService.saveEntity(newNode, false);
 				// Open the corresponding editor
 				String jcrId = newNode.getIdentifier();
-				ConnectWorkbenchUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
+				ConnectWorkbenchUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
 				return newNode.getPath();
 			} else {
@@ -84,11 +86,11 @@ public class CreateEntity extends AbstractHandler {
 	}
 
 	protected AppService getAppService() {
-		return appService;
+		return systemAppService;
 	}
 
 	protected AppWorkbenchService getAppWorkbenchService() {
-		return appWorkbenchService;
+		return systemWorkbenchService;
 	}
 
 	/* DEPENDENCY INJECTION */
@@ -96,11 +98,11 @@ public class CreateEntity extends AbstractHandler {
 		this.repository = repository;
 	}
 
-	public void setAppService(AppService appService) {
-		this.appService = appService;
+	public void setSystemAppService(SystemAppService systemAppService) {
+		this.systemAppService = systemAppService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

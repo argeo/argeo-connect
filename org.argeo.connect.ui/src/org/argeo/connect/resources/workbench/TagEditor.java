@@ -16,10 +16,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.SystemAppService;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesRole;
 import org.argeo.connect.resources.ResourcesService;
@@ -36,6 +36,7 @@ import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.EditTagWizard;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
@@ -73,9 +74,9 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private AppService appService;
 	private ResourcesService resourcesService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemAppService systemAppService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// UI Objects
 	private Row[] rows;
@@ -101,7 +102,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
-				new TitleIconRowLP(appWorkbenchService, null, Property.JCR_TITLE), 300));
+				new TitleIconRowLP(systemWorkbenchService, null, Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Other tags", new OtherTagsLabelProvider(node, null), 300));
 	}
 
@@ -166,7 +167,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					EditTagWizard wizard = new EditTagWizard(resourcesService, appWorkbenchService, getNode(),
+					EditTagWizard wizard = new EditTagWizard(resourcesService, systemWorkbenchService, getNode(),
 							ConnectConstants.RESOURCE_TAG, ResourcesNames.CONNECT_TAGS);
 					WizardDialog dialog = new WizardDialog(titleROLbl.getShell(), wizard);
 					// NoProgressBarWizardDialog dialog = new
@@ -186,7 +187,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 	@Override
 	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
 		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
-		columns.add(new ConnectColumnDefinition("Type", new MainNodeTypeLabelProvider(appService)));
+		columns.add(new ConnectColumnDefinition("Type", new MainNodeTypeLabelProvider(systemAppService)));
 		columns.add(new ConnectColumnDefinition("Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
 		columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ResourcesNames.CONNECT_TAGS)));
 		columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
@@ -319,7 +320,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 	}
 
 	protected AppWorkbenchService getAppWorkbenchService() {
-		return appWorkbenchService;
+		return systemWorkbenchService;
 	}
 
 	/* Life Cycle */
@@ -359,11 +360,11 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 		this.resourcesService = resourcesService;
 	}
 
-	public void setAppService(AppService appService) {
-		this.appService = appService;
+	public void setSystemAppService(SystemAppService systemAppService) {
+		this.systemAppService = systemAppService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

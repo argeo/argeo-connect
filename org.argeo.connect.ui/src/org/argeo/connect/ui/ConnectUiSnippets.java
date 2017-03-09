@@ -8,10 +8,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
-/**
- * Some helper methods to generate html snippets TODO refactor this once the
- * internationalization has been implemented.
- */
+/** Helper methods to generate HTML snippets */
 public class ConnectUiSnippets {
 
 	/**

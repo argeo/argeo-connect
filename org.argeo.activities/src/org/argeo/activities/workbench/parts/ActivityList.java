@@ -21,8 +21,8 @@ import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -58,7 +58,7 @@ public class ActivityList extends LazyCTabControl {
 	private final UserAdminService userAdminService;
 	private final ResourcesService resourceService;
 	private final ActivitiesService activityService;
-	private final AppWorkbenchService appWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node entity;
 	private final AbstractConnectEditor editor;
 	private final FormToolkit toolkit;
@@ -75,12 +75,12 @@ public class ActivityList extends LazyCTabControl {
 
 	public ActivityList(Composite parent, int style, AbstractConnectEditor editor, UserAdminService userAdminService,
 			ResourcesService resourceService, ActivitiesService activityService,
-			AppWorkbenchService appWorkbenchService, Node entity) {
+			SystemWorkbenchService systemWorkbenchService, Node entity) {
 		super(parent, style);
 		this.userAdminService = userAdminService;
 		this.resourceService = resourceService;
 		this.activityService = activityService;
-		this.appWorkbenchService = appWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.entity = entity;
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
@@ -101,10 +101,10 @@ public class ActivityList extends LazyCTabControl {
 		activityTable = new MyActivityTableCmp(parent, SWT.MULTI, entity);
 		activityTable.setLayoutData(EclipseUiUtils.fillAll());
 		if (addCmp != null)
-			addNewActivityPanel(addCmp, entity, appWorkbenchService.getOpenEntityEditorCmdId(), activityTable);
+			addNewActivityPanel(addCmp, entity, systemWorkbenchService.getOpenEntityEditorCmdId(), activityTable);
 		// Doubleclick listener
 		activityTable.getTableViewer()
-				.addDoubleClickListener(new ActivityTableDCL(appWorkbenchService.getOpenEntityEditorCmdId()));
+				.addDoubleClickListener(new ActivityTableDCL(systemWorkbenchService.getOpenEntityEditorCmdId()));
 
 		myFormPart = new MyFormPart();
 		myFormPart.initialize(editor.getManagedForm());
@@ -219,7 +219,7 @@ public class ActivityList extends LazyCTabControl {
 		private static final long serialVersionUID = 1L;
 
 		public MyActivityTableCmp(Composite parent, int style, Node entity) {
-			super(parent, style, userAdminService, resourceService, activityService, appWorkbenchService, entity);
+			super(parent, style, userAdminService, resourceService, activityService, systemWorkbenchService, entity);
 		}
 
 		protected void refreshFilteredList() {

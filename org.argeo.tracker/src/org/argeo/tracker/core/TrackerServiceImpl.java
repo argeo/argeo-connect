@@ -219,23 +219,24 @@ public class TrackerServiceImpl implements TrackerService {
 		return component;
 	}
 
-	private static Node getProjectFromIssue(Node issue) throws RepositoryException {
-		Node parent = issue;
-		while (!parent.isNodeType(TrackerTypes.TRACKER_PROJECT)) {
-			parent = parent.getParent();
-		}
-		return parent;
-	}
+//	private static Node getProjectFromIssue(Node issue) throws RepositoryException {
+//		Node parent = issue;
+//		while (!parent.isNodeType(TrackerTypes.TRACKER_PROJECT)) {
+//			parent = parent.getParent();
+//		}
+//		return parent;
+//	}
 
 	private static Node getIssueParent(Node project) throws RepositoryException {
 		// Should always be there
 		return project.getNode(TrackerUtils.issuesRelPath());
 	}
 
-	private static Node getVersionParent(Node project) throws RepositoryException {
-		// Should always be there
-		return project.getNode(TrackerUtils.versionsRelPath());
-	}
+	// private static Node getVersionParent(Node project) throws
+	// RepositoryException {
+	// // Should always be there
+	// return project.getNode(TrackerUtils.versionsRelPath());
+	// }
 
 	// FIXME harden to avoid discrepancy in numbering while having concurrent
 	// access

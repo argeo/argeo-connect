@@ -11,18 +11,16 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-/** Workaround to enable opening of a default editor */
+/** Open a monitoring editor */
 public class OpenMonitoringPart extends AbstractHandler {
-	public final static String ID = PeopleRapPlugin.PLUGIN_ID
-			+ ".openMonitoringView";
+	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".openMonitoringView";
 
 	public final static String PARAM_PART_ID = "param.partId";
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String partId = event.getParameter(PARAM_PART_ID);
 		try {
-			IWorkbenchPage iwPage = HandlerUtil.getActiveWorkbenchWindow(event)
-					.getActivePage();
+			IWorkbenchPage iwPage = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage();
 
 			SingletonEditorInput eei = new SingletonEditorInput(partId);
 			IEditorPart iep = iwPage.findEditor(eei);

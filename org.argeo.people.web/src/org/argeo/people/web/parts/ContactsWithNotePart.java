@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 
 /**
- * Part that display a list of contacts for a people:contactable node and the
+ * Display a list of contacts for a people:contactable node and the
  * jcr:description of this contactable node
  */
 public class ContactsWithNotePart extends ContactsPart {

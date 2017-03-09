@@ -19,8 +19,8 @@ import org.argeo.connect.exports.jxl.RowsToCalcWriter;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.OpenFile;
@@ -50,7 +50,7 @@ public class GetJxlExport extends AbstractHandler {
 			+ SingleSourcingConstants.SCHEME_HOST_SEPARATOR;
 
 	/* DEPENDENCY INJECTION */
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		String exportId = event.getParameter(PARAM_EXPORT_ID);
@@ -139,7 +139,7 @@ public class GetJxlExport extends AbstractHandler {
 							Map<String, String> params = new HashMap<String, String>();
 							params.put(OpenFile.PARAM_FILE_NAME, targetFileName);
 							params.put(OpenFile.PARAM_FILE_URI, URI_FILE_PREFIX + tmpFile.getAbsolutePath());
-							CommandUtils.callCommand(appWorkbenchService.getOpenFileCmdId(), params);
+							CommandUtils.callCommand(systemWorkbenchService.getOpenFileCmdId(), params);
 						}
 					});
 				}
@@ -151,7 +151,7 @@ public class GetJxlExport extends AbstractHandler {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

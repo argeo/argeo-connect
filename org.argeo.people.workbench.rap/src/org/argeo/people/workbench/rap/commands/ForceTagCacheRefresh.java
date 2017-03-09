@@ -31,7 +31,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private ResourcesService resourceService;
+	private ResourcesService resourcesService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
 
@@ -42,7 +42,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 		if (!MessageDialog.openConfirm(activeShell, "Confirm Deletion", msg))
 			return null;
 
-		new UpdateTagAndInstancesJob(repository, resourceService).schedule();
+		new UpdateTagAndInstancesJob(repository, resourcesService).schedule();
 		return null;
 	}
 
@@ -91,7 +91,7 @@ public class ForceTagCacheRefresh extends AbstractHandler {
 		this.repository = repository;
 	}
 
-	public void setResourceService(ResourcesService resourceService) {
-		this.resourceService = resourceService;
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
 	}
 }

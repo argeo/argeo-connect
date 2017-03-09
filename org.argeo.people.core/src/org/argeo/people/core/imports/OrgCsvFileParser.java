@@ -28,7 +28,7 @@ import org.argeo.people.util.PeopleJcrUtils;
 import org.springframework.core.io.Resource;
 
 /**
- * Base utility to load organizations data in a People repository from a .CSV
+ * Base utility to load organisations data in a People repository from a .CSV
  * file
  **/
 public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
@@ -36,9 +36,9 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 
 	private Node peopleParentNode;
 
-	public OrgCsvFileParser(Session adminSession, ResourcesService resourceService, PeopleService peopleService,
+	public OrgCsvFileParser(Session adminSession, ResourcesService resourcesService, PeopleService peopleService,
 			Resource images) {
-		super(adminSession, resourceService, peopleService, images);
+		super(adminSession, resourcesService, peopleService, images);
 		peopleParentNode = ConnectJcrUtils.getNode(adminSession, null,
 				peopleService.getBaseRelPath(PeopleTypes.PEOPLE_ORG));
 	}
@@ -68,29 +68,29 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 
 				// picture
 				InputStream is = null;
+				String image = webSite.trim().toLowerCase() + ".jpg";
 				try {
-					String image = webSite.trim().toLowerCase() + ".jpg";
 					Resource myImg = getPicture(image);
 					if (myImg.exists()) {
 						is = myImg.getInputStream();
 						PeopleJcrUtils.setEntityPicture(orga, is, image);
-					} else {
-						// log.trace("No Org Image found for " + image);
 					}
-
-				} catch (IOException ioe) {
-					log.warn("IOException while importing org image: " + ioe.getMessage());
-					// Silent
+				} catch (IOException ioe) {// Silent
+					log.warn("Cannot import org image " + image, ioe);
 				} finally {
 					IOUtils.closeQuietly(is);
 				}
 			}
 
 			// address
-			Node address = PeopleJcrUtils.createAddress(getResourcesService(), getPeopleService(), orga,
-					line.get(PEOPLE_STREET), line.get(PEOPLE_STREET_COMPLEMENT), line.get(PEOPLE_ZIP_CODE),
-					line.get(PEOPLE_CITY), line.get(PEOPLE_STATE), line.get(PEOPLE_COUNTRY), true, ContactValueCatalogs.CONTACT_CAT_HEADOFFICE,
-					null);
+			String street = line.get(PEOPLE_STREET), street2 = line.get(PEOPLE_STREET_COMPLEMENT),
+					zip = line.get(PEOPLE_ZIP_CODE), city = line.get(PEOPLE_CITY), state = line.get(PEOPLE_STATE),
+					country = line.get(PEOPLE_COUNTRY);
+
+			if (notEmpty(street) || notEmpty(street2) || notEmpty(zip) || notEmpty(city) || notEmpty(state)
+					|| notEmpty(country))
+				PeopleJcrUtils.createAddress(getResourcesService(), getPeopleService(), orga, street, street2, zip,
+						city, state, country, true, ContactValueCatalogs.CONTACT_CAT_HEADOFFICE, null);
 
 			String emailAddress = line.get("people:emailAddress").trim();
 			if (notEmpty(emailAddress)) {
@@ -101,8 +101,8 @@ public class OrgCsvFileParser extends AbstractPeopleCsvFileParser {
 			// Phone numbers
 			String phone = line.get("people:phoneNb");
 			if (notEmpty(phone))
-				PeopleJcrUtils.createPhone(getResourcesService(), getPeopleService(), orga, phone, true, ContactValueCatalogs.CONTACT_CAT_MAIN,
-						null);
+				PeopleJcrUtils.createPhone(getResourcesService(), getPeopleService(), orga, phone, true,
+						ContactValueCatalogs.CONTACT_CAT_MAIN, null);
 			phone = line.get("people:faxNb");
 			if (notEmpty(phone))
 				PeopleJcrUtils.createContact(getResourcesService(), getPeopleService(), orga, PeopleTypes.PEOPLE_FAX,

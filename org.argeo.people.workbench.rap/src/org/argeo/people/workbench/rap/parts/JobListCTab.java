@@ -17,8 +17,8 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
@@ -61,9 +61,9 @@ public class JobListCTab extends LazyCTabControl {
 	private static final long serialVersionUID = -4736848221960630767L;
 
 	// Context
-	private final ResourcesService resourceService;
+	private final ResourcesService resourcesService;
 	private final PeopleService peopleService;
-	private final AppWorkbenchService peopleWorkbenchService;
+	private final SystemWorkbenchService systemWorkbenchService;
 	private final AbstractConnectEditor editor;
 	private final FormToolkit toolkit;
 	private final Node entity;
@@ -72,13 +72,23 @@ public class JobListCTab extends LazyCTabControl {
 	// UI Objects
 	private MyFormPart myFormPart;
 
-	public JobListCTab(Composite parent, int style, AbstractConnectEditor editor, ResourcesService resourceService,
-			PeopleService peopleService, AppWorkbenchService peopleWorkbenchService, Node entity) {
+	/**
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param editor
+	 * @param resourcesService
+	 * @param peopleService
+	 * @param systemWorkbenchService
+	 * @param entity
+	 */
+	public JobListCTab(Composite parent, int style, AbstractConnectEditor editor, ResourcesService resourcesService,
+			PeopleService peopleService, SystemWorkbenchService systemWorkbenchService, Node entity) {
 		super(parent, style);
 		toolkit = editor.getFormToolkit();
-		this.resourceService = resourceService;
+		this.resourcesService = resourcesService;
 		this.peopleService = peopleService;
-		this.peopleWorkbenchService = peopleWorkbenchService;
+		this.systemWorkbenchService = systemWorkbenchService;
 		this.entity = entity;
 		this.editor = editor;
 		// Participations are stored in the projects.
@@ -175,11 +185,11 @@ public class JobListCTab extends LazyCTabControl {
 		col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.LEFT, 300);
 		tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(200, 80, true));
 		if (isBackward)
-			col.setLabelProvider(new PersonOverviewLabelProvider(ConnectUiConstants.LIST_TYPE_MEDIUM, resourceService,
-					peopleService, peopleWorkbenchService));
+			col.setLabelProvider(new PersonOverviewLabelProvider(ConnectUiConstants.LIST_TYPE_MEDIUM, resourcesService,
+					peopleService, systemWorkbenchService));
 		else
 			col.setLabelProvider(
-					new OrgOverviewLabelProvider(true, resourceService, peopleService, peopleWorkbenchService));
+					new OrgOverviewLabelProvider(true, resourcesService, peopleService, systemWorkbenchService));
 
 		// Edit & Remove links
 		if (editor.isEditing()) {
@@ -245,7 +255,7 @@ public class JobListCTab extends LazyCTabControl {
 					toOpen = peopleService.getEntityByUid(ConnectJcrUtils.getSession(entity), null,
 							ConnectJcrUtils.get(link, PeopleNames.PEOPLE_REF_UID));
 				}
-				CommandUtils.callCommand(peopleWorkbenchService.getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(toOpen));
 			}
 		}
@@ -267,7 +277,7 @@ public class JobListCTab extends LazyCTabControl {
 		protected void setValue(Object element, Object value) {
 			Node currNode = (Node) element;
 			if (((Boolean) value).booleanValue()
-					&& PeopleJcrUtils.markAsPrimary(resourceService, peopleService, entity, currNode)) {
+					&& PeopleJcrUtils.markAsPrimary(resourcesService, peopleService, entity, currNode)) {
 				myFormPart.refresh();
 				myFormPart.markDirty();
 			}

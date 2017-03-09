@@ -20,8 +20,8 @@ import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -58,7 +58,7 @@ public class QuickSearchView extends ViewPart implements Refreshable {
 	private Session session;
 	private ResourcesService resourcesService;
 	private PeopleService peopleService;
-	private AppWorkbenchService appWorkbenchService;
+	private SystemWorkbenchService systemWorkbenchService;
 
 	// This page widgets
 	private TableViewer entityViewer;
@@ -71,7 +71,7 @@ public class QuickSearchView extends ViewPart implements Refreshable {
 		parent.setLayout(new GridLayout());
 		addFilterPanel(parent);
 		entityViewer = createListPart(parent,
-				new EntitySingleColumnLabelProvider(resourcesService, peopleService, appWorkbenchService));
+				new EntitySingleColumnLabelProvider(resourcesService, peopleService, systemWorkbenchService));
 		refreshFilteredList();
 	}
 
@@ -221,7 +221,7 @@ public class QuickSearchView extends ViewPart implements Refreshable {
 		this.peopleService = peopleService;
 	}
 
-	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-		this.appWorkbenchService = appWorkbenchService;
+	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }
