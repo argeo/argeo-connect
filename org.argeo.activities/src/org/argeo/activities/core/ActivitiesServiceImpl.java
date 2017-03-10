@@ -263,7 +263,9 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			// Assigned to
 			StringBuilder tmpBuilder = new StringBuilder();
 			for (String role : roles) {
-				String attrQuery = XPathUtils.getPropertyEquals(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, role);
+				// TODO clean this: IPA roles have upper case key tokens
+				String attrQuery = XPathUtils.getPropertyEquals(ActivitiesNames.ACTIVITIES_ASSIGNED_TO,
+						role.toLowerCase());
 				if (notEmpty(attrQuery))
 					tmpBuilder.append(attrQuery).append(" or ");
 			}
