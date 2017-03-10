@@ -11,11 +11,11 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.ui.PeopleUiSnippets;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -104,7 +104,7 @@ public class ContactComposite extends Composite {
 		// The widgets
 		final Text valueTxt = createAddressTxt(parent, "Value", 150);
 		final Text labelTxt = createAddressTxt(parent, "", 120);
-		final Combo catCmb = hasCat ? new Combo(parent, SWT.READ_ONLY) : null;
+		final Combo catCmb = hasCat ? new Combo(parent, SWT.NONE) : null;
 
 		if (catCmb != null) {
 			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));
@@ -113,8 +113,11 @@ public class ContactComposite extends Composite {
 
 		ConnectWorkbenchUtils.refreshFormText(editor, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
 		ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, Property.JCR_DESCRIPTION, "Description");
-		if (catCmb != null)
-			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, Property.JCR_TITLE);
+		if (catCmb != null) {
+			String currValue = ConnectJcrUtils.get(contactNode, Property.JCR_TITLE);
+			if (EclipseUiUtils.notEmpty(currValue))
+				catCmb.setText(currValue);
+		}
 
 		// Listeners
 		ConnectWorkbenchUtils.addTxtModifyListener(formPart, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE,

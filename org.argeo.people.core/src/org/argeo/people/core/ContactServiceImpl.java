@@ -66,9 +66,9 @@ public class ContactServiceImpl implements ContactService, PeopleNames {
 						return ContactValueCatalogs.ARRAY_PERSON_HOME_ADDRESSES;
 				else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
 					return ContactValueCatalogs.ARRAY_ORG_ADDRESSES;
-			} else if (entity.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
+			} else if (contact.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA))
 				return ContactValueCatalogs.ARRAY_SOCIAL_MEDIA;
-			else if (entity.isNodeType(PeopleTypes.PEOPLE_IMPP))
+			else if (contact.isNodeType(PeopleTypes.PEOPLE_IMPP))
 				return ContactValueCatalogs.ARRAY_IMPP;
 			return new String[0];
 		} catch (RepositoryException re) {
