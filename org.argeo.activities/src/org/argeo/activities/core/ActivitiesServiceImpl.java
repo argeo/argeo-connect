@@ -2,6 +2,7 @@ package org.argeo.activities.core;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -13,6 +14,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
 
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
@@ -239,7 +242,21 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	/* TASKS */
 	@Override
 	public NodeIterator getMyTasks(Session session, boolean onlyOpenTasks) {
-		return getTasksForUser(session, session.getUserID(), onlyOpenTasks);
+
+		List<String> normalisedRoles = new ArrayList<>();
+		for (String role : CurrentUser.roles())
+			normalisedRoles.add(normalizeDn(role));
+		String[] nrArr = normalisedRoles.toArray(new String[0]);
+		return getTasksForGroup(session, nrArr, onlyOpenTasks);
+		// return getTasksForUser(session, session.getUserID(), onlyOpenTasks);
+	}
+
+	private String normalizeDn(String dn) {
+		try {
+			return new LdapName(dn).toString();
+		} catch (InvalidNameException e) {
+			throw new ActivitiesException("Cannot nromalize " + dn, e);
+		}
 	}
 
 	/**
@@ -263,9 +280,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			// Assigned to
 			StringBuilder tmpBuilder = new StringBuilder();
 			for (String role : roles) {
-				// TODO clean this: IPA roles have upper case key tokens
-				String attrQuery = XPathUtils.getPropertyEquals(ActivitiesNames.ACTIVITIES_ASSIGNED_TO,
-						role.toLowerCase());
+				String attrQuery = XPathUtils.getPropertyEquals(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, role);
 				if (notEmpty(attrQuery))
 					tmpBuilder.append(attrQuery).append(" or ");
 			}

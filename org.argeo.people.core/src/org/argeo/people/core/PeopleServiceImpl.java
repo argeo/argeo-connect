@@ -56,13 +56,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 						"Unable to define default path for " + srcNode + ". No property people:uid is defined");
 			String relPath = getDefaultRelPath(nodeType, peopleUid);
 			Node createdNode = JcrUtils.mkdirs(parent, relPath);
-			createdNode.addMixin(nodeType);
 			RemoteJcrUtils.copy(srcNode, createdNode, true);
+			createdNode.addMixin(nodeType);
+			JcrUtils.updateLastModified(createdNode);
 			if (removeSrc)
 				srcNode.remove();
 			return createdNode;
-		}
-		return null;
+		} else
+			return null;
 	}
 
 	@Override

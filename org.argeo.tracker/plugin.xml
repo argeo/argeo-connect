@@ -42,23 +42,6 @@
 	
 	<!-- COMMANDS --> 
 	<extension point="org.eclipse.ui.commands">
-		<command
-	   		id="org.argeo.tracker.openTrackerEntityEditor"
-   			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-            name="openDefaultEditor">
-            <commandParameter
-         		id="param.jcrId"
-         		name="The JCR identifier">
-         	</commandParameter>
-         	<commandParameter
-				id="param.openForEdit"
-				name="A flag to try to open the corresponding entity for edition">
-			</commandParameter>
-         	<commandParameter
-				id="param.cTabId"
-				name="The ID of the tab to open if such a tab exists">
-			</commandParameter>
-		</command>    	
  	</extension>
 	
 	<!-- MENU CONTRIBUTION --> 

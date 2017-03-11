@@ -40,43 +40,47 @@ public class CreateEntity extends AbstractHandler {
 	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-
 		String nodeType = event.getParameter(PARAM_TARGET_NODE_TYPE);
-
-		Session session = null;
-		Node tmpNode = null;
+		Session draftSession = null;
+		Session mainSession = null;
+		String jcrId = null;
 		try {
-			session = repository.login();
-			Node tmpParent = systemAppService.getDraftParent(session);
+			draftSession = repository.login();
+			mainSession = repository.login();
+			Node tmpParent = systemAppService.getDraftParent(draftSession);
 			String uuid = UUID.randomUUID().toString();
-			tmpNode = tmpParent.addNode(uuid);
+			Node tmpNode = tmpParent.addNode(uuid);
 			tmpNode.addMixin(nodeType);
 			tmpNode.setProperty(ConnectNames.CONNECT_UID, uuid);
-
 			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);
 			WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");
 			int result = dialog.open();
 			if (result == WizardDialog.OK) {
-				Node parent = session.getNode("/" + systemAppService.getBaseRelPath(nodeType));
+				Node parent = mainSession.getNode("/" + systemAppService.getBaseRelPath(nodeType));
 				Node newNode = systemAppService.createEntity(parent, nodeType, tmpNode);
 				// Save the newly created entity without creating a base version
 				newNode = systemAppService.saveEntity(newNode, false);
-				// Open the corresponding editor
-				String jcrId = newNode.getIdentifier();
-				ConnectWorkbenchUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
-				return newNode.getPath();
+				jcrId = newNode.getIdentifier();
 			} else {
 				// This will try to remove the newly created temporary Node if
 				// the process fails before first save
-				JcrUtils.discardQuietly(session);
+				JcrUtils.discardQuietly(draftSession);
 			}
+
 		} catch (RepositoryException e) {
-			throw new ConnectException("unexpected JCR error while opening editor for newly created entity", e);
+			throw new ConnectException("Cannot create "
+					+ nodeType+ "entity", e);
 		} finally {
-			JcrUtils.logoutQuietly(session);
+			JcrUtils.logoutQuietly(draftSession);
+			JcrUtils.logoutQuietly(mainSession);
 		}
+
+		if (jcrId != null)
+			// Open the corresponding editor
+			ConnectWorkbenchUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+					OpenEntityEditor.PARAM_JCR_ID, jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
+
 		return null;
 	}
 

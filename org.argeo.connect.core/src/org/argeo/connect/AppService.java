@@ -37,8 +37,10 @@ public interface AppService {
 	 */
 	default public Node saveEntity(Node entity, boolean publish) {
 		try {
-			if (entity.getSession().hasPendingChanges())
+			if (entity.getSession().hasPendingChanges()){
+				JcrUtils.updateLastModified(entity);
 				entity.getSession().save();
+			}
 			if (entity.isNodeType(NodeType.MIX_VERSIONABLE))
 				// TODO check if some changes happened since last checkpoint
 				entity.getSession().getWorkspace().getVersionManager().checkpoint(entity.getPath());
