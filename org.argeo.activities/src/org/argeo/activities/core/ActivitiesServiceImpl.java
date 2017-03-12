@@ -14,9 +14,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
@@ -33,8 +33,7 @@ import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to Connect's {@link ActivitiesService} */
 public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames {
-	// private final static Log log =
-	// LogFactory.getLog(ActivityServiceImpl.class);
+	private final static Log log = LogFactory.getLog(ActivitiesServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
 	private UserAdminService userAdminService;
@@ -242,7 +241,6 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	/* TASKS */
 	@Override
 	public NodeIterator getMyTasks(Session session, boolean onlyOpenTasks) {
-
 		List<String> normalisedRoles = new ArrayList<>();
 		for (String role : CurrentUser.roles())
 			normalisedRoles.add(normalizeDn(role));
@@ -252,11 +250,16 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	}
 
 	private String normalizeDn(String dn) {
-		try {
-			return new LdapName(dn).toString();
-		} catch (InvalidNameException e) {
-			throw new ActivitiesException("Cannot nromalize " + dn, e);
-		}
+		// FIXME dirty workaround for the DN key case issue
+		String lowerCased = dn.replaceAll("UID=", "uid=").replaceAll("CN=", "cn=").replaceAll("DC=", "dc=")
+				.replaceAll("OU=", "ou=").replaceAll(", ", ",");
+		return lowerCased;
+		// try {
+		// String nString = new LdapName(dn).toString();
+		// return nString;
+		// } catch (InvalidNameException e) {
+		// throw new ActivitiesException("Cannot nromalize " + dn, e);
+		// }
 	}
 
 	/**
@@ -298,6 +301,9 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 				builder.append("[").append(allCond).append("]");
 
 			builder.append(" order by @").append(Property.JCR_LAST_MODIFIED).append(" descending");
+			if (log.isDebugEnabled())
+				log.debug("Getting todo list for " + CurrentUser.getDisplayName() + " (DN: " + CurrentUser.getUsername()
+						+ ") with query: " + builder.toString());
 			Query query = XPathUtils.createQuery(session, builder.toString());
 			return query.execute().getNodes();
 		} catch (RepositoryException e) {
