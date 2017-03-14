@@ -11,30 +11,59 @@ import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.core.TagUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
+/**
+ * A label provider to display clickable tag-like resources like in
+ * markup-enabled viewers
+ */
 public class OtherTagsLabelProvider extends ColumnLabelProvider {
+	private static final long serialVersionUID = -3486673830618518227L;
 
 	// private final String tagTypeId;
+	// Context
+	private final Session session;
+	private final ResourcesService resourcesService;
+	private final AppWorkbenchService appWorkbenchService;
+	private String tagId;
+
 	private final String taggablePropName;
 	private final String currentTag;
 	private Node tagLikeResPar;
 	private String selectorName;
 
-	public OtherTagsLabelProvider(ResourcesService resourcesService, Session session, String tagId, String currentTag) {
-		tagLikeResPar = resourcesService.getTagLikeResourceParent(session, tagId);
-		taggablePropName = ConnectJcrUtils.get(tagLikeResPar, ResourcesNames.RESOURCES_TAGGABLE_PROP_NAME);
+	// enhance labels
+	private String labelPrefix = "#";
+
+	public OtherTagsLabelProvider(ResourcesService resourcesService, AppWorkbenchService appWorkbenchService,
+			Session session, String tagId, String currentTag) {
+		this.resourcesService = resourcesService;
+		this.appWorkbenchService = appWorkbenchService;
+		this.session = session;
+		this.tagId = tagId;
 		this.currentTag = currentTag;
-	}
-
-	public OtherTagsLabelProvider(Node tageInstance, String selectorName) {
-		this.selectorName = selectorName;
-		tagLikeResPar = TagUtils.retrieveTagParentFromTag(tageInstance);
+		tagLikeResPar = resourcesService.getTagLikeResourceParent(session, tagId);
 		taggablePropName = ConnectJcrUtils.getMultiAsString(tagLikeResPar, RESOURCES_TAGGABLE_PROP_NAME, ",");
-		currentTag = TagUtils.retrieveTagId(tageInstance);
 	}
 
-	private static final long serialVersionUID = 1L;
+	public OtherTagsLabelProvider(ResourcesService resourcesService, AppWorkbenchService appWorkbenchService,
+			Node tagInstance, String selectorName) {
+		this.session = ConnectJcrUtils.getSession(tagInstance);
+		this.resourcesService = resourcesService;
+		this.appWorkbenchService = appWorkbenchService;
+		this.selectorName = selectorName;
+		tagLikeResPar = TagUtils.retrieveTagParentFromTag(tagInstance);
+		tagId = ConnectJcrUtils.get(tagLikeResPar, ResourcesNames.RESOURCES_TAG_ID);
+		taggablePropName = ConnectJcrUtils.getMultiAsString(tagLikeResPar, RESOURCES_TAGGABLE_PROP_NAME, ",");
+		currentTag = TagUtils.retrieveTagId(tagInstance);
+	}
+
+	public void setLabelPrefix(String labelPrefix) {
+		this.labelPrefix = labelPrefix;
+	}
 
 	@Override
 	public String getText(Object element) {
@@ -44,14 +73,15 @@ public class OtherTagsLabelProvider extends ColumnLabelProvider {
 		StringBuilder builder = new StringBuilder();
 		List<String> currTags = ConnectJcrUtils.getMultiAsList(currNode, taggablePropName);
 		loop: for (String tag : currTags) {
-			if (tag.equals(currentTag))
+			if (EclipseUiUtils.notEmpty(currentTag) && tag.equals(currentTag))
 				continue loop;
 			// TODO rather display links to open corresponding tag editor
-			builder.append(tag).append(", ");
+			String value = ConnectWorkbenchUtils.getTagLink(session, resourcesService, appWorkbenchService, tagId, tag);
+			builder.append(labelPrefix).append(value).append(" ");
 		}
 
 		if (builder.length() > 2)
-			return builder.substring(0, builder.length() - 2);
+			return builder.toString();
 		else
 			return "";
 		// } catch (RepositoryException re) {

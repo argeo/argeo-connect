@@ -20,6 +20,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.resources.workbench.OtherTagsLabelProvider;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
@@ -34,6 +35,7 @@ import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.EditTagWizard;
 import org.argeo.connect.workbench.util.EntityEditorInput;
+import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
@@ -106,7 +108,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	private Row[] rows;
 	private Form form;
 
-	// LIFE CYCLE
+	/* LIFE CYCLE */
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
@@ -116,15 +118,17 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		session = ConnectJcrUtils.login(repository);
 		mailingList = ConnectJcrUtils.getNodeByIdentifier(session, sei.getUid());
 
-		// Initialize column definition
-		// Cannot be done statically: we must have a valid reference to the
-		// injected peopleUiService
+		// Initialise column definition
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
-				new TitleIconRowLP(systemWorkbenchService, null, Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_PMAIL), 300));
-		colDefs.add(
-				new ConnectColumnDefinition("Other mailing lists", new OtherTagsLabelProvider(mailingList, null), 300));
+				new TitleIconRowLP(systemWorkbenchService, null, Property.JCR_TITLE), 120));
+		colDefs.add(new ConnectColumnDefinition("Primary mail", new JcrHtmlLabelProvider(PEOPLE_PMAIL), 120));
+		OtherTagsLabelProvider otlp = new OtherTagsLabelProvider(resourcesService, systemWorkbenchService, mailingList,
+				null);
+		otlp.setLabelPrefix("@");
+		colDefs.add(new ConnectColumnDefinition("Other mailing lists", otlp, 200));
+		colDefs.add(new ConnectColumnDefinition("Tags", new OtherTagsLabelProvider(resourcesService,
+				systemWorkbenchService, session, ResourcesTypes.RESOURCES_TAG, null), 120));
 	}
 
 	protected void afterNameUpdate(String name) {
@@ -279,6 +283,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		membersViewer = createTableViewer(tableComp);
 		membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
 		membersViewer.addDoubleClickListener(new JcrViewerDClickListener());
+		membersViewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
 		addFilterListener(filterTxt, membersViewer);
 		refreshFilteredList();
 	}

@@ -162,6 +162,13 @@
 				<parameter name="param.nodeType" value="people:org" />
 				<parameter name="param.editorName" value="Organisations" />
 			</command>	
+			<command
+				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				icon="theme/icons/types/mailingList.gif"
+				label="Mailing Lists">
+				<parameter name="param.nodeType" value="people:mailingList" />
+				<parameter name="param.editorName" value="Mailing Lists" />
+			</command>	
 		</menuContribution>		
 	</extension>
 	

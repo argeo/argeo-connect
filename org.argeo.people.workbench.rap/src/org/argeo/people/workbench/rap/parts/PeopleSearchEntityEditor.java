@@ -15,6 +15,8 @@ import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesNames;
+import org.argeo.connect.resources.ResourcesTypes;
+import org.argeo.connect.resources.workbench.OtherTagsLabelProvider;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -23,6 +25,7 @@ import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.parts.DefaultSearchEntityEditor;
+import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
@@ -65,16 +68,15 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 		super.init(site, input);
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Tags", new JcrHtmlLabelProvider(ResourcesNames.CONNECT_TAGS), 300));
+
 	}
 
-	// @Override
-	// public void createPartControl(Composite parent) {
-	// super.createPartControl(parent);
-	// if (PeopleTypes.PEOPLE_MAILING_LIST.equals(getEntityType()))
-	// getTableViewer().getTableViewer().getTable().addSelectionListener(new
-	// HtmlListRwtAdapter());
-	// }
+	@Override
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+		if (PeopleTypes.PEOPLE_PERSON.equals(getEntityType()) || PeopleTypes.PEOPLE_ORG.equals(getEntityType()))
+			getTableViewer().getTableViewer().getTable().addSelectionListener(new HtmlListRwtAdapter());
+	}
 
 	/** Override this to provide type specific static filters */
 	protected void populateStaticFilters(Composite body) {
@@ -130,12 +132,11 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 	/** Overwrite to provide corresponding column definitions */
 	@Override
 	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
-
 		String currType = getEntityType();
 		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
 
-		// The editor table sends a null ID whereas the JxlExport mechanism
-		// always passes an ID
+		// This editor table retrives columns with a null extractId whereas the
+		// JxlExport mechanism always passes an ID
 		if (EclipseUiUtils.isEmpty(extractId)) {
 			if (ActivitiesTypes.ACTIVITIES_TASK.equals(currType)) {
 				columns.add(new ConnectColumnDefinition("Status",
@@ -153,6 +154,17 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 			} else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(currType)) {
 				columns.add(new ConnectColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 				columns.add(new ConnectColumnDefinition("Nb of members", new CountMemberLP(getResourceService()), 85));
+				return columns;
+			} else if (PeopleTypes.PEOPLE_PERSON.equals(currType) || PeopleTypes.PEOPLE_ORG.equals(currType)) {
+				columns.add(
+						new ConnectColumnDefinition("Display name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 160));
+				columns.add(new ConnectColumnDefinition("Tags", new OtherTagsLabelProvider(getResourceService(),
+						getSystemWorkbenchService(), getSession(), ResourcesTypes.RESOURCES_TAG, null), 120));
+
+				OtherTagsLabelProvider otlp = new OtherTagsLabelProvider(getResourceService(),
+						getSystemWorkbenchService(), getSession(), PeopleTypes.PEOPLE_MAILING_LIST, null);
+				otlp.setLabelPrefix("@");
+				columns.add(new ConnectColumnDefinition("Mailing Lists", otlp, 120));
 				return columns;
 			} else
 				return colDefs;
@@ -192,12 +204,11 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 			columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
 			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ResourcesNames.CONNECT_TAGS)));
 			columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
+
 		} else if (PeopleTypes.PEOPLE_ORG.equals(currType)) {
-
-			// DISPLAY NAME
+			// Display name
 			columns.add(new ConnectColumnDefinition("Display Name", new JcrRowLabelProvider(Property.JCR_TITLE)));
-
-			// PRIMARY ADDRESS
+			// Primary Address
 			columns.add(new ConnectColumnDefinition("Primary Street",
 					new PrimAddressLP(peopleService, null, PEOPLE_STREET)));
 			columns.add(new ConnectColumnDefinition("Primary Street2",
@@ -210,8 +221,7 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 					new PrimAddressLP(peopleService, null, PEOPLE_ZIP_CODE)));
 			columns.add(new ConnectColumnDefinition("Primary Country ISO",
 					new PrimAddressLP(peopleService, null, PEOPLE_COUNTRY)));
-
-			// PRIMARY CONTACTS
+			// Primary contacts
 			columns.add(new ConnectColumnDefinition("Primary Phone",
 					new PrimContactValueLP("", PeopleTypes.PEOPLE_TELEPHONE_NUMBER)));
 			columns.add(
@@ -220,13 +230,11 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 					new NotPrimContactValueLP("", PeopleTypes.PEOPLE_MAIL)));
 			columns.add(new ConnectColumnDefinition("Primary Website",
 					new PrimContactValueLP("", PeopleTypes.PEOPLE_URL), 100));
-
-			// LEGAL INFO
+			// Legal info
 			columns.add(new ConnectColumnDefinition("Legal name", new JcrRowLabelProvider(PEOPLE_LEGAL_NAME)));
 			columns.add(new ConnectColumnDefinition("Legal form", new JcrRowLabelProvider(PEOPLE_LEGAL_FORM)));
 			columns.add(new ConnectColumnDefinition("VAT ID", new JcrRowLabelProvider(PEOPLE_VAT_ID_NB)));
-
-			// PRIMARY PAIEMENT ACCOUNT
+			// Primary payment account
 			columns.add(new ConnectColumnDefinition("Bank Name", new PrimBankAccountLP("", PEOPLE_BANK_NAME)));
 			columns.add(
 					new ConnectColumnDefinition("Account Holder", new PrimBankAccountLP("", PEOPLE_ACCOUNT_HOLDER)));
@@ -235,11 +243,11 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 			columns.add(new ConnectColumnDefinition("Bank Number", new PrimBankAccountLP("", PEOPLE_BANK_NB)));
 			columns.add(new ConnectColumnDefinition("BIC", new PrimBankAccountLP("", PEOPLE_BIC)));
 			columns.add(new ConnectColumnDefinition("IBAN", new PrimBankAccountLP("", PEOPLE_IBAN)));
-
 			// Tags, notes and mailing list
 			columns.add(new ConnectColumnDefinition("Notes", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
 			columns.add(new ConnectColumnDefinition("Tags", new JcrRowLabelProvider(ResourcesNames.CONNECT_TAGS)));
 			columns.add(new ConnectColumnDefinition("Mailing Lists", new JcrRowLabelProvider(PEOPLE_MAILING_LISTS)));
+
 		} else if (ActivitiesTypes.ACTIVITIES_TASK.equals(currType)) {
 			columns.add(new ConnectColumnDefinition("Status",
 					new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_TASK_STATUS)));

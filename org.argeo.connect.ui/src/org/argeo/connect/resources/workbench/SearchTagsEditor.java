@@ -13,9 +13,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.argeo.cms.auth.CurrentUser;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.resources.ResourcesConstants;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesRole;
 import org.argeo.connect.resources.ResourcesService;
@@ -88,24 +86,10 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 		String label = ((SearchNodeEditorInput) getEditorInput()).getName();
 		setPartName(label);
 
-		String basePath = ((SearchNodeEditorInput) getEditorInput()).getBasePath();
-		try {
-			session = ConnectJcrUtils.login(repository);
-			tagParent = session.getNode(basePath);
-		} catch (RepositoryException e) {
-			throw new ConnectException(
-					"Unable to retrieve tag parent with path " + basePath + "\nUnable to open search editor.", e);
-		}
-		tagInstanceType = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE);
+		tagInstanceType = ((SearchNodeEditorInput) getEditorInput()).getNodeType();
+		session = ConnectJcrUtils.login(repository);
+		tagParent = resourcesService.getTagLikeResourceParent(session, tagInstanceType);
 		tagId = ConnectJcrUtils.get(tagParent, ResourcesNames.RESOURCES_TAG_ID);
-
-		// TODO this info should be stored in the parent path
-		if (tagId.equals(ConnectConstants.RESOURCE_TAG)) {
-			propertyName = ResourcesNames.CONNECT_TAGS;
-			// } else if (PeopleTypes.PEOPLE_MAILING_LIST.equals(tagId)) {
-			// propertyName = PeopleNames.PEOPLE_MAILING_LISTS;
-		} else
-			throw new ConnectException("Unknown tag like property at base path " + basePath);
 
 		colDefs.add(new ConnectColumnDefinition("Title", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Member count", new CountMemberLP(), 85));
@@ -180,9 +164,7 @@ public class SearchTagsEditor extends EditorPart implements Refreshable {
 	/** Refresh the table viewer based on the free text search field */
 	protected void refreshStaticFilteredList() {
 		try {
-			String type = ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE;
-			String queryStr = XPathUtils.descendantFrom(
-					"/" + resourcesService.getBaseRelPath(type) + "//element(*, " + tagInstanceType + ")");
+			String queryStr = XPathUtils.descendantFrom(tagParent.getPath()) + "//element(*, " + tagInstanceType + ")";
 			String attrQuery = XPathUtils.getFreeTextConstraint(filterTxt.getText());
 			if (EclipseUiUtils.notEmpty(attrQuery))
 				queryStr += "[" + attrQuery + "]";

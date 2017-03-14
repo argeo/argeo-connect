@@ -8,10 +8,17 @@
 	
 	<!-- EDITORS --> 
 	<extension point="org.eclipse.ui.editors">
+		<!-- Tags -->
 		<editor
 			id="org.argeo.connect.ui.tagEditor"
 			name="Tag"
 			icon="theme/icons/types/tag.png"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory">
+		</editor>
+		<editor
+			id="org.argeo.connect.ui.searchTagsEditor"
+			name="Search tags"
+			icon="theme/icons/actions/search.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
@@ -254,6 +261,17 @@
 					</visibleWhen>
 				</command>
 			</toolbar>
+		</menuContribution>		
+			
+		<!-- Contribute resources menu items -->
+		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+			<command
+				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				icon="theme/icons/types/tag.png"
+				label="Tags">
+				<parameter name="param.nodeType" value="connect:tag" />
+				<parameter name="param.editorName" value="Tags" />
+			</command>	
 		</menuContribution>	
 	</extension>
 	

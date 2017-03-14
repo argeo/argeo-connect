@@ -39,6 +39,7 @@ import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.EditTagWizard;
 import org.argeo.connect.workbench.util.EntityEditorInput;
+import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -103,7 +104,8 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name",
 				new TitleIconRowLP(systemWorkbenchService, null, Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Other tags", new OtherTagsLabelProvider(node, null), 300));
+		colDefs.add(new ConnectColumnDefinition("Other tags",
+				new OtherTagsLabelProvider(resourcesService, systemWorkbenchService, node, null), 300));
 	}
 
 	protected void afterNameUpdate(String name) {
@@ -263,6 +265,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs, enableBatchUpdate());
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
+		tableViewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
 		return tableViewer;
 	}
 
