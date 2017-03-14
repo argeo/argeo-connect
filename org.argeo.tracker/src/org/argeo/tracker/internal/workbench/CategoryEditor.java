@@ -11,8 +11,13 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.activities.ActivitiesNames;
+import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.IJcrTableViewer;
+import org.argeo.connect.ui.util.JcrRowLabelProvider;
+import org.argeo.connect.ui.util.UserNameLP;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
@@ -55,7 +60,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
  * enable business admin to edit the main info of this category (typically :
  * title & description)
  */
-public class CategoryEditor extends AbstractTrackerEditor {
+public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableViewer {
 	private static final long serialVersionUID = -6492660981141107302L;
 	// private final static Log log = LogFactory.getLog(CategoryEditor.class);
 	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".categoryEditor";
@@ -67,6 +72,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 	private String officeID;
 
 	// Ease implementation
+	private Text filterTxt;
 
 	@Override
 	protected void addPages() {
@@ -118,7 +124,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 			form.reflow(true);
 		}
 
-		/** Creates the answers for one group */
+		/** Creates the list of issues relevant for this category */
 		private void appendIssuesPart(Composite parent) {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_ID), "ID", 40));
@@ -146,6 +152,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 		private void refreshViewer(String filter) {
 			NodeIterator nit = TrackerUtils.getIssues(project, filter, relevantPropName, officeID);
 			tableViewer.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
+			tableViewer.refresh();
 		}
 
 		// Add the filter ability
@@ -155,7 +162,7 @@ public class CategoryEditor extends AbstractTrackerEditor {
 			parent.setLayout(layout);
 			parent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-			final Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+			filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
@@ -200,5 +207,42 @@ public class CategoryEditor extends AbstractTrackerEditor {
 			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
 		}
 		return name;
+	}
+
+	@Override
+	public Object[] getElements(String extractId) {
+		String filter = "";
+		if (filterTxt != null && !filterTxt.isDisposed())
+			filter = filterTxt.getText();
+		NodeIterator nit = TrackerUtils.getIssues(project, filter, relevantPropName, officeID);
+		return JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]);
+	}
+
+	@Override
+	public List<ConnectColumnDefinition> getColumnDefinition(String extractId) {
+		List<ConnectColumnDefinition> columns = new ArrayList<ConnectColumnDefinition>();
+		columns.add(new ConnectColumnDefinition("ID", new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_ID)));
+		columns.add(
+				new ConnectColumnDefinition("Status", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_TASK_STATUS)));
+		columns.add(new ConnectColumnDefinition("Title", new JcrRowLabelProvider(Property.JCR_TITLE)));
+		columns.add(new ConnectColumnDefinition("Description", new JcrRowLabelProvider(Property.JCR_DESCRIPTION)));
+		columns.add(new ConnectColumnDefinition("Assigned To",
+				new AssignedToLP(getActivitiesService(), null, Property.JCR_DESCRIPTION)));
+		columns.add(
+				new ConnectColumnDefinition("Due Date", new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_DUE_DATE)));
+		columns.add(new ConnectColumnDefinition("Importance", new TrackerLps().new ImportanceLabelProvider()));
+		columns.add(new ConnectColumnDefinition("Priority", new TrackerLps().new PriorityLabelProvider()));
+		columns.add(new ConnectColumnDefinition("Components",
+				new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_COMPONENT_IDS)));
+		columns.add(new ConnectColumnDefinition("Target Milestone",
+				new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_TARGET_ID)));
+
+		columns.add(new ConnectColumnDefinition("Wake-Up Date",
+				new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE)));
+		columns.add(new ConnectColumnDefinition("Close Date",
+				new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE)));
+		columns.add(new ConnectColumnDefinition("Closed by",
+				new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY)));
+		return columns;
 	}
 }

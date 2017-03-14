@@ -81,7 +81,7 @@ public class GetJxlExport extends AbstractHandler {
 
 	/** Override to provide other naming strategy */
 	protected String getFileName(IJcrTableViewer provider) {
-		String prefix = "PeopleExport-";
+		String prefix = "ConnectExport-";
 		String dateVal = df.format(new GregorianCalendar().getTime());
 		return prefix + dateVal + ".xls";
 	}
@@ -124,7 +124,7 @@ public class GetJxlExport extends AbstractHandler {
 				if (monitor != null && !monitor.isCanceled()) {
 					monitor.beginTask("Getting objects", -1);
 					// session = repository.login();
-					final File tmpFile = File.createTempFile("people-extract", ".xls");
+					final File tmpFile = File.createTempFile("connect-extract", ".xls");
 					tmpFile.deleteOnExit();
 
 					callJxlEngine(elements, cols, exportId, tmpFile);

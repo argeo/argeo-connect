@@ -54,6 +54,13 @@ public class AskTitleDescriptionDialog extends TrayDialog {
 		this.windowTitle = windowTitle;
 	}
 
+	public AskTitleDescriptionDialog(Shell parentShell, String windowTitle, String defaultTitle, String defaultDesc) {
+		super(parentShell);
+		this.windowTitle = windowTitle;
+		title = defaultTitle;
+		desc = defaultDesc;
+	}
+
 	protected Control createDialogArea(Composite parent) {
 		// MAIN LAYOUT
 		Composite dialogarea = (Composite) super.createDialogArea(parent);
@@ -62,6 +69,8 @@ public class AskTitleDescriptionDialog extends TrayDialog {
 
 		// Title
 		titleTxt = createLT(dialogarea, "Title");
+		if (EclipseUiUtils.notEmpty(title))
+			titleTxt.setText(title);
 		titleTxt.setMessage("Please provide a title");
 		titleTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
@@ -79,6 +88,8 @@ public class AskTitleDescriptionDialog extends TrayDialog {
 		lbl.setLayoutData(new GridData(SWT.RIGHT, SWT.TOP, false, false));
 		descTxt = new Text(dialogarea, SWT.MULTI | SWT.WRAP | SWT.BORDER);
 		descTxt.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		if (EclipseUiUtils.notEmpty(desc))
+			descTxt.setText(desc);
 		descTxt.setMessage("... and optionally a description");
 		descTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 1L;
@@ -109,7 +120,7 @@ public class AskTitleDescriptionDialog extends TrayDialog {
 		// Sanity check
 		String msg = null;
 
-		if (EclipseUiUtils.isEmpty(title) || title.length() < 3)
+		if (EclipseUiUtils.isEmpty(title) || title.length() < 2)
 			msg = "Please enter a title that is at list two (2) valid charaters long.";
 		if (msg != null) {
 			MessageDialog.openError(getShell(), "Non valid information", msg);

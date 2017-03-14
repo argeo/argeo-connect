@@ -1,5 +1,7 @@
 package org.argeo.connect.ui;
 
+import org.eclipse.rap.rwt.RWT;
+
 /**
  * Centralizes management of UI constants for the various Connect UIs
  * 
@@ -52,4 +54,6 @@ public interface ConnectUiConstants {
 	// we cannot use the CSS class parameter inside of a custom variant control.
 	String ENTITY_HEADER_INNER_CSS_STYLE = "style='font-size:14px;'";
 
+	// CENTRALISE dependency to RWT. TODO manage this cleanly in CmsUtils
+	int MARKUP_VIEWER_HYPERLINK = RWT.HYPERLINK;
 }

@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.eclipse.rap.rwt.RWT;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
@@ -21,7 +21,7 @@ public class HtmlListRwtAdapter extends SelectionAdapter {
 	private final static Log log = LogFactory.getLog(HtmlListRwtAdapter.class);
 
 	public void widgetSelected(SelectionEvent event) {
-		if (event.detail == RWT.HYPERLINK) {
+		if (event.detail == ConnectUiConstants.MARKUP_VIEWER_HYPERLINK) {
 			String string = event.text;
 			String[] token = string.split("/");
 			if (token.length > 0) {

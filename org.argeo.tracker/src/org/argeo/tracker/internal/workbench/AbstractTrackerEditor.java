@@ -11,15 +11,18 @@ import javax.jcr.Session;
 import javax.jcr.version.VersionManager;
 
 import org.argeo.activities.ActivitiesService;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
+import org.argeo.tracker.TrackerRole;
 import org.argeo.tracker.TrackerService;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -31,7 +34,7 @@ import org.eclipse.ui.forms.editor.FormEditor;
  * Base Editor for a tracker entity. Centralise some methods to ease business
  * specific development
  */
-public abstract class AbstractTrackerEditor extends FormEditor implements CmsEditable {
+public abstract class AbstractTrackerEditor extends FormEditor implements CmsEditable, Refreshable {
 	private static final long serialVersionUID = -6765842363698806619L;
 
 	/* DEPENDENCY INJECTION */
@@ -133,6 +136,12 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	}
 
 	@Override
+	public void forceRefresh(Object object) {
+		// TODO implement a better refresh mechanism
+		getActivePageInstance().getManagedForm().refresh();
+	}
+
+	@Override
 	public void doSaveAs() {
 	}
 
@@ -150,7 +159,9 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	// CmsEditable LIFE CYCLE
 	@Override
 	public Boolean canEdit() {
-		return true;
+		// TODO refine this
+		String roleStr = TrackerRole.editor.dn();
+		return CurrentUser.isInRole(roleStr);
 	}
 
 	@Override

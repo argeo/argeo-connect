@@ -4,11 +4,15 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ui.widgets.DateText;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
+import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.core.TrackerUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,21 +28,28 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /** Dialog to simply configure a new milestone or version */
-public class NewVersionWizard extends Wizard implements ModifyListener {
+public class ConfigureVersionWizard extends Wizard implements ModifyListener {
 	private static final long serialVersionUID = -8365425809976445458L;
 
 	// Context
 	final private TrackerService issueService;
 	final private Node project;
+	private Node version; // the version Node to update or null at creation
 
-	// this page widgets and UI objects
+	// UI objects
 	private Text idTxt;
 	private DateText targetDateCmp;
 	private DateText releaseDateCmp;
 	private Text descTxt;
 
-	public NewVersionWizard(TrackerService issueService, Node project) {
+	public ConfigureVersionWizard(TrackerService issueService, Node project) {
 		this.project = project;
+		this.issueService = issueService;
+	}
+
+	public ConfigureVersionWizard(TrackerService issueService, Node project, Node version) {
+		this.project = project;
+		this.version = version;
 		this.issueService = issueService;
 	}
 
@@ -51,33 +62,47 @@ public class NewVersionWizard extends Wizard implements ModifyListener {
 
 	@Override
 	public boolean performFinish() {
-		// TODO rather use error messages than an error popup
-		Calendar now = new GregorianCalendar();
-		if (EclipseUiUtils.isEmpty(getId())) {
-			MessageDialog.openError(getShell(), "Compulsory ID", "Please define the version ID");
-			return false;
-		} else if (TrackerUtils.getVersionById(project, getId()) != null) {
-			MessageDialog.openError(getShell(), "Already existing version",
-					"A version with ID " + getId() + " already exists, cannot create");
-			return false;
-		} else if (getReleaseDate() != null && getReleaseDate().after(now)) {
-			MessageDialog.openError(getShell(), "Non-valid release date",
-					"A release date can only be defined when the release " + "has already been done, and thus must be "
-							+ "in the past.");
-			return false;
+		if (version == null) { // creation
+			// TODO rather use error messages than an error popup
+			Calendar now = new GregorianCalendar();
+			if (EclipseUiUtils.isEmpty(getId())) {
+				MessageDialog.openError(getShell(), "Compulsory ID", "Please define the version ID");
+				return false;
+			} else if (TrackerUtils.getVersionById(project, getId()) != null) {
+				MessageDialog.openError(getShell(), "Already existing version",
+						"A version with ID " + getId() + " already exists, cannot create");
+				return false;
+			} else if (getReleaseDate() != null && getReleaseDate().after(now)) {
+				MessageDialog.openError(getShell(), "Non-valid release date",
+						"A release date can only be defined when the release "
+								+ "has already been done, and thus must be " + "in the past.");
+				return false;
 
-		} else if (getTargetDate() != null && getTargetDate().before(now)) {
-			MessageDialog.openError(getShell(), "Non-valid target date",
-					"A target date must be in the future:\n we cannot change "
-							+ "the past and must not plan at a past date a "
-							+ "release that has not already been done.");
-			return false;
-		}
+			} else if (getTargetDate() != null && getTargetDate().before(now)) {
+				MessageDialog.openError(getShell(), "Non-valid target date",
+						"A target date must be in the future:\n we cannot change "
+								+ "the past and must not plan at a past date a "
+								+ "release that has not already been done.");
+				return false;
+			}
 
-		try {
-			issueService.createVersion(project, getId(), getDescription(), getTargetDate(), getReleaseDate());
-		} catch (RepositoryException e1) {
-			throw new TrackerException("Unable to create" + "version with ID " + getId() + " on " + project, e1);
+			try {
+				issueService.createVersion(project, getId(), getDescription(), getTargetDate(), getReleaseDate());
+			} catch (RepositoryException e1) {
+				throw new TrackerException("Unable to create" + "version with ID " + getId() + " on " + project, e1);
+			}
+		} else {
+			try {
+				version.setProperty(Property.JCR_DESCRIPTION, getDescription());
+				version.setProperty(TrackerNames.TRACKER_TARGET_DATE, getTargetDate());
+				version.setProperty(TrackerNames.TRACKER_RELEASE_DATE, getReleaseDate());
+				if (version.getSession().hasPendingChanges()) {
+					JcrUtils.updateLastModified(version);
+					// version.getSession().save();
+				}
+			} catch (RepositoryException e1) {
+				throw new TrackerException("Unable to create" + "version with ID " + getId() + " on " + project, e1);
+			}
 		}
 		return true;
 	}
@@ -113,7 +138,7 @@ public class NewVersionWizard extends Wizard implements ModifyListener {
 			GridData gd = EclipseUiUtils.fillWidth();
 			gd.horizontalSpan = 3;
 			idTxt.setLayoutData(gd);
-			idTxt.addModifyListener(NewVersionWizard.this);
+			idTxt.addModifyListener(ConfigureVersionWizard.this);
 
 			createLabel(parent, "Target Date", SWT.CENTER);
 			targetDateCmp = new DateText(parent, SWT.NO_FOCUS);
@@ -134,6 +159,21 @@ public class NewVersionWizard extends Wizard implements ModifyListener {
 			gd.horizontalSpan = 3;
 			descTxt.setLayoutData(gd);
 			descTxt.setMessage("An optional description for this milestone");
+
+			if (version != null) {
+				String id = ConnectJcrUtils.get(version, Property.JCR_TITLE);
+				String desc = ConnectJcrUtils.get(version, Property.JCR_DESCRIPTION);
+				Calendar releaseDate = ConnectJcrUtils.getDateValue(version, TrackerNames.TRACKER_RELEASE_DATE);
+				Calendar targetDate = ConnectJcrUtils.getDateValue(version, TrackerNames.TRACKER_TARGET_DATE);
+
+				idTxt.setText(id);
+				idTxt.setEditable(false);
+				descTxt.setText(desc);
+				if (releaseDate != null)
+					releaseDateCmp.setText(releaseDate);
+				if (targetDate != null)
+					targetDateCmp.setText(targetDate);
+			}
 
 			// Don't forget this.
 			setControl(idTxt);

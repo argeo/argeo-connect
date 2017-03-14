@@ -56,7 +56,9 @@ public class TrackerUiUtils {
 
 			@Override
 			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-				viewer.refresh();
+				// This must be called after the inputChanged method has
+				// returned
+				// viewer.refresh();
 			}
 
 			@Override
@@ -100,7 +102,9 @@ public class TrackerUiUtils {
 
 	/** Appends a section with a title in a table wrap layout */
 	public static Section addFormSection(FormToolkit tk, Composite parent, String title) {
-		Section section = tk.createSection(parent, Section.TITLE_BAR);
+		// Section section = new Section(parent, Section.TITLE_BAR);
+		// CmsUtils.style(section, "custom");
+		Section section = tk.createSection(parent, Section.TITLE_BAR); // SWT.NONE
 		section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 		section.setText(title);
 		Composite body = tk.createComposite(section, SWT.NO_FOCUS);

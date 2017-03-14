@@ -8,4 +8,6 @@ public interface TrackerUiConstants {
 	String isoDateBasicFormat = "yyyyMMdd";
 	String simpleDateTimeFormat = "yyyy-MM-dd 'at' HH:mm";
 	String defaultDateFormat = "MMM dd',' yyyy";
+
+	int DEFAULT_ROW_HEIGHT = 23;
 }

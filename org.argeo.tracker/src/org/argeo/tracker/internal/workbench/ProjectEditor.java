@@ -8,31 +8,38 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
+import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectException;
+import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
+import org.argeo.connect.workbench.parts.AskTitleDescriptionDialog;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
+import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.core.VersionComparator;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.controls.CategoryOverviewChart;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureVersionWizard;
 import org.argeo.tracker.internal.ui.dialogs.NewComponentWizard;
 import org.argeo.tracker.internal.ui.dialogs.NewIssueWizard;
-import org.argeo.tracker.internal.ui.dialogs.NewVersionWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -53,8 +60,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
+import org.eclipse.ui.forms.IFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.SectionPart;
 import org.eclipse.ui.forms.editor.FormEditor;
@@ -245,13 +256,13 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		coc.layout(true, true);
 
 		Label datesLbl = new Label(boxCmp, SWT.WRAP);
-		String ddVal = ConnectJcrUtils.getDateFormattedAsString(milestone, ActivitiesNames.ACTIVITIES_DUE_DATE,
+		String ddVal = ConnectJcrUtils.getDateFormattedAsString(milestone, TrackerNames.TRACKER_TARGET_DATE,
 				TrackerUiConstants.defaultDateFormat);
 		if (EclipseUiUtils.isEmpty(ddVal)) {
 			datesLbl.setText("No due date defined");
 			datesLbl.setFont(EclipseUiUtils.getItalicFont(boxCmp));
 		} else
-			datesLbl.setText("Due by " + ddVal);
+			datesLbl.setText("Due date: " + ddVal);
 
 		Label descLbl = new Label(boxCmp, SWT.WRAP);
 		String desc = ConnectJcrUtils.get(milestone, Property.JCR_DESCRIPTION);
@@ -304,6 +315,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		private void refreshViewer(String filter) {
 			NodeIterator nit = TrackerUtils.getIssues(project, filter);
 			tableViewer.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
+			tableViewer.refresh();
 		}
 
 		private void createFilterPart(Composite parent) {
@@ -352,12 +364,13 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.issuesPage";
 
 		private TableViewer tableViewer;
+		private Text filterTxt;
 
 		public VersionsPage(FormEditor editor) {
 			super(editor, ID, "Milestones");
 		}
 
-		protected void createFormContent(final IManagedForm mf) {
+		protected void createFormContent(IManagedForm mf) {
 			ScrolledForm form = mf.getForm();
 			Composite body = form.getBody();
 			GridLayout mainLayout = new GridLayout();
@@ -367,19 +380,21 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			createFilterPart(filterCmp);
 			filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			Composite tableCmp = new Composite(body, SWT.NO_FOCUS);
-			appendVersionsPart(tableCmp);
+			appendVersionsPart(mf, tableCmp);
 			tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 			form.reflow(true);
 		}
 
-		private void appendVersionsPart(Composite parent) {
+		private void appendVersionsPart(IManagedForm mf, Composite parent) {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 			columnDefs.add(new ColumnDefinition(getJcrLP(TrackerNames.TRACKER_ID), "ID", 80));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new VersionDateLabelProvider(), "Date", 120));
 			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_DESCRIPTION), "Description", 300));
 			columnDefs.add(new ColumnDefinition(getCountLP(true), "Open issues", 120));
 			columnDefs.add(new ColumnDefinition(getCountLP(false), "All issues", 120));
+			if (canEdit())
+				columnDefs.add(new ColumnDefinition(getEditionLP(), "", 120));
 
 			tableViewer = TrackerUiUtils.createTableViewer(parent, SWT.SINGLE, columnDefs);
 			tableViewer.setComparator(new ViewerComparator() {
@@ -394,12 +409,29 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				};
 			});
 			addDClickListener(tableViewer);
+
+			AbstractFormPart part = new AbstractFormPart() {
+				@Override
+				public void refresh() {
+					refreshViewer(filterTxt.getText());
+					super.refresh();
+				}
+			};
+			mf.addPart(part);
+
+			if (canEdit()) {
+				Table table = tableViewer.getTable();
+				CmsUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
+				CmsUtils.markup(table);
+				table.addSelectionListener(new EditionRwtAdapter(part));
+			}
 			refreshViewer(null);
 		}
 
 		private void refreshViewer(String filter) {
 			NodeIterator nit = TrackerUtils.getAllVersions(project, filter);
 			tableViewer.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
+			tableViewer.refresh();
 		}
 
 		private void createFilterPart(Composite parent) {
@@ -408,7 +440,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			parent.setLayout(layout);
 			parent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-			final Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+			filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
@@ -428,7 +460,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					NewVersionWizard wizard = new NewVersionWizard(getTrackerService(), project);
+					ConfigureVersionWizard wizard = new ConfigureVersionWizard(getTrackerService(), project);
 					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
 					if (dialog.open() == Window.OK) {
 						try {
@@ -447,6 +479,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.componentsPage";
 
 		private TableViewer tableViewer;
+		private Text filterTxt;
 
 		public ComponentsPage(FormEditor editor) {
 			super(editor, ID, "Components");
@@ -461,30 +494,54 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			createFilterPart(filterCmp);
 			filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			Composite tableCmp = new Composite(body, SWT.NO_FOCUS);
-			appendComponentsPart(tableCmp);
+			appendComponentsPart(mf, tableCmp);
 			tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 			form.reflow(true);
 		}
 
-		private void appendComponentsPart(Composite parent) {
+		private void appendComponentsPart(IManagedForm mf, Composite parent) {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_TITLE), "Title", 150));
 			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_DESCRIPTION), "Description", 300));
 			columnDefs.add(new ColumnDefinition(getCountLP(true), "Open issues", 120));
 			columnDefs.add(new ColumnDefinition(getCountLP(false), "All issues", 120));
+			if (canEdit())
+				columnDefs.add(new ColumnDefinition(getEditionLP(), "", 120));
 
 			tableViewer = TrackerUiUtils.createTableViewer(parent, SWT.SINGLE, columnDefs);
 			tableViewer.setComparator(new ViewerComparator() {
 				private static final long serialVersionUID = 1L;
 
 				public int compare(Viewer viewer, Object e1, Object e2) {
-					Node n1 = (Node) e1;
-					Node n2 = (Node) e2;
-					return ConnectJcrUtils.get(n1, Property.JCR_TITLE)
-							.compareToIgnoreCase(ConnectJcrUtils.get(n2, Property.JCR_TITLE));
+					try {
+						Node n1 = (Node) e1;
+						Node n2 = (Node) e2;
+						return ConnectJcrUtils.get(n1, Property.JCR_TITLE)
+								.compareToIgnoreCase(ConnectJcrUtils.get(n2, Property.JCR_TITLE));
+					} catch (ConnectException e) {
+						// TODO clean this: silently catch exception when an
+						// item has been deleted.
+					}
+					return 0;
 				};
 			});
 			addDClickListener(tableViewer);
+
+			AbstractFormPart part = new AbstractFormPart() {
+				@Override
+				public void refresh() {
+					refreshViewer(filterTxt.getText());
+					super.refresh();
+				}
+			};
+			mf.addPart(part);
+
+			if (canEdit()) {
+				Table table = tableViewer.getTable();
+				CmsUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
+				CmsUtils.markup(table);
+				table.addSelectionListener(new EditionRwtAdapter(part));
+			}
 			refreshViewer(null);
 		}
 
@@ -494,6 +551,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				tableViewer.setInput(null);
 			else
 				tableViewer.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
+			tableViewer.refresh();
 		}
 
 		private void createFilterPart(Composite parent) {
@@ -501,7 +559,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			layout.horizontalSpacing = 5;
 			parent.setLayout(layout);
 			parent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			final Text filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+			filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create a new component");
@@ -601,6 +659,29 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		};
 	}
 
+	private static ColumnLabelProvider getEditionLP() {
+		return new ColumnLabelProvider() {
+			private static final long serialVersionUID = 6502008085763687925L;
+
+			@Override
+			public String getText(Object element) {
+				Node category = (Node) element;
+				String jcrId = ConnectJcrUtils.getIdentifier(category);
+
+				String editHref = ConnectUiConstants.CRUD_EDIT + "/" + jcrId;
+				String editLinkStr = ConnectUiSnippets.getRWTLink(editHref, ConnectUiConstants.CRUD_EDIT);
+
+				// TODO enable deletion of referenced components
+				if (TrackerUtils.getIssueNb(category, false) == 0) {
+					String removeHref = ConnectUiConstants.CRUD_DELETE + "/" + jcrId;
+					String removeLinkStr = ConnectUiSnippets.getRWTLink(removeHref, ConnectUiConstants.CRUD_DELETE);
+					editLinkStr += "  or  " + removeLinkStr;
+				}
+				return editLinkStr;
+			}
+		};
+	}
+
 	private void addDClickListener(TableViewer tableViewer) {
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
@@ -611,5 +692,66 @@ public class ProjectEditor extends AbstractTrackerEditor {
 						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 			}
 		});
+	}
+
+	private class EditionRwtAdapter extends SelectionAdapter {
+		private static final long serialVersionUID = -7459078949241763141L;
+
+		private IFormPart part;
+
+		public EditionRwtAdapter(IFormPart part) {
+			this.part = part;
+		}
+
+		public void widgetSelected(SelectionEvent event) {
+			if (event.detail == ConnectUiConstants.MARKUP_VIEWER_HYPERLINK) {
+				String string = event.text;
+				String[] token = string.split("/");
+				String cmdId = token[0];
+				String jcrId = token[1];
+				Shell shell = event.display.getActiveShell();
+				boolean hasChanged = false;
+				try {
+					Node node = project.getSession().getNodeByIdentifier(jcrId);
+					if (ConnectUiConstants.CRUD_DELETE.equals(cmdId)) {
+						if (MessageDialog.openConfirm(shell, "Confirm deletion",
+								"Are you sure you want to delete " + ConnectJcrUtils.get(node, Property.JCR_TITLE))) {
+							node.remove();
+							project.getSession().save();
+							hasChanged = true;
+						}
+					} else if (ConnectUiConstants.CRUD_EDIT.equals(cmdId)) {
+						if (node.isNodeType(TrackerTypes.TRACKER_COMPONENT)) {
+							String title = ConnectJcrUtils.get(node, Property.JCR_TITLE);
+							String desc = ConnectJcrUtils.get(node, Property.JCR_DESCRIPTION);
+							AskTitleDescriptionDialog dialog = new AskTitleDescriptionDialog(shell, "Edit component",
+									title, desc);
+							if (dialog.open() == Window.OK) {
+								hasChanged = ConnectJcrUtils.setJcrProperty(node, Property.JCR_TITLE,
+										PropertyType.STRING, dialog.getTitle());
+								hasChanged |= ConnectJcrUtils.setJcrProperty(node, Property.JCR_DESCRIPTION,
+										PropertyType.STRING, dialog.getDescription());
+								if (hasChanged)
+									project.getSession().save();
+							}
+						} else if (node.isNodeType(TrackerTypes.TRACKER_VERSION)) {
+							ConfigureVersionWizard wizard = new ConfigureVersionWizard(getTrackerService(), project,
+									node);
+							WizardDialog dialog = new WizardDialog(shell, wizard);
+							if (dialog.open() == Window.OK) {
+								if (project.getSession().hasPendingChanges()) {
+									project.getSession().save();
+									hasChanged = true;
+								}
+							}
+						}
+					}
+				} catch (RepositoryException e) {
+					throw new TrackerException("Cannot " + cmdId + " with JcrId " + jcrId, e);
+				}
+				if (hasChanged)
+					part.refresh();
+			}
+		}
 	}
 }
