@@ -441,16 +441,20 @@ public class PeopleJcrUtils implements PeopleNames {
 	/**
 	 * Create a mail address node. Corresponding nodes are not saved
 	 * 
+	 * @param resourcesService
+	 * @param peopleService
 	 * @param contactable
 	 *            the parent item on which we want to add the email
 	 * @param emailAddress
 	 *            the value
-	 * @param contactType
-	 *            an optional label
+	 * @param title
+	 *            the generic label for this email
+	 * @param description
+	 *            an optional description
 	 */
-	public static Node createEmail(ResourcesService resourceService, PeopleService peopleService, Node contactable,
+	public static Node createEmail(ResourcesService resourcesService, PeopleService peopleService, Node contactable,
 			String emailAddress, boolean isPrimary, String title, String description) {
-		return createContact(resourceService, peopleService, contactable, PeopleTypes.PEOPLE_MAIL, emailAddress,
+		return createContact(resourcesService, peopleService, contactable, PeopleTypes.PEOPLE_MAIL, emailAddress,
 				isPrimary, title, description);
 	}
 
