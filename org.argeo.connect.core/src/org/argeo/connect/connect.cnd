@@ -23,13 +23,13 @@
 - ldap:givenName (STRING) 
 - ldap:sn (STRING)
 - ldap:title (STRING)
-- ldap:displayName (BOOLEAN)  
+- ldap:displayName (BOOLEAN) // FIXME there is typo: must be (STRING)
 - ldap:generationQualifier
 
 [connect:org] 
  mixin
 - ldap:cn (STRING) 
-- ldap:displayName (BOOLEAN)
+- ldap:displayName (BOOLEAN) // FIXME there is typo: must be (STRING)
 
 [connect:contactable] 
  mixin
@@ -46,8 +46,6 @@
 - ldap:l (STRING) // city
 - ldap:st (STRING) // state
 - ldap:c (STRING) // country
-
-
 
 // RESOURCE MANAGEMENT
 
