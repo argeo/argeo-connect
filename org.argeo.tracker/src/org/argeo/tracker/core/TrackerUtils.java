@@ -92,7 +92,7 @@ public class TrackerUtils {
 	public static String getRelevantPropName(Node category) {
 		try {
 			if (category.isNodeType(TrackerTypes.TRACKER_COMPONENT))
-				return TrackerNames.TRACKER_COMPONENTS;
+				return TrackerNames.TRACKER_COMPONENT_IDS;
 			else if (category.isNodeType(TrackerTypes.TRACKER_VERSION)) {
 				// TODO enhance the choice between milestone and version
 				if (category.hasProperty(TrackerNames.TRACKER_RELEASE_DATE))
