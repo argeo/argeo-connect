@@ -1,7 +1,5 @@
 package org.argeo.connect.workbench.commands;
 
-import java.util.UUID;
-
 import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -9,7 +7,6 @@ import javax.jcr.Session;
 
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ConnectNames;
 import org.argeo.connect.SystemAppService;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
@@ -40,26 +37,28 @@ public class CreateEntity extends AbstractHandler {
 	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		String nodeType = event.getParameter(PARAM_TARGET_NODE_TYPE);
-		Session draftSession = null;
-		Session mainSession = null;
+		Session draftSession = null, mainSession = null;
 		String jcrId = null;
+
+		String nodeType = event.getParameter(PARAM_TARGET_NODE_TYPE);
 		try {
 			draftSession = repository.login();
-			mainSession = repository.login();
-			Node tmpParent = systemAppService.getDraftParent(draftSession);
-			String uuid = UUID.randomUUID().toString();
-			Node tmpNode = tmpParent.addNode(uuid);
-			tmpNode.addMixin(nodeType);
-			tmpNode.setProperty(ConnectNames.CONNECT_UID, uuid);
+			Node tmpNode = systemAppService.createDraftEntity(draftSession, nodeType);
 			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);
 			WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");
-			int result = dialog.open();
-			if (result == WizardDialog.OK) {
-				Node parent = mainSession.getNode("/" + systemAppService.getBaseRelPath(nodeType));
-				Node newNode = systemAppService.createEntity(parent, nodeType, tmpNode);
-				// Save the newly created entity without creating a base version
+			if (dialog.open() == WizardDialog.OK) {
+				// Why did we use a new session?
+				// mainSession = repository.login();
+
+				// By default, all entities are stored at the same place,
+				// depending on their types.
+				// We will enhance this in the future, typically to enable
+				// (partially) private entities
+				Node parent = draftSession.getNode("/" + systemAppService.getBaseRelPath(nodeType));
+				// Node parent = mainSession.getNode("/" +
+				// systemAppService.getBaseRelPath(nodeType));
+				Node newNode = systemAppService.publishEntity(parent, nodeType, tmpNode);
 				newNode = systemAppService.saveEntity(newNode, false);
 				jcrId = newNode.getIdentifier();
 			} else {
@@ -69,8 +68,7 @@ public class CreateEntity extends AbstractHandler {
 			}
 
 		} catch (RepositoryException e) {
-			throw new ConnectException("Cannot create "
-					+ nodeType+ "entity", e);
+			throw new ConnectException("Cannot create " + nodeType + "entity", e);
 		} finally {
 			JcrUtils.logoutQuietly(draftSession);
 			JcrUtils.logoutQuietly(mainSession);
@@ -84,7 +82,7 @@ public class CreateEntity extends AbstractHandler {
 		return null;
 	}
 
-	// expose to children classes
+	// Expose to children classes
 	protected Repository getRepository() {
 		return repository;
 	}

@@ -83,7 +83,8 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 		else if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
 			return new NewOrgWizard(node);
 		else
-			throw new PeopleException("No defined wizard for node " + node);
+			return null;
+		// throw new PeopleException("No defined wizard for node " + node);
 	}
 
 	/**

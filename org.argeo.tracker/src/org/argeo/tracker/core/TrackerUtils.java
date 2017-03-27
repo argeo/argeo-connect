@@ -111,7 +111,8 @@ public class TrackerUtils {
 	public static NodeIterator getProjects(Session session, String projectParentPath) {
 		try {
 			StringBuilder builder = new StringBuilder();
-			builder.append(XPathUtils.descendantFrom(projectParentPath));
+			if (EclipseUiUtils.notEmpty(projectParentPath))
+				builder.append(XPathUtils.descendantFrom(projectParentPath));
 			builder.append("//element(*, ").append(TrackerTypes.TRACKER_PROJECT).append(")");
 			builder.append(" order by @").append(Property.JCR_TITLE);
 			QueryResult result = XPathUtils.createQuery(session, builder.toString()).execute();
@@ -277,6 +278,16 @@ public class TrackerUtils {
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get version for " + project + " with filter: " + filter, e);
 		}
+	}
+
+	public static List<String> getComponentIds(Node project, String filter) {
+		NodeIterator nit = getComponents(project, filter);
+		List<String> componentIds = new ArrayList<String>();
+		while (nit.hasNext()) {
+			Node currNode = nit.nextNode();
+			componentIds.add(ConnectJcrUtils.get(currNode, TrackerNames.TRACKER_ID));
+		}
+		return componentIds;
 	}
 
 	public static NodeIterator getComponents(Node project, String filter) {

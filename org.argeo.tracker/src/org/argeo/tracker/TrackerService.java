@@ -1,10 +1,10 @@
 package org.argeo.tracker;
 
 import java.util.Calendar;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.argeo.connect.AppService;
 
@@ -13,25 +13,27 @@ import org.argeo.connect.AppService;
  */
 public interface TrackerService extends AppService {
 
-	/** Create a new project. Session is saved so that we can configure ACL */
-	public Node createProject(Session session, String title, String description, String managerId,
-			String counterpartyGroupId);
+	/** Simply configure an IT Project node */
+	public Node configureItProject(Node project, String title, String description, String managerId,
+			String counterpartyGroupId) throws RepositoryException;
+
+	public void configureCustomACL(Node node);
 
 	/**
 	 * 
-	 * @param parentIssue
 	 * @param title
 	 * @param description
-	 * @param versionId
 	 * @param targetId
 	 * @param priority
 	 * @param importance
 	 * @param managerId
+	 * @param versionId
 	 * @return
 	 * @throws RepositoryException
 	 */
-	public Node createIssue(Node parentIssue, String title, String description, String versionId, String targetId,
-			int priority, int importance, String managerId) throws RepositoryException;
+	public Node configureIssue(Node issue, Node project, String title, String description, String targetId,
+			List<String> versionIds, List<String> componentIds, int priority, int importance, String managerId)
+			throws RepositoryException;
 
 	public Node addComment(Node parentIssue, String description) throws RepositoryException;
 

@@ -33,7 +33,7 @@ public class DocumentsService implements AppService {
 	// private final static String NODE_PREFIX = "node://";
 
 	@Override
-	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+	public Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
 			throws RepositoryException {
 		return null;
 	}
@@ -49,7 +49,7 @@ public class DocumentsService implements AppService {
 	}
 
 	@Override
-	public String getDefaultRelPath(String nodeType, String id) {
+	public String getDefaultRelPath(Session session, String nodeType, String id) {
 		throw new DocumentsException("No default relpath is defined for the Documents App");
 	}
 

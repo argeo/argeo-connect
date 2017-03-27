@@ -6,14 +6,14 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- COMMANDS -->
-	<bean id="createSimpleTask"
-		class="org.argeo.activities.workbench.commands.CreateSimpleTask"
-		scope="prototype">
-		<property name="repository" ref="repository" />
-		<property name="userAdminService" ref="userAdminService" />
-		<property name="activitiesService" ref="activitiesService" />
-		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
-	</bean>
+<!-- 	<bean id="createSimpleTask" -->
+<!-- 		class="org.argeo.activities.workbench.commands.CreateSimpleTask" -->
+<!-- 		scope="prototype"> -->
+<!-- 		<property name="repository" ref="repository" /> -->
+<!-- 		<property name="userAdminService" ref="userAdminService" /> -->
+<!-- 		<property name="activitiesService" ref="activitiesService" /> -->
+<!-- 		<property name="systemWorkbenchService" ref="systemWorkbenchService" /> -->
+<!-- 	</bean> -->
 
 	<!-- EDITORS -->
 	<bean id="activityEditor"

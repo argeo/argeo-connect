@@ -172,21 +172,6 @@ public class PickUpContactableDialog extends TrayDialog {
 			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
 			QueryResult result = xpathQuery.execute();
 
-			// QueryManager queryManager = session.getWorkspace()
-			// .getQueryManager();
-			// QueryObjectModelFactory factory = queryManager.getQOMFactory();
-			// Selector source = factory.selector(nodeType, nodeType);
-			//
-			// Constraint defaultC = ConnectJcrUtils.getFreeTextConstraint(
-			// session, factory, source, filterTxt.getText());
-			//
-			// Ordering order = factory.ascending(factory.propertyValue(
-			// source.getSelectorName(), Property.JCR_TITLE));
-			// Ordering[] orderings = { order };
-			// QueryObjectModel query = factory.createQuery(source, defaultC,
-			// orderings, null);
-			// query.setLimit(100);
-			// QueryResult result = query.execute();
 			Row[] rows = ConnectJcrUtils.rowIteratorToArray(result.getRows());
 			setViewerInput(rows);
 		} catch (RepositoryException e) {

@@ -2,28 +2,31 @@ package org.argeo.tracker.internal.ui.dialogs;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
-import org.argeo.tracker.internal.ui.controls.VersionDropDown;
+import org.argeo.tracker.internal.ui.controls.ProjectDropDown;
+import org.argeo.tracker.internal.ui.controls.TagListWithDropDownComposite;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -32,50 +35,67 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Generic wizard to created a new issue. Caller might use setRelatedTo method
- * to add some related entities after creation and before opening the wizard
+ * Generic wizard to create a new issue. Caller might use setRelatedTo method to
+ * add some related entities after creation and before opening the wizard
  * dialog.
  * 
- * The newly created task might be retrieved after termination if Dialog.open()
+ * The newly created issue might be retrieved after termination if Dialog.open()
  * return Window.OK.
  * 
- * Warning: the passed session is not saved: the task stays in a transient mode
+ * Warning: the passed session is not saved: the issue stays in a transient mode
  * until the caller save the session to enable roll-back.
  */
 
 public class NewIssueWizard extends Wizard {
-	private final static Log log = LogFactory.getLog(NewIssueWizard.class);
+	// private final static Log log = LogFactory.getLog(NewIssueWizard.class);
 
-	private UserAdminService userAdminService;
-	private TrackerService trackerService;
+	private final UserAdminService userAdminService;
+	private final TrackerService trackerService;
+	private final Node draftEntity;
 
 	// Business objects
 	private Node project;
-	private Node createdIssue;
-	private List<Node> relatedTo;
-	// private String assignedToGroupId;
-	private ExistingGroupsDropDown assignedToDD;
+	private Node chosenProject;
+	private String targetMilestone;
+	private List<String> versionIds;
+	private List<String> componentIds;
+
+	// private Node createdIssue;
 
 	// This page widgets
+	protected Text projectTxt;
+	protected ProjectDropDown projectDD;
 	protected Text titleTxt;
-
+	private ExistingGroupsDropDown assignedToDD;
 	protected Combo importanceCmb;
 	protected Combo priorityCmb;
-
-	protected VersionDropDown versionDD;
 	protected MilestoneDropDown targetDD;
+	protected TagListWithDropDownComposite versionsCmp;
+	protected TagListWithDropDownComposite componentsCmp;
+	// protected ComponentDropDown componentDD;
+	// protected VersionDropDown versionDD;
 
 	protected Text descTxt;
 
 	private DateText targetDateCmp;
 	private DateText releaseDateCmp;
+	private List<Node> relatedTo;
 
 	protected TableViewer itemsViewer;
 
-	public NewIssueWizard(UserAdminService userAdminService, TrackerService trackerService, Node project) {
-		this.project = project;
+	public NewIssueWizard(UserAdminService userAdminService, TrackerService trackerService, Node draftEntity) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
+		this.draftEntity = draftEntity;
+	}
+
+	public void setKnownProperties(Node project, String targetMilestone, List<String> versionIds,
+			List<String> componentIds) {
+		this.project = project;
+		this.chosenProject = project;
+		this.targetMilestone = targetMilestone;
+		this.versionIds = versionIds;
+		this.componentIds = componentIds;
 	}
 
 	@Override
@@ -93,8 +113,12 @@ public class NewIssueWizard extends Wizard {
 	public boolean performFinish() {
 		// Sanity check
 		String msg = null;
-		if (isEmpty(assignedToDD.getText()))
-			msg = "Please assign this issue to a group.";
+		String title = titleTxt.getText();
+		if (chosenProject == null)
+			msg = "Please pick up a project";
+		else if (isEmpty(title))
+			msg = "Please give at least a title";
+
 		if (msg != null) {
 			MessageDialog.openError(getShell(), "Uncomplete information", msg);
 			return false;
@@ -107,9 +131,8 @@ public class NewIssueWizard extends Wizard {
 			String priorityStr = TrackerUtils.getKeyByValue(TrackerUtils.MAPS_ISSUE_PRIORITIES, priorityCmb.getText());
 			int priority = new Integer(priorityStr).intValue();
 
-			createdIssue = trackerService.createIssue(project.getNode(TrackerUtils.issuesRelPath()), titleTxt.getText(),
-					descTxt.getText(), versionDD.getText(), targetDD.getText(), priority, importance,
-					assignedToDD.getText());
+			trackerService.configureIssue(draftEntity, chosenProject, title, descTxt.getText(), targetDD.getText(),
+					versionIds, componentIds, priority, importance, assignedToDD.getText());
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to create issue on project " + project, e);
 		}
@@ -118,10 +141,6 @@ public class NewIssueWizard extends Wizard {
 
 	public void setRelatedTo(List<Node> relatedTo) {
 		this.relatedTo = relatedTo;
-	}
-
-	public Node getCreatedIssue() {
-		return createdIssue;
 	}
 
 	@Override
@@ -140,13 +159,40 @@ public class NewIssueWizard extends Wizard {
 		public ConfigureIssuePage(String pageName) {
 			super(pageName);
 			setTitle("Create a new issue");
-			setMessage("Please fill out following information.");
+			setMessage("Please fill in following information.");
 		}
 
 		public void createControl(Composite parent) {
 			parent.setLayout(new GridLayout(4, false));
 
-			// TITLE
+			// Project
+			if (project == null) {
+				ConnectWorkbenchUtils.createBoldLabel(parent, "Project");
+				projectTxt = new Text(parent, SWT.BORDER);
+				projectTxt.setMessage("Choose relevant project");
+				GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+				gd.horizontalSpan = 3;
+				projectTxt.setLayoutData(gd);
+				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(draftEntity), projectTxt, false);
+
+				projectTxt.addFocusListener(new FocusAdapter() {
+					private static final long serialVersionUID = 1719432159240562984L;
+
+					@Override
+					public void focusLost(FocusEvent event) {
+						Node project = projectDD.getChosenProject();
+						if (project == null)
+							setErrorMessage("Choose a valid project");
+						else {
+							setErrorMessage(null);
+							chosenProject = project;
+							targetDD.setProject(chosenProject);
+						}
+					}
+				});
+			}
+
+			// Title
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
 			titleTxt.setMessage("To be shown in the various lists");
@@ -154,12 +200,10 @@ public class NewIssueWizard extends Wizard {
 			gd.horizontalSpan = 3;
 			titleTxt.setLayoutData(gd);
 
-			// Versions
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Impacted Version");
-			Text versionTxt = new Text(parent, SWT.BORDER);
-			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-			versionTxt.setLayoutData(gd);
-			versionDD = new VersionDropDown(project, versionTxt);
+			// Assigned to
+			Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
+					"Choose a group or person to manage this issue", 1);
+			assignedToDD = new ExistingGroupsDropDown(assignedToTxt, userAdminService, true, false);
 
 			// Target milestone
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Target milestone");
@@ -167,6 +211,38 @@ public class NewIssueWizard extends Wizard {
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			milestoneTxt.setLayoutData(gd);
 			targetDD = new MilestoneDropDown(project, milestoneTxt);
+			if (EclipseUiUtils.notEmpty(targetMilestone))
+				targetDD.reset(targetMilestone);
+
+			// Versions
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Impacted Version");
+			versionsCmp = new TagListWithDropDownComposite(parent, SWT.NO_FOCUS, versionIds) {
+				private static final long serialVersionUID = -3852824835081771001L;
+
+				@Override
+				protected List<String> getFilteredValues(String filter) {
+					if (chosenProject == null)
+						return new ArrayList<>();
+					else
+						return TrackerUtils.getVersionIds(chosenProject, filter);
+				}
+			};
+			versionsCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+
+			// Components
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Components");
+			componentsCmp = new TagListWithDropDownComposite(parent, SWT.NO_FOCUS, componentIds) {
+				private static final long serialVersionUID = 2356778978317806935L;
+
+				@Override
+				protected List<String> getFilteredValues(String filter) {
+					if (chosenProject == null)
+						return new ArrayList<>();
+					else
+						return TrackerUtils.getComponentIds(chosenProject, filter);
+				}
+			};
+			componentsCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 
 			// Importance
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Importance");
@@ -184,51 +260,6 @@ public class NewIssueWizard extends Wizard {
 			priorityCmb.setItems(TrackerUtils.MAPS_ISSUE_PRIORITIES.values().toArray(new String[0]));
 			priorityCmb.select(0);
 
-			// Assigned to
-			Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
-					"Choose a group or person to manage this issue", 3);
-			assignedToDD = new ExistingGroupsDropDown(assignedToTxt, userAdminService, true, false);
-
-			// PeopleRapUtils.createBoldLabel(parent, "Assigned to");
-			// Composite assignedToCmp = new Composite(parent, SWT.NO_FOCUS);
-			// gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
-			// assignedToCmp.setLayoutData(gd);
-			// GridLayout gl = EclipseUiUtils.noSpaceGridLayout(new
-			// GridLayout(2,
-			// false));
-			// gl.horizontalSpacing = 5;
-			// assignedToCmp.setLayout(gl);
-			// final Text assignedToTxt = new Text(assignedToCmp, SWT.BORDER
-			// | SWT.NO_FOCUS);
-			// assignedToTxt
-			// .setMessage("Assign this issue to a group or an individual");
-			// CmsUtils.style(assignedToTxt,
-			// PeopleStyles.PEOPLE_CLASS_FORCE_BORDER);
-			// assignedToTxt.setLayoutData(EclipseUiUtils.fillWidth());
-			// assignedToTxt.setEnabled(false);
-
-			// private ExistingGroupsDropDown assignedToDD;
-
-			//
-			// Link assignedToLk = new Link(assignedToCmp, SWT.NONE);
-			// assignedToLk.setText("<a>Pick up</a>");
-			// assignedToLk.addSelectionListener(new SelectionAdapter() {
-			// private static final long serialVersionUID = 1L;
-			//
-			// @Override
-			// public void widgetSelected(final SelectionEvent event) {
-			// PickUpGroupDialog diag = new PickUpGroupDialog(
-			// assignedToTxt.getShell(), "Choose a group",
-			// aoService);
-			// if (diag.open() == Window.OK) {
-			// assignedToGroupId = diag.getSelected().getName();
-			// if (EclipseUiUtils.notEmpty(assignedToGroupId))
-			// assignedToTxt.setText(userAdminService
-			// .getUserDisplayName(assignedToGroupId));
-			// }
-			// }
-			// });
-
 			// DESCRIPTION
 			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);
 			label.setText("Description");
@@ -242,8 +273,14 @@ public class NewIssueWizard extends Wizard {
 			gd.heightHint = 150;
 			descTxt.setLayoutData(gd);
 			// Don't forget this.
-			setControl(titleTxt);
-			titleTxt.setFocus();
+
+			if (projectTxt != null) {
+				setControl(projectTxt);
+				projectTxt.setFocus();
+			} else {
+				setControl(titleTxt);
+				titleTxt.setFocus();
+			}
 		}
 	}
 

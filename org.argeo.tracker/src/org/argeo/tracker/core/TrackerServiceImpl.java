@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -17,12 +18,13 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.security.Privilege;
 
 import org.argeo.activities.ActivitiesService;
-import org.argeo.activities.ActivitiesTypes;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.RemoteJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -37,29 +39,66 @@ public class TrackerServiceImpl implements TrackerService {
 
 	private ActivitiesService activitiesService;
 
-
 	@Override
-	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+	public synchronized Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
 			throws RepositoryException {
-		// TODO Auto-generated method stub
-		return null;
+		Node createdNode = null;
+		if (TrackerTypes.TRACKER_ISSUE.equals(nodeType)) {
+			Session session = parent.getSession();
+			Node project = getEntityByUid(session, parent.getPath(),
+					ConnectJcrUtils.get(srcNode, TrackerNames.TRACKER_PROJECT_UID));
+			createIssueIdIfNeeded(project, srcNode);
+			String relPath = getDefaultRelPath(srcNode);
+			createdNode = JcrUtils.mkdirs(parent, relPath);
+			RemoteJcrUtils.copy(srcNode, createdNode, true);
+			createdNode.addMixin(nodeType);
+			JcrUtils.updateLastModified(createdNode);
+			if (removeSrcNode)
+				srcNode.remove();
+		} else if (TrackerTypes.TRACKER_PROJECT.equals(nodeType) || TrackerTypes.TRACKER_IT_PROJECT.equals(nodeType)) {
+			String relPath = getDefaultRelPath(srcNode);
+			createdNode = JcrUtils.mkdirs(parent, relPath);
+			RemoteJcrUtils.copy(srcNode, createdNode, true);
+			createdNode.addMixin(nodeType);
+			JcrUtils.updateLastModified(createdNode);
+			if (removeSrcNode)
+				srcNode.remove();
+		}
+		return createdNode;
 	}
-	
-	
+
 	@Override
 	public String getAppBaseName() {
 		return TrackerConstants.TRACKER_APP_BASE_NAME;
 	}
 
+	@Override
+	public String getBaseRelPath(String nodeType) {
+		if (TrackerTypes.TRACKER_PROJECT.equals(nodeType) || TrackerTypes.TRACKER_IT_PROJECT.equals(nodeType)
+				|| TrackerTypes.TRACKER_ISSUE.equals(nodeType))
+			return TrackerNames.TRACKER_PROJECTS;
+		else
+			return getAppBaseName();
+	}
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		// TODO Auto-generated method stub
+		if (entity.isNodeType(TrackerTypes.TRACKER_ISSUE)) {
+			Session session = entity.getSession();
+			Node project = getEntityByUid(session, null, ConnectJcrUtils.get(entity, TrackerNames.TRACKER_PROJECT_UID));
+			String issueIdStr = ConnectJcrUtils.get(entity, TrackerNames.TRACKER_ID);
+			return getDefaultRelPath(project) + "/" + TrackerNames.TRACKER_ISSUES + "/" + issueIdStr;
+		} else if (entity.isNodeType(TrackerTypes.TRACKER_PROJECT)
+				|| entity.isNodeType(TrackerTypes.TRACKER_IT_PROJECT)) {
+			String title = entity.getProperty(Property.JCR_TITLE).getString();
+			String name = cleanTitle(title);
+			return name;
+		}
 		return null;
 	}
 
 	@Override
-	public String getDefaultRelPath(String nodeType, String id) {
+	public String getDefaultRelPath(Session session, String nodeType, String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -89,74 +128,84 @@ public class TrackerServiceImpl implements TrackerService {
 			return false;
 	}
 
-	/**
-	 * Centralises the management of known types to provide corresponding base
-	 * path
-	 */
-	private String getBasePath(String entityType) {
-		if (TrackerTypes.TRACKER_PROJECT.equals(entityType))
-			return "/projects";
-		else
-			throw new TrackerException("Unvalid entity type");
-	}
+	// /**
+	// * Centralises the management of known types to provide corresponding base
+	// * path
+	// */
+	// private String getBasePath(String entityType) {
+	// if (TrackerTypes.TRACKER_PROJECT.equals(entityType))
+	// return "/projects";
+	// else
+	// throw new TrackerException("Unvalid entity type");
+	// }
 
 	/** No check is done to see if a similar project already exists */
 	@Override
-	public Node createProject(Session session, String title, String description, String managerId,
-			String counterpartyGroupId) {
-		try {
-			String parPath = getBasePath(TrackerTypes.TRACKER_PROJECT);
-			Node projects = session.getNode(parPath);
-			String name = cleanTitle(title);
-			Node project = projects.addNode(name);
-			project.addMixin(TrackerTypes.TRACKER_PROJECT);
-			project.setProperty(TrackerNames.TRACKER_CP_GROUP_ID, counterpartyGroupId);
-			project.setProperty(Property.JCR_TITLE, title);
-			project.setProperty(Property.JCR_DESCRIPTION, description);
-			JcrUtils.mkdirs(project, TrackerNames.TRACKER_DATA, NodeType.NT_FOLDER);
-			JcrUtils.mkdirs(project, TrackerNames.TRACKER_SPEC, CmsTypes.CMS_TEXT);
-			JcrUtils.mkdirs(project, TrackerNames.TRACKER_VERSIONS, NodeType.NT_UNSTRUCTURED);
-			Node issuesParent = JcrUtils.mkdirs(project, TrackerNames.TRACKER_ISSUES, NodeType.NT_UNSTRUCTURED);
+	public Node configureItProject(Node draftProject, String title, String description, String managerId,
+			String counterpartyGroupId) throws RepositoryException {
+		draftProject.setProperty(TrackerNames.TRACKER_CP_GROUP_ID, counterpartyGroupId);
+		draftProject.setProperty(Property.JCR_TITLE, title);
+		draftProject.setProperty(Property.JCR_DESCRIPTION, description);
+		JcrUtils.mkdirs(draftProject, TrackerNames.TRACKER_DATA, NodeType.NT_FOLDER);
+		JcrUtils.mkdirs(draftProject, TrackerNames.TRACKER_SPEC, CmsTypes.CMS_TEXT);
+		JcrUtils.mkdirs(draftProject, TrackerNames.TRACKER_VERSIONS);
+		JcrUtils.mkdirs(draftProject, TrackerNames.TRACKER_ISSUES);
 
-			// Nodes must be saved before the rights are assigned.
-			if (project.getSession().hasPendingChanges())
-				project.getSession().save();
-
-			// TODO refine privileges for client group
-			JcrUtils.addPrivilege(project.getSession(), project.getPath(), counterpartyGroupId, Privilege.JCR_READ);
-			JcrUtils.addPrivilege(project.getSession(), issuesParent.getPath(), counterpartyGroupId, Privilege.JCR_ALL);
-
-			session.save();
-
-			return project;
-		} catch (RepositoryException re) {
-			throw new TrackerException("Cannot create project " + title, re);
-		}
-
+		// // Nodes must be saved before the rights are assigned.
+		// if (project.getSession().hasPendingChanges())
+		// project.getSession().save();
+		//
+		// // TODO refine privileges for client group
+		// JcrUtils.addPrivilege(project.getSession(), project.getPath(),
+		// counterpartyGroupId, Privilege.JCR_READ);
+		// JcrUtils.addPrivilege(project.getSession(), issuesParent.getPath(),
+		// counterpartyGroupId, Privilege.JCR_ALL);
+		// session.save();
+		return draftProject;
 	}
 
 	@Override
-	public Node createIssue(Node parentIssue, String title, String description, String versionId, String targetId,
-			int priority, int importance, String managerId) throws RepositoryException {
-		Node issue = createTask(parentIssue, title, description, managerId);
-		issue.addMixin(TrackerTypes.TRACKER_ISSUE);
-		activitiesService.setTaskDefaultStatus(issue, TrackerTypes.TRACKER_ISSUE);
-		issue.setProperty(Property.JCR_TITLE, title);
+	public void configureCustomACL(Node node) {
+		try {
+			if (node.isNodeType(TrackerTypes.TRACKER_PROJECT) || node.isNodeType(TrackerTypes.TRACKER_IT_PROJECT)) {
+				Session session = node.getSession();
+				// TODO refine privileges for client group
+				String basePath = node.getPath();
+				String counterpartyGroupId = node.getProperty(TrackerNames.TRACKER_CP_GROUP_ID).getString();
+				JcrUtils.addPrivilege(session, basePath, counterpartyGroupId, Privilege.JCR_READ);
+				JcrUtils.addPrivilege(session, basePath + "/" + TrackerNames.TRACKER_ISSUES, counterpartyGroupId,
+						Privilege.JCR_ALL);
+				session.save();
+			}
+		} catch (RepositoryException re) {
+			throw new TrackerException("Cannot onfigure ACL on" + node, re);
+		}
+	}
+
+	@Override
+	public Node configureIssue(Node issue, Node project, String title, String description, String targetId,
+			List<String> versionIds, List<String> componentIds, int priority, int importance, String managerId)
+			throws RepositoryException {
+		activitiesService.configureTask(issue, TrackerTypes.TRACKER_ISSUE, title, description, managerId);
+		// TODO Useless?
+		// activitiesService.setTaskDefaultStatus(issue,
+		// TrackerTypes.TRACKER_ISSUE);
+		issue.setProperty(TrackerNames.TRACKER_PROJECT_UID, project.getProperty(ConnectNames.CONNECT_UID).getString());
 		issue.setProperty(TrackerNames.TRACKER_PRIORITY, priority);
 		issue.setProperty(TrackerNames.TRACKER_IMPORTANCE, importance);
-		if (EclipseUiUtils.notEmpty(description))
-			issue.setProperty(Property.JCR_DESCRIPTION, description);
 		if (EclipseUiUtils.notEmpty(targetId))
 			issue.setProperty(TrackerNames.TRACKER_TARGET_ID, targetId);
-		if (EclipseUiUtils.notEmpty(versionId)) {
-			// if (versionId != null) {
-			String[] versions = { versionId };
-			issue.setProperty(TrackerNames.TRACKER_VERSION_IDS, versions);
+		if (versionIds != null && !versionIds.isEmpty()) {
+			issue.setProperty(TrackerNames.TRACKER_VERSION_IDS, versionIds.toArray(new String[0]));
 		}
-		String issueIdStr = createIssueIdIfNeeded(TrackerUtils.getProjectFromChild(parentIssue), issue) + "";
-		String currName = issue.getName();
-		if (!issueIdStr.equals(currName))
-			issue.getSession().move(issue.getPath(), parentIssue.getPath() + "/" + issueIdStr);
+		if (componentIds != null && !componentIds.isEmpty())
+			issue.setProperty(TrackerNames.TRACKER_COMPONENT_IDS, componentIds.toArray(new String[0]));
+
+		// String issueIdStr = createIssueIdIfNeeded(project, issue) + "";
+		// String currName = issue.getName();
+		// if (!issueIdStr.equals(currName))
+		// issue.getSession().move(issue.getPath(), parentIssue.getPath() + "/"
+		// + issueIdStr);
 		return issue;
 	}
 
@@ -180,13 +229,6 @@ public class TrackerServiceImpl implements TrackerService {
 		if (hasChanged)
 			JcrUtils.updateLastModified(comment);
 		return hasChanged;
-	}
-
-	/** Encapsulate the activity service create task to enhance read-ability */
-	private Node createTask(Node parentNode, String title, String description, String assignedTo)
-			throws RepositoryException {
-		return activitiesService.createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_TASK, null, title, description,
-				assignedTo, null, null, null, null);
 	}
 
 	@Override
@@ -219,13 +261,14 @@ public class TrackerServiceImpl implements TrackerService {
 		return component;
 	}
 
-//	private static Node getProjectFromIssue(Node issue) throws RepositoryException {
-//		Node parent = issue;
-//		while (!parent.isNodeType(TrackerTypes.TRACKER_PROJECT)) {
-//			parent = parent.getParent();
-//		}
-//		return parent;
-//	}
+	// private static Node getProjectFromIssue(Node issue) throws
+	// RepositoryException {
+	// Node parent = issue;
+	// while (!parent.isNodeType(TrackerTypes.TRACKER_PROJECT)) {
+	// parent = parent.getParent();
+	// }
+	// return parent;
+	// }
 
 	private static Node getIssueParent(Node project) throws RepositoryException {
 		// Should always be there

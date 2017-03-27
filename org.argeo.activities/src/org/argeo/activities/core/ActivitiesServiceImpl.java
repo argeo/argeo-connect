@@ -12,7 +12,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
 import org.apache.commons.logging.Log;
@@ -23,7 +22,6 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
 import org.argeo.cms.auth.CurrentUser;
-import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -45,78 +43,90 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		return ActivitiesNames.ACTIVITIES_APP_BASE_NAME;
 	}
 
-	@Override
-	public String getActivityParentCanonicalPath(Session session) {
-		String currentUser = session.getUserID();
-		Calendar currentTime = GregorianCalendar.getInstance();
-		String path = "/" + getAppBaseName() + "/" + dateAsRelPath(currentTime) + currentUser;
-		return path;
-	}
+	// @Override
+	// public String getActivityParentCanonicalPath(Session session) {
+	// String currentUser = session.getUserID();
+	// Calendar currentTime = GregorianCalendar.getInstance();
+	// String path = "/" + getAppBaseName() + "/" + dateAsRelPath(currentTime) +
+	// currentUser;
+	// return path;
+	// }
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		if (entity.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
+		if (entity.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)
+				|| entity.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
 			String currentUser = ConnectJcrUtils.getSession(entity).getUserID();
-			Calendar currentTime = entity.getProperty(Property.JCR_CREATED).getDate();
+
+			Calendar currentTime = null;
+			if (entity.hasProperty(ACTIVITIES_ACTIVITY_DATE))
+				currentTime = entity.getProperty(ACTIVITIES_ACTIVITY_DATE).getDate();
+			else {
+				// fallback, always there
+				currentTime = entity.getProperty(Property.JCR_CREATED).getDate();
+				if (log.isDebugEnabled())
+					log.warn("Activity at " + entity.getPath() + "has no activity date ");
+			}
 			return dateAsRelPath(currentTime) + "/" + currentUser;
 		}
 		return null;
 	}
 
 	@Override
-	public String getDefaultRelPath(String nodeType, String userId) {
-		if (ActivitiesTypes.ACTIVITIES_ACTIVITY.equals(nodeType)) {
-			Calendar currentTime = GregorianCalendar.getInstance();
-			return dateAsRelPath(currentTime) + "/" + userId;
-		} else
-			return null;
+	public String getDefaultRelPath(Session session, String nodeType, String id) {
+		throw new ActivitiesException("This method should not be used anymore");
+		// if (ActivitiesTypes.ACTIVITIES_ACTIVITY.equals(nodeType)) {
+		// String userId = session.getUserID();
+		// Calendar currentTime = GregorianCalendar.getInstance();
+		// return dateAsRelPath(currentTime) + "/" + userId;
+		// } else
+		// return null;
 	}
 
-	public String getActivityParentRelPath(Session session, Calendar date, String managerId) {
-		String path = JcrUtils.dateAsPath(date, true) + managerId;
-		return path;
-	}
+	// @Override
+	// public Node publishEntity(Node parent, String nodeType, Node srcNode,
+	// boolean removeSrcNode)
+	// throws RepositoryException {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
 
 	@Override
-	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+	public Node configureActivity(Node activity, String type, String title, String desc, List<Node> relatedTo)
 			throws RepositoryException {
-		// TODO Auto-generated method stub
-		return null;
+		return configureActivity(activity, activity.getSession().getUserID(), type, title, desc, relatedTo,
+				new GregorianCalendar());
 	}
 
 	@Override
-	public Node createActivity(Session session, String type, String title, String desc, List<Node> relatedTo) {
-		return createActivity(session, session.getUserID(), type, title, desc, relatedTo, new GregorianCalendar());
-	}
+	public Node configureActivity(Node activity, String reporterId, String type, String title, String desc,
+			List<Node> relatedTo, Calendar date) throws RepositoryException {
+		// try {
+		// Node activityBase = session.getNode(getBasePath());
+		// String localId = UserAdminUtils.getUserLocalId(reporterId);
+		// Node activity = JcrUtils.mkdirs(activityBase,
+		// getDefaultRelPath(session, ActivitiesTypes.ACTIVITIES_ACTIVITY,
+		// localId));
+		// activity.addMixin(type);
 
-	@Override
-	public Node createActivity(Session session, String reporterId, String type, String title, String desc,
-			List<Node> relatedTo, Calendar date) {
-		try {
-			Node activityBase = session.getNode(getBasePath());
-			String localId = UserAdminUtils.getUserLocalId(reporterId);
-			Node parent = JcrUtils.mkdirs(activityBase, getActivityParentRelPath(session, date, localId),
-					NodeType.NT_UNSTRUCTURED);
-			Node activity = parent.addNode(type, NodeType.NT_UNSTRUCTURED);
-			activity.addMixin(type);
-			activity.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
+		activity.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
 
-			// Activity Date
-			if (date != null)
-				activity.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, date);
+		// Activity Date
+		if (date != null)
+			activity.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, date);
 
-			// related to
-			if (relatedTo != null && !relatedTo.isEmpty())
-				ConnectJcrUtils.setMultipleReferences(activity, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
+		// related to
+		if (relatedTo != null && !relatedTo.isEmpty())
+			ConnectJcrUtils.setMultipleReferences(activity, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
 
-			// Content
-			activity.setProperty(Property.JCR_TITLE, title);
-			activity.setProperty(Property.JCR_DESCRIPTION, desc);
-			JcrUtils.updateLastModified(activity);
-			return activity;
-		} catch (RepositoryException e) {
-			throw new ActivitiesException("Unable to create activity node", e);
-		}
+		// Content
+		activity.setProperty(Property.JCR_TITLE, title);
+		activity.setProperty(Property.JCR_DESCRIPTION, desc);
+		JcrUtils.updateLastModified(activity);
+		return activity;
+		// } catch (RepositoryException e) {
+		// throw new ActivitiesException("Unable to create activity node", e);
+		// }
 	}
 
 	private String getBasePath() {
@@ -406,67 +416,71 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	}
 
 	@Override
-	public Node createTask(Session session, Node parentNode, String title, String description, String assignedTo,
-			List<Node> relatedTo, Calendar dueDate, Calendar wakeUpDate) throws RepositoryException {
-		return createTask(session, parentNode, CurrentUser.getUsername(), title, description, assignedTo, relatedTo,
-				new GregorianCalendar(), dueDate, wakeUpDate);
+	public Node configureTask(Node task, String taskNodeType, String title, String description, String assignedTo)
+			throws RepositoryException {
+		return configureTask(task, taskNodeType, task.getSession().getUserID(), title, description, assignedTo, null,
+				new GregorianCalendar(), null, null);
 	}
+	//
+	// @Override
+	// public Node createDraftTask(Session session, String title, String
+	// description, String assignedTo,
+	// List<Node> relatedTo, Calendar dueDate, Calendar wakeUpDate) throws
+	// RepositoryException {
+	// return createDraftTask(session, CurrentUser.getUsername(), title,
+	// description, assignedTo, relatedTo,
+	// new GregorianCalendar(), dueDate, wakeUpDate);
+	// }
+	//
+	// @Override
+	// public Node createDraftTask(Session session, String reporterId, String
+	// title, String description, String assignedTo,
+	// List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar
+	// wakeUpDate)
+	// throws RepositoryException {
+	// return createDraftTask(session, ActivitiesTypes.ACTIVITIES_TASK,
+	// reporterId, title, description, assignedTo,
+	// relatedTo, creationDate, dueDate, wakeUpDate);
+	// }
 
 	@Override
-	public Node createTask(Session session, Node parentNode, String reporterId, String title, String description,
+	public Node configureTask(Node draftTask, String taskNodeType, String reporterId, String title, String description,
 			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate)
 			throws RepositoryException {
-		return createTask(session, parentNode, ActivitiesTypes.ACTIVITIES_TASK, reporterId, title, description,
-				assignedTo, relatedTo, creationDate, dueDate, wakeUpDate);
-	}
 
-	@Override
-	public Node createTask(Session session, Node parentNode, String taskNodeType, String reporterId, String title,
-			String description, String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate,
-			Calendar wakeUpDate) throws RepositoryException {
-		if (session == null && parentNode == null)
-			throw new ActivitiesException(
-					"Define either a session or a parent node. Both cannot be null at the same time.");
+		// Node parentNode = getDraftParent(session);
+		// // We use the mixin as node name
+		// Node taskNode = parentNode.addNode(taskNodeType);
+		// taskNode.addMixin(taskNodeType);
 
-		if (session == null)
-			session = parentNode.getSession();
-
-		if (parentNode == null) {
-			Node activityBase = session.getNode(getBasePath());
-			String localId = UserAdminUtils.getUserLocalId(reporterId);
-			parentNode = JcrUtils.mkdirs(activityBase, getActivityParentRelPath(session, creationDate, localId),
-					NodeType.NT_UNSTRUCTURED);
-		}
-
-		Node taskNode = parentNode.addNode(taskNodeType);
-		taskNode.addMixin(taskNodeType);
+		// Node draftTask = createDraftEntity(session, taskNodeType);
 
 		if (notEmpty(title))
-			taskNode.setProperty(Property.JCR_TITLE, title);
+			draftTask.setProperty(Property.JCR_TITLE, title);
 		if (notEmpty(description))
-			taskNode.setProperty(Property.JCR_DESCRIPTION, description);
+			draftTask.setProperty(Property.JCR_DESCRIPTION, description);
 		if (EclipseUiUtils.isEmpty(reporterId))
-			reporterId = session.getUserID();
-		taskNode.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
+			reporterId = draftTask.getSession().getUserID();
+		draftTask.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
 
 		if (notEmpty(assignedTo))
-			taskNode.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, assignedTo);
+			draftTask.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, assignedTo);
 
 		if (relatedTo != null && !relatedTo.isEmpty())
-			ConnectJcrUtils.setMultipleReferences(taskNode, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
+			ConnectJcrUtils.setMultipleReferences(draftTask, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
 
 		if (creationDate == null)
 			creationDate = new GregorianCalendar();
-		taskNode.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, creationDate);
+		draftTask.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, creationDate);
 
 		if (dueDate != null) {
-			taskNode.setProperty(ActivitiesNames.ACTIVITIES_DUE_DATE, dueDate);
+			draftTask.setProperty(ActivitiesNames.ACTIVITIES_DUE_DATE, dueDate);
 		}
 		if (wakeUpDate != null) {
-			taskNode.setProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE, wakeUpDate);
+			draftTask.setProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE, wakeUpDate);
 		}
-		setTaskDefaultStatus(taskNode, taskNodeType);
-		return taskNode;
+		setTaskDefaultStatus(draftTask, taskNodeType);
+		return draftTask;
 	}
 
 	@Override
@@ -480,27 +494,31 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			taskNode.setProperty(ActivitiesNames.ACTIVITIES_TASK_STATUS, defaultStatus);
 	}
 
-	@Override
-	public Node createPoll(Node parentNode, String reporterId, String pollName, String title, String description,
-			String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar wakeUpDate)
-			throws RepositoryException {
-		Node poll = createTask(null, parentNode, ActivitiesTypes.ACTIVITIES_POLL, reporterId, title, description,
-				assignedTo, relatedTo, creationDate, dueDate, wakeUpDate);
-
-		String newPath = parentNode.getPath() + "/" + JcrUtils.replaceInvalidChars(pollName);
-		poll.setProperty(ActivitiesNames.ACTIVITIES_POLL_NAME, pollName);
-		poll.addNode(ActivitiesNames.ACTIVITIES_RATES);
-
-		// TODO clean this
-		Session session = parentNode.getSession();
-		session.move(poll.getPath(), newPath);
-		// } catch (RepositoryException e) {
-		// throw new ActivitiesException(
-		// "Unable to add poll specific info to task " + poll + " and move it to
-		// " + newPath, e);
-		// }
-		return poll;
-	}
+	// @Override
+	// public Node createPoll(Node parentNode, String reporterId, String
+	// pollName, String title, String description,
+	// String assignedTo, List<Node> relatedTo, Calendar creationDate, Calendar
+	// dueDate, Calendar wakeUpDate)
+	// throws RepositoryException {
+	// Node poll = createDraftTask(null, ActivitiesTypes.ACTIVITIES_POLL,
+	// reporterId, title, description, assignedTo,
+	// relatedTo, creationDate, dueDate, wakeUpDate);
+	//
+	// String newPath = parentNode.getPath() + "/" +
+	// JcrUtils.replaceInvalidChars(pollName);
+	// poll.setProperty(ActivitiesNames.ACTIVITIES_POLL_NAME, pollName);
+	// poll.addNode(ActivitiesNames.ACTIVITIES_RATES);
+	//
+	// // TODO clean this
+	// Session session = parentNode.getSession();
+	// session.move(poll.getPath(), newPath);
+	// // } catch (RepositoryException e) {
+	// // throw new ActivitiesException(
+	// // "Unable to add poll specific info to task " + poll + " and move it to
+	// // " + newPath, e);
+	// // }
+	// return poll;
+	// }
 
 	/* DEPENDENCY INJECTION */
 	public void setUserAdminService(UserAdminService userAdminService) {

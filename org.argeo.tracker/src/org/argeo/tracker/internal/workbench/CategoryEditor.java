@@ -9,11 +9,13 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.connect.AppService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -27,6 +29,7 @@ import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
+import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
@@ -49,6 +52,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 import org.eclipse.ui.forms.editor.FormPage;
@@ -73,6 +77,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 
 	// Ease implementation
 	private Text filterTxt;
+	private AbstractFormPart issueListPart;
 
 	@Override
 	protected void addPages() {
@@ -119,13 +124,13 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 			createFilterPart(filterCmp);
 			filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			Composite tableCmp = new Composite(body, SWT.NO_FOCUS);
-			appendIssuesPart(tableCmp);
+			appendIssuesPart(tableCmp, mf);
 			tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 			form.reflow(true);
 		}
 
 		/** Creates the list of issues relevant for this category */
-		private void appendIssuesPart(Composite parent) {
+		private void appendIssuesPart(Composite parent, IManagedForm mf) {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_ID), "ID", 40));
 			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(Property.JCR_TITLE), "Title", 300));
@@ -142,11 +147,25 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 				public void doubleClick(DoubleClickEvent event) {
 					Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 					String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-					CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
 							OpenEntityEditor.PARAM_JCR_ID, jcrId);
 				}
 			});
+
+			issueListPart = new AbstractFormPart() {
+				@Override
+				public void refresh() {
+					refreshViewer(filterTxt.getText());
+					super.refresh();
+				}
+			};
+			mf.addPart(issueListPart);
 			refreshViewer(null);
+		}
+
+		public void setActive(boolean active) {
+			issueListPart.markStale();
+			super.setActive(active);
 		}
 
 		private void refreshViewer(String filter) {
@@ -183,17 +202,41 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 
-					NewIssueWizard wizard = new NewIssueWizard(getUserAdminService(), getTrackerService(), project);
-					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
-					if (dialog.open() == Window.OK) {
-						try {
-							project.getSession().save();
-							refreshViewer(filterTxt.getText());
-							// TODO link to current category
-						} catch (RepositoryException e1) {
-							throw new TrackerException("Unable to create issue on " + project, e1);
-						}
+					String targetMilestone = null;
+					List<String> versionIds = null;
+					List<String> componentIds = null;
+					if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_COMPONENT)) {
+						componentIds = new ArrayList<>();
+						componentIds.add(officeID);
+					} else if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_VERSION)) {
+						versionIds = new ArrayList<>();
+						versionIds.add(officeID);
+						targetMilestone = officeID;
 					}
+
+					Session tmpSession = null;
+					try {
+						AppService as = getAppService();
+						tmpSession = project.getSession().getRepository().login();
+						Node draftIssue = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_ISSUE);
+						NewIssueWizard wizard = new NewIssueWizard(getUserAdminService(), getTrackerService(),
+								draftIssue);
+						wizard.setKnownProperties(project, targetMilestone, versionIds, componentIds);
+						WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
+						if (dialog.open() == Window.OK) {
+							String issueBasePath = as.getBaseRelPath(TrackerTypes.TRACKER_ISSUE);
+							Node parent = tmpSession.getNode("/" + issueBasePath);
+							Node issue = as.publishEntity(parent, TrackerTypes.TRACKER_ISSUE, draftIssue);
+							issue = as.saveEntity(issue, false);
+							project.getSession().refresh(true);
+							refreshViewer(filterTxt.getText());
+						}
+					} catch (RepositoryException e1) {
+						throw new TrackerException("Unable to create issue on " + project, e1);
+					} finally {
+						JcrUtils.logoutQuietly(tmpSession);
+					}
+
 				}
 			});
 		}

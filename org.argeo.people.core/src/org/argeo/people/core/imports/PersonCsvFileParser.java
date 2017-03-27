@@ -55,15 +55,15 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 			// Basic info
 			String lastName = line.get(PEOPLE_LAST_NAME).trim();
 			String firstName = line.get(PEOPLE_FIRST_NAME).trim();
-			String peopleUid = UUID.randomUUID().toString();
+			String connectUid = UUID.randomUUID().toString();
 
 			// Create corresponding node
-			String relPath = getPeopleService().getDefaultRelPath(PeopleTypes.PEOPLE_PERSON, peopleUid);
+			String relPath = getPeopleService().getDefaultRelPath(getSession(), PeopleTypes.PEOPLE_PERSON, connectUid);
 			Node person = JcrUtils.mkdirs(peopleParentNode, relPath);
 			person.addMixin(PeopleTypes.PEOPLE_PERSON);
 
 			// Mandatory properties
-			person.setProperty(ConnectNames.CONNECT_UID, peopleUid);
+			person.setProperty(ConnectNames.CONNECT_UID, connectUid);
 			if (notEmpty(lastName))
 				person.setProperty(PEOPLE_LAST_NAME, lastName);
 			if (notEmpty(firstName))
@@ -127,14 +127,14 @@ public class PersonCsvFileParser extends AbstractPeopleCsvFileParser {
 
 			String emailAddress = JcrUtils.replaceInvalidChars(line.get("people:emailAddress").trim());
 			if (notEmpty(emailAddress)) {
-				PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), person, emailAddress, true,
-						null, null);
+				PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), person, emailAddress, true, null,
+						null);
 			}
 
 			emailAddress = JcrUtils.replaceInvalidChars(line.get("people:emailAddressOther").trim());
 			if (notEmpty(emailAddress)) {
-				PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), person, emailAddress, false,
-						null, null);
+				PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), person, emailAddress, false, null,
+						null);
 			}
 
 			String facebook = line.get("Facebook");

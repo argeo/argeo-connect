@@ -20,17 +20,17 @@ import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.internal.ui.TrackerUiConstants;
+import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.tracker.internal.ui.controls.TagListFormPart;
@@ -40,13 +40,13 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -193,6 +193,11 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			changeAssignationLk = new Link(body, SWT.NONE);
 			changeAssignationLk.setLayoutData(new TableWrapData(FILL_GRAB));
 
+			// Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
+			// "Choose a group or person to manage this issue", 3);
+			// assignedToDD = new ExistingGroupsDropDown(assignedToTxt,
+			// userAdminService, true, false);
+
 			// Reported by
 			TrackerUiUtils.createFormBoldLabel(tk, body, "Reported by");
 			reporterLk = new Link(body, SWT.NONE);
@@ -210,7 +215,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
 							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(project));
 				}
 			});
@@ -383,6 +388,9 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			commentsCmp.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 			SectionPart part = new SectionPart(section) {
+
+				private ColumnLabelProvider lp = new TrackerLps().new IssueCommentOverviewLabelProvider();
+
 				@Override
 				public void refresh() {
 					if (commentsCmp.isDisposed())
@@ -391,7 +399,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 					List<Node> comments = getComments();
 					for (Node comment : comments)
-						addCommentCmp(commentsCmp, null, comment);
+						addCommentCmp(commentsCmp, lp, null, comment);
 
 					parent.layout(true, true);
 					super.refresh();
@@ -408,18 +416,28 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 				public void widgetSelected(SelectionEvent e) {
 					String newTag = newCommentTxt.getText();
 					if (EclipseUiUtils.notEmpty(newTag)) {
+						Session tmpSession = null;
 						try {
-							getTrackerService().addComment(issue, newTag);
+							// We use a new session that is saved
+							String issuePath = issue.getPath();
+							tmpSession = issue.getSession().getRepository().login();
+							Node issueExt = tmpSession.getNode(issuePath);
+							getTrackerService().addComment(issueExt, newTag);
+							tmpSession.save();
+							session.refresh(true);
 						} catch (RepositoryException re) {
 							throw new TrackerException("Unable to add comment " + newTag + " on " + issue, re);
+						} finally {
+							JcrUtils.logoutQuietly(tmpSession);
 						}
 						part.refresh();
-						part.markDirty();
+						// part.markDirty();
 					}
 					// Reset the "new comment" field
 					newCommentTxt.setText("");
-					GridData gd = ((GridData) newCommentTxt.getLayoutData());
-					gd.heightHint = SWT.DEFAULT;
+					// okBtn.setFocus();
+					TableWrapData twd = ((TableWrapData) newCommentTxt.getLayoutData());
+					twd.heightHint = SWT.DEFAULT;
 					newCommentTxt.getParent().layout(true, true);
 					getManagedForm().reflow(true);
 				}
@@ -444,14 +462,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		return comments;
 	}
 
-	private void addCommentCmp(Composite parent, AbstractFormPart formPart, Node comment) {
+	private void addCommentCmp(Composite parent, ColumnLabelProvider lp, AbstractFormPart formPart, Node comment) {
 		// retrieve properties
-		String createdBy = ConnectJcrUtils.get(comment, Property.JCR_CREATED_BY);
-		String createdOn = ConnectJcrUtils.getDateFormattedAsString(comment, Property.JCR_CREATED,
-				TrackerUiConstants.simpleDateTimeFormat);
-		String lastUpdatedBy = ConnectJcrUtils.get(comment, Property.JCR_LAST_MODIFIED_BY);
-		String lastUpdatedOn = ConnectJcrUtils.getDateFormattedAsString(comment, Property.JCR_LAST_MODIFIED,
-				TrackerUiConstants.simpleDateTimeFormat);
 		String description = ConnectJcrUtils.get(comment, Property.JCR_DESCRIPTION);
 
 		Composite commentCmp = new Composite(parent, SWT.NO_FOCUS);
@@ -461,12 +473,8 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		// First line
 		Label overviewLabel = new Label(commentCmp, SWT.WRAP);
 		overviewLabel.setLayoutData(new TableWrapData(FILL_GRAB));
-		StringBuilder builder = new StringBuilder();
-		builder.append(UserAdminUtils.getUserLocalId(createdBy)).append(" on ").append(createdOn);
-		if (EclipseUiUtils.notEmpty(lastUpdatedBy))
-			builder.append(" (last edited by ").append(UserAdminUtils.getUserLocalId(lastUpdatedBy)).append(" on ")
-					.append(lastUpdatedOn).append(")");
-		overviewLabel.setText(builder.toString());
+		overviewLabel.setText(lp.getText(comment));
+		overviewLabel.setFont(EclipseUiUtils.getBoldFont(parent));
 
 		// Second line: description
 		Label descLabel = new Label(commentCmp, SWT.WRAP);
@@ -589,13 +597,14 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 	}
 
 	private String getIssueTitle() {
+		String id = ConnectJcrUtils.get(getNode(), TrackerNames.TRACKER_ID);
 		String name = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 		if (notEmpty(name)) {
 			Node project = TrackerUtils.getProjectFromChild(getNode());
 			String pname = ConnectJcrUtils.get(project, Property.JCR_TITLE);
 			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
 		}
-		return name;
+		return "#" + id + " " + name;
 	}
 
 	private class VersionListFormPart extends TagListFormPart {
@@ -627,7 +636,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		protected void callOpenEditor(String tagKey) {
 			Node node = TrackerUtils.getVersionById(project, tagKey);
 			if (node != null)
-				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
 		}
 
@@ -662,7 +671,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		protected void callOpenEditor(String tagKey) {
 			Node node = TrackerUtils.getComponentById(project, tagKey);
 			if (node != null)
-				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
 		}
 	}

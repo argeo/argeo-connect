@@ -13,7 +13,10 @@ public interface AppUiService {
 		return null;
 	}
 
-	/** Creates the correct wizard depending on the type of the given node. */
+	/**
+	 * Creates and returns the correct wizard to retrieve relevant minimum
+	 * information depending on the type of the given node.
+	 */
 	default public Wizard getCreationWizard(Node node) {
 		return null;
 	}

@@ -75,7 +75,7 @@ public class ConnectJcrUtils {
 	}
 
 	public static String cleanNodeName(String name) {
-		String cleanName = name.trim().replaceAll("[^a-zA-Z0-9-. ]", "");
+		String cleanName = name.trim().replaceAll("[^a-zA-Z0-9-. _]", "");
 		return cleanName;
 	}
 

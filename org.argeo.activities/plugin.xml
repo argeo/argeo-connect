@@ -39,11 +39,6 @@
 	
 	<!-- COMMANDS --> 
 	<extension point="org.eclipse.ui.commands">
-		<command
-      		id="org.argeo.activities.createSimpleTask"
-            defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		name="Create simple task">
-        </command>
  	</extension>
 	
 	<!-- MENU CONTRIBUTION --> 
@@ -54,9 +49,12 @@
 		<!-- Corresponding submenus --> 
 		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
 			<command
-				commandId="org.argeo.activities.createSimpleTask"
+				commandId="org.argeo.connect.ui.createEntity"
 				icon="theme/icons/types/todo.gif"
 				label="Task">
+				<parameter
+         		name="param.targetNodeType"
+         		value="activities:task" />
 			</command>	
 		</menuContribution>
 		

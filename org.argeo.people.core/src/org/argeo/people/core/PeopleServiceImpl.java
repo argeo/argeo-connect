@@ -13,12 +13,10 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.resources.ResourcesService;
@@ -48,13 +46,14 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	private ContactService contactService = new ContactServiceImpl();
 
 	@Override
-	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrc) throws RepositoryException {
+	public Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrc)
+			throws RepositoryException {
 		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType) || PeopleTypes.PEOPLE_ORG.equals(nodeType)) {
 			String peopleUid = ConnectJcrUtils.get(srcNode, ConnectNames.CONNECT_UID);
 			if (isEmpty(peopleUid))
 				throw new PeopleException(
 						"Unable to define default path for " + srcNode + ". No property people:uid is defined");
-			String relPath = getDefaultRelPath(nodeType, peopleUid);
+			String relPath = getDefaultRelPath(ConnectJcrUtils.getSession(srcNode), nodeType, peopleUid);
 			Node createdNode = JcrUtils.mkdirs(parent, relPath);
 			RemoteJcrUtils.copy(srcNode, createdNode, true);
 			createdNode.addMixin(nodeType);
@@ -101,11 +100,11 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			throw new PeopleException(
 					"Unable to define default path for " + entity + ". No property people:uid is defined");
 		else
-			return getDefaultRelPath(null, peopleUid);
+			return getDefaultRelPath(ConnectJcrUtils.getSession(entity), null, peopleUid);
 	}
 
 	@Override
-	public String getDefaultRelPath(String nodeType, String peopleUid) {
+	public String getDefaultRelPath(Session session, String nodeType, String peopleUid) {
 		String path = JcrUtils.firstCharsToPath(peopleUid, 2) + "/" + peopleUid;
 		return path;
 	}
@@ -214,40 +213,6 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 			}
 		} else
 			log.warn("Trying to update primary cache on " + entity + " - Unknown type.");
-	}
-
-	@Override
-	public Node getEntityByUid(Session session, String parentPath, String uid) {
-		if (isEmpty(uid))
-			throw new PeopleException("Cannot get entity by id by providing an empty people:uid");
-		try {
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(parentPath) + "//element(*, " + ConnectTypes.CONNECT_ENTITY
-					+ ")";
-			String attrQuery = XPathUtils.getPropertyEquals(ConnectNames.CONNECT_UID, uid);
-			if (notEmpty(attrQuery))
-				xpathQueryStr += "[" + attrQuery + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
-			QueryResult result = xpathQuery.execute();
-			NodeIterator ni = result.getNodes();
-
-			long niSize = ni.getSize();
-			if (niSize == 0)
-				return null;
-			else if (niSize > 1) {
-				// TODO find a way to include the calling stack in the thrown
-				// Exception
-				log.error("Found " + niSize + " entities with PeopleUID [" + uid + "] - calling stack:\n "
-						+ Thread.currentThread().getStackTrace().toString());
-				Node first = ni.nextNode();
-				throw new PeopleException(
-						"Found " + niSize + " entities for People UID [" + uid + "], First occurence info:\npath: "
-								+ first.getPath() + ", node type: " + first.getPrimaryNodeType().getName() + "");
-			} else
-				return ni.nextNode();
-		} catch (RepositoryException e) {
-			throw new PeopleException("Unable to retrieve entity with people uid: [" + uid + "]", e);
-		}
 	}
 
 	@Override

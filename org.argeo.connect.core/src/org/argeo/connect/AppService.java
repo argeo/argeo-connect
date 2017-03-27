@@ -1,43 +1,77 @@
 package org.argeo.connect;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
+
+import java.util.UUID;
+
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.query.Query;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.RemoteJcrUtils;
+import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeUtils;
 
-/** Minimal interface that an Argeo App must implement */
+/** Minimal interface that a Connect AppService must implement */
 public interface AppService {
+	final static Log log = LogFactory.getLog(AppService.class);
 
-	default public Node createEntity(Node parent, String nodeType, Node srcNode) throws RepositoryException {
-		return createEntity(parent, nodeType, srcNode, true);
+	/** Returns the current App name */
+	public String getAppBaseName();
+
+	default public String getBaseRelPath(String nodeType) {
+		return getAppBaseName();
 	}
 
-	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
-			throws RepositoryException;
+	default public Node publishEntity(Node parent, String nodeType, Node srcNode) throws RepositoryException {
+		return publishEntity(parent, nodeType, srcNode, true);
+	}
+
+	default public Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+			throws RepositoryException {
+		Node createdNode = null;
+		if (isKnownType(nodeType)) {
+			String relPath = getDefaultRelPath(srcNode);
+
+			if (parent == null)
+				parent = srcNode.getNode("/" + getBaseRelPath(nodeType));
+
+			createdNode = JcrUtils.mkdirs(parent, relPath);
+			RemoteJcrUtils.copy(srcNode, createdNode, true);
+			createdNode.addMixin(nodeType);
+			JcrUtils.updateLastModified(createdNode);
+			if (removeSrcNode)
+				srcNode.remove();
+		}
+		return createdNode;
+	}
 
 	/**
 	 * Try to save and optionally publish a business object after applying
 	 * context specific rules and special behaviours (typically cache updates).
 	 * 
 	 * @return the entity that has been saved (and optionally published): note
-	 *         that is some cases (typically, the first save of a draft node in
+	 *         that in some cases (typically, the first save of a draft node in
 	 *         the business sub tree) the returned node is not the same as the
 	 *         one that has been passed
 	 * @param entity
 	 * @param publish
-	 *            also publish the corresponding node
+	 *            also publishes the corresponding node
 	 * @throws PeopleException
-	 *             If one a the rule defined for this type is not respected. Use
-	 *             getMessage to display to the user if needed
+	 *             If one of the rule defined for this type is not respected.
+	 *             Use getMessage to display to the user if needed
 	 */
 	default public Node saveEntity(Node entity, boolean publish) {
 		try {
-			if (entity.getSession().hasPendingChanges()){
+			if (entity.getSession().hasPendingChanges()) {
 				JcrUtils.updateLastModified(entity);
 				entity.getSession().save();
 			}
@@ -50,10 +84,6 @@ public interface AppService {
 		}
 	}
 
-	default public String getBaseRelPath(String nodeType) {
-		return getAppBaseName();
-	}
-
 	/**
 	 * Computes the App specific relative path for a known type based on
 	 * properties of the passed node
@@ -63,15 +93,11 @@ public interface AppService {
 	/**
 	 * Computes the App specific relative path for this known node type based on
 	 * the passed id
+	 * 
+	 * @param session
+	 *            TODO
 	 */
-	public String getDefaultRelPath(String nodeType, String id);
-
-	/** Returns the current App name */
-	public String getAppBaseName();
-
-	// default public String getDefaultBasePath() {
-	// return "/" + getAppBaseName();
-	// }
+	public String getDefaultRelPath(Session session, String nodeType, String id);
 
 	/**
 	 * Returns a display name that is app specific and that depends on one or
@@ -88,6 +114,10 @@ public interface AppService {
 			return defaultDisplayName;
 	}
 
+	/**
+	 * Returns (after creation if necessary) the base parent for draft nodes of
+	 * this application
+	 */
 	default public Node getDraftParent(Session session) throws RepositoryException {
 		Node home = NodeUtils.getUserHome(session);
 		String draftRelPath = ConnectConstants.HOME_APP_SYS_RELPARPATH + "/" + getAppBaseName();
@@ -95,18 +125,86 @@ public interface AppService {
 	}
 
 	/**
+	 * Convenience method to create a Node with given mixin under the current
+	 * logged in user home. Creates a UUID and set the connect:uid properties.
+	 * The session is not saved.
+	 */
+	default public Node createDraftEntity(Session session, String mainMixin) throws RepositoryException {
+		Node parent = getDraftParent(session);
+		String connectUid = UUID.randomUUID().toString();
+		Node draftNode = parent.addNode(connectUid);
+		draftNode.addMixin(mainMixin);
+		draftNode.setProperty(ConnectNames.CONNECT_UID, connectUid);
+		return draftNode;
+	}
+
+	/**
 	 * Returns the App specific main type of a node, that can be its primary
-	 * type or one of its mixin, typically for People App.
+	 * type or one of its mixin, typically for the People App.
 	 */
 	default public String getMainNodeType(Node node) {
 		return ConnectJcrUtils.get(node, Property.JCR_PRIMARY_TYPE);
 	}
 
+	/**
+	 * Simply checks if the passed entity has a primary or mixin type that is
+	 * known and thus can be managed by the this App
+	 */
 	public boolean isKnownType(Node entity);
 
+	/**
+	 * Simply checks if the passed type is known and thus can be managed by the
+	 * this App. It might be a primary or mixin type
+	 */
 	public boolean isKnownType(String nodeType);
 
+	/**
+	 * Draft implementation of an i18n mechanism to retrieve labels given a key
+	 */
 	default public String getLabel(String key, String... innerNames) {
 		return key;
+	}
+
+	/**
+	 * Searches the workspace corresponding to the passed session. It returns
+	 * the corresponding entity or null if none has been found. This UID is
+	 * implementation specific and is not a JCR Identifier.
+	 * 
+	 * It will throw a PeopleException if more than one item with this ID has
+	 * been found
+	 * 
+	 * @param session
+	 * @param parentPath
+	 *            can be null or empty
+	 * @param uid
+	 *            the implementation specific UID of the searched entity
+	 */
+	default public Node getEntityByUid(Session session, String parentPath, String uid) {
+		if (isEmpty(uid))
+			throw new ConnectException("uid cannot be null or empty");
+		try {
+			StringBuilder builder = new StringBuilder();
+			builder.append(XPathUtils.descendantFrom(parentPath));
+			builder.append("//element(*, ").append(ConnectTypes.CONNECT_ENTITY).append(")");
+			builder.append("[").append(XPathUtils.getPropertyEquals(ConnectNames.CONNECT_UID, uid)).append("]");
+			Query xpathQuery = XPathUtils.createQuery(session, builder.toString());
+			NodeIterator ni = xpathQuery.execute().getNodes();
+			long niSize = ni.getSize();
+			if (niSize == 0)
+				return null;
+			else if (niSize > 1) {
+				// TODO rather include the calling stack in the thrown
+				// ConnectException
+				log.error("Found " + niSize + " entities with connect:uid [" + uid + "] - calling stack:\n "
+						+ Thread.currentThread().getStackTrace().toString());
+				Node first = ni.nextNode();
+				throw new ConnectException(
+						"Found " + niSize + " entities for People UID [" + uid + "], First occurence info:\npath: "
+								+ first.getPath() + ", node type: " + first.getPrimaryNodeType().getName() + "");
+			} else
+				return ni.nextNode();
+		} catch (RepositoryException e) {
+			throw new ConnectException("Unable to retrieve entity with connect:uid  [" + uid + "]", e);
+		}
 	}
 }

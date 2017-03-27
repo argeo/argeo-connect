@@ -1,9 +1,16 @@
 package org.argeo.tracker.internal.ui;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.core.TrackerUtils;
@@ -19,7 +26,8 @@ public class TrackerLps {
 		@Override
 		public String getText(Object element) {
 			Node version = (Node) element;
-			String date = ConnectJcrUtils.getDateFormattedAsString(version, TrackerNames.TRACKER_RELEASE_DATE, datePattern);
+			String date = ConnectJcrUtils.getDateFormattedAsString(version, TrackerNames.TRACKER_RELEASE_DATE,
+					datePattern);
 			if (date == null)
 				date = ConnectJcrUtils.getDateFormattedAsString(version, TrackerNames.TRACKER_TARGET_DATE, datePattern);
 
@@ -85,6 +93,41 @@ public class TrackerLps {
 				throw new TrackerException("Unable to get isssue importance for " + issue, e);
 			}
 			return "";
+		}
+	}
+
+	public class IssueCommentOverviewLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = 3580821684409015205L;
+
+		private DateFormat df = new SimpleDateFormat(TrackerUiConstants.simpleDateTimeFormat);
+
+		@Override
+		public String getText(Object element) {
+			Node comment = (Node) element;
+			String createdBy = ConnectJcrUtils.get(comment, Property.JCR_CREATED_BY);
+			Calendar createdOn = ConnectJcrUtils.getDateValue(comment, Property.JCR_CREATED);
+			String lastUpdatedBy = ConnectJcrUtils.get(comment, Property.JCR_LAST_MODIFIED_BY);
+			Calendar lastUpdatedOn = ConnectJcrUtils.getDateValue(comment, Property.JCR_LAST_MODIFIED);
+
+			if (createdBy.equalsIgnoreCase(lastUpdatedBy))
+				lastUpdatedBy = null;
+			long t1Millis = createdOn.getTimeInMillis() + 300000;
+			long t2Millis = createdOn.getTimeInMillis();
+			if (t2Millis < t1Millis)
+				lastUpdatedOn = null;
+
+			String createdOnStr = df.format(createdOn.getTime());
+			ConnectJcrUtils.getDateFormattedAsString(comment, Property.JCR_CREATED,
+					TrackerUiConstants.simpleDateTimeFormat);
+			StringBuilder builder = new StringBuilder();
+			builder.append(UserAdminUtils.getUserLocalId(createdBy)).append(" on ").append(createdOnStr);
+			if (lastUpdatedOn != null) {
+				builder.append(" (last edited ");
+				if (EclipseUiUtils.notEmpty(lastUpdatedBy))
+					builder.append("by ").append(UserAdminUtils.getUserLocalId(lastUpdatedBy)).append(" ");
+				builder.append("on ").append(df.format(lastUpdatedOn.getTime())).append(")");
+			}
+			return builder.toString();
 		}
 	}
 }

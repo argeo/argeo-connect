@@ -4,28 +4,11 @@ import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.argeo.connect.AppService;
 
 /** Provides method interfaces to manage a people repository */
 public interface PeopleService extends AppService {
-
-	/**
-	 * Searches the workspace corresponding to the passed session. It returns
-	 * the corresponding entity or null if none has been found. This UID is
-	 * implementation specific and is not a JCR Identifier.
-	 * 
-	 * It will throw a PeopleException if more than one item with this ID has
-	 * been found
-	 * 
-	 * @param session
-	 * @param parentPath
-	 *            can be null or empty
-	 * @param uid
-	 *            the implementation specific UID of the searched entity
-	 */
-	public Node getEntityByUid(Session session, String parentPath, String uid);
 
 	/**
 	 * Returns the corresponding people entity using the People UID that is

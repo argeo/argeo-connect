@@ -1,6 +1,6 @@
 package org.argeo.tracker;
 
-/** Jcr names used by the Tracker app */
+/** Jcr names used by the Tracker App */
 public interface TrackerNames {
 
 	/* PROJECT */
@@ -13,10 +13,11 @@ public interface TrackerNames {
 	String TRACKER_ISSUES = "issues";
 
 	/* ISSUE & VERSION */
-	String TRACKER_ID = "office:id";
-	String TRACKER_TARGET_ID = "office:targetId";
-	String TRACKER_VERSION_IDS = "office:versionIds";
-	String TRACKER_COMPONENT_IDS = "office:componentIds";
+	String TRACKER_ID = "tracker:id"; // "office:id";
+	String TRACKER_PROJECT_UID = "tracker:projectUid";
+	String TRACKER_TARGET_ID = "tracker:milestoneId"; // "office:targetId";
+	String TRACKER_VERSION_IDS = "tracker:versionIds"; // "office:versionIds";
+	String TRACKER_COMPONENT_IDS = "tracker:componentIds"; // "office:componentIds";
 	String TRACKER_COMMENTS = "comments";
 
 	// (LONG) highest, high, normal, low, lowest

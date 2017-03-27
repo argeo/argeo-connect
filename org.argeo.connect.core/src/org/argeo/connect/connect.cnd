@@ -7,7 +7,7 @@
 // ENTITY TYPE: it is the parent of all connect business types.
 [connect:entity] > connect:base, mix:referenceable
  mixin
-- connect:uid (String) m nofulltext // An implementation dependent UID for each entity
+- connect:uid (String) m // nofulltext // An implementation dependent UID for each entity
 + connect:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
 + photo (nt:file) // An optional picture for this entity
 
@@ -23,13 +23,13 @@
 - ldap:givenName (STRING) 
 - ldap:sn (STRING)
 - ldap:title (STRING)
-- ldap:displayName (BOOLEAN) // FIXME there is typo: must be (STRING)
+- ldap:displayName (STRING) 
 - ldap:generationQualifier
 
 [connect:org] 
  mixin
 - ldap:cn (STRING) 
-- ldap:displayName (BOOLEAN) // FIXME there is typo: must be (STRING)
+- ldap:displayName (STRING) 
 
 [connect:contactable] 
  mixin

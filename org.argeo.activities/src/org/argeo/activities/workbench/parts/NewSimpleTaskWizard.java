@@ -2,14 +2,15 @@ package org.argeo.activities.workbench.parts;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesService;
+import org.argeo.activities.ActivitiesTypes;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.ConnectUiStyles;
@@ -49,9 +50,9 @@ public class NewSimpleTaskWizard extends Wizard {
 	// .getLog(CreateSimpleTaskWizard.class);
 
 	// Set upon instantiation
-	private Session currSession;
-	private ActivitiesService activityService;
-	private UserAdminService userAdminService;
+	private final UserAdminService userAdminService;
+	private final ActivitiesService activityService;
+	private final Node draftTask;
 
 	// Business objects
 	private List<Node> relatedTo;
@@ -67,24 +68,20 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	protected TableViewer itemsViewer;
 
-	public NewSimpleTaskWizard(Session session, UserAdminService userAdminService, ActivitiesService activityService) {
+	public NewSimpleTaskWizard(UserAdminService userAdminService, ActivitiesService activityService, Node draftTask) {
 		this.userAdminService = userAdminService;
 		this.activityService = activityService;
-		this.currSession = session;
+		this.draftTask = draftTask;
 	}
 
 	public void setRelatedTo(List<Node> relatedTo) {
 		this.relatedTo = relatedTo;
 	}
 
-	public Node getCreatedTask() {
-		return createdTask;
-	}
-
-	// Exposes to extending classes
-	protected Session getSession() {
-		return currSession;
-	}
+	// // Exposes to extending classes
+	// protected Session getSession() {
+	// return currSession;
+	// }
 
 	@Override
 	public void addPages() {
@@ -109,8 +106,9 @@ public class NewSimpleTaskWizard extends Wizard {
 		}
 
 		try {
-			createdTask = activityService.createTask(currSession, null, titleTxt.getText(), descTxt.getText(),
-					assignedToGroupId, relatedTo, dueDateCmp.getCalendar(), wakeUpDateCmp.getCalendar());
+			activityService.configureTask(draftTask, ActivitiesTypes.ACTIVITIES_TASK,
+					draftTask.getSession().getUserID(), titleTxt.getText(), descTxt.getText(), assignedToGroupId,
+					relatedTo, GregorianCalendar.getInstance(), dueDateCmp.getCalendar(), wakeUpDateCmp.getCalendar());
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create simple task with title " + titleTxt.getText(), e);
 		}

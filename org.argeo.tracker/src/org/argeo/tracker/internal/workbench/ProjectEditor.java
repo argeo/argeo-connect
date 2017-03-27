@@ -10,11 +10,13 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
@@ -237,7 +239,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String jcrId = ConnectJcrUtils.getIdentifier(milestone);
-				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 			}
 		});
@@ -345,15 +347,26 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 
-					NewIssueWizard wizard = new NewIssueWizard(getUserAdminService(), getTrackerService(), project);
-					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
-					if (dialog.open() == Window.OK) {
-						try {
-							project.getSession().save();
+					Session tmpSession = null;
+					try {
+						AppService as = getAppService();
+						tmpSession = project.getSession().getRepository().login();
+						Node draftIssue = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_ISSUE);
+						NewIssueWizard wizard = new NewIssueWizard(getUserAdminService(), getTrackerService(),
+								draftIssue);
+						wizard.setKnownProperties(project, null, null, null);
+						WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
+						if (dialog.open() == Window.OK) {
+							String issueBasePath = as.getBaseRelPath(TrackerTypes.TRACKER_ISSUE);
+							Node parent = tmpSession.getNode("/" + issueBasePath);
+							Node issue = getTrackerService().publishEntity(parent, TrackerTypes.TRACKER_ISSUE,
+									draftIssue);
+							issue = getTrackerService().saveEntity(issue, false);
+							project.getSession().refresh(true);
 							refreshViewer(filterTxt.getText());
-						} catch (RepositoryException e1) {
-							throw new TrackerException("Unable to create issue on " + project, e1);
 						}
+					} catch (RepositoryException e1) {
+						throw new TrackerException("Unable to create issue on " + project, e1);
 					}
 				}
 			});
@@ -688,7 +701,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			public void doubleClick(DoubleClickEvent event) {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
 						OpenEntityEditor.PARAM_JCR_ID, jcrId);
 			}
 		});

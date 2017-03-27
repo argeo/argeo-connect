@@ -38,7 +38,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 
 	/* API METHODS */
 	@Override
-	public Node createEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
+	public Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
 			throws RepositoryException {
 		// TODO Auto-generated method stub
 		return null;
@@ -56,7 +56,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 	}
 
 	@Override
-	public String getDefaultRelPath(String nodeType, String id) {
+	public String getDefaultRelPath(Session session, String nodeType, String id) {
 		if (ResourcesTypes.RESOURCES_TAG.equals(nodeType) | ResourcesTypes.RESOURCES_ENCODED_TAG.equals(nodeType)) {
 			// remove trailing and starting space
 			id = id.trim();
@@ -79,19 +79,6 @@ public class ResourcesServiceImpl implements ResourcesService {
 		} else
 			return null;
 	}
-
-	// private String getPathForId(String resourceType, String id) {
-	// if (ResourcesConstants.RESOURCE_TYPE_ID_TEMPLATE.equals(resourceType))
-	// return "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" +
-	// ResourcesNames.RESOURCES_TEMPLATES + "/" + id;
-	// else if
-	// (ResourcesConstants.RESOURCE_TYPE_ID_TAG_LIKE.equals(resourceType))
-	// return "/" + ResourcesNames.RESOURCES_BASE_NAME + "/" +
-	// ResourcesNames.RESOURCES_TAG_LIKE + "/" + id;
-	// else
-	// throw new ConnectException("Unknown resource type " + resourceType + "
-	// for id " + id);
-	// }
 
 	@Override
 	public boolean isKnownType(Node entity) {
@@ -161,7 +148,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 	@Override
 	public Node getNodeTemplate(Session session, String templateId) {
 		String path = "/" + getAppBaseName() + "/"
-				+ getDefaultRelPath(ResourcesTypes.RESOURCES_NODE_TEMPLATE, templateId);
+				+ getDefaultRelPath(null, ResourcesTypes.RESOURCES_NODE_TEMPLATE, templateId);
 		try {
 			if (session.nodeExists(path)) {
 				return session.getNode(path);
@@ -181,7 +168,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 			return node;
 		else {
 			String path = "/" + getAppBaseName() + "/"
-					+ getDefaultRelPath(ResourcesTypes.RESOURCES_NODE_TEMPLATE, currId);
+					+ getDefaultRelPath(null, ResourcesTypes.RESOURCES_NODE_TEMPLATE, currId);
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (!session.nodeExists(parPath))
@@ -264,7 +251,8 @@ public class ResourcesServiceImpl implements ResourcesService {
 		if (node != null)
 			return node;
 		else {
-			String path = "/" + getAppBaseName() + "/" + getDefaultRelPath(ResourcesTypes.RESOURCES_TAG_PARENT, currId);
+			String path = "/" + getAppBaseName() + "/"
+					+ getDefaultRelPath(null, ResourcesTypes.RESOURCES_TAG_PARENT, currId);
 			String parPath = JcrUtils.parentPath(path);
 			try {
 				if (!session.nodeExists(parPath))
@@ -292,7 +280,8 @@ public class ResourcesServiceImpl implements ResourcesService {
 
 	@Override
 	public Node getTagLikeResourceParent(Session session, String tagId) {
-		String path = "/" + getAppBaseName() + "/" + getDefaultRelPath(ResourcesTypes.RESOURCES_TAG_PARENT, tagId);
+		String path = "/" + getAppBaseName() + "/"
+				+ getDefaultRelPath(null, ResourcesTypes.RESOURCES_TAG_PARENT, tagId);
 		try {
 			if (session.nodeExists(path)) {
 				return session.getNode(path);
@@ -351,7 +340,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 	@Override
 	public Node getRegisteredTag(Node tagParent, String instanceKey) {
 		try {
-			String relPath = getDefaultRelPath(ResourcesTypes.RESOURCES_TAG, instanceKey);
+			String relPath = getDefaultRelPath(null, ResourcesTypes.RESOURCES_TAG, instanceKey);
 			if (tagParent.hasNode(relPath)) {
 				Node existing = tagParent.getNode(relPath);
 				String existingValue = ConnectJcrUtils.get(existing, getTagKeyPropName(tagParent));
@@ -586,7 +575,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 		while (nit.hasNext())
 			updateOneTag(nit.nextNode(), propName, oldValue, newValue);
 
-		String newRelPath = "/" + getDefaultRelPath(ResourcesTypes.RESOURCES_TAG, newValue);
+		String newRelPath = "/" + getDefaultRelPath(null, ResourcesTypes.RESOURCES_TAG, newValue);
 		// Insure the parent node is already existing
 		// Rather use the parent node than the abs path: we might have not the
 		// right on the full workspace
@@ -668,7 +657,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 	private Node createTagInstanceInternal(Node tagParent, String tagKey) {
 		try {
 			// retrieve parameters for this tag
-			String relPath = getDefaultRelPath(ResourcesTypes.RESOURCES_TAG, tagKey);
+			String relPath = getDefaultRelPath(null, ResourcesTypes.RESOURCES_TAG, tagKey);
 			String instanceType = tagParent.getProperty(ResourcesNames.RESOURCES_TAG_INSTANCE_TYPE).getString();
 			// create and set props
 			Node newTag = JcrUtils.mkdirs(tagParent, relPath, instanceType);

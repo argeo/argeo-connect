@@ -30,6 +30,7 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -181,8 +182,8 @@ public class ActivityList extends LazyCTabControl {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				createTask(addTaskLk.getShell(), entity);
-				activityTable.refresh();
+				if (createTask(addTaskLk.getShell(), entity))
+					activityTable.refresh();
 			}
 		});
 	}
@@ -239,52 +240,55 @@ public class ActivityList extends LazyCTabControl {
 		}
 	}
 
-	private Node createActivity(Node entity, Combo typeLbCmb, Text titleTxt, Text descTxt, ActivityTable table) {
+	private void createActivity(Node entity, Combo typeLbCmb, Text titleTxt, Text descTxt, ActivityTable table) {
 		String typeLbl = typeLbCmb.getText();
 		String title = titleTxt.getText();
 		String desc = descTxt.getText();
 		String type = ActivityValueCatalogs.getKeyByValue(ActivityValueCatalogs.MAPS_ACTIVITY_TYPES, typeLbl);
-		Node activity = createActivity(entity, type, title, desc);
-		if (activity != null) {
+		if (createActivity(entity, type, title, desc)) {
 			table.refresh();
 			typeLbCmb.select(0);
 			titleTxt.setText("");
 			descTxt.setText("");
 			typeLbCmb.setFocus();
 		}
-		return activity;
 	}
 
-	private void createTask(Shell shell, Node relatedEntity) {
+	private boolean createTask(Shell shell, Node relatedEntity) {
 		Session session = null;
 		try {
-			// FIXME session management is not clean here
-			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
-			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(session, userAdminService, activityService);
+			Node task = activityService.createDraftEntity(session, ActivitiesTypes.ACTIVITIES_TASK);
+			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(userAdminService, activityService, task);
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(relatedEntity);
 			wizard.setRelatedTo(relatedTo);
 			WizardDialog dialog = new WizardDialog(shell, wizard);
-			dialog.open();
-			session.save();
+			if (dialog.open() == Window.OK) {
+				activityService.publishEntity(null, ActivitiesTypes.ACTIVITIES_TASK, task);
+				activityService.saveEntity(task, false);
+				relatedEntity.getSession().refresh(true);
+				return true;
+			}
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create task node related to " + relatedEntity, e);
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
+		return false;
 	}
 
-	private Node createActivity(Node relatedEntity, String type, String title, String desc) {
+	private boolean createActivity(Node relatedEntity, String type, String title, String desc) {
 		Session session = null;
 		try {
-			// Create an independent session.
 			session = relatedEntity.getSession().getRepository().login();
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(relatedEntity);
-			Node activity = activityService.createActivity(session, type, title, desc, relatedTo);
-			ConnectJcrUtils.saveAndPublish(activity, true);
-			return activity;
+			Node activity = activityService.createDraftEntity(session, type);
+			activityService.configureActivity(activity, type, title, desc, relatedTo);
+			activityService.publishEntity(null, type, activity);
+			activityService.saveEntity(activity, true);
+			return true;
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create activity node related to " + relatedEntity, e);
 		} finally {

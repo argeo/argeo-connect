@@ -48,5 +48,17 @@
 	<extension
 		id="menu:org.eclipse.ui.main.menu"
 		point="org.eclipse.ui.menus">
+		
+		<!-- Tracker specific entity creation --> 
+		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="theme/icons/types/bug.ico"
+				label="Issue">
+				<parameter
+         			name="param.targetNodeType"
+         			value="tracker:issue" />
+			</command>	
+		</menuContribution>
 	</extension>
 </plugin>

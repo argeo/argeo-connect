@@ -5,6 +5,7 @@ public interface TrackerTypes {
 	// Projects
 	String TRACKER_IT_PROJECT = "tracker:itProject";
 	String TRACKER_PROJECT = "tracker:project";
+	String TRACKER_TASK = "tracker:task";
 	// A Ticket for a given project
 	String TRACKER_ISSUE = "tracker:issue";
 	// A comment on an issue

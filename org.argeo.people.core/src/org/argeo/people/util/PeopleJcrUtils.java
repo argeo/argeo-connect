@@ -694,7 +694,8 @@ public class PeopleJcrUtils implements PeopleNames {
 
 	public static Node createImportTmpParent(Session session, AppService appService) throws RepositoryException {
 		Node peopleDraftParent = appService.getDraftParent(session);
-		String relPath = "imports/" + appService.getDefaultRelPath(ConnectTypes.CONNECT_ENTITY, session.getUserID());
+		String relPath = "imports/"
+				+ appService.getDefaultRelPath(session, ConnectTypes.CONNECT_ENTITY, session.getUserID());
 		Node parent = JcrUtils.mkdirs(peopleDraftParent, ConnectJcrUtils.parentRelPath(relPath));
 		return parent.addNode(session.getUserID());
 	}

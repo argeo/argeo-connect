@@ -11,7 +11,7 @@ import org.argeo.tracker.internal.workbench.CategoryEditor;
 import org.argeo.tracker.internal.workbench.IssueEditor;
 import org.argeo.tracker.internal.workbench.ProjectEditor;
 import org.argeo.tracker.internal.workbench.TrackerImages;
-import org.eclipse.jface.wizard.Wizard;
+import org.argeo.tracker.ui.TrackerUiService;
 import org.eclipse.swt.graphics.Image;
 
 /**
@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.Image;
  * the name of the command to open editors so that it is easily extended by
  * specific extensions
  */
-public class TrackerWorkbenchService implements AppWorkbenchService {
+public class TrackerWorkbenchService extends TrackerUiService implements AppWorkbenchService {
 
 	@Override
 	public String getEntityEditorId(Node entity) {
@@ -47,11 +47,6 @@ public class TrackerWorkbenchService implements AppWorkbenchService {
 	}
 
 	@Override
-	public Wizard getCreationWizard(Node node) {
-		return null;
-	}
-
-	@Override
 	public Image getIconForType(Node entity) {
 		try {
 			if (entity.isNodeType(TrackerTypes.TRACKER_ISSUE))
@@ -59,7 +54,7 @@ public class TrackerWorkbenchService implements AppWorkbenchService {
 			else if (entity.isNodeType(TrackerTypes.TRACKER_PROJECT))
 				return TrackerImages.ICON_PROJECT;
 			else
-				return null;
+				return super.getIconForType(entity);
 		} catch (RepositoryException re) {
 			throw new TrackerException("Unable to get image for node" + entity, re);
 		}

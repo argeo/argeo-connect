@@ -13,12 +13,13 @@ import javax.jcr.version.VersionManager;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
+import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.Refreshable;
-import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
@@ -28,6 +29,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.AbstractFormPart;
+import org.eclipse.ui.forms.IFormPart;
+import org.eclipse.ui.forms.IManagedForm;
 import org.eclipse.ui.forms.editor.FormEditor;
 
 /**
@@ -43,7 +47,8 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	private ResourcesService resourcesService;
 	private ActivitiesService activitiesService;
 	private TrackerService trackerService;
-	private SystemWorkbenchService systemWorkbenchService;
+	private AppService appService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// Context
 	private Session session;
@@ -106,8 +111,12 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		return trackerService;
 	}
 
-	protected SystemWorkbenchService getSystemWorkbenchService() {
-		return systemWorkbenchService;
+	protected AppWorkbenchService getAppWorkbenchService() {
+		return appWorkbenchService;
+	}
+
+	protected AppService getAppService() {
+		return appService;
 	}
 
 	// Editor life cycle
@@ -138,7 +147,12 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	@Override
 	public void forceRefresh(Object object) {
 		// TODO implement a better refresh mechanism
-		getActivePageInstance().getManagedForm().refresh();
+		IManagedForm mf = getActivePageInstance().getManagedForm();
+		for (IFormPart part : mf.getParts())
+			if (part instanceof AbstractFormPart)
+				((AbstractFormPart) part).markStale();
+
+		mf.refresh();
 	}
 
 	@Override
@@ -198,7 +212,11 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		this.trackerService = trackerService;
 	}
 
-	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
-		this.systemWorkbenchService = systemWorkbenchService;
+	public void setAppService(AppService appService) {
+		this.appService = appService;
+	}
+
+	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+		this.appWorkbenchService = appWorkbenchService;
 	}
 }

@@ -13,7 +13,8 @@
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
 		<property name="trackerService" ref="trackerService" />
-		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
+		<property name="appService" ref="systemAppService" />
+		<property name="appWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 	<bean id="categoryEditor" class="org.argeo.tracker.internal.workbench.CategoryEditor"
 		scope="prototype">
@@ -22,7 +23,8 @@
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
 		<property name="trackerService" ref="trackerService" />
-		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
+		<property name="appService" ref="systemAppService" />
+		<property name="appWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 	<bean id="issueEditor" class="org.argeo.tracker.internal.workbench.IssueEditor"
 		scope="prototype">
@@ -31,7 +33,8 @@
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
 		<property name="trackerService" ref="trackerService" />
-		<property name="systemWorkbenchService" ref="systemWorkbenchService" />
+		<property name="appService" ref="systemAppService" />
+		<property name="appWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
 	<bean id="allProjectsEditor" class="org.argeo.tracker.internal.workbench.AllProjectsEditor"
 		scope="prototype">
