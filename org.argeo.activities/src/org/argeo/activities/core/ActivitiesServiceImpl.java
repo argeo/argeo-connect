@@ -22,6 +22,7 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
 import org.argeo.cms.auth.CurrentUser;
+import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -54,20 +55,35 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		if (entity.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)
-				|| entity.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
-			String currentUser = ConnectJcrUtils.getSession(entity).getUserID();
+		if (entity.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
+
+//			String puid = ConnectJcrUtils.get(entity, ACTIVITIES_PARENT_UID);
+//			if (EclipseUiUtils.notEmpty(puid)) {
+//				Node parentActivity = getEntityByUid(entity.getSession(), null, puid);
+//				String relPath = getDefaultRelPath(parentActivity) + "/" + ACTIVITIES_ACTIVITIES;
+//				// JcrUtils.mkdirs(parentActivity, ACTIVITIES_ACTIVITIES);
+//				return relPath;
+//			}
+
+			String currentUser = null;
+			if (entity.hasProperty(ACTIVITIES_REPORTED_BY))
+				currentUser = entity.getProperty(ACTIVITIES_REPORTED_BY).getString();
+			else {
+				currentUser = CurrentUser.getUsername();
+				if (log.isDebugEnabled())
+					log.warn("Activity at " + entity.getPath() + "has no reportedBy property");
+			}
+			String userId = UserAdminUtils.getUserLocalId(currentUser);
 
 			Calendar currentTime = null;
 			if (entity.hasProperty(ACTIVITIES_ACTIVITY_DATE))
 				currentTime = entity.getProperty(ACTIVITIES_ACTIVITY_DATE).getDate();
 			else {
-				// fallback, always there
 				currentTime = entity.getProperty(Property.JCR_CREATED).getDate();
 				if (log.isDebugEnabled())
 					log.warn("Activity at " + entity.getPath() + "has no activity date ");
 			}
-			return dateAsRelPath(currentTime) + "/" + currentUser;
+			return dateAsRelPath(currentTime) + "/" + userId;
 		}
 		return null;
 	}
@@ -129,10 +145,6 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		// }
 	}
 
-	private String getBasePath() {
-		return "/" + getAppBaseName();
-	}
-
 	@Override
 	public boolean isKnownType(Node entity) {
 		if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_TASK)
@@ -142,48 +154,75 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			return false;
 	}
 
+	private static final String[] KNOWN_MIXIN = { ActivitiesTypes.ACTIVITIES_TASK, ActivitiesTypes.ACTIVITIES_NOTE,
+			ActivitiesTypes.ACTIVITIES_MEETING, ActivitiesTypes.ACTIVITIES_SENT_EMAIL,
+			ActivitiesTypes.ACTIVITIES_SENT_FAX, ActivitiesTypes.ACTIVITIES_SENT_EMAIL,
+			ActivitiesTypes.ACTIVITIES_BLOG_POST, ActivitiesTypes.ACTIVITIES_CALL, ActivitiesTypes.ACTIVITIES_CHAT,
+			ActivitiesTypes.ACTIVITIES_PAYMENT, ActivitiesTypes.ACTIVITIES_POLL, ActivitiesTypes.ACTIVITIES_RATE,
+			ActivitiesTypes.ACTIVITIES_REVIEW, ActivitiesTypes.ACTIVITIES_TWEET, ActivitiesTypes.ACTIVITIES_ACTIVITY };
+
 	@Override
 	public String getMainNodeType(Node entity) {
-		if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_TASK))
-			return ActivitiesTypes.ACTIVITIES_TASK;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_NOTE))
-			return ActivitiesTypes.ACTIVITIES_NOTE;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_MEETING))
-			return ActivitiesTypes.ACTIVITIES_MEETING;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_SENT_EMAIL))
-			return ActivitiesTypes.ACTIVITIES_SENT_EMAIL;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_SENT_FAX))
-			return ActivitiesTypes.ACTIVITIES_SENT_FAX;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_SENT_EMAIL))
-			return ActivitiesTypes.ACTIVITIES_SENT_EMAIL;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_BLOG_POST))
-			return ActivitiesTypes.ACTIVITIES_BLOG_POST;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_CALL))
-			return ActivitiesTypes.ACTIVITIES_CALL;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_CHAT))
-			return ActivitiesTypes.ACTIVITIES_CHAT;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_PAYMENT))
-			return ActivitiesTypes.ACTIVITIES_PAYMENT;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_POLL))
-			return ActivitiesTypes.ACTIVITIES_POLL;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_RATE))
-			return ActivitiesTypes.ACTIVITIES_RATE;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_REVIEW))
-			return ActivitiesTypes.ACTIVITIES_REVIEW;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_TWEET))
-			return ActivitiesTypes.ACTIVITIES_TWEET;
-		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_ACTIVITY))
-			return ActivitiesTypes.ACTIVITIES_ACTIVITY;
-		else
-			return null;
+
+		for (String mixin : KNOWN_MIXIN)
+			if (ConnectJcrUtils.isNodeType(entity, mixin))
+				return mixin;
+
+		// if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_TASK))
+		// return ActivitiesTypes.ACTIVITIES_TASK;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_NOTE))
+		// return ActivitiesTypes.ACTIVITIES_NOTE;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_MEETING))
+		// return ActivitiesTypes.ACTIVITIES_MEETING;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_SENT_EMAIL))
+		// return ActivitiesTypes.ACTIVITIES_SENT_EMAIL;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_SENT_FAX))
+		// return ActivitiesTypes.ACTIVITIES_SENT_FAX;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_SENT_EMAIL))
+		// return ActivitiesTypes.ACTIVITIES_SENT_EMAIL;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_BLOG_POST))
+		// return ActivitiesTypes.ACTIVITIES_BLOG_POST;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_CALL))
+		// return ActivitiesTypes.ACTIVITIES_CALL;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_CHAT))
+		// return ActivitiesTypes.ACTIVITIES_CHAT;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_PAYMENT))
+		// return ActivitiesTypes.ACTIVITIES_PAYMENT;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_POLL))
+		// return ActivitiesTypes.ACTIVITIES_POLL;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_RATE))
+		// return ActivitiesTypes.ACTIVITIES_RATE;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_REVIEW))
+		// return ActivitiesTypes.ACTIVITIES_REVIEW;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_TWEET))
+		// return ActivitiesTypes.ACTIVITIES_TWEET;
+		// else if (ConnectJcrUtils.isNodeType(entity,
+		// ActivitiesTypes.ACTIVITIES_ACTIVITY))
+		// return ActivitiesTypes.ACTIVITIES_ACTIVITY;
+		// else
+		return null;
 	}
 
 	@Override
 	public boolean isKnownType(String nodeType) {
-		if (ActivitiesTypes.ACTIVITIES_TASK.equals(nodeType) || ActivitiesTypes.ACTIVITIES_ACTIVITY.equals(nodeType))
-			return true;
-		else
-			return false;
+		for (String mixin : KNOWN_MIXIN)
+			if (mixin.equals(nodeType))
+				return true;
+		return false;
 	}
 
 	/* ACTIVITIES APP SPECIFIC METHODS */

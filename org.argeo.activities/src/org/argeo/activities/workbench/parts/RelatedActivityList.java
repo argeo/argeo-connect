@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
-public class ActivityList extends LazyCTabControl {
+public class RelatedActivityList extends LazyCTabControl {
 	private static final long serialVersionUID = 5906357274592489553L;
 
 	// private final static Log log = LogFactory.getLog(ActivityList.class);
@@ -57,8 +57,8 @@ public class ActivityList extends LazyCTabControl {
 
 	// Context
 	private final UserAdminService userAdminService;
-	private final ResourcesService resourceService;
-	private final ActivitiesService activityService;
+	private final ResourcesService resourcesService;
+	private final ActivitiesService activitiesService;
 	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node entity;
 	private final AbstractConnectEditor editor;
@@ -71,16 +71,16 @@ public class ActivityList extends LazyCTabControl {
 	@Override
 	public void refreshPartControl() {
 		myFormPart.refresh();
-		ActivityList.this.layout(true, true);
+		RelatedActivityList.this.layout(true, true);
 	}
 
-	public ActivityList(Composite parent, int style, AbstractConnectEditor editor, UserAdminService userAdminService,
-			ResourcesService resourceService, ActivitiesService activityService,
+	public RelatedActivityList(Composite parent, int style, AbstractConnectEditor editor,
+			UserAdminService userAdminService, ResourcesService resourcesService, ActivitiesService activitiesService,
 			SystemWorkbenchService systemWorkbenchService, Node entity) {
 		super(parent, style);
 		this.userAdminService = userAdminService;
-		this.resourceService = resourceService;
-		this.activityService = activityService;
+		this.resourcesService = resourcesService;
+		this.activitiesService = activitiesService;
 		this.systemWorkbenchService = systemWorkbenchService;
 		this.entity = entity;
 		this.editor = editor;
@@ -90,22 +90,22 @@ public class ActivityList extends LazyCTabControl {
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite addCmp = null;
+
 		// if (peopleService.getUserAdminService().amIInRole(
 		// PeopleConstants.ROLE_MEMBER)) {
+		Composite addCmp = null;
 		if (ConnectJcrUtils.canEdit(entity)) {
 			addCmp = toolkit.createComposite(parent);
 			addCmp.setLayoutData(EclipseUiUtils.fillWidth());
 		}
 
-		// The Table that displays corresponding activities
 		activityTable = new MyActivityTableCmp(parent, SWT.MULTI, entity);
 		activityTable.setLayoutData(EclipseUiUtils.fillAll());
-		if (addCmp != null)
-			addNewActivityPanel(addCmp, entity, systemWorkbenchService.getOpenEntityEditorCmdId(), activityTable);
-		// Doubleclick listener
 		activityTable.getTableViewer()
 				.addDoubleClickListener(new ActivityTableDCL(systemWorkbenchService.getOpenEntityEditorCmdId()));
+
+		if (addCmp != null)
+			addNewActivityPanel(addCmp, activityTable);
 
 		myFormPart = new MyFormPart();
 		myFormPart.initialize(editor.getManagedForm());
@@ -121,8 +121,7 @@ public class ActivityList extends LazyCTabControl {
 		}
 	}
 
-	private void addNewActivityPanel(final Composite addActivityBar, final Node entity, final String openEditorCmdId,
-			final MyActivityTableCmp activityTable) {
+	private void addNewActivityPanel(final Composite addActivityBar, final MyActivityTableCmp activityTable) {
 		// The Add Activity bar
 		addActivityBar.setLayoutData(EclipseUiUtils.fillWidth());
 		addActivityBar.setLayout(new GridLayout(7, false));
@@ -220,7 +219,7 @@ public class ActivityList extends LazyCTabControl {
 		private static final long serialVersionUID = 1L;
 
 		public MyActivityTableCmp(Composite parent, int style, Node entity) {
-			super(parent, style, userAdminService, resourceService, activityService, systemWorkbenchService, entity);
+			super(parent, style, userAdminService, resourcesService, activitiesService, systemWorkbenchService, entity);
 		}
 
 		protected void refreshFilteredList() {
@@ -258,15 +257,15 @@ public class ActivityList extends LazyCTabControl {
 		Session session = null;
 		try {
 			session = relatedEntity.getSession().getRepository().login();
-			Node task = activityService.createDraftEntity(session, ActivitiesTypes.ACTIVITIES_TASK);
-			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(userAdminService, activityService, task);
+			Node draftTask = activitiesService.createDraftEntity(session, ActivitiesTypes.ACTIVITIES_TASK);
+			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(userAdminService, activitiesService, draftTask);
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(relatedEntity);
 			wizard.setRelatedTo(relatedTo);
 			WizardDialog dialog = new WizardDialog(shell, wizard);
 			if (dialog.open() == Window.OK) {
-				activityService.publishEntity(null, ActivitiesTypes.ACTIVITIES_TASK, task);
-				activityService.saveEntity(task, false);
+				Node newTask = activitiesService.publishEntity(null, ActivitiesTypes.ACTIVITIES_TASK, draftTask);
+				activitiesService.saveEntity(newTask, false);
 				relatedEntity.getSession().refresh(true);
 				return true;
 			}
@@ -284,10 +283,10 @@ public class ActivityList extends LazyCTabControl {
 			session = relatedEntity.getSession().getRepository().login();
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(relatedEntity);
-			Node activity = activityService.createDraftEntity(session, type);
-			activityService.configureActivity(activity, type, title, desc, relatedTo);
-			activityService.publishEntity(null, type, activity);
-			activityService.saveEntity(activity, true);
+			Node draftActivity = activitiesService.createDraftEntity(session, type);
+			activitiesService.configureActivity(draftActivity, type, title, desc, relatedTo);
+			Node createdActivity = activitiesService.publishEntity(null, type, draftActivity);
+			activitiesService.saveEntity(createdActivity, true);
 			return true;
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create activity node related to " + relatedEntity, e);

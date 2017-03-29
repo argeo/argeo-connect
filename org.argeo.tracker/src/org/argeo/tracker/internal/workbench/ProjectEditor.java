@@ -367,6 +367,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 						}
 					} catch (RepositoryException e1) {
 						throw new TrackerException("Unable to create issue on " + project, e1);
+					} finally {
+						JcrUtils.logoutQuietly(tmpSession);
 					}
 				}
 			});

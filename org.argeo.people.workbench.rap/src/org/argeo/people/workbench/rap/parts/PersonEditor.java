@@ -10,7 +10,7 @@ import javax.jcr.Value;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
-import org.argeo.activities.workbench.parts.ActivityList;
+import org.argeo.activities.workbench.parts.RelatedActivityList;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesNames;
@@ -114,7 +114,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		// Activities and tasks
 		tooltip = "Activities and tasks related to " + JcrUtils.get(person, Property.JCR_TITLE);
-		LazyCTabControl activitiesCmp = new ActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
+		LazyCTabControl activitiesCmp = new RelatedActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
 				getResourcesService(), getActivitiesService(), getSystemWorkbenchService(), person);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);

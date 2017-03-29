@@ -18,7 +18,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.argeo.activities.ActivitiesException;
@@ -28,7 +27,6 @@ import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.core.ActivityUtils;
 import org.argeo.activities.workbench.util.ActivityViewerComparator;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
@@ -64,8 +62,6 @@ public class ActivityTable extends Composite {
 	private ActivitiesService activitiesService;
 	private SystemWorkbenchService systemWorkbenchService;
 
-	// CONSTRUCTORS
-
 	/**
 	 * Default table with a filter
 	 * 
@@ -76,8 +72,7 @@ public class ActivityTable extends Composite {
 	 */
 	public ActivityTable(Composite parent, int style, UserAdminService userAdminService,
 			ResourcesService resourceService, ActivitiesService activityService,
-			SystemWorkbenchService systemWorkbenchService,
-			Node entity) {
+			SystemWorkbenchService systemWorkbenchService, Node entity) {
 		super(parent, SWT.NONE);
 		this.entity = entity;
 		session = ConnectJcrUtils.getSession(entity);
@@ -85,7 +80,7 @@ public class ActivityTable extends Composite {
 		this.resourceService = resourceService;
 		this.activitiesService = activityService;
 		this.systemWorkbenchService = systemWorkbenchService;
-		
+
 		this.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite tableComp = new Composite(this, SWT.NO_FOCUS);
 		tableViewer = createActivityViewer(tableComp, style);
@@ -194,12 +189,11 @@ public class ActivityTable extends Composite {
 	 * subset
 	 */
 	protected NodeIterator listFilteredElements(Session session, String filter) throws RepositoryException {
-		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		String xpathQueryStr = "//element(*, " + ActivitiesTypes.ACTIVITIES_ACTIVITY + ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
 		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
-		Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
+		Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
 		QueryResult result = xpathQuery.execute();
 		return result.getNodes();
 	}

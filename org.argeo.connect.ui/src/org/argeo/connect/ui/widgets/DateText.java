@@ -81,6 +81,7 @@ public class DateText extends Composite {
 		gl.horizontalSpacing = 5;
 		dateComposite.setLayout(gl);
 		dateTxt = new Text(dateComposite, SWT.BORDER);
+		dateTxt.setMessage(ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
 		CmsUtils.style(dateTxt, ConnectUiStyles.FORCE_BORDER);
 		dateTxt.setLayoutData(new GridData(80, SWT.DEFAULT));
 		dateTxt.setToolTipText(

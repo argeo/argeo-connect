@@ -3,13 +3,17 @@
 // ACTIVITIES AND TASKS
 
 // Activities
-[activities:activity] > connect:base
+[activities:activity] > connect:entity
 mixin
 - activities:activityDate (DATE) // References the relevant date for this activity. Generally, the creation date. 
 - activities:reportedBy (STRING) // Tracks the user that has reported (and generally created) this activity. 
 							 // It is used instead of jcr:createdBy because we cannot force the JCR protected property;
 							 // which is useful, among others, in case of an import 
 - activities:relatedTo (REFERENCE) * // Related entities like persons, orgs or documents
+- activities:parentUid (STRING) // Optionnal connect UID of a parent activity 
+
++ activities (nt:unstructured) // Child activities
+
 // + activities:attachments (nt:unstructured) // an optional list of related documents
 // - activities:boundActivities (REFERENCE) * // Enable linking activities together, especially enable referencing of related tasks and workflows.
 
@@ -62,7 +66,7 @@ mixin
 - activities:closedBy (STRING) // The dn of the user who closed this task
 - activities:wakeUpDate (DATE) 
 //various sub nodes
-+ activities:activities (nt:unstructured)
+// + activities:activities (nt:unstructured)
 // - activities:dependsOn (REFERENCE) *
 // + activities:tasks (nt:unstructured)
 
@@ -73,4 +77,4 @@ mixin
 - activities:pollName (STRING) // a specific name. Useful?
 - activities:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
 // Contains the child rating activities
-+ activities:rates (nt:unstructured)
+// + activities:rates (nt:unstructured)

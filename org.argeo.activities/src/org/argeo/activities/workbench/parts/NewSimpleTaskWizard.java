@@ -11,26 +11,20 @@ import javax.jcr.RepositoryException;
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
-import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.widgets.DateText;
+import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.parts.PickUpGroupDialog;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 /**
@@ -56,12 +50,12 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	// Business objects
 	private List<Node> relatedTo;
-	private String assignedToGroupId;
-	private Node createdTask;
+	// private String assignedToGroupId;
 
 	// This page widgets
 	protected Text titleTxt;
 	protected Text descTxt;
+	private ExistingGroupsDropDown assignedToDD;
 
 	private DateText dueDateCmp;
 	private DateText wakeUpDateCmp;
@@ -98,8 +92,12 @@ public class NewSimpleTaskWizard extends Wizard {
 	public boolean performFinish() {
 		// Sanity check
 		String msg = null;
-		if (isEmpty(assignedToGroupId))
-			msg = "Please assign this task to a group.";
+		String title = titleTxt.getText();
+		if (isEmpty(title))
+			msg = "Please give at least a title";
+
+		// if (isEmpty(assignedToGroupId))
+		// msg = "Please assign this task to a group.";
 		if (msg != null) {
 			MessageDialog.openError(getShell(), "Uncomplete information", msg);
 			return false;
@@ -107,7 +105,7 @@ public class NewSimpleTaskWizard extends Wizard {
 
 		try {
 			activityService.configureTask(draftTask, ActivitiesTypes.ACTIVITIES_TASK,
-					draftTask.getSession().getUserID(), titleTxt.getText(), descTxt.getText(), assignedToGroupId,
+					draftTask.getSession().getUserID(), titleTxt.getText(), descTxt.getText(), assignedToDD.getText(),
 					relatedTo, GregorianCalendar.getInstance(), dueDateCmp.getCalendar(), wakeUpDateCmp.getCalendar());
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create simple task with title " + titleTxt.getText(), e);
@@ -148,34 +146,44 @@ public class NewSimpleTaskWizard extends Wizard {
 
 			// ASSIGNED TO
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Assigned to");
-			Composite assignedToCmp = new Composite(parent, SWT.NO_FOCUS);
-			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
-			assignedToCmp.setLayoutData(gd);
-			GridLayout gl = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false));
-			gl.horizontalSpacing = 5;
-			assignedToCmp.setLayout(gl);
-			final Text assignedToTxt = new Text(assignedToCmp, SWT.BORDER | SWT.NO_FOCUS);
-			assignedToTxt.setMessage("Assign a group to manage this task");
-			CmsUtils.style(assignedToTxt, ConnectUiStyles.FORCE_BORDER);
-			assignedToTxt.setLayoutData(EclipseUiUtils.fillWidth());
-			assignedToTxt.setEnabled(false);
+			Text assignedToTxt = new Text(parent, SWT.BORDER);
+			assignedToTxt.setMessage("Pick up a group");
+			assignedToTxt.setToolTipText("Choose a group or person to manage this issue");
+			assignedToTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
+			assignedToDD = new ExistingGroupsDropDown(assignedToTxt, userAdminService, true, false);
 
-			Link assignedToLk = new Link(assignedToCmp, SWT.NONE);
-			assignedToLk.setText("<a>Pick up</a>");
-			assignedToLk.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(final SelectionEvent event) {
-					PickUpGroupDialog diag = new PickUpGroupDialog(assignedToTxt.getShell(), "Choose a group",
-							userAdminService);
-					if (diag.open() == Window.OK) {
-						assignedToGroupId = diag.getSelected().getName();
-						if (EclipseUiUtils.notEmpty(assignedToGroupId))
-							assignedToTxt.setText(userAdminService.getUserDisplayName(assignedToGroupId));
-					}
-				}
-			});
+			// ConnectWorkbenchUtils.createBoldLabel(parent, "Assigned to");
+			// Composite assignedToCmp = new Composite(parent, SWT.NO_FOCUS);
+			// gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
+			// assignedToCmp.setLayoutData(gd);
+			// GridLayout gl = EclipseUiUtils.noSpaceGridLayout(new
+			// GridLayout(2, false));
+			// gl.horizontalSpacing = 5;
+			// assignedToCmp.setLayout(gl);
+			// final Text assignedToTxt = new Text(assignedToCmp, SWT.BORDER |
+			// SWT.NO_FOCUS);
+			// assignedToTxt.setMessage("Assign a group to manage this task");
+			// CmsUtils.style(assignedToTxt, ConnectUiStyles.FORCE_BORDER);
+			// assignedToTxt.setLayoutData(EclipseUiUtils.fillWidth());
+			// assignedToTxt.setEnabled(false);
+			//
+			// Link assignedToLk = new Link(assignedToCmp, SWT.NONE);
+			// assignedToLk.setText("<a>Pick up</a>");
+			// assignedToLk.addSelectionListener(new SelectionAdapter() {
+			// private static final long serialVersionUID = 1L;
+			//
+			// @Override
+			// public void widgetSelected(final SelectionEvent event) {
+			// PickUpGroupDialog diag = new
+			// PickUpGroupDialog(assignedToTxt.getShell(), "Choose a group",
+			// userAdminService);
+			// if (diag.open() == Window.OK) {
+			// assignedToGroupId = diag.getSelected().getName();
+			// if (EclipseUiUtils.notEmpty(assignedToGroupId))
+			// assignedToTxt.setText(userAdminService.getUserDisplayName(assignedToGroupId));
+			// }
+			// }
+			// });
 
 			// DUE DATE
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Due date");

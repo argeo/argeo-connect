@@ -42,9 +42,11 @@ public interface AppService {
 			String relPath = getDefaultRelPath(srcNode);
 
 			if (parent == null)
-				parent = srcNode.getNode("/" + getBaseRelPath(nodeType));
+				parent = srcNode.getSession().getNode("/" + getBaseRelPath(nodeType));
 
-			createdNode = JcrUtils.mkdirs(parent, relPath);
+			//  TODO check duplicate
+			createdNode = parent.addNode(relPath); // JcrUtils.mkdirs(parent, relPath);
+			
 			RemoteJcrUtils.copy(srcNode, createdNode, true);
 			createdNode.addMixin(nodeType);
 			JcrUtils.updateLastModified(createdNode);
