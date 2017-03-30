@@ -7,14 +7,11 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.widgets.DelayedText;
@@ -27,6 +24,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleService;
+import org.argeo.people.PeopleTypes;
 import org.argeo.people.ui.PeopleUiConstants;
 import org.argeo.people.workbench.rap.PeopleRapPlugin;
 import org.argeo.people.workbench.rap.providers.EntitySingleColumnLabelProvider;
@@ -174,10 +172,14 @@ public class QuickSearchView extends ViewPart implements Refreshable {
 			// entityViewer.setInput(null);
 			// return;
 			// }
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
 
 			// XPATH Query
-			String xpathQueryStr = "//element(*, " + ConnectTypes.CONNECT_ENTITY + ")";
+			// FIXME reduced to people:entities only until we finish
+			// implementing the corresponding label providers and get decent
+			// icons
+			String xpathQueryStr = "//element(*, " + PeopleTypes.PEOPLE_ENTITY + ")";
+			// String xpathQueryStr = "//element(*, " +
+			// ConnectTypes.CONNECT_ENTITY + ")";
 			String xpathFilter = XPathUtils.getFreeTextConstraint(filter);
 			if (notEmpty(xpathFilter))
 				xpathQueryStr += "[" + xpathFilter + "]";
@@ -190,14 +192,13 @@ public class QuickSearchView extends ViewPart implements Refreshable {
 			// }
 
 			long begin = System.currentTimeMillis();
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
+			Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
 
 			// xpathQuery.setLimit(TrackerUiConstants.SEARCH_DEFAULT_LIMIT);
 			QueryResult result = xpathQuery.execute();
 
 			NodeIterator nit = result.getNodes();
 			entityViewer.setInput(JcrUtils.nodeIteratorToList(nit));
-
 			if (log.isDebugEnabled()) {
 				long end = System.currentTimeMillis();
 				log.debug("Quick Search - Found: " + nit.getSize() + " in " + (end - begin)

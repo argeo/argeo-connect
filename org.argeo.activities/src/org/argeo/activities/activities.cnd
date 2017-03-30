@@ -57,13 +57,11 @@ mixin
 - activities:rate (LONG) // the note attributed by the current user  
 
 // Tasks 
-[activities:task] > activities:activity
+[activities:task] > activities:activity, connect:closable
 mixin
 - activities:taskStatus (String) // the current status of this task
 - activities:assignedTo (String) // the dn of a group or a user
 - activities:dueDate (DATE) 
-- activities:closeDate (DATE) 
-- activities:closedBy (STRING) // The dn of the user who closed this task
 - activities:wakeUpDate (DATE) 
 //various sub nodes
 // + activities:activities (nt:unstructured)

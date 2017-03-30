@@ -59,6 +59,22 @@
          			name="param.targetNodeType"
          			value="tracker:issue" />
 			</command>	
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="theme/icons/types/project.gif"
+				label="Project">
+				<parameter
+         			name="param.targetNodeType"
+         			value="tracker:project" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="theme/icons/types/milestone.gif"
+				label="Milestone">
+				<parameter
+         			name="param.targetNodeType"
+         			value="tracker:milestone" />
+			</command>	
 		</menuContribution>
 	</extension>
 </plugin>

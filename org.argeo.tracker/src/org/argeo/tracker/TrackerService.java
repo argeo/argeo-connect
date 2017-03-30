@@ -35,6 +35,12 @@ public interface TrackerService extends AppService {
 			List<String> versionIds, List<String> componentIds, int priority, int importance, String managerId)
 			throws RepositoryException;
 
+	public void configureMilestone(Node milestone, Node project, Node parentMilestone, String title, String description,
+			String managerId, String defaultAssigneeId, Calendar targetDate) throws RepositoryException;
+
+	public void configureProject(Node project, String title, String description,
+			String managerId) throws RepositoryException;
+
 	public Node addComment(Node parentIssue, String description) throws RepositoryException;
 
 	public boolean updateComment(Node comment, String newDescription) throws RepositoryException;

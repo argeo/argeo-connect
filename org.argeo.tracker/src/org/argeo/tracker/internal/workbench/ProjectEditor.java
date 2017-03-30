@@ -39,7 +39,7 @@ import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.controls.CategoryOverviewChart;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureVersionWizard;
 import org.argeo.tracker.internal.ui.dialogs.NewComponentWizard;
-import org.argeo.tracker.internal.ui.dialogs.NewIssueWizard;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -352,7 +352,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 						AppService as = getAppService();
 						tmpSession = project.getSession().getRepository().login();
 						Node draftIssue = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_ISSUE);
-						NewIssueWizard wizard = new NewIssueWizard(getUserAdminService(), getTrackerService(),
+						ConfigureIssueWizard wizard = new ConfigureIssueWizard(getUserAdminService(), getTrackerService(),
 								draftIssue);
 						wizard.setKnownProperties(project, null, null, null);
 						WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);

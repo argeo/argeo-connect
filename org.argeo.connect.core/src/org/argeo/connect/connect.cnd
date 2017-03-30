@@ -47,6 +47,14 @@
 - ldap:st (STRING) // state
 - ldap:c (STRING) // country
 
+[connect:closable]  
+ mixin
+- connect:closeDate (DATE) 
+- connect:closedBy (STRING) // The dn of the user who closed this task
+// - tracker:closingComment (STRING) // Really?
+
+
+
 // RESOURCE MANAGEMENT
 
 [connect:taggable] 

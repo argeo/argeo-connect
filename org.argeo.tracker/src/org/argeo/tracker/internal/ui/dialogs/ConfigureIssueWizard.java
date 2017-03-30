@@ -9,7 +9,6 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
@@ -35,23 +34,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Generic wizard to create a new issue. Caller might use setRelatedTo method to
- * add some related entities after creation and before opening the wizard
- * dialog.
+ * Generic wizard to configure an issue.
  * 
- * The newly created issue might be retrieved after termination if Dialog.open()
- * return Window.OK.
- * 
- * Warning: the passed session is not saved: the issue stays in a transient mode
- * until the caller save the session to enable roll-back.
+ * Warning: the passed session is not saved to enable roll-back: all changes are
+ * only transient until the caller save the session .
  */
 
-public class NewIssueWizard extends Wizard {
+public class ConfigureIssueWizard extends Wizard {
 	// private final static Log log = LogFactory.getLog(NewIssueWizard.class);
 
 	private final UserAdminService userAdminService;
 	private final TrackerService trackerService;
-	private final Node draftEntity;
+	private final Node draftIssue;
 
 	// Business objects
 	private Node project;
@@ -59,8 +53,6 @@ public class NewIssueWizard extends Wizard {
 	private String targetMilestone;
 	private List<String> versionIds;
 	private List<String> componentIds;
-
-	// private Node createdIssue;
 
 	// This page widgets
 	protected Text projectTxt;
@@ -72,21 +64,14 @@ public class NewIssueWizard extends Wizard {
 	protected MilestoneDropDown targetDD;
 	protected TagListWithDropDownComposite versionsCmp;
 	protected TagListWithDropDownComposite componentsCmp;
-	// protected ComponentDropDown componentDD;
-	// protected VersionDropDown versionDD;
-
 	protected Text descTxt;
-
-	private DateText targetDateCmp;
-	private DateText releaseDateCmp;
-	private List<Node> relatedTo;
 
 	protected TableViewer itemsViewer;
 
-	public NewIssueWizard(UserAdminService userAdminService, TrackerService trackerService, Node draftEntity) {
+	public ConfigureIssueWizard(UserAdminService userAdminService, TrackerService trackerService, Node draftEntity) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
-		this.draftEntity = draftEntity;
+		this.draftIssue = draftEntity;
 	}
 
 	public void setKnownProperties(Node project, String targetMilestone, List<String> versionIds,
@@ -131,16 +116,12 @@ public class NewIssueWizard extends Wizard {
 			String priorityStr = TrackerUtils.getKeyByValue(TrackerUtils.MAPS_ISSUE_PRIORITIES, priorityCmb.getText());
 			int priority = new Integer(priorityStr).intValue();
 
-			trackerService.configureIssue(draftEntity, chosenProject, title, descTxt.getText(), targetDD.getText(),
+			trackerService.configureIssue(draftIssue, chosenProject, title, descTxt.getText(), targetDD.getText(),
 					versionIds, componentIds, priority, importance, assignedToDD.getText());
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to create issue on project " + project, e);
 		}
 		return true;
-	}
-
-	public void setRelatedTo(List<Node> relatedTo) {
-		this.relatedTo = relatedTo;
 	}
 
 	@Override
@@ -173,7 +154,7 @@ public class NewIssueWizard extends Wizard {
 				GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 				gd.horizontalSpan = 3;
 				projectTxt.setLayoutData(gd);
-				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(draftEntity), projectTxt, false);
+				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(draftIssue), projectTxt, false);
 
 				projectTxt.addFocusListener(new FocusAdapter() {
 					private static final long serialVersionUID = 1719432159240562984L;
@@ -260,20 +241,19 @@ public class NewIssueWizard extends Wizard {
 			priorityCmb.setItems(TrackerUtils.MAPS_ISSUE_PRIORITIES.values().toArray(new String[0]));
 			priorityCmb.select(0);
 
-			// DESCRIPTION
+			// Description
 			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);
 			label.setText("Description");
 			gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 			label.setLayoutData(gd);
-
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			descTxt.setMessage("A longer description");
 			gd = EclipseUiUtils.fillAll();
 			gd.horizontalSpan = 3;
 			gd.heightHint = 150;
 			descTxt.setLayoutData(gd);
-			// Don't forget this.
 
+			// Don't forget this.
 			if (projectTxt != null) {
 				setControl(projectTxt);
 				projectTxt.setFocus();

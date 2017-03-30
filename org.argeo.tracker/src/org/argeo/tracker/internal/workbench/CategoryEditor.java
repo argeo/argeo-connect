@@ -33,7 +33,7 @@ import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
-import org.argeo.tracker.internal.ui.dialogs.NewIssueWizard;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -219,7 +219,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 						AppService as = getAppService();
 						tmpSession = project.getSession().getRepository().login();
 						Node draftIssue = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_ISSUE);
-						NewIssueWizard wizard = new NewIssueWizard(getUserAdminService(), getTrackerService(),
+						ConfigureIssueWizard wizard = new ConfigureIssueWizard(getUserAdminService(), getTrackerService(),
 								draftIssue);
 						wizard.setKnownProperties(project, targetMilestone, versionIds, componentIds);
 						WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);

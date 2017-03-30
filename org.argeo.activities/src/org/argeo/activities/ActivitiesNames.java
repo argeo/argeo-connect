@@ -1,5 +1,7 @@
 package org.argeo.activities;
 
+import org.argeo.connect.ConnectNames;
+
 /** Property names for the activities App */
 public interface ActivitiesNames {
 
@@ -20,11 +22,10 @@ public interface ActivitiesNames {
 	String ACTIVITIES_TASK_STATUS = "activities:taskStatus";
 	String ACTIVITIES_ASSIGNED_TO = "activities:assignedTo"; // user or group dn
 	String ACTIVITIES_DUE_DATE = "activities:dueDate";
-	String ACTIVITIES_CLOSE_DATE = "activities:closeDate"; // This is the marker
-															// to check if a
-															// task has been
-															// done.
-	String ACTIVITIES_CLOSED_BY = "activities:closedBy";
+	@Deprecated
+	String ACTIVITIES_CLOSE_DATE = ConnectNames.CONNECT_CLOSE_DATE;
+	@Deprecated
+	String ACTIVITIES_CLOSED_BY = ConnectNames.CONNECT_CLOSED_BY;
 	String ACTIVITIES_WAKE_UP_DATE = "activities:wakeUpDate";
 	String ACTIVITIES_DEPENDS_ON = "activities:dependsOn";
 	String ACTIVITIES_TASKS = "activities:tasks";

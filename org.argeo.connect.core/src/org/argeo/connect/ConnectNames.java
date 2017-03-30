@@ -13,7 +13,7 @@ public interface ConnectNames {
 	String CONNECT_UID = "connect:uid";
 
 	String CONNECT_PHOTO = "photo";
-	
+
 	/* EXTERNAL IDS */
 	String CONNECT_EXTERNAL_IDS = "externalIds"; // parent node for external ids
 	String CONNECT_SOURCE_URI = "connect:sourceUri";
@@ -23,6 +23,9 @@ public interface ConnectNames {
 	// Defines various standard property names
 	String CONNECT_DATE_BEGIN = "connect:dateBegin";
 	String CONNECT_DATE_END = "connect:dateEnd";
+
+	String CONNECT_CLOSE_DATE = "connect:closeDate";
+	String CONNECT_CLOSED_BY = "connect:closedBy";
 
 	// Widely used property names
 	// String CONNECT_LANG = "connect:lang";

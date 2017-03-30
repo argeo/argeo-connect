@@ -1,5 +1,14 @@
 package org.argeo.tracker.core;
 
+import static javax.jcr.Property.JCR_DESCRIPTION;
+import static javax.jcr.Property.JCR_TITLE;
+import static javax.jcr.PropertyType.DATE;
+import static javax.jcr.PropertyType.STRING;
+import static org.argeo.connect.ConnectNames.CONNECT_UID;
+import static org.argeo.connect.util.ConnectJcrUtils.get;
+import static org.argeo.tracker.TrackerNames.TRACKER_PARENT_UID;
+import static org.argeo.tracker.TrackerNames.TRACKER_PROJECT_UID;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -207,6 +216,27 @@ public class TrackerServiceImpl implements TrackerService {
 		// issue.getSession().move(issue.getPath(), parentIssue.getPath() + "/"
 		// + issueIdStr);
 		return issue;
+	}
+
+	@Override
+	public void configureMilestone(Node milestone, Node project, Node parentMilestone, String title, String description,
+			String managerId, String defaultAssigneeId, Calendar targetDate) throws RepositoryException {
+		ConnectJcrUtils.setJcrProperty(milestone, TRACKER_PROJECT_UID, STRING, get(project, CONNECT_UID));
+		ConnectJcrUtils.setJcrProperty(milestone, TRACKER_PARENT_UID, STRING, get(parentMilestone, CONNECT_UID));
+		ConnectJcrUtils.setJcrProperty(milestone, JCR_TITLE, STRING, title);
+		ConnectJcrUtils.setJcrProperty(milestone, JCR_DESCRIPTION, STRING, description);
+		// TODO check if users are really existing
+		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_MANAGER, STRING, managerId);
+		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_DEFAULT_ASSIGNEE, STRING, defaultAssigneeId);
+		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_TARGET_DATE, DATE, targetDate);
+	}
+
+	public void configureProject(Node project, String title, String description, String managerId)
+			throws RepositoryException {
+		ConnectJcrUtils.setJcrProperty(project, JCR_TITLE, STRING, title);
+		ConnectJcrUtils.setJcrProperty(project, JCR_DESCRIPTION, STRING, description);
+		// TODO check if users are really existing
+		ConnectJcrUtils.setJcrProperty(project, TrackerNames.TRACKER_MANAGER, STRING, managerId);
 	}
 
 	private final static DateFormat isobdf = new SimpleDateFormat(TrackerUiConstants.isoDateBasicFormat);

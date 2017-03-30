@@ -7,7 +7,9 @@ import org.argeo.connect.ui.AppUiService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.TrackerTypes;
-import org.argeo.tracker.internal.ui.dialogs.NewIssueWizard;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureMilestoneWizard;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureProjectWizard;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
@@ -24,7 +26,11 @@ public class TrackerUiService implements AppUiService {
 	@Override
 	public Wizard getCreationWizard(Node node) {
 		if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_ISSUE))
-			return new NewIssueWizard(userAdminService, trackerService, node);
+			return new ConfigureIssueWizard(userAdminService, trackerService, node);
+		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_MILESTONE))
+			return new ConfigureMilestoneWizard(userAdminService, trackerService, node);
+		if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_PROJECT))
+			return new ConfigureProjectWizard(userAdminService, trackerService, node);
 		return null;
 	}
 

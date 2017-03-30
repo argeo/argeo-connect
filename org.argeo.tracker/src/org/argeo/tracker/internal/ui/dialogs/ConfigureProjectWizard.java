@@ -1,12 +1,17 @@
 package org.argeo.tracker.internal.ui.dialogs;
 
+import static javax.jcr.Property.JCR_DESCRIPTION;
+import static javax.jcr.Property.JCR_TITLE;
+import static org.argeo.connect.util.ConnectJcrUtils.get;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.UserAdminService;
+import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerService;
-import org.argeo.tracker.core.TrackerUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -19,52 +24,51 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-/** Dialog to simply configure a component */
-public class NewComponentWizard extends Wizard implements ModifyListener {
+/** Dialog to simply configure a project */
+public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 	private static final long serialVersionUID = -8365425809976445458L;
 
 	// Context
-	final private TrackerService issueService;
+	final private UserAdminService userAdminService;
+	final private TrackerService trackerService;
 	final private Node project;
 
 	// UI controls
-	// private Text idTxt;
 	private Text titleTxt;
+	private ExistingGroupsDropDown managerDD;
 	private Text descTxt;
 
-	public NewComponentWizard(TrackerService issueService, Node project) {
+	public ConfigureProjectWizard(UserAdminService userAdminService, TrackerService trackerService, Node project) {
+		this.userAdminService = userAdminService;
+		this.trackerService = trackerService;
 		this.project = project;
-		this.issueService = issueService;
 	}
 
 	@Override
 	public void addPages() {
-		setWindowTitle("Create a new component");
+		setWindowTitle("Project configuration");
 		addPage(new MainPage("Main page"));
 	}
 
 	@Override
 	public boolean performFinish() {
 		// TODO rather use error messages than an error popup
-		if (EclipseUiUtils.isEmpty(getId())) {
-			MessageDialog.openError(getShell(), "Compulsory ID", "Please define the component ID");
-			return false;
-		} else if (TrackerUtils.getComponentById(project, getId()) != null) {
-			MessageDialog.openError(getShell(), "Already existing component",
-					"A component with ID " + getId() + " already exists, cannot create");
+		String title = titleTxt.getText();
+		if (EclipseUiUtils.isEmpty(title)) {
+			MessageDialog.openError(getShell(), "Compulsory title", "Please define this project title");
 			return false;
 		}
 		try {
-			issueService.createComponent(project, getId(), getTitle(), getDescription());
+			trackerService.configureProject(project, title, descTxt.getText(), managerDD.getText());
 		} catch (RepositoryException e1) {
-			throw new TrackerException("Unable to create component with ID " + getId() + " on " + project, e1);
+			throw new TrackerException("Unable to create project with title " + title, e1);
 		}
 		return true;
 	}
 
 	@Override
 	public boolean canFinish() {
-		if (EclipseUiUtils.isEmpty(getId()))
+		if (EclipseUiUtils.isEmpty(titleTxt.getText()))
 			return false;
 		else
 			return true;
@@ -80,45 +84,37 @@ public class NewComponentWizard extends Wizard implements ModifyListener {
 
 		public MainPage(String pageName) {
 			super(pageName);
-			setTitle("Create a new component");
-			setMessage("Please fill out following information.");
+			// setTitle("Project overview");
+			setMessage("Please complete following information.");
 		}
 
 		public void createControl(Composite parent) {
 			parent.setLayout(new GridLayout(2, false));
 
-			// createLabel(parent, "ID", SWT.CENTER);
-			// idTxt = new Text(parent, SWT.BORDER);
-			// idTxt.setMessage("Only alphanumeric characters");
-			// GridData gd = EclipseUiUtils.fillWidth();
-			// idTxt.setLayoutData(gd);
-			// idTxt.addModifyListener(NewComponentWizard.this);
-
 			createLabel(parent, "Name", SWT.CENTER);
 			titleTxt = new Text(parent, SWT.BORDER);
-			titleTxt.setMessage("A short name for this component, that is also used as ID within this project");
+			titleTxt.setMessage("A short name for this project");
 			titleTxt.setLayoutData(EclipseUiUtils.fillWidth());
-			titleTxt.addModifyListener(NewComponentWizard.this);
+			titleTxt.addModifyListener(ConfigureProjectWizard.this);
+
+			createLabel(parent, "Manager", SWT.CENTER);
+			Text managerTxt = new Text(parent, SWT.BORDER);
+			managerTxt.setMessage("Choose a group");
+			managerTxt.setLayoutData(EclipseUiUtils.fillWidth());
+			managerDD = new ExistingGroupsDropDown(managerTxt, userAdminService, true, false);
 
 			createLabel(parent, "Description", SWT.TOP);
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-			descTxt.setLayoutData(EclipseUiUtils.fillAll());
+			GridData gd = EclipseUiUtils.fillWidth();
+			gd.heightHint = 150;
+			descTxt.setLayoutData(gd);
 			descTxt.setMessage("An optional description for this component");
+
+			titleTxt.setText(get(project, JCR_TITLE));
+			descTxt.setText(get(project, JCR_DESCRIPTION));
 
 			setControl(titleTxt);
 		}
-	}
-
-	public String getId() {
-		return titleTxt.getText();
-	}
-
-	public String getTitle() {
-		return titleTxt.getText();
-	}
-
-	public String getDescription() {
-		return descTxt.getText();
 	}
 
 	private Label createLabel(Composite parent, String label, int verticalAlign) {
