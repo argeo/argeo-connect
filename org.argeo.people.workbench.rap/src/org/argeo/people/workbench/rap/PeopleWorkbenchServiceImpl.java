@@ -100,11 +100,6 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	// return OpenSearchEntityEditor.ID;
 	// }
 
-	@Override
-	public String getDefaultEditorId() {
-		throw new PeopleException("No default editor has been defined for PeopleWorkbenchService base implementation");
-	}
-
 	/**
 	 * Specific management of contact icons. Might be overridden by client
 	 * application

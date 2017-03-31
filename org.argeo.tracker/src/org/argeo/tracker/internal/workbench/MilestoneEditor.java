@@ -14,6 +14,7 @@ import javax.jcr.Session;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.cms.ArgeoNames;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
@@ -28,6 +29,7 @@ import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
@@ -61,20 +63,19 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 /**
  * Basic editor to display a list of all issues that are related to a given
- * category (a milestone, a version, a component ...) within a project. It also
- * enable business admin to edit the main info of this category (typically :
- * title & description)
+ * milestone within a project. It also enables a user with sufficient rights to
+ * edit main info of this milestone (typically : title, description & target
+ * date)
  */
-public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableViewer {
-	private static final long serialVersionUID = -6492660981141107302L;
-	// private final static Log log = LogFactory.getLog(CategoryEditor.class);
-	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".categoryEditor";
+public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableViewer {
+	private static final long serialVersionUID = 8933205213178363028L;
+
+	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".milestoneEditor";
 
 	// Context
 	private Node project;
-	private Node category;
-	private String relevantPropName;
-	private String officeID;
+	private Node milestone;
+	private String milestoneUid;
 
 	// Ease implementation
 	private Text filterTxt;
@@ -83,24 +84,25 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 	@Override
 	protected void addPages() {
 		// Initialise local cache
-		category = getNode();
-		project = TrackerUtils.getProjectFromChild(category);
-		officeID = ConnectJcrUtils.get(category, TrackerNames.TRACKER_ID);
-		relevantPropName = TrackerUtils.getRelevantPropName(category);
+		milestone = getNode();
+		project = getAppService().getEntityByUid(ConnectJcrUtils.getSession(milestone), null,
+				ConnectJcrUtils.get(milestone, TrackerNames.TRACKER_PROJECT_UID));
+		milestoneUid = ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_UID);
 		try {
 			MainPage mainPage = new MainPage(this);
 			addPage(mainPage);
-
-			TechnicalInfoPage techInfoPage = new TechnicalInfoPage(this,
-					TrackerUiPlugin.PLUGIN_ID + ".projectEditor.techInfoPage", getNode());
-			addPage(techInfoPage);
+			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN)) {
+				TechnicalInfoPage techInfoPage = new TechnicalInfoPage(this,
+						TrackerUiPlugin.PLUGIN_ID + ".projectEditor.techInfoPage", getNode());
+				addPage(techInfoPage);
+			}
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
 	}
 
 	protected void updatePartName() {
-		String name = getCategoryTitle();
+		String name = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 		if (notEmpty(name))
 			setPartName(name);
 		else
@@ -108,7 +110,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 	}
 
 	private class MainPage extends FormPage implements ArgeoNames {
-		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.componentsPage";
+		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".milestoneEditor.mainPage";
 
 		private TableViewer tableViewer;
 
@@ -170,7 +172,8 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 		}
 
 		private void refreshViewer(String filter) {
-			NodeIterator nit = TrackerUtils.getIssues(project, filter, relevantPropName, officeID);
+			NodeIterator nit = TrackerUtils.getIssues(project, filter, TrackerNames.TRACKER_MILESTONE_UID,
+					milestoneUid);
 			tableViewer.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
 			tableViewer.refresh();
 		}
@@ -202,19 +205,6 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-
-					String targetMilestone = null;
-					List<String> versionIds = null;
-					List<String> componentIds = null;
-					if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_COMPONENT)) {
-						componentIds = new ArrayList<>();
-						componentIds.add(officeID);
-					} else if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_VERSION)) {
-						versionIds = new ArrayList<>();
-						versionIds.add(officeID);
-						targetMilestone = officeID;
-					}
-
 					Session tmpSession = null;
 					try {
 						AppService as = getAppService();
@@ -222,9 +212,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 						Node draftIssue = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_ISSUE);
 						draftIssue.setProperty(TrackerNames.TRACKER_PROJECT_UID,
 								ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID));
-						if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_MILESTONE))
-							draftIssue.setProperty(TrackerNames.TRACKER_MILESTONE_UID,
-									ConnectJcrUtils.get(category, ConnectNames.CONNECT_UID));
+						draftIssue.setProperty(TrackerNames.TRACKER_MILESTONE_UID, milestoneUid);
 
 						ConfigureIssueWizard wizard = new ConfigureIssueWizard(getUserAdminService(),
 								getTrackerService(), draftIssue);
@@ -249,22 +237,12 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 		}
 	}
 
-	private String getCategoryTitle() {
-		String name = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
-		if (notEmpty(name)) {
-			Node project = TrackerUtils.getProjectFromChild(getNode());
-			String pname = ConnectJcrUtils.get(project, Property.JCR_TITLE);
-			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
-		}
-		return name;
-	}
-
 	@Override
 	public Object[] getElements(String extractId) {
 		String filter = "";
 		if (filterTxt != null && !filterTxt.isDisposed())
 			filter = filterTxt.getText();
-		NodeIterator nit = TrackerUtils.getIssues(project, filter, relevantPropName, officeID);
+		NodeIterator nit = TrackerUtils.getIssues(project, filter, TrackerNames.TRACKER_MILESTONE_UID, milestoneUid);
 		return JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]);
 	}
 
@@ -284,15 +262,13 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 		columns.add(new ConnectColumnDefinition("Priority", new TrackerLps().new PriorityLabelProvider()));
 		columns.add(new ConnectColumnDefinition("Components",
 				new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_COMPONENT_IDS)));
-		columns.add(new ConnectColumnDefinition("Target Milestone",
-				new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_MILESTONE_ID)));
 
 		columns.add(new ConnectColumnDefinition("Wake-Up Date",
 				new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE)));
-		columns.add(new ConnectColumnDefinition("Close Date",
-				new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE)));
+		columns.add(
+				new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(ConnectNames.CONNECT_CLOSE_DATE)));
 		columns.add(new ConnectColumnDefinition("Closed by",
-				new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY)));
+				new UserNameLP(getUserAdminService(), null, ConnectNames.CONNECT_CLOSED_BY)));
 		return columns;
 	}
 }

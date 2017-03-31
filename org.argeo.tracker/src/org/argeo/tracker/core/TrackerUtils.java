@@ -23,7 +23,9 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
+import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -86,19 +88,21 @@ public class TrackerUtils {
 	}
 
 	public static String versionsRelPath() {
-		return TrackerNames.TRACKER_VERSIONS;
+		return TrackerNames.TRACKER_MILESTONES;
 	}
 
 	public static String getRelevantPropName(Node category) {
 		try {
 			if (category.isNodeType(TrackerTypes.TRACKER_COMPONENT))
 				return TrackerNames.TRACKER_COMPONENT_IDS;
+			else if (category.isNodeType(TrackerTypes.TRACKER_MILESTONE))
+				return TrackerNames.TRACKER_MILESTONE_UID;
 			else if (category.isNodeType(TrackerTypes.TRACKER_VERSION)) {
 				// TODO enhance the choice between milestone and version
 				if (category.hasProperty(TrackerNames.TRACKER_RELEASE_DATE))
 					return TrackerNames.TRACKER_VERSION_IDS;
 				else
-					return TrackerNames.TRACKER_TARGET_ID;
+					return TrackerNames.TRACKER_MILESTONE_UID;
 			} else
 				throw new TrackerException("Unsupported category node type " + category.getMixinNodeTypes().toString()
 						+ " for " + category.getPath());
@@ -120,6 +124,23 @@ public class TrackerUtils {
 		} catch (RepositoryException e) {
 			throw new TrackerException(
 					"Unable to get projects under " + projectParentPath + " for session " + session.getUserID(), e);
+		}
+	}
+
+	public static NodeIterator getOpenMilestones(Node project, String filter) {
+		try {
+			StringBuilder builder = new StringBuilder();
+			builder.append(XPathUtils.descendantFrom(project.getPath()));
+			builder.append("//element(*, ").append(TrackerTypes.TRACKER_MILESTONE).append(")");
+			builder.append("[not(@").append(ConnectNames.CONNECT_CLOSE_DATE).append(")");
+			if (EclipseUiUtils.notEmpty(filter))
+				builder.append(" and ").append(XPathUtils.getFreeTextConstraint(filter));
+			builder.append("]");
+			builder.append(" order by @").append(Property.JCR_TITLE).append(" ascending");
+			QueryResult result = XPathUtils.createQuery(project.getSession(), builder.toString()).execute();
+			return result.getNodes();
+		} catch (RepositoryException e) {
+			throw new TrackerException("Unable to get milestones on " + project + " with filter:" + filter, e);
 		}
 	}
 
@@ -159,16 +180,15 @@ public class TrackerUtils {
 
 	public static NodeIterator getVersions(Node project, String filter) throws RepositoryException {
 		StringBuilder builder = new StringBuilder();
-		Node parent = project.getNode(versionsRelPath());
-		builder.append(XPathUtils.descendantFrom(parent.getPath()));
+		// Node parent = project.getNode(versionsRelPath());
+		builder.append(XPathUtils.descendantFrom(project.getPath()));
 		builder.append("//element(*, ").append(TrackerTypes.TRACKER_VERSION).append(")");
 		builder.append("[@").append(TrackerNames.TRACKER_RELEASE_DATE);
 		if (EclipseUiUtils.notEmpty(filter))
 			builder.append(" and ").append(XPathUtils.getFreeTextConstraint(filter));
 		builder.append("]");
 		builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" descending");
-		QueryManager qm = parent.getSession().getWorkspace().getQueryManager();
-		QueryResult result = qm.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
+		QueryResult result = XPathUtils.createQuery(project.getSession(), builder.toString()).execute();
 		return result.getNodes();
 	}
 
@@ -183,6 +203,21 @@ public class TrackerUtils {
 			return versionIds;
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get version ids on " + project + " with filter:" + filter, e);
+		}
+	}
+
+	public static NodeIterator getTasks(Node project, String filter) {
+		try {
+			StringBuilder builder = new StringBuilder();
+			builder.append(XPathUtils.descendantFrom(project.getPath()));
+			builder.append("//element(*, ").append(TrackerTypes.TRACKER_TASK).append(")");
+			if (EclipseUiUtils.notEmpty(filter))
+				builder.append("[").append(XPathUtils.getFreeTextConstraint(filter)).append("]");
+			builder.append(" order by @").append(TrackerNames.TRACKER_ID);
+			QueryResult result = XPathUtils.createQuery(project.getSession(), builder.toString()).execute();
+			return result.getNodes();
+		} catch (RepositoryException e) {
+			throw new TrackerException("Unable to get issues for " + project + " with filter: " + filter, e);
 		}
 	}
 
@@ -216,7 +251,7 @@ public class TrackerUtils {
 	public static boolean isIssueClosed(Node issue) {
 		try {
 			// TODO enhance definition of closed status
-			return issue.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE);
+			return issue.hasProperty(ConnectNames.CONNECT_CLOSE_DATE);
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to check closed status of " + issue, e);
 		}
@@ -225,11 +260,10 @@ public class TrackerUtils {
 	public static NodeIterator getIssues(Node project, String filter, String propName, String catId,
 			boolean onlyOpenTasks) {
 		try {
-			QueryManager queryManager = project.getSession().getWorkspace().getQueryManager();
 			StringBuilder builder = new StringBuilder();
-			Node parent = project.getNode(issuesRelPath());
-			builder.append(XPathUtils.descendantFrom(parent.getPath()));
-			builder.append("//element(*, ").append(TrackerTypes.TRACKER_ISSUE).append(")");
+			// Node parent = project.getNode(issuesRelPath());
+			builder.append(XPathUtils.descendantFrom(project.getPath()));
+			builder.append("//element(*, ").append(TrackerTypes.TRACKER_TASK).append(")");
 
 			StringBuilder tmpBuilder = new StringBuilder();
 
@@ -246,7 +280,7 @@ public class TrackerUtils {
 
 			if (onlyOpenTasks) {
 				tmpBuilder.append(" not(@");
-				tmpBuilder.append(ActivitiesNames.ACTIVITIES_CLOSE_DATE);
+				tmpBuilder.append(ConnectNames.CONNECT_CLOSE_DATE);
 				tmpBuilder.append(")");
 				tmpBuilder.append(andStr);
 			}
@@ -255,7 +289,7 @@ public class TrackerUtils {
 				builder.append("[").append(tmpBuilder.substring(0, tmpBuilder.length() - andStr.length())).append("]");
 
 			builder.append(" order by @" + TrackerNames.TRACKER_ID);
-			Query xpathQuery = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH);
+			Query xpathQuery = XPathUtils.createQuery(project.getSession(), builder.toString());
 			QueryResult result = xpathQuery.execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
@@ -292,18 +326,13 @@ public class TrackerUtils {
 
 	public static NodeIterator getComponents(Node project, String filter) {
 		try {
-			String relPath = componentsRelPath();
-			if (!project.hasNode(relPath))
-				return null;
-			Node parent = project.getNode(relPath);
-			QueryManager queryManager = parent.getSession().getWorkspace().getQueryManager();
 			StringBuilder builder = new StringBuilder();
-			builder.append(XPathUtils.descendantFrom(parent.getPath()));
+			builder.append(XPathUtils.descendantFrom(project.getPath()));
 			builder.append("//element(*, ").append(TrackerTypes.TRACKER_COMPONENT).append(")");
 			if (EclipseUiUtils.notEmpty(filter))
 				builder.append("[").append(XPathUtils.getFreeTextConstraint(filter)).append("]");
 			builder.append(" order by @").append(TrackerNames.TRACKER_ID).append(" ascending");
-			QueryResult result = queryManager.createQuery(builder.toString(), ConnectConstants.QUERY_XPATH).execute();
+			QueryResult result = XPathUtils.createQuery(project.getSession(), builder.toString()).execute();
 			return result.getNodes();
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to get components for " + project + " with filter: " + filter, e);
@@ -312,12 +341,11 @@ public class TrackerUtils {
 
 	public static Node getVersionById(Node project, String versionId) {
 		try {
-			Node parent = project.getNode(versionsRelPath());
-			QueryManager queryManager = parent.getSession().getWorkspace().getQueryManager();
-			String xpathQueryStr = XPathUtils.descendantFrom(parent.getPath());
+			// Node parent = project.getNode(versionsRelPath());
+			String xpathQueryStr = XPathUtils.descendantFrom(project.getPath());
 			xpathQueryStr += "//element(*, " + TrackerTypes.TRACKER_VERSION + ")";
 			xpathQueryStr += "[" + XPathUtils.getPropertyEquals(TrackerNames.TRACKER_ID, versionId) + "]";
-			Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
+			Query xpathQuery = XPathUtils.createQuery(project.getSession(), xpathQueryStr);
 			NodeIterator results = xpathQuery.execute().getNodes();
 			if (!results.hasNext())
 				return null;
@@ -358,6 +386,15 @@ public class TrackerUtils {
 		NodeIterator nit = getIssues(project, null, relProp, ConnectJcrUtils.get(category, TrackerNames.TRACKER_ID),
 				onlyOpen);
 		return nit.getSize();
+	}
+
+	public static Node getRelatedProject(AppService appService, Node node) {
+		try {
+			String refUid = ConnectJcrUtils.get(node, TrackerNames.TRACKER_PROJECT_UID);
+			return appService.getEntityByUid(node.getSession(), null, refUid);
+		} catch (RepositoryException e) {
+			throw new TrackerException("Unable to get project for " + node, e);
+		}
 	}
 
 	public static Node getProjectFromChild(Node issue) {
@@ -427,7 +464,7 @@ public class TrackerUtils {
 					.append(TrackerUtils.getPriorityLabel(issue)).append("] - ");
 
 			// milestone, version
-			String targetId = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_TARGET_ID);
+			String targetId = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_MILESTONE_ID);
 			if (notEmpty(targetId))
 				builder.append("<b>Target milestone: </b> ").append(targetId).append(" - ");
 			String versionId = ConnectJcrUtils.getMultiAsString(issue, TrackerNames.TRACKER_VERSION_IDS, ", ");
@@ -437,8 +474,8 @@ public class TrackerUtils {
 
 			// assigned to
 			if (activityService.isTaskDone(issue)) {
-				String closeBy = ConnectJcrUtils.get(issue, ActivitiesNames.ACTIVITIES_CLOSED_BY);
-				Calendar closedDate = issue.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).getDate();
+				String closeBy = ConnectJcrUtils.get(issue, ConnectNames.CONNECT_CLOSED_BY);
+				Calendar closedDate = issue.getProperty(ConnectNames.CONNECT_CLOSE_DATE).getDate();
 				builder.append(" - Marked as closed by ").append(closeBy);
 				builder.append(" on ").append(dtFormat.format(closedDate.getTime())).append(".");
 			} else {

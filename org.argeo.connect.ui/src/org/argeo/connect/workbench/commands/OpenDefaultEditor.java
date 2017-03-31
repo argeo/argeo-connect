@@ -36,7 +36,8 @@ public class OpenDefaultEditor extends AbstractHandler {
 			EntityEditorInput eei = new EntityEditorInput(homeNode.getIdentifier());
 			IEditorPart iep = iwPage.findEditor(eei);
 			if (iep == null) {
-				iwPage.openEditor(eei, systemWorkbenchService.getDefaultEditorId());
+				String edId = systemWorkbenchService.getDefaultEditorId();
+				iwPage.openEditor(eei, edId);
 			} else
 				iwPage.activate(iep);
 		} catch (RepositoryException | PartInitException re) {

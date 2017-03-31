@@ -4,7 +4,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.connect.AppService;
 
@@ -31,15 +33,20 @@ public interface TrackerService extends AppService {
 	 * @return
 	 * @throws RepositoryException
 	 */
-	public Node configureIssue(Node issue, Node project, String title, String description, String targetId,
+	public void configureIssue(Node issue, Node project, Node milestone, String title, String description,
 			List<String> versionIds, List<String> componentIds, int priority, int importance, String managerId)
 			throws RepositoryException;
+
+	public void configureTask(Node task, Node project, Node milestone, String title, String description,
+			String managerId) throws RepositoryException;
 
 	public void configureMilestone(Node milestone, Node project, Node parentMilestone, String title, String description,
 			String managerId, String defaultAssigneeId, Calendar targetDate) throws RepositoryException;
 
-	public void configureProject(Node project, String title, String description,
-			String managerId) throws RepositoryException;
+	public NodeIterator getMyMilestones(Session session, boolean onlyOpenTasks);
+
+	public void configureProject(Node project, String title, String description, String managerId)
+			throws RepositoryException;
 
 	public Node addComment(Node parentIssue, String description) throws RepositoryException;
 

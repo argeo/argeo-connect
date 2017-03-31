@@ -17,6 +17,7 @@ import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
+import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
@@ -36,10 +37,10 @@ import org.argeo.tracker.core.VersionComparator;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureMilestoneWizard;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureTaskWizard;
+import org.argeo.tracker.internal.ui.controls.CategoryOverviewChart;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureVersionWizard;
-import org.argeo.tracker.ui.MilestoneListComposite;
+import org.argeo.tracker.internal.ui.dialogs.NewComponentWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -61,6 +62,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
@@ -78,31 +80,41 @@ import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 /** Default editor to display and edit a project definition */
-public class ProjectEditor extends AbstractTrackerEditor {
-	private static final long serialVersionUID = -2589214457345896922L;
-	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor";
+public class ItProjectEditor extends AbstractTrackerEditor {
+	private static final long serialVersionUID = 1787310296792025442L;
 
-	// Ease implementation
+	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".itProjectEditor";
+
+	// Context
+	// private TrackerService trackerService;
 	private Node project;
 
 	// Current pages
 	private MainPage projectMainPage;
-	private TasksPage tasksPage;
-	private MilestonesPage milestonesPage;
+	private IssuesPage issuesPage;
+	private VersionsPage milestonesPage;
+	private ComponentsPage componentsPage;
 	private TechnicalInfoPage techInfoPage;
+
+	// Ease implementation
 
 	@Override
 	protected void addPages() {
+		// Initialise the nodes
 		project = getNode();
+		// trackerService = getTrackerService();
 		try {
 			projectMainPage = new MainPage(this);
 			addPage(projectMainPage);
 
-			tasksPage = new TasksPage(this);
-			addPage(tasksPage);
+			issuesPage = new IssuesPage(this);
+			addPage(issuesPage);
 
-			milestonesPage = new MilestonesPage(this);
+			milestonesPage = new VersionsPage(this);
 			addPage(milestonesPage);
+
+			componentsPage = new ComponentsPage(this);
+			addPage(componentsPage);
 
 			techInfoPage = new TechnicalInfoPage(this, TrackerUiPlugin.PLUGIN_ID + ".issueEditor.issueMainPage",
 					getNode());
@@ -117,7 +129,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.mainPage";
 
 		public MainPage(FormEditor editor) {
-			super(editor, ID, "Overview");
+			super(editor, ID, "Main");
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
@@ -126,7 +138,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			TableWrapLayout layout = new TableWrapLayout();
 			body.setLayout(layout);
 			appendOverviewPart(body);
-			appendOpenMilestonePart(body);
+			appendIssueListPart(body);
 		}
 
 		/** Creates the general section */
@@ -134,7 +146,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			FormToolkit tk = getManagedForm().getToolkit();
 
 			Section section = TrackerUiUtils.addFormSection(tk, parent,
-					ConnectJcrUtils.get(project, Property.JCR_TITLE));
+					ConnectJcrUtils.get(project, Property.JCR_TITLE) + " - Overview");
 			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 			Composite body = (Composite) section.getClient();
@@ -161,38 +173,115 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			getManagedForm().addPart(part);
 		}
 
-		private Section appendOpenMilestonePart(Composite parent) {
+		// Some monitoring indicators
+		private Section appendIssueListPart(Composite parent) {
 			FormToolkit tk = getManagedForm().getToolkit();
-			Section section = TrackerUiUtils.addFormSection(tk, parent, "Open Milestones");
+			Section section = TrackerUiUtils.addFormSection(tk, parent, "Next Milestones");
 			section.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
-			Composite body = (Composite) section.getClient();
+			final Composite body = (Composite) section.getClient();
 			body.setLayout(new TableWrapLayout());
-			final MilestoneListComposite msBoxCmp = new MilestoneListComposite(body, SWT.NO_FOCUS,
-					getAppWorkbenchService(), project);
-			msBoxCmp.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
 
 			SectionPart part = new SectionPart(section) {
 
 				@Override
 				public void refresh() {
-					NodeIterator nit = TrackerUtils.getOpenMilestones(project, null);
-					msBoxCmp.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
+
+					if (body.isDisposed())
+						return;
+					CmsUtils.clear(body);
+
+					// TODO enhance picking up and ordering of displayed
+					// milestones
+					NodeIterator nit = TrackerUtils.getMilestones(project, null);
+					while (nit.hasNext()) {
+						Node currMilestone = nit.nextNode();
+						appendMilestoneCmp(body, currMilestone);
+					}
+
+					refreshViewer();
 					super.refresh();
 				}
 			};
 			getManagedForm().addPart(part);
 			return section;
 		}
+
+		private void refreshViewer() {
+
+		}
 	}
 
-	private class TasksPage extends FormPage implements ArgeoNames {
+	private void appendMilestoneCmp(Composite parent, Node milestone) {
+		String currTitle = ConnectJcrUtils.get(milestone, Property.JCR_TITLE);
+		String currId = ConnectJcrUtils.get(milestone, TrackerNames.TRACKER_ID);
+		int totalNb = (int) TrackerUtils.getIssues(project, null, TrackerNames.TRACKER_MILESTONE_ID, currId).getSize();
+		int openNb = (int) TrackerUtils.getIssues(project, null, TrackerNames.TRACKER_MILESTONE_ID, currId, true)
+				.getSize();
+		int closeNb = totalNb - openNb;
+
+		if (totalNb <= 0)
+			return;
+
+		Composite boxCmp = new Composite(parent, SWT.NO_FOCUS | SWT.BORDER); //
+		boxCmp.setLayoutData(new TableWrapData(FILL_GRAB));
+
+		TableWrapLayout layout = new TableWrapLayout();
+		layout.numColumns = 2;
+		boxCmp.setLayout(layout);
+
+		Link titleLk = new Link(boxCmp, SWT.WRAP);
+		titleLk.setLayoutData(new TableWrapData(FILL_GRAB));
+		titleLk.setFont(EclipseUiUtils.getBoldFont(boxCmp));
+		titleLk.setText("<a>" + currId + "</a>");
+		titleLk.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 5342086098924045174L;
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				String jcrId = ConnectJcrUtils.getIdentifier(milestone);
+				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, jcrId);
+			}
+		});
+
+		Composite chartCmp = new Composite(boxCmp, SWT.NO_FOCUS);
+		TableWrapData twd = new TableWrapData();
+		twd.rowspan = 3;
+		twd.heightHint = 40;
+		twd.valign = TableWrapData.CENTER;
+		chartCmp.setLayoutData(twd);
+		chartCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
+
+		CategoryOverviewChart coc = new CategoryOverviewChart(chartCmp, SWT.NO_FOCUS);
+		coc.setInput(currTitle, closeNb, totalNb);
+		coc.setLayoutData(new GridData(310, 40));
+		coc.layout(true, true);
+
+		Label datesLbl = new Label(boxCmp, SWT.WRAP);
+		String ddVal = ConnectJcrUtils.getDateFormattedAsString(milestone, TrackerNames.TRACKER_TARGET_DATE,
+				TrackerUiConstants.defaultDateFormat);
+		if (EclipseUiUtils.isEmpty(ddVal)) {
+			datesLbl.setText("No due date defined");
+			datesLbl.setFont(EclipseUiUtils.getItalicFont(boxCmp));
+		} else
+			datesLbl.setText("Due date: " + ddVal);
+
+		Label descLbl = new Label(boxCmp, SWT.WRAP);
+		String desc = ConnectJcrUtils.get(milestone, Property.JCR_DESCRIPTION);
+		if (EclipseUiUtils.isEmpty(desc))
+			descLbl.setText("-");
+		else
+			descLbl.setText(desc);
+	}
+
+	private class IssuesPage extends FormPage implements ArgeoNames {
 		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.issuesPage";
 
 		private TableViewer tableViewer;
 
-		public TasksPage(FormEditor editor) {
-			super(editor, ID, "All tasks");
+		public IssuesPage(FormEditor editor) {
+			super(editor, ID, "Issues");
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
@@ -218,16 +307,16 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			columnDefs.add(new ColumnDefinition(getJcrLP(ActivitiesNames.ACTIVITIES_TASK_STATUS), "Status", 100));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new ImportanceLabelProvider(), "Importance", 100));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new PriorityLabelProvider(), "Priority", 100));
-			columnDefs.add(new ColumnDefinition(new TrackerLps().new MilestoneLabelProvider(getAppService()),
-					"Milestone", 80));
+			columnDefs.add(new ColumnDefinition(getJcrLP(TrackerNames.TRACKER_MILESTONE_ID), "Target", 80));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new CommentNbLabelProvider(), "Comments", 120));
+
 			tableViewer = TrackerUiUtils.createTableViewer(parent, SWT.SINGLE, columnDefs);
 			addDClickListener(tableViewer);
 			refreshViewer(null);
 		}
 
 		private void refreshViewer(String filter) {
-			NodeIterator nit = TrackerUtils.getTasks(project, filter);
+			NodeIterator nit = TrackerUtils.getIssues(project, filter);
 			tableViewer.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
 			tableViewer.refresh();
 		}
@@ -242,7 +331,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
-			addBtn.setToolTipText("Create a task");
+			addBtn.setToolTipText("Create a new issue");
 			addBtn.setImage(TrackerImages.ICON_ADD);
 
 			filterTxt.addModifyListener(new ModifyListener() {
@@ -263,17 +352,18 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					try {
 						AppService as = getAppService();
 						tmpSession = project.getSession().getRepository().login();
-						Node draftTask = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_TASK);
-						draftTask.setProperty(TrackerNames.TRACKER_PROJECT_UID,
+						Node draftIssue = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_ISSUE);
+						draftIssue.setProperty(TrackerNames.TRACKER_PROJECT_UID,
 								ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID));
-						ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getTrackerService(),
-								draftTask);
+						ConfigureIssueWizard wizard = new ConfigureIssueWizard(getUserAdminService(),
+								getTrackerService(), draftIssue);
 						WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
 						if (dialog.open() == Window.OK) {
-							String taskBasePath = as.getBaseRelPath(TrackerTypes.TRACKER_TASK);
-							Node parent = tmpSession.getNode("/" + taskBasePath);
-							Node task = getTrackerService().publishEntity(parent, TrackerTypes.TRACKER_TASK, draftTask);
-							task = getTrackerService().saveEntity(task, false);
+							String issueBasePath = as.getBaseRelPath(TrackerTypes.TRACKER_ISSUE);
+							Node parent = tmpSession.getNode("/" + issueBasePath);
+							Node issue = getTrackerService().publishEntity(parent, TrackerTypes.TRACKER_ISSUE,
+									draftIssue);
+							issue = getTrackerService().saveEntity(issue, false);
 							project.getSession().refresh(true);
 							refreshViewer(filterTxt.getText());
 						}
@@ -287,13 +377,13 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		}
 	}
 
-	private class MilestonesPage extends FormPage implements ArgeoNames {
+	private class VersionsPage extends FormPage implements ArgeoNames {
 		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.issuesPage";
 
 		private TableViewer tableViewer;
 		private Text filterTxt;
 
-		public MilestonesPage(FormEditor editor) {
+		public VersionsPage(FormEditor editor) {
 			super(editor, ID, "Milestones");
 		}
 
@@ -307,19 +397,19 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			createFilterPart(filterCmp);
 			filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			Composite tableCmp = new Composite(body, SWT.NO_FOCUS);
-			appendMilestonesPart(mf, tableCmp);
+			appendVersionsPart(mf, tableCmp);
 			tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
 			form.reflow(true);
 		}
 
-		private void appendMilestonesPart(IManagedForm mf, Composite parent) {
+		private void appendVersionsPart(IManagedForm mf, Composite parent) {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
-			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_TITLE), "Name", 120));
-			columnDefs.add(new ColumnDefinition(new TrackerLps().new MilestoneDateLabelProvider(), "Date", 120));
+			columnDefs.add(new ColumnDefinition(getJcrLP(TrackerNames.TRACKER_ID), "ID", 80));
+			columnDefs.add(new ColumnDefinition(new TrackerLps().new VersionDateLabelProvider(), "Date", 120));
 			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_DESCRIPTION), "Description", 300));
-			columnDefs.add(new ColumnDefinition(getMSIssuesLP(true), "Open tasks", 120));
-			columnDefs.add(new ColumnDefinition(getMSIssuesLP(false), "All tasks", 120));
+			columnDefs.add(new ColumnDefinition(getCountLP(true), "Open issues", 120));
+			columnDefs.add(new ColumnDefinition(getCountLP(false), "All issues", 120));
 			if (canEdit())
 				columnDefs.add(new ColumnDefinition(getEditionLP(), "", 120));
 
@@ -356,7 +446,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		}
 
 		private void refreshViewer(String filter) {
-			NodeIterator nit = TrackerUtils.getOpenMilestones(project, filter);
+			NodeIterator nit = TrackerUtils.getAllVersions(project, filter);
 			tableViewer.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
 			tableViewer.refresh();
 		}
@@ -371,7 +461,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
-			addBtn.setToolTipText("Create a milestone");
+			addBtn.setToolTipText("Create a new version");
 			addBtn.setImage(TrackerImages.ICON_ADD);
 
 			filterTxt.addModifyListener(new ModifyListener() {
@@ -387,34 +477,184 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-
-					Session tmpSession = null;
-					try {
-						AppService as = getAppService();
-						tmpSession = project.getSession().getRepository().login();
-						Node draftMilestone = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_MILESTONE);
-						draftMilestone.setProperty(TrackerNames.TRACKER_PROJECT_UID,
-								ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID));
-						ConfigureMilestoneWizard wizard = new ConfigureMilestoneWizard(getUserAdminService(),
-								getTrackerService(), draftMilestone);
-						WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
-						if (dialog.open() == Window.OK) {
-							Node parent = tmpSession.getNode("/" + as.getBaseRelPath(TrackerTypes.TRACKER_MILESTONE));
-							Node milestone = getTrackerService().publishEntity(parent, TrackerTypes.TRACKER_MILESTONE,
-									draftMilestone);
-							milestone = getTrackerService().saveEntity(milestone, false);
-							project.getSession().refresh(true);
+					ConfigureVersionWizard wizard = new ConfigureVersionWizard(getTrackerService(), project);
+					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
+					if (dialog.open() == Window.OK) {
+						try {
+							project.getSession().save();
 							refreshViewer(filterTxt.getText());
+						} catch (RepositoryException e1) {
+							throw new TrackerException("Unable to create a version for" + project, e1);
 						}
-					} catch (RepositoryException e1) {
-						throw new TrackerException("Unable to create issue on " + project, e1);
-					} finally {
-						JcrUtils.logoutQuietly(tmpSession);
 					}
 				}
 			});
 		}
 	}
+
+	private class ComponentsPage extends FormPage implements ArgeoNames {
+		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.componentsPage";
+
+		private TableViewer tableViewer;
+		private Text filterTxt;
+
+		public ComponentsPage(FormEditor editor) {
+			super(editor, ID, "Components");
+		}
+
+		protected void createFormContent(final IManagedForm mf) {
+			ScrolledForm form = mf.getForm();
+			Composite body = form.getBody();
+			GridLayout mainLayout = new GridLayout();
+			body.setLayout(mainLayout);
+			Composite filterCmp = new Composite(body, SWT.NO_FOCUS);
+			createFilterPart(filterCmp);
+			filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
+			Composite tableCmp = new Composite(body, SWT.NO_FOCUS);
+			appendComponentsPart(mf, tableCmp);
+			tableCmp.setLayoutData(EclipseUiUtils.fillAll());
+			form.reflow(true);
+		}
+
+		private void appendComponentsPart(IManagedForm mf, Composite parent) {
+			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
+			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_TITLE), "Title", 150));
+			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_DESCRIPTION), "Description", 300));
+			columnDefs.add(new ColumnDefinition(getCountLP(true), "Open issues", 120));
+			columnDefs.add(new ColumnDefinition(getCountLP(false), "All issues", 120));
+			if (canEdit())
+				columnDefs.add(new ColumnDefinition(getEditionLP(), "", 120));
+
+			tableViewer = TrackerUiUtils.createTableViewer(parent, SWT.SINGLE, columnDefs);
+			tableViewer.setComparator(new ViewerComparator() {
+				private static final long serialVersionUID = 1L;
+
+				public int compare(Viewer viewer, Object e1, Object e2) {
+					try {
+						Node n1 = (Node) e1;
+						Node n2 = (Node) e2;
+						return ConnectJcrUtils.get(n1, Property.JCR_TITLE)
+								.compareToIgnoreCase(ConnectJcrUtils.get(n2, Property.JCR_TITLE));
+					} catch (ConnectException e) {
+						// TODO clean this: silently catch exception when an
+						// item has been deleted.
+					}
+					return 0;
+				};
+			});
+			addDClickListener(tableViewer);
+
+			AbstractFormPart part = new AbstractFormPart() {
+				@Override
+				public void refresh() {
+					refreshViewer(filterTxt.getText());
+					super.refresh();
+				}
+			};
+			mf.addPart(part);
+
+			if (canEdit()) {
+				Table table = tableViewer.getTable();
+				CmsUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
+				CmsUtils.markup(table);
+				table.addSelectionListener(new EditionRwtAdapter(part));
+			}
+			refreshViewer(null);
+		}
+
+		private void refreshViewer(String filter) {
+			NodeIterator nit = TrackerUtils.getComponents(project, filter);
+			if (nit == null || !nit.hasNext())
+				tableViewer.setInput(null);
+			else
+				tableViewer.setInput(JcrUtils.nodeIteratorToList(nit).toArray(new Node[0]));
+			tableViewer.refresh();
+		}
+
+		private void createFilterPart(Composite parent) {
+			GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false));
+			layout.horizontalSpacing = 5;
+			parent.setLayout(layout);
+			parent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
+			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
+			final Button addBtn = new Button(parent, SWT.PUSH);
+			addBtn.setToolTipText("Create a new component");
+			addBtn.setImage(TrackerImages.ICON_ADD);
+			filterTxt.addModifyListener(new ModifyListener() {
+				private static final long serialVersionUID = 8130545587125370689L;
+
+				public void modifyText(ModifyEvent event) {
+					refreshViewer(filterTxt.getText());
+				}
+			});
+
+			addBtn.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 9141984572082449486L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					NewComponentWizard wizard = new NewComponentWizard(getTrackerService(), project);
+					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
+					if (dialog.open() == Window.OK) {
+						try {
+							project.getSession().save();
+							refreshViewer(filterTxt.getText());
+						} catch (RepositoryException e1) {
+							throw new TrackerException("Unable to create a version for" + project, e1);
+						}
+					}
+				}
+			});
+		}
+	}
+
+	// MENU CONFIGURATION
+	// private void addListSectionMenu(SectionPart sectionPart) {
+	// ToolBarManager toolBarManager =
+	// TrackerUiUtils.addMenu(sectionPart.getSection());
+	// String tooltip = "Create a new issue";
+	// // Action action = new CreateIssue(tooltip,
+	// // TrackerImages.ICON_DESC_CREATE, sectionPart);
+	// // toolBarManager.add(action);
+	// toolBarManager.update(true);
+	// }
+	//
+	// // MENU ACTIONS
+	// private class ForceRefresh extends Action {
+	// private static final long serialVersionUID = -6798429720348536525L;
+	// private final SectionPart sectionPart;
+	//
+	// private ForceRefresh(String name, ImageDescriptor img, SectionPart
+	// sectionPart) {
+	// super(name, img);
+	// this.sectionPart = sectionPart;
+	// }
+	//
+	// @Override
+	// public void run() {
+	// sectionPart.refresh();
+	// }
+	// }
+
+	// private class CreateIssue extends Action {
+	// private static final long serialVersionUID = -1337713097184522588L;
+	//
+	// private final SectionPart sectionPart;
+	//
+	// private CreateIssue(String name, ImageDescriptor img, SectionPart
+	// sectionPart) {
+	// super(name, img);
+	// this.sectionPart = sectionPart;
+	//
+	// }
+	//
+	// @Override
+	// public void run() {
+	// // TODO Do something
+	// // sectionPart.refresh();
+	// }
+	// }
 
 	// LOCAL HELPERS
 
@@ -423,29 +663,14 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		return new SimpleJcrNodeLabelProvider(propName);
 	}
 
-	// private static ColumnLabelProvider getCountLP(boolean onlyOpen) {
-	// return new ColumnLabelProvider() {
-	// private static final long serialVersionUID = -998161071505982347L;
-	//
-	// @Override
-	// public String getText(Object element) {
-	// Node category = (Node) element;
-	// long currNb = TrackerUtils.getIssueNb(category, onlyOpen);
-	// return currNb + "";
-	// }
-	// };
-	// }
-	//
-	private ColumnLabelProvider getMSIssuesLP(boolean onlyOpen) {
+	private static ColumnLabelProvider getCountLP(boolean onlyOpen) {
 		return new ColumnLabelProvider() {
 			private static final long serialVersionUID = -998161071505982347L;
 
 			@Override
 			public String getText(Object element) {
-				Node milestone = (Node) element;
-				NodeIterator nit = TrackerUtils.getIssues(project, null, TrackerNames.TRACKER_MILESTONE_UID,
-						ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_UID), onlyOpen);
-				long currNb = nit.getSize();
+				Node category = (Node) element;
+				long currNb = TrackerUtils.getIssueNb(category, onlyOpen);
 				return currNb + "";
 			}
 		};

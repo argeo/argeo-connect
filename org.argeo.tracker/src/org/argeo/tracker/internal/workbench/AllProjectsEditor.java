@@ -37,20 +37,8 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Account", new AccountLp(), 300));
-		colDefs.add(new ConnectColumnDefinition("Open Issues", new CountLp(), 150));
+		colDefs.add(new ConnectColumnDefinition("Open Milestones", new CountLp(), 150));
 	}
-
-	// public void createPartControl(Composite parent) {
-	// super.createPartControl(parent);
-	// getTableViewer().getTableViewer().addDoubleClickListener(new
-	// IDoubleClickListener() {
-	//
-	// @Override
-	// public void doubleClick(DoubleClickEvent event) {
-	// System.out.println("Double clicked");
-	// }
-	// });
-	// }
 
 	protected boolean showStaticFilterSection() {
 		return false;
@@ -87,7 +75,7 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 		@Override
 		public String getText(Object element) {
 			Node project = (Node) element;
-			long currNb = TrackerUtils.getIssues(project, null, null, null, true).getSize();
+			long currNb = TrackerUtils.getOpenMilestones(project, null).getSize();
 			return currNb + "";
 		}
 	}
@@ -100,13 +88,15 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 			Node project = (Node) element;
 			try {
 				// TODO this is defined in a client app.
-				Node account = project.getReferences().nextProperty().getParent().getParent().getParent();
-				return ConnectJcrUtils.get(account, Property.JCR_TITLE);
+				if (project.getReferences().hasNext()) {
+					Node account = project.getReferences().nextProperty().getParent().getParent().getParent();
+					return ConnectJcrUtils.get(account, Property.JCR_TITLE);
+				} else
+					return "-";
 			} catch (RepositoryException e) {
 				throw new TrackerException("unable to retrieve related account ", e);
 
 			}
-			// return "";
 		}
 	}
 }

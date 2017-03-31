@@ -40,7 +40,6 @@ public interface AppService {
 		Node createdNode = null;
 		if (isKnownType(nodeType)) {
 			String relPath = getDefaultRelPath(srcNode);
-
 			if (parent == null)
 				parent = srcNode.getSession().getNode("/" + getBaseRelPath(nodeType));
 

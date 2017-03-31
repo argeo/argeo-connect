@@ -9,6 +9,8 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.util.UserAdminUtils;
+import org.argeo.connect.AppService;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
@@ -19,21 +21,47 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 /** Centralise label providers for Argeo tracker to keep packages simple */
 public class TrackerLps {
 
+	// FIXME provide a better management of date patterns
+	private final static String SIMPLE_DATE_PATTERN = "dd MMM yyyy";
+
 	public class VersionDateLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = -7883411659009058536L;
-		private String datePattern = "dd MMM yyyy";
 
 		@Override
 		public String getText(Object element) {
 			Node version = (Node) element;
 			String date = ConnectJcrUtils.getDateFormattedAsString(version, TrackerNames.TRACKER_RELEASE_DATE,
-					datePattern);
+					SIMPLE_DATE_PATTERN);
 			if (date == null)
-				date = ConnectJcrUtils.getDateFormattedAsString(version, TrackerNames.TRACKER_TARGET_DATE, datePattern);
+				date = ConnectJcrUtils.getDateFormattedAsString(version, TrackerNames.TRACKER_TARGET_DATE,
+						SIMPLE_DATE_PATTERN);
 
 			if (date == null)
 				date = " - ";
 			return date;
+		}
+	}
+
+	public class MilestoneDateLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = 8003688506253830216L;
+
+		@Override
+		public String getText(Object element) {
+			Node milestone = (Node) element;
+			String dateStr = "";
+			try {
+				if (milestone.hasProperty(ConnectNames.CONNECT_CLOSE_DATE))
+					dateStr = "Closed on " + ConnectJcrUtils.getDateFormattedAsString(milestone,
+							ConnectNames.CONNECT_CLOSE_DATE, SIMPLE_DATE_PATTERN);
+				else if (milestone.hasProperty(TrackerNames.TRACKER_TARGET_DATE))
+					dateStr = "Due to " + ConnectJcrUtils.getDateFormattedAsString(milestone,
+							TrackerNames.TRACKER_TARGET_DATE, SIMPLE_DATE_PATTERN);
+				else
+					dateStr = " - ";
+			} catch (RepositoryException e) {
+				throw new TrackerException("Cannot retrieve milstone relevant date for " + milestone, e);
+			}
+			return dateStr;
 		}
 	}
 
@@ -74,6 +102,32 @@ public class TrackerLps {
 				throw new TrackerException("Unable to get isssue priority for " + issue, e);
 			}
 			return "None yet";
+		}
+	}
+
+	public class MilestoneLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = -2359291146337869742L;
+		private AppService appService;
+
+		public MilestoneLabelProvider(AppService appService) {
+			this.appService = appService;
+		}
+
+		// TODO make it clickable
+		@Override
+		public String getText(Object element) {
+			Node issue = (Node) element;
+			try {
+				String muid = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_MILESTONE_UID);
+				if (EclipseUiUtils.notEmpty(muid)) {
+					Node m = appService.getEntityByUid(issue.getSession(), null, muid);
+					if (m != null)
+						return ConnectJcrUtils.get(m, Property.JCR_TITLE);
+				}
+			} catch (RepositoryException e) {
+				throw new TrackerException("Unable to get milestone name for " + issue, e);
+			}
+			return "";
 		}
 	}
 

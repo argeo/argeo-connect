@@ -83,14 +83,14 @@ public class ConfigureMilestoneWizard extends Wizard {
 		if (EclipseUiUtils.isEmpty(title)) {
 			MessageDialog.openError(getShell(), "Compulsory ID", "Please define the version ID");
 			return false;
-		} else if (TrackerUtils.getVersionById(project, title) != null) {
+		} else if (TrackerUtils.getVersionById(chosenProject, title) != null) {
 			MessageDialog.openError(getShell(), "Already existing version",
 					"A version with ID " + title + " already exists, cannot create");
 			return false;
 		}
 
 		try {
-			trackerService.configureMilestone(milestone, project, null, title, descTxt.getText(), managerDD.getText(),
+			trackerService.configureMilestone(milestone, chosenProject, null, title, descTxt.getText(), managerDD.getText(),
 					defaultAssigneeDD.getText(), targetDateCmp.getCalendar());
 			if (milestone.getSession().hasPendingChanges())
 				JcrUtils.updateLastModified(milestone);

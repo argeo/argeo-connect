@@ -9,7 +9,10 @@ import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.internal.workbench.AllProjectsEditor;
 import org.argeo.tracker.internal.workbench.CategoryEditor;
 import org.argeo.tracker.internal.workbench.IssueEditor;
+import org.argeo.tracker.internal.workbench.ItProjectEditor;
+import org.argeo.tracker.internal.workbench.MilestoneEditor;
 import org.argeo.tracker.internal.workbench.ProjectEditor;
+import org.argeo.tracker.internal.workbench.TaskEditor;
 import org.argeo.tracker.internal.workbench.TrackerImages;
 import org.argeo.tracker.ui.TrackerUiService;
 import org.eclipse.swt.graphics.Image;
@@ -24,13 +27,19 @@ public class TrackerWorkbenchService extends TrackerUiService implements AppWork
 	@Override
 	public String getEntityEditorId(Node entity) {
 		try {
-			if (entity.isNodeType(TrackerTypes.TRACKER_PROJECT))
+			if (entity.isNodeType(TrackerTypes.TRACKER_IT_PROJECT))
+				return ItProjectEditor.ID;
+			else if (entity.isNodeType(TrackerTypes.TRACKER_PROJECT))
 				return ProjectEditor.ID;
+			else if (entity.isNodeType(TrackerTypes.TRACKER_MILESTONE))
+				return MilestoneEditor.ID;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_COMPONENT)
 					|| entity.isNodeType(TrackerTypes.TRACKER_VERSION))
 				return CategoryEditor.ID;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_ISSUE))
 				return IssueEditor.ID;
+			else if (entity.isNodeType(TrackerTypes.TRACKER_TASK))
+				return TaskEditor.ID;
 		} catch (RepositoryException re) {
 			throw new TrackerException("Unable to open editor for node " + entity, re);
 		}

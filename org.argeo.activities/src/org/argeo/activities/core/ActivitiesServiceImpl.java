@@ -23,6 +23,7 @@ import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
+import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -57,13 +58,15 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
 		if (entity.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
 
-//			String puid = ConnectJcrUtils.get(entity, ACTIVITIES_PARENT_UID);
-//			if (EclipseUiUtils.notEmpty(puid)) {
-//				Node parentActivity = getEntityByUid(entity.getSession(), null, puid);
-//				String relPath = getDefaultRelPath(parentActivity) + "/" + ACTIVITIES_ACTIVITIES;
-//				// JcrUtils.mkdirs(parentActivity, ACTIVITIES_ACTIVITIES);
-//				return relPath;
-//			}
+			// String puid = ConnectJcrUtils.get(entity, ACTIVITIES_PARENT_UID);
+			// if (EclipseUiUtils.notEmpty(puid)) {
+			// Node parentActivity = getEntityByUid(entity.getSession(), null,
+			// puid);
+			// String relPath = getDefaultRelPath(parentActivity) + "/" +
+			// ACTIVITIES_ACTIVITIES;
+			// // JcrUtils.mkdirs(parentActivity, ACTIVITIES_ACTIVITIES);
+			// return relPath;
+			// }
 
 			String currentUser = null;
 			if (entity.hasProperty(ACTIVITIES_REPORTED_BY))
@@ -167,53 +170,6 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		for (String mixin : KNOWN_MIXIN)
 			if (ConnectJcrUtils.isNodeType(entity, mixin))
 				return mixin;
-
-		// if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_TASK))
-		// return ActivitiesTypes.ACTIVITIES_TASK;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_NOTE))
-		// return ActivitiesTypes.ACTIVITIES_NOTE;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_MEETING))
-		// return ActivitiesTypes.ACTIVITIES_MEETING;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_SENT_EMAIL))
-		// return ActivitiesTypes.ACTIVITIES_SENT_EMAIL;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_SENT_FAX))
-		// return ActivitiesTypes.ACTIVITIES_SENT_FAX;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_SENT_EMAIL))
-		// return ActivitiesTypes.ACTIVITIES_SENT_EMAIL;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_BLOG_POST))
-		// return ActivitiesTypes.ACTIVITIES_BLOG_POST;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_CALL))
-		// return ActivitiesTypes.ACTIVITIES_CALL;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_CHAT))
-		// return ActivitiesTypes.ACTIVITIES_CHAT;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_PAYMENT))
-		// return ActivitiesTypes.ACTIVITIES_PAYMENT;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_POLL))
-		// return ActivitiesTypes.ACTIVITIES_POLL;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_RATE))
-		// return ActivitiesTypes.ACTIVITIES_RATE;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_REVIEW))
-		// return ActivitiesTypes.ACTIVITIES_REVIEW;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_TWEET))
-		// return ActivitiesTypes.ACTIVITIES_TWEET;
-		// else if (ConnectJcrUtils.isNodeType(entity,
-		// ActivitiesTypes.ACTIVITIES_ACTIVITY))
-		// return ActivitiesTypes.ACTIVITIES_ACTIVITY;
-		// else
 		return null;
 	}
 
@@ -248,8 +204,8 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		try {
 			Calendar relevantDate = null;
 			if (activityNode.isNodeType(ActivitiesTypes.ACTIVITIES_TASK)) {
-				if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE))
-					relevantDate = activityNode.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).getDate();
+				if (activityNode.hasProperty(ConnectNames.CONNECT_CLOSE_DATE))
+					relevantDate = activityNode.getProperty(ConnectNames.CONNECT_CLOSE_DATE).getDate();
 				else if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE))
 					relevantDate = activityNode.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate();
 				else if (activityNode.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE))
@@ -303,12 +259,6 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		String lowerCased = dn.replaceAll("UID=", "uid=").replaceAll("CN=", "cn=").replaceAll("DC=", "dc=")
 				.replaceAll("OU=", "ou=").replaceAll(", ", ",");
 		return lowerCased;
-		// try {
-		// String nString = new LdapName(dn).toString();
-		// return nString;
-		// } catch (InvalidNameException e) {
-		// throw new ActivitiesException("Cannot nromalize " + dn, e);
-		// }
 	}
 
 	/**
@@ -343,7 +293,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			// Only opened tasks
 			String notClosedCond = null;
 			if (onlyOpenTasks)
-				notClosedCond = "not(@" + ActivitiesNames.ACTIVITIES_CLOSE_DATE + ")";
+				notClosedCond = "not(@" + ConnectNames.CONNECT_CLOSE_DATE + ")";
 
 			String allCond = XPathUtils.localAnd(groupCond, notClosedCond);
 			if (EclipseUiUtils.notEmpty(allCond))
@@ -374,8 +324,8 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 					// Already closed, nothing to do
 				} else {
 					// Close
-					taskNode.setProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE, new GregorianCalendar());
-					taskNode.setProperty(ActivitiesNames.ACTIVITIES_CLOSED_BY, session.getUserID());
+					taskNode.setProperty(ConnectNames.CONNECT_CLOSE_DATE, new GregorianCalendar());
+					taskNode.setProperty(ConnectNames.CONNECT_CLOSED_BY, session.getUserID());
 					changed = true;
 				}
 			} else {
@@ -383,10 +333,10 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 					// Already open, nothing to do
 				} else {
 					// Re-Open
-					if (taskNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE))
-						taskNode.getProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE).remove();
-					if (taskNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSED_BY))
-						taskNode.getProperty(ActivitiesNames.ACTIVITIES_CLOSED_BY).remove();
+					if (taskNode.hasProperty(ConnectNames.CONNECT_CLOSE_DATE))
+						taskNode.getProperty(ConnectNames.CONNECT_CLOSE_DATE).remove();
+					if (taskNode.hasProperty(ConnectNames.CONNECT_CLOSED_BY))
+						taskNode.getProperty(ConnectNames.CONNECT_CLOSED_BY).remove();
 					changed = true;
 				}
 			}
@@ -418,7 +368,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	public boolean isTaskDone(Node taskNode) {
 		try {
 			// Only rely on the non-nullity of the closed date
-			return taskNode.hasProperty(ActivitiesNames.ACTIVITIES_CLOSE_DATE);
+			return taskNode.hasProperty(ConnectNames.CONNECT_CLOSE_DATE);
 		} catch (RepositoryException re) {
 			throw new ActivitiesException("Unable to get done status for task " + taskNode, re);
 		}

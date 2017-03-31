@@ -12,7 +12,21 @@
 		<editor
 			id="org.argeo.tracker.projectEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			name="Project Editor"
+			name="IT Project Editor"
+			icon="theme/icons/types/project.gif"
+			default="false">
+		</editor>
+		<editor
+			id="org.argeo.tracker.milestoneEditor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			name="Milestone Editor"
+			icon="theme/icons/types/milestone.gif"
+			default="false">
+		</editor>
+		<editor
+			id="org.argeo.tracker.itProjectEditor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			name="IT Project Editor"
 			icon="theme/icons/types/project.gif"
 			default="false">
 		</editor>
@@ -23,6 +37,13 @@
         	icon="theme/icons/types/category.gif"
         	name="Category Editor">
   		</editor>
+		<editor
+			id="org.argeo.tracker.taskEditor"
+			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+			name="Task Editor"
+			icon="theme/icons/types/task.png"
+			default="false">
+		</editor>
 		<editor
 			id="org.argeo.tracker.issueEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
@@ -53,19 +74,11 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
 			<command
 				commandId="org.argeo.connect.ui.createEntity"
-				icon="theme/icons/types/bug.ico"
-				label="Issue">
+				icon="theme/icons/types/todo.png"
+				label="Task">
 				<parameter
          			name="param.targetNodeType"
-         			value="tracker:issue" />
-			</command>	
-			<command
-				commandId="org.argeo.connect.ui.createEntity"
-				icon="theme/icons/types/project.gif"
-				label="Project">
-				<parameter
-         			name="param.targetNodeType"
-         			value="tracker:project" />
+         			value="tracker:task" />
 			</command>	
 			<command
 				commandId="org.argeo.connect.ui.createEntity"
@@ -75,6 +88,32 @@
          			name="param.targetNodeType"
          			value="tracker:milestone" />
 			</command>	
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="theme/icons/types/project.gif"
+				label="Project">
+				<parameter
+         			name="param.targetNodeType"
+         			value="tracker:project" />
+			</command>	
 		</menuContribution>
+		
+		<!-- tracker specific search editors --> 
+		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+			<command
+				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				icon="theme/icons/types/project.gif"
+				label="Projects">
+				<parameter name="param.nodeType" value="tracker:project" />
+				<parameter name="param.editorName" value="Projects" />
+				<visibleWhen>
+		    		<with variable="roles">
+		      			<iterate ifEmpty="false" operator="or">
+		        			<equals value="cn=org.argeo.tracker.editor,ou=roles,ou=node" />
+		      			</iterate>
+					</with>
+				</visibleWhen>
+			</command>	
+		</menuContribution>		
 	</extension>
 </plugin>

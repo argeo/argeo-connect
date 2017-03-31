@@ -23,8 +23,9 @@ mixin
 // Additional mixin for tasks
 [tracker:task] > activities:task
 mixin 
+//- tracker:id (STRING) // Automatically incremented long ID
 //- tracker:projectUid (STRING) 
-//- tracker:milestoneId (STRING) 
+//- tracker:milestoneUid (STRING) 
 //- tracker:componentIds (STRING) * // Ids the components to which this task belongs 
 //- tracker:priority (LONG) // highest, high, normal, low, lowest
 //- tracker:importance (LONG) // blocker, critical, major, normal, minor ...
@@ -33,13 +34,12 @@ mixin
 
 [tracker:issue] > tracker:task 
 mixin 
-//- tracker:id (STRING) 
 //- tracker:versionIds (STRING) * // Ids of the versions in which the issue appears 
 
 [tracker:comment] > mix:title, mix:created, mix:lastModified
 mixin 
 
-[tracker:milestone] > tracker:managed, mix:title
+[tracker:milestone] > connect:entity, tracker:managed, mix:title
 mixin
 - tracker:targetDate (DATE) 
 

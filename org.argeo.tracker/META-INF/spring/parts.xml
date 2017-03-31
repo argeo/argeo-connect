@@ -16,7 +16,37 @@
 		<property name="appService" ref="systemAppService" />
 		<property name="appWorkbenchService" ref="systemWorkbenchService" />
 	</bean>
+	<bean id="itProjectEditor" class="org.argeo.tracker.internal.workbench.ItProjectEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="trackerService" ref="trackerService" />
+		<property name="appService" ref="systemAppService" />
+		<property name="appWorkbenchService" ref="systemWorkbenchService" />
+	</bean>
 	<bean id="categoryEditor" class="org.argeo.tracker.internal.workbench.CategoryEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="trackerService" ref="trackerService" />
+		<property name="appService" ref="systemAppService" />
+		<property name="appWorkbenchService" ref="systemWorkbenchService" />
+	</bean>
+	<bean id="milestoneEditor" class="org.argeo.tracker.internal.workbench.MilestoneEditor"
+		scope="prototype">
+		<property name="repository" ref="repository" />
+		<property name="userAdminService" ref="userAdminService" />
+		<property name="resourcesService" ref="resourcesService" />
+		<property name="activitiesService" ref="activitiesService" />
+		<property name="trackerService" ref="trackerService" />
+		<property name="appService" ref="systemAppService" />
+		<property name="appWorkbenchService" ref="systemWorkbenchService" />
+	</bean>
+	<bean id="taskEditor" class="org.argeo.tracker.internal.workbench.TaskEditor"
 		scope="prototype">
 		<property name="repository" ref="repository" />
 		<property name="userAdminService" ref="userAdminService" />
