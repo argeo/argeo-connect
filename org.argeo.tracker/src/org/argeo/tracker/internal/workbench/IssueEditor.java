@@ -231,8 +231,9 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			TrackerUiUtils.createFormBoldLabel(tk, body, "Target");
 			Text targetTxt = tk.createText(body, "", SWT.BORDER);
 			targetTxt.setLayoutData(new TableWrapData(FILL_GRAB));
-			targetDD = new MilestoneDropDown(TrackerUtils.getProjectFromChild(issue), targetTxt, false);
-
+			targetDD = new MilestoneDropDown(ConnectJcrUtils.getSession(issue), targetTxt, false);
+			targetDD.setProject(TrackerUtils.getProjectFromChild(issue));
+			
 			// Versions
 			TrackerUiUtils.createFormBoldLabel(tk, body, "Versions");
 			VersionListFormPart vlfp = new VersionListFormPart(getManagedForm(), body, SWT.NO_FOCUS);

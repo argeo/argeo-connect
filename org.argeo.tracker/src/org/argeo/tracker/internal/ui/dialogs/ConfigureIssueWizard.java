@@ -191,11 +191,7 @@ public class ConfigureIssueWizard extends Wizard {
 			Text milestoneTxt = new Text(parent, SWT.BORDER);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			milestoneTxt.setLayoutData(gd);
-			targetDD = new MilestoneDropDown(project, milestoneTxt, false);
-
-			String muid = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_MILESTONE_UID);
-			if (EclipseUiUtils.notEmpty(muid))
-				targetDD.resetMilestone(trackerService.getEntityByUid(ConnectJcrUtils.getSession(issue), null, muid));
+			targetDD = new MilestoneDropDown(ConnectJcrUtils.getSession(issue), milestoneTxt, false);
 
 			// Versions
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Impacted Version");
@@ -255,6 +251,13 @@ public class ConfigureIssueWizard extends Wizard {
 			gd.heightHint = 150;
 			descTxt.setLayoutData(gd);
 
+			// Initialise fields:
+			String muid = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_MILESTONE_UID);
+			if (EclipseUiUtils.notEmpty(muid))
+				targetDD.resetMilestone(trackerService.getEntityByUid(ConnectJcrUtils.getSession(issue), null, muid));
+
+			
+			
 			// Don't forget this.
 			if (projectTxt != null) {
 				setControl(projectTxt);

@@ -397,6 +397,13 @@ public class TrackerUtils {
 		}
 	}
 
+	public static Node getMilestone(AppService appService, Node task) {
+		String muid = ConnectJcrUtils.get(task, TrackerNames.TRACKER_MILESTONE_UID);
+		if (EclipseUiUtils.notEmpty(muid))
+			return appService.getEntityByUid(ConnectJcrUtils.getSession(task), null, muid);
+		return null;
+	}
+
 	public static Node getProjectFromChild(Node issue) {
 		try {
 			// Not very clean. Will fail in the case of a draft issue that is
@@ -411,23 +418,37 @@ public class TrackerUtils {
 	}
 
 	public static String getImportanceLabel(Node issue) {
-		try {
-			int importance = (int) issue.getProperty(TrackerNames.TRACKER_IMPORTANCE).getLong();
-			Integer importanceI = new Integer(importance);
-			return TrackerUtils.MAPS_ISSUE_IMPORTANCES.get(importanceI);
-		} catch (RepositoryException e) {
-			throw new TrackerException("Unable to get importance label for " + issue, e);
-		}
+		Long importance = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_IMPORTANCE);
+		if (importance != null)
+			return TrackerUtils.MAPS_ISSUE_IMPORTANCES.get(importance.toString());
+		else
+			return "";
+		// try {
+		// int importance = (int)
+		// issue.getProperty(TrackerNames.TRACKER_IMPORTANCE).getLong();
+		// Integer importanceI = new Integer(importance);
+		// return TrackerUtils.MAPS_ISSUE_IMPORTANCES.get(importanceI);
+		// } catch (RepositoryException e) {
+		// throw new TrackerException("Unable to get importance label for " +
+		// issue, e);
+		// }
 	}
 
 	public static String getPriorityLabel(Node issue) {
-		try {
-			int priority = (int) issue.getProperty(TrackerNames.TRACKER_PRIORITY).getLong();
-			Integer priorityI = new Integer(priority);
-			return TrackerUtils.MAPS_ISSUE_PRIORITIES.get(priorityI);
-		} catch (RepositoryException e) {
-			throw new TrackerException("Unable to get priority label for " + issue, e);
-		}
+		Long priority = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_PRIORITY);
+		if (priority != null)
+			return TrackerUtils.MAPS_ISSUE_PRIORITIES.get(priority.toString());
+		else
+			return "";
+		// try {
+		// int priority = (int)
+		// issue.getProperty(TrackerNames.TRACKER_PRIORITY).getLong();
+		// Integer priorityI = new Integer(priority);
+		// return TrackerUtils.MAPS_ISSUE_PRIORITIES.get(priorityI);
+		// } catch (RepositoryException e) {
+		// throw new TrackerException("Unable to get priority label for " +
+		// issue, e);
+		// }
 	}
 
 	public static String getCreationLabel(UserAdminService userAdminService, Node issue) {

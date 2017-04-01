@@ -1,11 +1,11 @@
 package org.argeo.tracker.internal.workbench;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+import static org.eclipse.ui.forms.widgets.TableWrapData.BOTTOM;
 import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -19,10 +19,9 @@ import org.argeo.activities.ActivitiesTypes;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
@@ -36,17 +35,15 @@ import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
-import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
-import org.argeo.tracker.internal.ui.dialogs.EditFreeTextDialog;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureTaskWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,6 +53,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -71,7 +69,6 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.osgi.service.useradmin.User;
 
 /** Default editor to display and edit an issue */
 public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
@@ -83,9 +80,6 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 	private Session session;
 	private Node project;
 	private Node task;
-
-	// UI Objects
-	private String assignedToGroupDn;
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
@@ -140,14 +134,12 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".issueEditor.issueMainPage";
 
 		private Combo statusCmb;
-		private Combo importanceCmb;
-		private Combo priorityCmb;
-		// private VersionDropDown versionDD;
-		private MilestoneDropDown targetDD;
-		private Link changeAssignationLk;
-		private Link reporterLk;
 		private Link projectLk;
-		private Text descTxt;
+		private Link targetLk;
+		private Link dueDateLk;
+		private Link reporterLk;
+		private Link assignedToLk;
+		private Label descLbl;
 
 		public TaskMainPage(FormEditor editor) {
 			super(editor, ID, "Main");
@@ -162,8 +154,27 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			appendCommentListPart(body);
 		}
 
+		private void configureOpenLink(Link link, Node targetNode) {
+			link.setText("<a>" + ConnectJcrUtils.get(targetNode, Property.JCR_TITLE) + "</a>");
+
+			// Remove existing if necessary
+			Listener[] existings = link.getListeners(SWT.Selection);
+			for (Listener l : existings)
+				link.removeListener(SWT.Selection, l);
+
+			link.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+				}
+			});
+		}
+
 		/** Creates the general section */
-		private void appendOverviewPart(Composite parent) {
+		private void appendOverviewPart(final Composite parent) {
 			FormToolkit tk = getManagedForm().getToolkit();
 
 			final Section section = TrackerUiUtils.addFormSection(tk, parent, getIssueTitle());
@@ -174,166 +185,99 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			layout.numColumns = 6;
 			body.setLayout(layout);
 
-			// 1st line: Status, Importance and Priority
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Status");
+			// Status
+			createFormBoldLabel(tk, body, "Status");
 			statusCmb = new Combo(body, SWT.READ_ONLY);
-			statusCmb.setLayoutData(new TableWrapData(FILL_GRAB));
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Importance");
-			importanceCmb = new Combo(body, SWT.READ_ONLY);
-			importanceCmb.setLayoutData(new TableWrapData(FILL_GRAB));
-			importanceCmb.setItems(TrackerUtils.MAPS_ISSUE_IMPORTANCES.values().toArray(new String[0]));
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Priority");
-			priorityCmb = new Combo(body, SWT.READ_ONLY);
-			priorityCmb.setLayoutData(new TableWrapData(FILL_GRAB));
-			priorityCmb.setItems(TrackerUtils.MAPS_ISSUE_PRIORITIES.values().toArray(new String[0]));
+			statusCmb.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
+
+			// Project
+			createFormBoldLabel(tk, body, "Project");
+			projectLk = new Link(body, SWT.NONE);
+			projectLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
+			configureOpenLink(projectLk, project);
+
+			// Target milestone
+			createFormBoldLabel(tk, body, "Target");
+			targetLk = new Link(body, SWT.NONE);
+			targetLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
 			// Assigned to
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Assigned to");
-			changeAssignationLk = new Link(body, SWT.NONE);
-			changeAssignationLk.setLayoutData(new TableWrapData(FILL_GRAB));
+			createFormBoldLabel(tk, body, "Assigned to");
+			assignedToLk = new Link(body, SWT.NONE);
+			assignedToLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
-			// Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
-			// "Choose a group or person to manage this issue", 3);
-			// assignedToDD = new ExistingGroupsDropDown(assignedToTxt,
-			// userAdminService, true, false);
+			// Due Date
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Due Date");
+			dueDateLk = new Link(body, SWT.NONE);
+			dueDateLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
 			// Reported by
 			TrackerUiUtils.createFormBoldLabel(tk, body, "Reported by");
 			reporterLk = new Link(body, SWT.NONE);
-			TableWrapData twd = new TableWrapData(FILL_GRAB);
-			twd.colspan = 3;
-			reporterLk.setLayoutData(twd);
-
-			// Project
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Project");
-			projectLk = new Link(body, SWT.NONE);
-			projectLk.setLayoutData(new TableWrapData(FILL_GRAB));
-			projectLk.setText("<a>" + ConnectJcrUtils.get(project, Property.JCR_TITLE) + "</a>");
-			projectLk.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(project));
-				}
-			});
-
-			// Components
-			// TrackerUiUtils.createFormBoldLabel(tk, body, "Components");
-			// ComponentListFormPart clfp = new
-			// ComponentListFormPart(getManagedForm(), body, SWT.NO_FOCUS);
-			// twd = new TableWrapData(FILL_GRAB);
-			// twd.colspan = 3;
-			// clfp.setLayoutData(twd);
-
-			// Target milestone
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Target");
-			Text targetTxt = tk.createText(body, "", SWT.BORDER);
-			twd = new TableWrapData(FILL_GRAB);
-			twd.colspan = 3;
-			targetTxt.setLayoutData(twd);
-			targetDD = new MilestoneDropDown(project, targetTxt, false);
-
-			String muid = ConnectJcrUtils.get(task, TrackerNames.TRACKER_MILESTONE_UID);
-			if (EclipseUiUtils.notEmpty(muid))
-				targetDD.resetMilestone(
-						getTrackerService().getEntityByUid(ConnectJcrUtils.getSession(task), null, muid));
+			reporterLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
 			// TODO add linked documents
 
 			// Description
-			twd = (TableWrapData) TrackerUiUtils.createFormBoldLabel(tk, body, "Description").getLayoutData();
+			TableWrapData twd = (TableWrapData) TrackerUiUtils.createFormBoldLabel(tk, body, "Details").getLayoutData();
 			twd.valign = TableWrapData.TOP;
-			descTxt = new Text(body, SWT.MULTI | SWT.WRAP | SWT.BORDER);
-			twd = new TableWrapData(FILL_GRAB);
+			descLbl = new Label(body, SWT.WRAP);
+			twd = new TableWrapData(FILL_GRAB, TableWrapData.TOP);
 			twd.colspan = 5;
-			twd.heightHint = 160;
-			descTxt.setLayoutData(twd);
+			descLbl.setLayoutData(twd);
 
 			SectionPart part = new SectionPart((Section) body.getParent()) {
 
 				@Override
 				public void refresh() {
 					// TODO Prevent edition for user without sufficient rights
-					String manager = getActivitiesService().getAssignedToDisplayName(task);
 					refreshStatusCombo(statusCmb, task);
-					if (isEditing()) {
-						manager += " ~ <a>Change</a>";
-					} else {
-
-					}
-					changeAssignationLk.setText(manager);
-					reporterLk.setText(TrackerUtils.getCreationLabel(getUserAdminService(), task));
 					statusCmb.setText(ConnectJcrUtils.get(task, ActivitiesNames.ACTIVITIES_TASK_STATUS));
-					Long importance = ConnectJcrUtils.getLongValue(task, TrackerNames.TRACKER_IMPORTANCE);
-					if (importance != null) {
-						String strVal = importance + "";
-						String iv = TrackerUtils.MAPS_ISSUE_IMPORTANCES.get(strVal);
-						importanceCmb.setText(iv);
-					}
-					Long priority = ConnectJcrUtils.getLongValue(task, TrackerNames.TRACKER_PRIORITY);
-					if (priority != null) {
-						String strVal = priority + "";
-						String iv = TrackerUtils.MAPS_ISSUE_PRIORITIES.get(strVal);
-						priorityCmb.setText(iv);
-					}
-					String mileStoneUid = ConnectJcrUtils.get(task, TrackerNames.TRACKER_MILESTONE_UID);
-					if (EclipseUiUtils.notEmpty(mileStoneUid))
-						targetDD.resetMilestone(getAppService().getEntityByUid(session, "/", mileStoneUid));
+
+					// Project cannot change
+					// configureOpenLink(projectLk, project);
+					Node milestone = TrackerUtils.getMilestone(getTrackerService(), task);
+					if (milestone != null)
+						configureOpenLink(targetLk, milestone);
+
+					String manager = getActivitiesService().getAssignedToDisplayName(task);
+					String importance = TrackerUtils.getImportanceLabel(task);
+					String priority = TrackerUtils.getPriorityLabel(task);
+					String tmp = ConnectJcrUtils.concatIfNotEmpty(importance, priority, "/");
+					if (EclipseUiUtils.notEmpty(tmp))
+						manager += " (" + tmp + " )";
+					// TODO make it clickable
+					assignedToLk.setText(manager);
+
+					String dueDateStr = ConnectJcrUtils.getDateFormattedAsString(task,
+							ActivitiesNames.ACTIVITIES_DUE_DATE, ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+					dueDateLk.setText(dueDateStr);
+
+					reporterLk.setText(TrackerUtils.getCreationLabel(getUserAdminService(), task));
 
 					String desc = ConnectJcrUtils.get(task, Property.JCR_DESCRIPTION);
-					descTxt.setText(desc);
-					statusCmb.getParent().layout();
-
+					descLbl.setText(desc);
+					parent.layout(true, true);
+					section.setFocus();
 					super.refresh();
 				}
 			};
 			addStatusCmbSelListener(part, statusCmb, task, ActivitiesNames.ACTIVITIES_TASK_STATUS, PropertyType.STRING);
-			addLongCmbSelListener(part, importanceCmb, task, TrackerNames.TRACKER_IMPORTANCE,
-					TrackerUtils.MAPS_ISSUE_IMPORTANCES);
-			addLongCmbSelListener(part, priorityCmb, task, TrackerNames.TRACKER_PRIORITY,
-					TrackerUtils.MAPS_ISSUE_PRIORITIES);
+			// addLongCmbSelListener(part, importanceCmb, task,
+			// TrackerNames.TRACKER_IMPORTANCE,
+			// TrackerUtils.MAPS_ISSUE_IMPORTANCES);
+			// addLongCmbSelListener(part, priorityCmb, task,
+			// TrackerNames.TRACKER_PRIORITY,
+			// TrackerUtils.MAPS_ISSUE_PRIORITIES);
 
-			addMilestoneDDFOListener(part, targetTxt, task);
-			addFocusOutListener(part, descTxt, task, Property.JCR_DESCRIPTION);
-			addChangeAssignListener(part, changeAssignationLk);
+			// addMilestoneDDFOListener(part, targetTxt, task);
+			// addFocusOutListener(part, descTxt, task,
+			// Property.JCR_DESCRIPTION);
+			// addChangeAssignListener(part, assignedToLk);
 			getManagedForm().addPart(part);
-			// addMainSectionMenu(part);
+			addMainSectionMenu(part);
 
 			parent.layout(true, true);
-		}
-
-		private void addChangeAssignListener(final AbstractFormPart myFormPart, final Link changeAssignationLk) {
-			changeAssignationLk.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(final SelectionEvent event) {
-					try {
-						PickUpUserDialog diag = new PickUpUserDialog(changeAssignationLk.getShell(), "Choose a group",
-								getUserAdminService().getUserAdmin());
-						int result = diag.open();
-						if (Window.OK == result) {
-							User newGroup = diag.getSelected();
-							String newGroupDn = newGroup.getName();
-							if (newGroupDn == null || newGroupDn.equals(assignedToGroupDn))
-								return; // nothing has changed
-							else {
-								// Update value
-								task.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, newGroupDn);
-								// update cache and display.
-								assignedToGroupDn = newGroupDn;
-								changeAssignationLk.setText(
-										getUserAdminService().getUserDisplayName(newGroupDn) + "  ~ <a>Change</a>");
-								myFormPart.markDirty();
-							}
-						}
-					} catch (RepositoryException re) {
-						throw new TrackerException("Unable to change assignation for node " + task, re);
-					}
-				}
-			});
 		}
 
 		// THE COMMENT LIST
@@ -444,24 +388,6 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			});
 			return section;
 		}
-
-		private void addMilestoneDDFOListener(final AbstractFormPart part, Text text, final Node task) {
-			text.addFocusListener(new FocusAdapter() {
-				private static final long serialVersionUID = 3699937056116569441L;
-
-				@Override
-				public void focusLost(FocusEvent event) {
-					Node chosenMilestone = targetDD.getChosenMilestone();
-					String muid = null;
-					if (chosenMilestone != null)
-						muid = ConnectJcrUtils.get(chosenMilestone, ConnectNames.CONNECT_UID);
-					if (ConnectJcrUtils.setJcrProperty(task, TrackerNames.TRACKER_MILESTONE_UID, PropertyType.STRING,
-							muid))
-						part.markDirty();
-				}
-			});
-		}
-
 	}
 
 	private List<Node> getComments() {
@@ -507,18 +433,18 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 	// SECTION MENU
 	private void addMainSectionMenu(SectionPart sectionPart) {
 		ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getSection());
-		String tooltip = "Edit the title of this issue";
-		Action action = new EditTitle(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
+		String tooltip = "Edit the task main information";
+		Action action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
 		toolBarManager.add(action);
 		toolBarManager.update(true);
 	}
 
 	// MENU ACTIONS
-	private class EditTitle extends Action {
+	private class OpenConfigureDialog extends Action {
 		private static final long serialVersionUID = -6798429720348536525L;
 		private final SectionPart sectionPart;
 
-		private EditTitle(String name, ImageDescriptor img, SectionPart sectionPart) {
+		private OpenConfigureDialog(String name, ImageDescriptor img, SectionPart sectionPart) {
 			super(name, img);
 			this.sectionPart = sectionPart;
 		}
@@ -526,19 +452,18 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		@Override
 		public void run() {
 			Shell currShell = sectionPart.getSection().getShell();
-			EditFreeTextDialog dialog = new EditFreeTextDialog(currShell, "Update task title", task,
-					Property.JCR_TITLE);
-			if (dialog.open() == Window.OK) {
-				String newTitle = dialog.getEditedText();
-				if (EclipseUiUtils.isEmpty(newTitle)) {
-					MessageDialog.openError(currShell, "Title cannot be null or empty", "Please provide a valid title");
-					return;
-				}
-				if (ConnectJcrUtils.setJcrProperty(task, Property.JCR_TITLE, PropertyType.STRING, newTitle)) {
-					sectionPart.getSection().setText(getIssueTitle());
+			ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getTrackerService(), task);
+			WizardDialog dialog = new WizardDialog(currShell, wizard);
+			try {
+				if (dialog.open() == Window.OK && task.getSession().hasPendingChanges()) {
 					updatePartName();
+					sectionPart.getSection().setText(getIssueTitle());
+					sectionPart.refresh();
 					sectionPart.markDirty();
+					sectionPart.getSection().setFocus();
 				}
+			} catch (RepositoryException e) {
+				throw new TrackerException("Cannot check session state on " + task, e);
 			}
 		}
 	}
@@ -566,40 +491,6 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		});
 	}
 
-	private void addLongCmbSelListener(final AbstractFormPart part, final Combo combo, final Node entity,
-			final String propName, final Map<String, String> map) {
-		combo.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int index = combo.getSelectionIndex();
-				if (index != -1) {
-					String selectedValue = combo.getItem(index);
-					String longStr = TrackerUtils.getKeyByValue(map, selectedValue);
-					long value = new Long(longStr).longValue();
-					if (ConnectJcrUtils.setJcrProperty(entity, propName, PropertyType.LONG, value))
-						part.markDirty();
-				}
-			}
-		});
-	}
-
-	private void addFocusOutListener(final AbstractFormPart part, final Text text, final Node entity,
-			final String propName) {
-		text.addFocusListener(new FocusAdapter() {
-			private static final long serialVersionUID = 3699937056116569441L;
-
-			@Override
-			public void focusLost(FocusEvent event) {
-				// TODO check if the value is correct
-				String newValue = text.getText();
-				if (ConnectJcrUtils.setJcrProperty(entity, propName, PropertyType.STRING, newValue))
-					part.markDirty();
-			}
-		});
-	}
-
 	/** Override this to add specific rights for status change */
 	protected void refreshStatusCombo(Combo combo, Node currTask) {
 		List<String> values = getResourcesService().getTemplateCatalogue(session, ActivitiesTypes.ACTIVITIES_TASK,
@@ -619,5 +510,15 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
 		}
 		return "#" + id + " " + name;
+	}
+
+	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
+		// We add a blank space before to workaround the cropping of the word
+		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
+		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		TableWrapData twd = new TableWrapData(TableWrapData.RIGHT, TableWrapData.BOTTOM);
+		label.setLayoutData(twd);
+		return label;
 	}
 }

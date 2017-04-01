@@ -96,7 +96,7 @@ public class TrackerUiUtils {
 		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
 		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new TableWrapData(TableWrapData.RIGHT));
+		label.setLayoutData(new TableWrapData(TableWrapData.RIGHT, TableWrapData.MIDDLE));
 		return label;
 	}
 

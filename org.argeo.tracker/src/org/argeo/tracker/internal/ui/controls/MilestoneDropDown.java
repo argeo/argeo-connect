@@ -30,12 +30,10 @@ public class MilestoneDropDown extends ConnectAbstractDropDown {
 	private final Map<String, Node> relevantMilestones = new LinkedHashMap<>();
 	private Map<String, Node> filteredMilestones;
 
-	public MilestoneDropDown(Node project, Text text, boolean onlyOpenMilestons) {
+	public MilestoneDropDown(Session session, Text text, boolean onlyOpenMilestons) {
 		super(text);
-		this.project = project;
-		session = ConnectJcrUtils.getSession(project);
+		this.session = session;
 		this.onlyOpenMilestons = onlyOpenMilestons;
-		populateMilestoneList();
 		init();
 	}
 
