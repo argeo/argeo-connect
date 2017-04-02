@@ -7,10 +7,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -297,6 +299,79 @@ public class TrackerUtils {
 		}
 	}
 
+	private final static String UNKNOWN = "Unknown";
+	private final static String OTHERS = "Others";
+
+	public static Map<String, String> getOpenTasksByAssignee(UserAdminService uas, Node project, String milestoneUid,
+			int maxSize) {
+		try {
+			StringBuilder builder = new StringBuilder();
+			builder.append(XPathUtils.descendantFrom(project.getPath()));
+			builder.append("//element(*, ").append(TrackerTypes.TRACKER_TASK).append(")");
+			builder.append("[");
+			if (EclipseUiUtils.notEmpty(milestoneUid)) {
+				builder.append(XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MILESTONE_UID, milestoneUid));
+				builder.append(" and ");
+			}
+			builder.append("( not(@").append(ConnectNames.CONNECT_CLOSE_DATE).append("))");
+			builder.append("]");
+			QueryResult result = XPathUtils.createQuery(project.getSession(), builder.toString()).execute();
+
+			Map<String, Long> nodeCount = countAndLimit(result.getNodes(), ActivitiesNames.ACTIVITIES_ASSIGNED_TO,
+					maxSize);
+			Map<String, String> openTasks = new LinkedHashMap();
+			for (String key : nodeCount.keySet()) {
+				String dName;
+				if (OTHERS.equals(key) || UNKNOWN.equals(key))
+					dName = key;
+				else
+					dName = uas.getUserDisplayName(key);
+				openTasks.put(dName, nodeCount.get(key).toString());
+			}
+			return openTasks;
+		} catch (RepositoryException e) {
+			throw new TrackerException("Unable to get issues for " + project + " with filter: ", e);
+		}
+	}
+
+	private static Map<String, Long> countAndLimit(NodeIterator nodes, String propName, int limit) {
+		// First: count occurrences:
+		Map<String, Long> nodeCount = new HashMap<>();
+		while (nodes.hasNext()) {
+			Node currNode = nodes.nextNode();
+			String id = ConnectJcrUtils.get(currNode, propName);
+			if (EclipseUiUtils.isEmpty(id))
+				id = UNKNOWN;
+			if (nodeCount.containsKey(id))
+				nodeCount.replace(id, nodeCount.get(id) + 1);
+			else
+				nodeCount.put(id, 1l);
+		}
+
+		if (nodeCount.size() < limit)
+			return nodeCount;
+
+		Map<String, Long> orderedCount = sortByValue(nodeCount);
+		Map<String, Long> limitedCount = new LinkedHashMap();
+
+		int i = 0;
+		long otherCount = 0;
+		for (String key : orderedCount.keySet()) {
+			if (i < limit)
+				limitedCount.put(key, orderedCount.get(key));
+			else
+				otherCount += orderedCount.get(key);
+			i++;
+		}
+		limitedCount.put(OTHERS, otherCount);
+		return limitedCount;
+	}
+
+	private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+	}
+
 	public static NodeIterator getAllVersions(Node project, String filter) {
 		try {
 			StringBuilder builder = new StringBuilder();
@@ -530,5 +605,12 @@ public class TrackerUtils {
 			}
 		}
 		return null;
+	}
+
+	public static String normalizeDn(String dn) {
+		// FIXME dirty workaround for the DN key case issue
+		String lowerCased = dn.replaceAll("UID=", "uid=").replaceAll("CN=", "cn=").replaceAll("DC=", "dc=")
+				.replaceAll("OU=", "ou=").replaceAll(", ", ",");
+		return lowerCased;
 	}
 }

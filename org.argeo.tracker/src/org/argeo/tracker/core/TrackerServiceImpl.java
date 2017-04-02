@@ -201,8 +201,8 @@ public class TrackerServiceImpl implements TrackerService {
 					milestone.getProperty(ConnectNames.CONNECT_UID).getString());
 		else if (task.hasProperty(TrackerNames.TRACKER_MILESTONE_UID))
 			task.getProperty(TrackerNames.TRACKER_MILESTONE_UID).remove();
-		// task.setProperty(TrackerNames.TRACKER_PRIORITY, priority);
-		// task.setProperty(TrackerNames.TRACKER_IMPORTANCE, importance);
+
+		activitiesService.setTaskDefaultStatus(task, TrackerTypes.TRACKER_TASK);
 	}
 
 	@Override
@@ -211,8 +211,6 @@ public class TrackerServiceImpl implements TrackerService {
 			throws RepositoryException {
 		activitiesService.configureTask(issue, TrackerTypes.TRACKER_ISSUE, title, description, managerId);
 		// TODO Useless?
-		// activitiesService.setTaskDefaultStatus(issue,
-		// TrackerTypes.TRACKER_ISSUE);
 		issue.setProperty(TrackerNames.TRACKER_PROJECT_UID, project.getProperty(ConnectNames.CONNECT_UID).getString());
 		issue.setProperty(TrackerNames.TRACKER_PRIORITY, priority);
 		issue.setProperty(TrackerNames.TRACKER_IMPORTANCE, importance);
@@ -256,7 +254,7 @@ public class TrackerServiceImpl implements TrackerService {
 	public NodeIterator getMyMilestones(Session session, boolean onlyOpenMilestones) {
 		List<String> normalisedRoles = new ArrayList<>();
 		for (String role : CurrentUser.roles())
-			normalisedRoles.add(normalizeDn(role));
+			normalisedRoles.add(TrackerUtils.normalizeDn(role));
 		String[] nrArr = normalisedRoles.toArray(new String[0]);
 		return getMilestonesForGroup(session, nrArr, onlyOpenMilestones);
 	}
@@ -296,13 +294,6 @@ public class TrackerServiceImpl implements TrackerService {
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to get milestones for groups " + roles.toString());
 		}
-	}
-
-	private String normalizeDn(String dn) {
-		// FIXME dirty workaround for the DN key case issue
-		String lowerCased = dn.replaceAll("UID=", "uid=").replaceAll("CN=", "cn=").replaceAll("DC=", "dc=")
-				.replaceAll("OU=", "ou=").replaceAll(", ", ",");
-		return lowerCased;
 	}
 
 	public void configureProject(Node project, String title, String description, String managerId)

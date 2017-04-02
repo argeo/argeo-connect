@@ -12,7 +12,8 @@ public class TrackerImages {
 	public final static String TYPE_RELPATH = "types/";
 
 	public final static ImageDescriptor IMG_DESC_EDIT = getDesc(ACTION_RELPATH + "edit.gif");
-	public final static Image ICON_ADD = getImage(ACTION_RELPATH + "add.gif");
+	public final static ImageDescriptor IMG_DESC_ADD = getDesc(ACTION_RELPATH + "add.gif");
+	public final static Image ICON_ADD = IMG_DESC_ADD.createImage();
 
 	public final static Image ICON_ISSUE = getImage(TYPE_RELPATH + "issue.png");
 	public final static Image ICON_PROJECT = getImage(TYPE_RELPATH + "project.gif");

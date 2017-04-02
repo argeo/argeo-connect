@@ -11,6 +11,7 @@ import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
+import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -52,10 +53,9 @@ public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 
 	@Override
 	public boolean performFinish() {
-		// TODO rather use error messages than an error popup
 		String title = titleTxt.getText();
 		if (EclipseUiUtils.isEmpty(title)) {
-			MessageDialog.openError(getShell(), "Compulsory title", "Please define this project title");
+			MessageDialog.openError(getShell(), "Compulsory title", "Project title cannot be empty");
 			return false;
 		}
 		try {
@@ -84,7 +84,6 @@ public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 
 		public MainPage(String pageName) {
 			super(pageName);
-			// setTitle("Project overview");
 			setMessage("Please complete following information.");
 		}
 
@@ -112,7 +111,7 @@ public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 
 			titleTxt.setText(get(project, JCR_TITLE));
 			descTxt.setText(get(project, JCR_DESCRIPTION));
-
+			managerDD.resetDN(get(project, TrackerNames.TRACKER_MANAGER));
 			setControl(titleTxt);
 		}
 	}

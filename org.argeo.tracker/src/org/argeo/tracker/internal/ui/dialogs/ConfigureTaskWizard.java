@@ -18,6 +18,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
+import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.tracker.internal.ui.controls.ProjectDropDown;
@@ -46,7 +47,7 @@ public class ConfigureTaskWizard extends Wizard {
 
 	private final UserAdminService userAdminService;
 	private final TrackerService trackerService;
-	private final Node draftTask;
+	private final Node task;
 
 	// Business objects
 	private Node project;
@@ -67,16 +68,16 @@ public class ConfigureTaskWizard extends Wizard {
 	public ConfigureTaskWizard(UserAdminService userAdminService, TrackerService trackerService, Node draftEntity) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
-		this.draftTask = draftEntity;
+		this.task = draftEntity;
 		try {
-			if (draftTask.hasProperty(TrackerNames.TRACKER_PROJECT_UID)) {
-				project = trackerService.getEntityByUid(draftTask.getSession(), null,
-						draftTask.getProperty(TrackerNames.TRACKER_PROJECT_UID).getString());
+			if (task.hasProperty(TrackerNames.TRACKER_PROJECT_UID)) {
+				project = trackerService.getEntityByUid(task.getSession(), null,
+						task.getProperty(TrackerNames.TRACKER_PROJECT_UID).getString());
 				chosenProject = project;
 			} else
 				project = null;
 		} catch (RepositoryException e) {
-			throw new TrackerException("Cannot retrieve project for " + draftTask, e);
+			throw new TrackerException("Cannot retrieve project for " + task, e);
 		}
 	}
 
@@ -103,26 +104,26 @@ public class ConfigureTaskWizard extends Wizard {
 		}
 
 		try {
-			trackerService.configureTask(draftTask, chosenProject, milestoneDD.getChosenMilestone(), title,
+			trackerService.configureTask(task, chosenProject, milestoneDD.getChosenMilestone(), title,
 					descTxt.getText(), assignedToDD.getText()); // priority,
 
 			// Additionnal values
 			String importanceStr = TrackerUtils.getKeyByValue(TrackerUtils.MAPS_ISSUE_IMPORTANCES,
 					importanceCmb.getText());
 			int importance = new Integer(importanceStr).intValue();
-			draftTask.setProperty(TrackerNames.TRACKER_IMPORTANCE, importance);
+			task.setProperty(TrackerNames.TRACKER_IMPORTANCE, importance);
 
 			String priorityStr = TrackerUtils.getKeyByValue(TrackerUtils.MAPS_ISSUE_PRIORITIES, priorityCmb.getText());
 			int priority = new Integer(priorityStr).intValue();
-			draftTask.setProperty(TrackerNames.TRACKER_PRIORITY, priority);
+			task.setProperty(TrackerNames.TRACKER_PRIORITY, priority);
 
 			Calendar dueDate = dueDateCmp.getCalendar();
 			if (dueDate != null)
-				draftTask.setProperty(ActivitiesNames.ACTIVITIES_DUE_DATE, dueDate);
+				task.setProperty(ActivitiesNames.ACTIVITIES_DUE_DATE, dueDate);
 
 			Calendar wakeUpDate = wakeUpDateCmp.getCalendar();
 			if (wakeUpDate != null) {
-				draftTask.setProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE, wakeUpDate);
+				task.setProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE, wakeUpDate);
 			}
 
 		} catch (RepositoryException e) {
@@ -156,7 +157,6 @@ public class ConfigureTaskWizard extends Wizard {
 
 			// Project
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Project");
-
 			projectTxt = new Text(parent, SWT.BORDER);
 			projectTxt.setMessage("Choose relevant project");
 			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -164,7 +164,7 @@ public class ConfigureTaskWizard extends Wizard {
 			projectTxt.setLayoutData(gd);
 
 			if (project == null) {
-				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(draftTask), projectTxt, false);
+				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(task), projectTxt, false);
 
 				projectTxt.addFocusListener(new FocusAdapter() {
 					private static final long serialVersionUID = 1719432159240562984L;
@@ -202,7 +202,7 @@ public class ConfigureTaskWizard extends Wizard {
 			Text milestoneTxt = new Text(parent, SWT.BORDER);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			milestoneTxt.setLayoutData(gd);
-			milestoneDD = new MilestoneDropDown(ConnectJcrUtils.getSession(draftTask), milestoneTxt, false);
+			milestoneDD = new MilestoneDropDown(ConnectJcrUtils.getSession(task), milestoneTxt, false);
 			if (project != null)
 				milestoneDD.setProject(project);
 
@@ -247,37 +247,37 @@ public class ConfigureTaskWizard extends Wizard {
 
 			// Initialise
 			try {
-				if (draftTask.hasProperty(Property.JCR_TITLE))
-					titleTxt.setText(draftTask.getProperty(Property.JCR_TITLE).getString());
-				if (draftTask.hasProperty(Property.JCR_DESCRIPTION))
-					descTxt.setText(draftTask.getProperty(Property.JCR_DESCRIPTION).getString());
-				if (draftTask.hasProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO))
-					assignedToDD.resetDN(draftTask.getProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO).getString());
+				if (task.hasProperty(Property.JCR_TITLE))
+					titleTxt.setText(task.getProperty(Property.JCR_TITLE).getString());
+				if (task.hasProperty(Property.JCR_DESCRIPTION))
+					descTxt.setText(task.getProperty(Property.JCR_DESCRIPTION).getString());
+				if (task.hasProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO))
+					assignedToDD.resetDN(task.getProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO).getString());
 
 				if (project != null)
 					projectTxt.setText(ConnectJcrUtils.get(project, Property.JCR_TITLE));
-				if (draftTask.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE))
-					dueDateCmp.setText(draftTask.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate());
-				if (draftTask.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE))
-					wakeUpDateCmp.setText(draftTask.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate());
-				String muid = ConnectJcrUtils.get(draftTask, TrackerNames.TRACKER_MILESTONE_UID);
+				if (task.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE))
+					dueDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate());
+				if (task.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE))
+					wakeUpDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate());
+				String muid = ConnectJcrUtils.get(task, TrackerNames.TRACKER_MILESTONE_UID);
 				if (EclipseUiUtils.notEmpty(muid))
 					milestoneDD.resetMilestone(
-							trackerService.getEntityByUid(ConnectJcrUtils.getSession(draftTask), null, muid));
+							trackerService.getEntityByUid(ConnectJcrUtils.getSession(task), null, muid));
 
-				Long importance = ConnectJcrUtils.getLongValue(draftTask, TrackerNames.TRACKER_IMPORTANCE);
+				Long importance = ConnectJcrUtils.getLongValue(task, TrackerNames.TRACKER_IMPORTANCE);
 				if (importance != null) {
 					String iv = TrackerUtils.MAPS_ISSUE_IMPORTANCES.get(importance.toString());
 					importanceCmb.setText(iv);
 				}
-				Long priority = ConnectJcrUtils.getLongValue(draftTask, TrackerNames.TRACKER_PRIORITY);
+				Long priority = ConnectJcrUtils.getLongValue(task, TrackerNames.TRACKER_PRIORITY);
 				if (priority != null) {
 					String iv = TrackerUtils.MAPS_ISSUE_PRIORITIES.get(priority.toString());
 					priorityCmb.setText(iv);
 				}
 
 			} catch (RepositoryException e) {
-				throw new TrackerException("Cannot initialise widgets with existing data on " + draftTask, e);
+				throw new TrackerException("Cannot initialise widgets with existing data on " + task, e);
 				// TODO: handle exception
 			}
 			// Don't forget this.

@@ -91,6 +91,10 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 		return node;
 	}
 
+	protected Session getSession() {
+		return ConnectJcrUtils.getSession(node);
+	}
+
 	protected Repository getRepository() {
 		return repository;
 	}

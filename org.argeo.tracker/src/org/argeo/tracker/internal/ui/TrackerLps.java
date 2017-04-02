@@ -11,6 +11,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
@@ -23,6 +24,27 @@ public class TrackerLps {
 
 	// FIXME provide a better management of date patterns
 	private final static String SIMPLE_DATE_PATTERN = "dd MMM yyyy";
+
+	public class DnLabelProvider extends ColumnLabelProvider {
+		private static final long serialVersionUID = -848512622910895692L;
+		private final UserAdminService userAdminService;
+		private final String propName;
+
+		public DnLabelProvider(UserAdminService userAdminService, String propName) {
+			this.userAdminService = userAdminService;
+			this.propName = propName;
+		}
+
+		@Override
+		public String getText(Object element) {
+			Node entity = (Node) element;
+			String dn = ConnectJcrUtils.get(entity, propName);
+			if (EclipseUiUtils.notEmpty(dn))
+				return userAdminService.getUserDisplayName(dn);
+			else
+				return "";
+		}
+	}
 
 	public class VersionDateLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = -7883411659009058536L;
@@ -51,11 +73,13 @@ public class TrackerLps {
 			String dateStr = "";
 			try {
 				if (milestone.hasProperty(ConnectNames.CONNECT_CLOSE_DATE))
-					dateStr = "Closed on " + ConnectJcrUtils.getDateFormattedAsString(milestone,
-							ConnectNames.CONNECT_CLOSE_DATE, SIMPLE_DATE_PATTERN);
+					// "Closed on " +
+					dateStr = ConnectJcrUtils.getDateFormattedAsString(milestone, ConnectNames.CONNECT_CLOSE_DATE,
+							SIMPLE_DATE_PATTERN);
 				else if (milestone.hasProperty(TrackerNames.TRACKER_TARGET_DATE))
-					dateStr = "Due to " + ConnectJcrUtils.getDateFormattedAsString(milestone,
-							TrackerNames.TRACKER_TARGET_DATE, SIMPLE_DATE_PATTERN);
+					// "Due to " +
+					dateStr = ConnectJcrUtils.getDateFormattedAsString(milestone, TrackerNames.TRACKER_TARGET_DATE,
+							SIMPLE_DATE_PATTERN);
 				else
 					dateStr = " - ";
 			} catch (RepositoryException e) {

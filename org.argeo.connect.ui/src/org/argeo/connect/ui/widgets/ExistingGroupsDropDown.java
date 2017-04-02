@@ -35,6 +35,13 @@ public class ExistingGroupsDropDown extends ConnectAbstractDropDown {
 		init();
 	}
 
+	public void resetDN(String dn) {
+		if (EclipseUiUtils.notEmpty(dn))
+			reset(userService.getUserDisplayName(dn));
+		else
+			reset("");
+	}
+
 	@Override
 	public String getText() {
 		String groupId = null;

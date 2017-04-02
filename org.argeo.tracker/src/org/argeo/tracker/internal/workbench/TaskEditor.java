@@ -70,7 +70,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
-/** Default editor to display and edit an issue */
+/** Default editor to display and edit a Tracker's task */
 public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 	private static final long serialVersionUID = -5501994143125392009L;
 	// private final static Log log = LogFactory.getLog(IssueEditor.class);
@@ -94,21 +94,11 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		try {
 			addPage(new TaskMainPage(this));
 
-			String techPageId = TrackerUiPlugin.PLUGIN_ID + ".issueEditor.techInfoPage";
 			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
-				addPage(new TechnicalInfoPage(this, techPageId, getNode()));
+				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
-	}
-
-	/** Overwrite to provide a specific part Name */
-	protected void updatePartName() {
-		String name = getIssueTitle();
-		if (notEmpty(name))
-			setPartName(name);
-		else
-			super.updatePartName();
 	}
 
 	@Override
@@ -135,7 +125,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 		private Combo statusCmb;
 		private Link projectLk;
-		private Link targetLk;
+		private Link milestoneLk;
 		private Link dueDateLk;
 		private Link reporterLk;
 		private Link assignedToLk;
@@ -152,25 +142,6 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			body.setLayout(layout);
 			appendOverviewPart(body);
 			appendCommentListPart(body);
-		}
-
-		private void configureOpenLink(Link link, Node targetNode) {
-			link.setText("<a>" + ConnectJcrUtils.get(targetNode, Property.JCR_TITLE) + "</a>");
-
-			// Remove existing if necessary
-			Listener[] existings = link.getListeners(SWT.Selection);
-			for (Listener l : existings)
-				link.removeListener(SWT.Selection, l);
-
-			link.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
-				}
-			});
 		}
 
 		/** Creates the general section */
@@ -197,9 +168,9 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			configureOpenLink(projectLk, project);
 
 			// Target milestone
-			createFormBoldLabel(tk, body, "Target");
-			targetLk = new Link(body, SWT.NONE);
-			targetLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
+			createFormBoldLabel(tk, body, "Milestone");
+			milestoneLk = new Link(body, SWT.NONE);
+			milestoneLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
 			// Assigned to
 			createFormBoldLabel(tk, body, "Assigned to");
@@ -238,7 +209,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 					// configureOpenLink(projectLk, project);
 					Node milestone = TrackerUtils.getMilestone(getTrackerService(), task);
 					if (milestone != null)
-						configureOpenLink(targetLk, milestone);
+						configureOpenLink(milestoneLk, milestone);
 
 					String manager = getActivitiesService().getAssignedToDisplayName(task);
 					String importance = TrackerUtils.getImportanceLabel(task);
@@ -276,8 +247,25 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			// addChangeAssignListener(part, assignedToLk);
 			getManagedForm().addPart(part);
 			addMainSectionMenu(part);
+		}
 
-			parent.layout(true, true);
+		private void configureOpenLink(Link link, Node targetNode) {
+			link.setText("<a>" + ConnectJcrUtils.get(targetNode, Property.JCR_TITLE) + "</a>");
+
+			// Remove existing if necessary
+			Listener[] existings = link.getListeners(SWT.Selection);
+			for (Listener l : existings)
+				link.removeListener(SWT.Selection, l);
+
+			link.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+				}
+			});
 		}
 
 		// THE COMMENT LIST

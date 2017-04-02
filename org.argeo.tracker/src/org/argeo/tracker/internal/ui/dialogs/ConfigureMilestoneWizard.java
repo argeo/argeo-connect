@@ -3,8 +3,10 @@ package org.argeo.tracker.internal.ui.dialogs;
 import static javax.jcr.Property.JCR_DESCRIPTION;
 import static javax.jcr.Property.JCR_TITLE;
 import static org.argeo.connect.util.ConnectJcrUtils.get;
+import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
 import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.UserAdminService;
@@ -17,7 +19,6 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
-import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.controls.ProjectDropDown;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -77,25 +78,24 @@ public class ConfigureMilestoneWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		// TODO rather use error messages than an error popup
-		// Calendar now = new GregorianCalendar();
+		String msg = null;
 		String title = titleTxt.getText();
-		if (EclipseUiUtils.isEmpty(title)) {
-			MessageDialog.openError(getShell(), "Compulsory ID", "Please define the version ID");
-			return false;
-		} else if (TrackerUtils.getVersionById(chosenProject, title) != null) {
-			MessageDialog.openError(getShell(), "Already existing version",
-					"A version with ID " + title + " already exists, cannot create");
+		if (chosenProject == null)
+			msg = "Please pick up a project";
+		else if (isEmpty(title))
+			msg = "Please give at least a title";
+
+		if (msg != null) {
+			MessageDialog.openError(getShell(), "Uncomplete information", msg);
 			return false;
 		}
 
 		try {
-			trackerService.configureMilestone(milestone, chosenProject, null, title, descTxt.getText(), managerDD.getText(),
-					defaultAssigneeDD.getText(), targetDateCmp.getCalendar());
+			trackerService.configureMilestone(milestone, chosenProject, null, title, descTxt.getText(),
+					managerDD.getText(), defaultAssigneeDD.getText(), targetDateCmp.getCalendar());
 			if (milestone.getSession().hasPendingChanges())
 				JcrUtils.updateLastModified(milestone);
 			return true;
-
 		} catch (RepositoryException e1) {
 			throw new TrackerException("Unable to create version with ID " + title + " on " + project, e1);
 		}
@@ -117,24 +117,28 @@ public class ConfigureMilestoneWizard extends Wizard {
 	private class MainPage extends WizardPage {
 		private static final long serialVersionUID = 3061153468301727903L;
 
+		private Text projectTxt;
+
 		public MainPage(String pageName) {
 			super(pageName);
 			setMessage("Please complete following information.");
 		}
 
-		public void createControl(Composite bodyCmp) {
-			bodyCmp.setLayout(new GridLayout(4, false));
+		public void createControl(Composite parent) {
+			parent.setLayout(new GridLayout(4, false));
 			FocusListener fl = getFocusListener();
 
 			// Project
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Project");
+			projectTxt = new Text(parent, SWT.BORDER);
+			projectTxt.setMessage("Choose relevant project");
+			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
+			gd.horizontalSpan = 3;
+			projectTxt.setLayoutData(gd);
+
 			if (project == null) {
-				ConnectWorkbenchUtils.createBoldLabel(bodyCmp, "Project");
-				Text projectTxt = new Text(bodyCmp, SWT.BORDER);
-				projectTxt.setMessage("Choose relevant project");
-				GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-				gd.horizontalSpan = 3;
-				projectTxt.setLayoutData(gd);
 				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(milestone), projectTxt, false);
+
 				projectTxt.addFocusListener(new FocusAdapter() {
 					private static final long serialVersionUID = 1719432159240562984L;
 
@@ -147,50 +151,64 @@ public class ConfigureMilestoneWizard extends Wizard {
 							setErrorMessage(null);
 							chosenProject = project;
 						}
-						getContainer().updateButtons();
 					}
 				});
-				projectTxt.addFocusListener(fl);
-			}
+			} else
+				projectTxt.setEditable(false);
 
-			createLabel(bodyCmp, "Title", SWT.CENTER);
-			titleTxt = new Text(bodyCmp, SWT.BORDER);
+			createLabel(parent, "Milestone Name", SWT.CENTER);
+			titleTxt = new Text(parent, SWT.BORDER);
 			titleTxt.setMessage("A clear name");
 			titleTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
 			titleTxt.addFocusListener(fl);
 
-			createLabel(bodyCmp, "Manager", SWT.CENTER);
-			Text managerTxt = new Text(bodyCmp, SWT.BORDER);
+			createLabel(parent, "Manager", SWT.CENTER);
+			Text managerTxt = new Text(parent, SWT.BORDER);
 			managerTxt.setMessage("Choose a group");
 			managerTxt.setLayoutData(EclipseUiUtils.fillWidth());
 			managerDD = new ExistingGroupsDropDown(managerTxt, userAdminService, true, false);
 
-			createLabel(bodyCmp, "Default Assignee", SWT.CENTER);
-			Text defaultAssigneeTxt = new Text(bodyCmp, SWT.BORDER);
+			createLabel(parent, "Default Assignee", SWT.CENTER);
+			Text defaultAssigneeTxt = new Text(parent, SWT.BORDER);
 			defaultAssigneeTxt.setMessage("Choose a group");
 			defaultAssigneeTxt.setLayoutData(EclipseUiUtils.fillWidth());
 			defaultAssigneeDD = new ExistingGroupsDropDown(defaultAssigneeTxt, userAdminService, true, false);
 
-			createLabel(bodyCmp, "Target Date", SWT.CENTER);
-			targetDateCmp = new DateText(bodyCmp, SWT.NO_FOCUS);
+			createLabel(parent, "Target Date", SWT.CENTER);
+			targetDateCmp = new DateText(parent, SWT.NO_FOCUS);
 			targetDateCmp.setLayoutData(EclipseUiUtils.fillWidth(3));
 			targetDateCmp.setToolTipText("An optional future due date for this milestone");
 
-			createLabel(bodyCmp, "Description", SWT.TOP);
-			descTxt = new Text(bodyCmp, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-			GridData gd = EclipseUiUtils.fillWidth(3);
+			createLabel(parent, "Description", SWT.TOP);
+			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
+			gd = EclipseUiUtils.fillWidth(3);
 			gd.heightHint = 150;
 			descTxt.setLayoutData(gd);
 			descTxt.setMessage("An optional description for this milestone");
 
 			// Initialise values
-			titleTxt.setText(get(milestone, JCR_TITLE));
-			descTxt.setText(get(milestone, JCR_DESCRIPTION));
-			targetDateCmp.setText(ConnectJcrUtils.getDateValue(milestone, TrackerNames.TRACKER_TARGET_DATE));
-
-			// Don't forget this.
-			setControl(titleTxt);
+			try {
+				titleTxt.setText(get(milestone, JCR_TITLE));
+				descTxt.setText(get(milestone, JCR_DESCRIPTION));
+				targetDateCmp.setText(ConnectJcrUtils.getDateValue(milestone, TrackerNames.TRACKER_TARGET_DATE));
+				if (milestone.hasProperty(TrackerNames.TRACKER_MANAGER))
+					managerDD.resetDN(milestone.getProperty(TrackerNames.TRACKER_MANAGER).getString());
+				if (milestone.hasProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE))
+					defaultAssigneeDD.resetDN(milestone.getProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE).getString());
+				if (project != null)
+					projectTxt.setText(ConnectJcrUtils.get(project, Property.JCR_TITLE));
+			} catch (RepositoryException e) {
+				throw new TrackerException("Cannot initialise widgets with existing data for " + milestone, e);
+			}
+			if (project == null) {
+				setControl(projectTxt);
+				projectTxt.setFocus();
+			} else {
+				setControl(titleTxt);
+				titleTxt.setFocus();
+			}
 		}
+
 	}
 
 	private FocusListener getFocusListener() {

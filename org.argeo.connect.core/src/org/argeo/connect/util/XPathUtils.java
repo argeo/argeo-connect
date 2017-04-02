@@ -76,6 +76,15 @@ public class XPathUtils {
 
 	private final static DateFormat jcrRefFormatter = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'+02:00'");
 
+	/**
+	 * @param propertyName
+	 * @param calendar
+	 *            the reference date
+	 * @param lowerOrGreater
+	 *            "<", ">" TODO validate ">="
+	 * @return
+	 * @throws RepositoryException
+	 */
 	public static String getPropertyDateComparaison(String propertyName, Calendar cal, String lowerOrGreater)
 			throws RepositoryException {
 		if (cal != null) {
