@@ -483,6 +483,8 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			builder.append(XPathUtils.descendantFrom(project.getPath()));
 			builder.append("//element(*, ").append(TrackerTypes.TRACKER_TASK).append(")");
 
+			String milestoneCond = XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MILESTONE_UID, milestoneUid);
+
 			String onlyMineCond = null;
 			if (onlyMineBtn.getSelection()) {
 				List<String> normalisedRoles = new ArrayList<>();
@@ -512,9 +514,8 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			if (EclipseUiUtils.notEmpty(filter))
 				ftcCond = XPathUtils.getFreeTextConstraint(filter);
 
-			String fullCond = XPathUtils.localAnd(overdueCond, notClosedCond, ftcCond, onlyMineCond);
-			if (EclipseUiUtils.notEmpty(fullCond))
-				builder.append("[").append(fullCond).append("]");
+			String fullCond = XPathUtils.localAnd(milestoneCond, overdueCond, notClosedCond, ftcCond, onlyMineCond);
+			builder.append("[").append(fullCond).append("]");
 			builder.append(" order by @" + TrackerNames.TRACKER_ID);
 
 			Query query = XPathUtils.createQuery(getSession(), builder.toString());
