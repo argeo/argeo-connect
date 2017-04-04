@@ -46,8 +46,6 @@ public interface TrackerService extends AppService {
 	public void configureVersion(Node version, Node project, String id, String description, Calendar releaseDate)
 			throws RepositoryException;
 
-	public NodeIterator getMyMilestones(Session session, boolean onlyOpenTasks);
-
 	public void configureProject(Node project, String title, String description, String managerId)
 			throws RepositoryException;
 
@@ -78,4 +76,10 @@ public interface TrackerService extends AppService {
 	 */
 	public Node createComponent(Node project, String officeId, String title, String description)
 			throws RepositoryException;
+
+	/* Remarkable queries */
+	public NodeIterator getMyProjects(Session session, boolean onlyOpenProjects);
+
+	public NodeIterator getMyMilestones(Session session, boolean onlyOpenTasks);
+
 }

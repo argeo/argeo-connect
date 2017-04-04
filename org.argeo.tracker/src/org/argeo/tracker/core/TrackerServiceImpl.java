@@ -262,6 +262,52 @@ public class TrackerServiceImpl implements TrackerService {
 		ConnectJcrUtils.setJcrProperty(version, TrackerNames.TRACKER_RELEASE_DATE, DATE, releaseDate);
 	}
 
+	@Override
+	public NodeIterator getMyProjects(Session session, boolean onlyOpenProjects) {
+		List<String> normalisedRoles = new ArrayList<>();
+		for (String role : CurrentUser.roles())
+			normalisedRoles.add(TrackerUtils.normalizeDn(role));
+		String[] nrArr = normalisedRoles.toArray(new String[0]);
+		return getProjectsForGroup(session, nrArr, onlyOpenProjects);
+	}
+
+	private NodeIterator getProjectsForGroup(Session session, String[] roles, boolean onlyOpenProjects) {
+		try {
+			// XPath
+			StringBuilder builder = new StringBuilder();
+			builder.append("//element(*, ").append(TrackerTypes.TRACKER_PROJECT).append(")");
+
+			// Assigned to
+			StringBuilder tmpBuilder = new StringBuilder();
+			for (String role : roles) {
+				String attrQuery = XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MANAGER, role);
+				if (notEmpty(attrQuery))
+					tmpBuilder.append(attrQuery).append(" or ");
+			}
+			String groupCond = null;
+			if (tmpBuilder.length() > 4)
+				groupCond = "(" + tmpBuilder.substring(0, tmpBuilder.length() - 3) + ")";
+
+			// Only open
+			String notClosedCond = null;
+			if (onlyOpenProjects)
+				notClosedCond = "not(@" + ConnectNames.CONNECT_CLOSE_DATE + ")";
+
+			String allCond = XPathUtils.localAnd(groupCond, notClosedCond);
+			if (EclipseUiUtils.notEmpty(allCond))
+				builder.append("[").append(allCond).append("]");
+
+			builder.append(" order by @").append(Property.JCR_LAST_MODIFIED).append(" descending");
+			if (log.isDebugEnabled())
+				log.debug("Getting open project list for " + CurrentUser.getDisplayName() + " (DN: "
+						+ CurrentUser.getUsername() + ") with query: " + builder.toString());
+			Query query = XPathUtils.createQuery(session, builder.toString());
+			return query.execute().getNodes();
+		} catch (RepositoryException e) {
+			throw new ActivitiesException("Unable to get milestones for groups " + roles.toString());
+		}
+	}
+
 	public NodeIterator getMyMilestones(Session session, boolean onlyOpenMilestones) {
 		List<String> normalisedRoles = new ArrayList<>();
 		for (String role : CurrentUser.roles())
@@ -287,7 +333,7 @@ public class TrackerServiceImpl implements TrackerService {
 			if (tmpBuilder.length() > 4)
 				groupCond = "(" + tmpBuilder.substring(0, tmpBuilder.length() - 3) + ")";
 
-			// Only opened tasks
+			// Only open
 			String notClosedCond = null;
 			if (onlyOpenMilestones)
 				notClosedCond = "not(@" + ConnectNames.CONNECT_CLOSE_DATE + ")";
@@ -298,8 +344,8 @@ public class TrackerServiceImpl implements TrackerService {
 
 			builder.append(" order by @").append(Property.JCR_LAST_MODIFIED).append(" descending");
 			if (log.isDebugEnabled())
-				log.debug("Getting todo list for " + CurrentUser.getDisplayName() + " (DN: " + CurrentUser.getUsername()
-						+ ") with query: " + builder.toString());
+				log.debug("Getting open milestone list for " + CurrentUser.getDisplayName() + " (DN: "
+						+ CurrentUser.getUsername() + ") with query: " + builder.toString());
 			Query query = XPathUtils.createQuery(session, builder.toString());
 			return query.execute().getNodes();
 		} catch (RepositoryException e) {
