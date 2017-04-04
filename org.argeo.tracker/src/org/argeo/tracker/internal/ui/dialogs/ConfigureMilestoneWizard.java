@@ -19,6 +19,7 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
+import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.internal.ui.controls.ProjectDropDown;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
@@ -27,9 +28,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
@@ -51,6 +56,12 @@ public class ConfigureMilestoneWizard extends Wizard {
 	private ExistingGroupsDropDown managerDD;
 	private ExistingGroupsDropDown defaultAssigneeDD;
 	private DateText targetDateCmp;
+	private Label isVersionLbl;
+	private Button isVersionBtn;
+	private Label versionIdLbl;
+	private Text versionIdTxt;
+	private Label releaseDateLbl;
+	private DateText releaseDateCmp;
 	private Text descTxt;
 
 	public ConfigureMilestoneWizard(UserAdminService userAdminService, TrackerService trackerService, Node milestone) {
@@ -61,7 +72,6 @@ public class ConfigureMilestoneWizard extends Wizard {
 			if (milestone.hasProperty(TrackerNames.TRACKER_PROJECT_UID)) {
 				project = trackerService.getEntityByUid(milestone.getSession(), null,
 						milestone.getProperty(TrackerNames.TRACKER_PROJECT_UID).getString());
-				chosenProject = project;
 			} else
 				project = null;
 		} catch (RepositoryException e) {
@@ -124,7 +134,7 @@ public class ConfigureMilestoneWizard extends Wizard {
 			setMessage("Please complete following information.");
 		}
 
-		public void createControl(Composite parent) {
+		public void createControl(final Composite parent) {
 			parent.setLayout(new GridLayout(4, false));
 			FocusListener fl = getFocusListener();
 
@@ -149,7 +159,7 @@ public class ConfigureMilestoneWizard extends Wizard {
 							setErrorMessage("Choose a valid project");
 						else {
 							setErrorMessage(null);
-							chosenProject = project;
+							afterProjectSet(project, false);
 						}
 					}
 				});
@@ -176,8 +186,24 @@ public class ConfigureMilestoneWizard extends Wizard {
 
 			createLabel(parent, "Target Date", SWT.CENTER);
 			targetDateCmp = new DateText(parent, SWT.NO_FOCUS);
-			targetDateCmp.setLayoutData(EclipseUiUtils.fillWidth(3));
+			targetDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			targetDateCmp.setToolTipText("An optional future due date for this milestone");
+
+			// if (ConnectJcrUtils.isNodeType(project,
+			// TrackerTypes.TRACKER_IT_PROJECT)){
+			isVersionLbl = createLabel(parent, "Is released version", SWT.CENTER);
+			isVersionBtn = new Button(parent, SWT.CHECK);
+
+			versionIdLbl = createLabel(parent, "Version ID", SWT.CENTER);
+			versionIdTxt = new Text(parent, SWT.BORDER);
+			versionIdTxt.setMessage("Major.Minor.Micro: 2.1.37");
+			versionIdTxt.setToolTipText("The version id syntax must be valid, major and minor are compulsory");
+			versionIdTxt.setLayoutData(EclipseUiUtils.fillWidth());
+
+			releaseDateLbl = createLabel(parent, "Release date", SWT.CENTER);
+			releaseDateCmp = new DateText(parent, SWT.NO_FOCUS);
+			releaseDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
+			releaseDateCmp.setToolTipText("The version's release date");
 
 			createLabel(parent, "Description", SWT.TOP);
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
@@ -197,6 +223,9 @@ public class ConfigureMilestoneWizard extends Wizard {
 					defaultAssigneeDD.resetDN(milestone.getProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE).getString());
 				if (project != null)
 					projectTxt.setText(ConnectJcrUtils.get(project, Property.JCR_TITLE));
+
+				afterProjectSet(project, ConnectJcrUtils.isNodeType(milestone, TrackerTypes.TRACKER_VERSION));
+
 			} catch (RepositoryException e) {
 				throw new TrackerException("Cannot initialise widgets with existing data for " + milestone, e);
 			}
@@ -207,6 +236,43 @@ public class ConfigureMilestoneWizard extends Wizard {
 				setControl(titleTxt);
 				titleTxt.setFocus();
 			}
+
+			isVersionBtn.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = -9065523003707104389L;
+
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					afterProjectSet(project, isVersionBtn.getSelection());
+					parent.layout(true, true);
+				}
+			});
+		}
+
+		private void afterProjectSet(Node project, boolean isVersion) {
+			chosenProject = project;
+			boolean show = chosenProject != null
+					&& ConnectJcrUtils.isNodeType(project, TrackerTypes.TRACKER_IT_PROJECT);
+			isVersionLbl.setVisible(show);
+			isVersionBtn.setVisible(show);
+			show &= isVersion;
+
+			if (ConnectJcrUtils.isNodeType(milestone, TrackerTypes.TRACKER_VERSION)) {
+				versionIdTxt.setText(ConnectJcrUtils.get(milestone, TrackerNames.TRACKER_ID));
+				releaseDateCmp.setText(ConnectJcrUtils.getDateValue(milestone, TrackerNames.TRACKER_RELEASE_DATE));
+			}
+			showWidget(versionIdLbl, show);
+			showWidget(versionIdTxt, show);
+			showWidget(releaseDateLbl, show);
+			showWidget(releaseDateCmp, show);
+		}
+
+		private void showWidget(Control control, boolean show) {
+			GridData gd = (GridData) control.getLayoutData();
+			control.setVisible(show);
+			if (show)
+				gd.heightHint = SWT.DEFAULT;
+			else
+				gd.heightHint = 0;
 		}
 
 	}

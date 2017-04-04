@@ -37,7 +37,7 @@ public class CreateEntity extends AbstractHandler {
 	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
-		Session draftSession = null, mainSession = null;
+		Session draftSession = null;
 		String jcrId = null;
 
 		String nodeType = event.getParameter(PARAM_TARGET_NODE_TYPE);
@@ -71,7 +71,6 @@ public class CreateEntity extends AbstractHandler {
 			throw new ConnectException("Cannot create " + nodeType + "entity", e);
 		} finally {
 			JcrUtils.logoutQuietly(draftSession);
-			JcrUtils.logoutQuietly(mainSession);
 		}
 
 		if (jcrId != null)

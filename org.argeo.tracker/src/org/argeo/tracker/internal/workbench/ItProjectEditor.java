@@ -14,6 +14,7 @@ import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.ArgeoNames;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
@@ -29,6 +30,7 @@ import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
@@ -89,36 +91,22 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 	// private TrackerService trackerService;
 	private Node project;
 
-	// Current pages
-	private MainPage projectMainPage;
-	private IssuesPage issuesPage;
-	private VersionsPage milestonesPage;
-	private ComponentsPage componentsPage;
-	private TechnicalInfoPage techInfoPage;
-
 	// Ease implementation
 
 	@Override
 	protected void addPages() {
 		// Initialise the nodes
 		project = getNode();
-		// trackerService = getTrackerService();
 		try {
-			projectMainPage = new MainPage(this);
-			addPage(projectMainPage);
+			addPage(new MainPage(this));
+			addPage(new IssuesPage(this));
+			addPage(new MilestoneListPage(this, ID + ".milestoneList", project, getUserAdminService(),
+					getTrackerService(), getAppWorkbenchService()));
+			addPage(new VersionsPage(this));
+			addPage(new ComponentsPage(this));
 
-			issuesPage = new IssuesPage(this);
-			addPage(issuesPage);
-
-			milestonesPage = new VersionsPage(this);
-			addPage(milestonesPage);
-
-			componentsPage = new ComponentsPage(this);
-			addPage(componentsPage);
-
-			techInfoPage = new TechnicalInfoPage(this, TrackerUiPlugin.PLUGIN_ID + ".issueEditor.issueMainPage",
-					getNode());
-			addPage(techInfoPage);
+			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
+				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
@@ -126,10 +114,10 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 
 	// Specific pages
 	private class MainPage extends FormPage implements ArgeoNames {
-		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.mainPage";
+		public final static String PAGE_ID = ID + ".mainPage";
 
 		public MainPage(FormEditor editor) {
-			super(editor, ID, "Main");
+			super(editor, PAGE_ID, "Main");
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
@@ -276,12 +264,12 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 	}
 
 	private class IssuesPage extends FormPage implements ArgeoNames {
-		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.issuesPage";
+		public final static String PAGE_ID = ID + ".issueListPage";
 
 		private TableViewer tableViewer;
 
 		public IssuesPage(FormEditor editor) {
-			super(editor, ID, "Issues");
+			super(editor, PAGE_ID, "Issues");
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
@@ -305,9 +293,13 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 			columnDefs.add(new ColumnDefinition(getJcrLP(TrackerNames.TRACKER_ID), "ID", 40));
 			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_TITLE), "Title", 300));
 			columnDefs.add(new ColumnDefinition(getJcrLP(ActivitiesNames.ACTIVITIES_TASK_STATUS), "Status", 100));
+			columnDefs.add(new ColumnDefinition(
+					new TrackerLps().new DnLabelProvider(getUserAdminService(), ActivitiesNames.ACTIVITIES_ASSIGNED_TO),
+					"Assignee", 160));
+			columnDefs.add(new ColumnDefinition(new TrackerLps().new MilestoneLabelProvider(getAppService()),
+					"Milestone", 220));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new ImportanceLabelProvider(), "Importance", 100));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new PriorityLabelProvider(), "Priority", 100));
-			columnDefs.add(new ColumnDefinition(getJcrLP(TrackerNames.TRACKER_MILESTONE_ID), "Target", 80));
 			columnDefs.add(new ColumnDefinition(new TrackerLps().new CommentNbLabelProvider(), "Comments", 120));
 
 			tableViewer = TrackerUiUtils.createTableViewer(parent, SWT.SINGLE, columnDefs);
@@ -384,7 +376,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 		private Text filterTxt;
 
 		public VersionsPage(FormEditor editor) {
-			super(editor, ID, "Milestones");
+			super(editor, ID, "Versions");
 		}
 
 		protected void createFormContent(IManagedForm mf) {
@@ -406,10 +398,10 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 		private void appendVersionsPart(IManagedForm mf, Composite parent) {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 			columnDefs.add(new ColumnDefinition(getJcrLP(TrackerNames.TRACKER_ID), "ID", 80));
-			columnDefs.add(new ColumnDefinition(new TrackerLps().new VersionDateLabelProvider(), "Date", 120));
-			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_DESCRIPTION), "Description", 300));
+			columnDefs.add(new ColumnDefinition(new TrackerLps().new VersionDateLabelProvider(), "Release Date", 120));
 			columnDefs.add(new ColumnDefinition(getCountLP(true), "Open issues", 120));
 			columnDefs.add(new ColumnDefinition(getCountLP(false), "All issues", 120));
+			columnDefs.add(new ColumnDefinition(getJcrLP(Property.JCR_DESCRIPTION), "Description", 300));
 			if (canEdit())
 				columnDefs.add(new ColumnDefinition(getEditionLP(), "", 120));
 
@@ -422,7 +414,8 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					Node n1 = (Node) e1;
 					Node n2 = (Node) e2;
 					// Last must be first: we skip 1 & 2
-					return comp.compare(viewer, ConnectJcrUtils.getName(n2), ConnectJcrUtils.getName(n1));
+					return comp.compare(viewer, ConnectJcrUtils.get(n2, TrackerNames.TRACKER_ID),
+							ConnectJcrUtils.get(n1, TrackerNames.TRACKER_ID));
 				};
 			});
 			addDClickListener(tableViewer);

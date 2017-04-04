@@ -14,6 +14,7 @@ import javax.jcr.Session;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.cms.ArgeoNames;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
@@ -28,6 +29,7 @@ import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
@@ -88,12 +90,10 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 		officeID = ConnectJcrUtils.get(category, TrackerNames.TRACKER_ID);
 		relevantPropName = TrackerUtils.getRelevantPropName(category);
 		try {
-			MainPage mainPage = new MainPage(this);
-			addPage(mainPage);
+			addPage(new MainPage(this));
 
-			TechnicalInfoPage techInfoPage = new TechnicalInfoPage(this,
-					TrackerUiPlugin.PLUGIN_ID + ".projectEditor.techInfoPage", getNode());
-			addPage(techInfoPage);
+			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
+				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
@@ -108,12 +108,12 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 	}
 
 	private class MainPage extends FormPage implements ArgeoNames {
-		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.componentsPage";
+		public final static String PAGE_ID = ID + ".mainPage";
 
 		private TableViewer tableViewer;
 
 		public MainPage(FormEditor editor) {
-			super(editor, ID, "Overview");
+			super(editor, PAGE_ID, "Overview");
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
@@ -284,15 +284,15 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 		columns.add(new ConnectColumnDefinition("Priority", new TrackerLps().new PriorityLabelProvider()));
 		columns.add(new ConnectColumnDefinition("Components",
 				new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_COMPONENT_IDS)));
-		columns.add(new ConnectColumnDefinition("Target Milestone",
-				new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_MILESTONE_ID)));
+		// columns.add(new ConnectColumnDefinition("Target Milestone",
+		// new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_MILESTONE_ID)));
 
 		columns.add(new ConnectColumnDefinition("Wake-Up Date",
 				new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE)));
-		columns.add(new ConnectColumnDefinition("Close Date",
-				new JcrRowLabelProvider(ActivitiesNames.ACTIVITIES_CLOSE_DATE)));
+		columns.add(
+				new ConnectColumnDefinition("Close Date", new JcrRowLabelProvider(ConnectNames.CONNECT_CLOSE_DATE)));
 		columns.add(new ConnectColumnDefinition("Closed by",
-				new UserNameLP(getUserAdminService(), null, ActivitiesNames.ACTIVITIES_CLOSED_BY)));
+				new UserNameLP(getUserAdminService(), null, ConnectNames.CONNECT_CLOSED_BY)));
 		return columns;
 	}
 }

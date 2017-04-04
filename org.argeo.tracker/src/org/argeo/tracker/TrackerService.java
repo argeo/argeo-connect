@@ -43,6 +43,9 @@ public interface TrackerService extends AppService {
 	public void configureMilestone(Node milestone, Node project, Node parentMilestone, String title, String description,
 			String managerId, String defaultAssigneeId, Calendar targetDate) throws RepositoryException;
 
+	public void configureVersion(Node version, Node project, String id, String description, Calendar releaseDate)
+			throws RepositoryException;
+
 	public NodeIterator getMyMilestones(Session session, boolean onlyOpenTasks);
 
 	public void configureProject(Node project, String title, String description, String managerId)

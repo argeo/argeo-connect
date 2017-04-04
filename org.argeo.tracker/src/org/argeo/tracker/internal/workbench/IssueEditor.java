@@ -1,11 +1,12 @@
 package org.argeo.tracker.internal.workbench;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+import static org.eclipse.ui.forms.widgets.TableWrapData.BOTTOM;
+import static org.eclipse.ui.forms.widgets.TableWrapData.FILL;
 import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -13,11 +14,12 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.ArgeoNames;
+import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -26,32 +28,33 @@ import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
-import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
-import org.argeo.tracker.internal.ui.controls.TagListFormPart;
-import org.argeo.tracker.internal.ui.dialogs.EditFreeTextDialog;
+import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -67,12 +70,12 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
-import org.osgi.service.useradmin.User;
 
 /** Default editor to display and edit an issue */
 public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
-	private static final long serialVersionUID = -5501994143125392009L;
 	// private final static Log log = LogFactory.getLog(IssueEditor.class);
+	private static final long serialVersionUID = -1934562242002470050L;
+
 	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".issueEditor";
 
 	// Context
@@ -80,30 +83,21 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 	private Node issue;
 	private Node project;
 
-	// local cache
-	private String assignedToGroupDn;
-	// private boolean isBeingEdited;
-	// private List<String> hiddenItemIds;
-	// private List<String> modifiedPaths = new ArrayList<String>();
-
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		// issue = getNode();
 	}
 
 	@Override
 	protected void addPages() {
-		// Initialise the nodes
+		// Cache to ease implementation
 		issue = getNode();
 		session = ConnectJcrUtils.getSession(issue);
-		project = TrackerUtils.getProjectFromChild(issue);
+		project = TrackerUtils.getRelatedProject(getTrackerService(), issue);
 		try {
-			IssueMainPage issueMainPage = new IssueMainPage(this);
-			addPage(issueMainPage);
+			addPage(new IssueMainPage(this));
 
-			TechnicalInfoPage techInfoPage = new TechnicalInfoPage(this,
-					TrackerUiPlugin.PLUGIN_ID + ".issueEditor.techInfoPage", getNode());
-			addPage(techInfoPage);
+			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
+				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
@@ -138,20 +132,20 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	// Specific pages
 	private class IssueMainPage extends FormPage implements ArgeoNames {
-		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".issueEditor.issueMainPage";
+		public final static String PAGE_ID = ID + ".issueMainPage";
 
 		private Combo statusCmb;
-		private Combo importanceCmb;
-		private Combo priorityCmb;
-		// private VersionDropDown versionDD;
-		private MilestoneDropDown targetDD;
-		private Link changeAssignationLk;
-		private Link reporterLk;
 		private Link projectLk;
-		private Text descTxt;
+		private Link milestoneLk;
+		private Link assignedToLk;
+		private Composite versionsCmp;
+		private Composite componentsCmp;
+		// private Map<String, Link> versionLks;
+		// private Link reporterLk;
+		private Label descLbl;
 
 		public IssueMainPage(FormEditor editor) {
-			super(editor, ID, "Main");
+			super(editor, PAGE_ID, "Main");
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
@@ -175,166 +169,121 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			layout.numColumns = 6;
 			body.setLayout(layout);
 
-			// 1st line: Status, Importance and Priority
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Status");
+			// Status
+			createFormBoldLabel(tk, body, "Status");
 			statusCmb = new Combo(body, SWT.READ_ONLY);
-			statusCmb.setLayoutData(new TableWrapData(FILL_GRAB));
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Importance");
-			importanceCmb = new Combo(body, SWT.READ_ONLY);
-			importanceCmb.setLayoutData(new TableWrapData(FILL_GRAB));
-			importanceCmb.setItems(TrackerUtils.MAPS_ISSUE_IMPORTANCES.values().toArray(new String[0]));
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Priority");
-			priorityCmb = new Combo(body, SWT.READ_ONLY);
-			priorityCmb.setLayoutData(new TableWrapData(FILL_GRAB));
-			priorityCmb.setItems(TrackerUtils.MAPS_ISSUE_PRIORITIES.values().toArray(new String[0]));
-
-			// Assigned to
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Assigned to");
-			changeAssignationLk = new Link(body, SWT.NONE);
-			changeAssignationLk.setLayoutData(new TableWrapData(FILL_GRAB));
-
-			// Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
-			// "Choose a group or person to manage this issue", 3);
-			// assignedToDD = new ExistingGroupsDropDown(assignedToTxt,
-			// userAdminService, true, false);
-
-			// Reported by
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Reported by");
-			reporterLk = new Link(body, SWT.NONE);
-			TableWrapData twd = new TableWrapData(FILL_GRAB);
-			twd.colspan = 3;
-			reporterLk.setLayoutData(twd);
+			statusCmb.setLayoutData(new TableWrapData(FILL, BOTTOM));
 
 			// Project
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Project");
+			createFormBoldLabel(tk, body, "Project");
 			projectLk = new Link(body, SWT.NONE);
-			projectLk.setLayoutData(new TableWrapData(FILL_GRAB));
-			projectLk.setText("<a>" + ConnectJcrUtils.get(project, Property.JCR_TITLE) + "</a>");
-			projectLk.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(project));
-				}
-			});
-
-			// Components
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Components");
-			ComponentListFormPart clfp = new ComponentListFormPart(getManagedForm(), body, SWT.NO_FOCUS);
-			twd = new TableWrapData(FILL_GRAB);
-			twd.colspan = 3;
-			clfp.setLayoutData(twd);
+			projectLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
+			configureOpenLink(projectLk, project);
 
 			// Target milestone
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Target");
-			Text targetTxt = tk.createText(body, "", SWT.BORDER);
-			targetTxt.setLayoutData(new TableWrapData(FILL_GRAB));
-			targetDD = new MilestoneDropDown(ConnectJcrUtils.getSession(issue), targetTxt, false);
-			targetDD.setProject(TrackerUtils.getProjectFromChild(issue));
-			
-			// Versions
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Versions");
-			VersionListFormPart vlfp = new VersionListFormPart(getManagedForm(), body, SWT.NO_FOCUS);
-			twd = new TableWrapData(FILL_GRAB);
-			twd.colspan = 3;
-			vlfp.setLayoutData(twd);
+			createFormBoldLabel(tk, body, "Target milestone");
+			milestoneLk = new Link(body, SWT.NONE);
+			milestoneLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
-			// TODO add linked documents
+			// Assigned to
+			createFormBoldLabel(tk, body, "Assigned to");
+			assignedToLk = new Link(body, SWT.NONE);
+			assignedToLk.setLayoutData(new TableWrapData(FILL, BOTTOM));
+
+			// Versions
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Impacted versions");
+			versionsCmp = new Composite(body, SWT.NO_FOCUS);
+			versionsCmp.setLayoutData(new TableWrapData(FILL_GRAB, TableWrapData.MIDDLE));
+
+			// Components
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Related components");
+			componentsCmp = new Composite(body, SWT.NO_FOCUS);
+			componentsCmp.setLayoutData(new TableWrapData(FILL_GRAB, TableWrapData.MIDDLE));
+
+			// TODO add stack traces and documents
 
 			// Description
-			twd = (TableWrapData) TrackerUiUtils.createFormBoldLabel(tk, body, "Description").getLayoutData();
+			TableWrapData twd = (TableWrapData) TrackerUiUtils.createFormBoldLabel(tk, body, "Details").getLayoutData();
 			twd.valign = TableWrapData.TOP;
-			descTxt = new Text(body, SWT.MULTI | SWT.WRAP | SWT.BORDER);
-			twd = new TableWrapData(FILL_GRAB);
+			descLbl = new Label(body, SWT.WRAP);
+			twd = new TableWrapData(FILL_GRAB, TableWrapData.TOP);
 			twd.colspan = 5;
-			twd.heightHint = 160;
-			descTxt.setLayoutData(twd);
+			descLbl.setLayoutData(twd);
 
-			// create form part (controller)
+			// // Components
+			// TrackerUiUtils.createFormBoldLabel(tk, body, "Components");
+			// ComponentListFormPart clfp = new
+			// ComponentListFormPart(getManagedForm(), body, SWT.NO_FOCUS);
+			// twd = new TableWrapData(FILL_GRAB);
+			// twd.colspan = 3;
+			// clfp.setLayoutData(twd);
+
+			//
+			// // Versions
+			// TrackerUiUtils.createFormBoldLabel(tk, body, "Versions");
+			// VersionListFormPart vlfp = new
+			// VersionListFormPart(getManagedForm(), body, SWT.NO_FOCUS);
+			// twd = new TableWrapData(FILL_GRAB);
+			// twd.colspan = 3;
+			// vlfp.setLayoutData(twd);
+
 			SectionPart part = new SectionPart((Section) body.getParent()) {
 
 				@Override
 				public void refresh() {
-					// TODO Prevent edition for user that do not have sufficient
-					// rights
+					refreshStatusCombo(statusCmb, issue);
+					statusCmb.setText(ConnectJcrUtils.get(issue, ActivitiesNames.ACTIVITIES_TASK_STATUS));
+
+					Node milestone = TrackerUtils.getMilestone(getTrackerService(), issue);
+					if (milestone != null)
+						configureOpenLink(milestoneLk, milestone);
 
 					String manager = getActivitiesService().getAssignedToDisplayName(issue);
-					refreshStatusCombo(statusCmb, issue);
-					if (isEditing()) {
-						manager += " ~ <a>Change</a>";
-					} else {
+					String importance = TrackerUtils.getImportanceLabel(issue);
+					String priority = TrackerUtils.getPriorityLabel(issue);
+					String tmp = ConnectJcrUtils.concatIfNotEmpty(importance, priority, "/");
+					if (EclipseUiUtils.notEmpty(tmp))
+						manager += " (" + tmp + " )";
+					// TODO make it clickable
+					assignedToLk.setText(manager);
 
+					// Versions
+					Node[] nodes = null;
+					try {
+						if (issue.hasProperty(TrackerNames.TRACKER_VERSION_IDS)) {
+							Value[] values = issue.getProperty(TrackerNames.TRACKER_VERSION_IDS).getValues();
+							nodes = new Node[values.length];
+							for (int i = 0; i < values.length; i++)
+								nodes[i] = TrackerUtils.getVersionById(project, values[i].getString());
+						}
+						populateMuliValueClickableList(versionsCmp, nodes);
+
+						// Components
+						nodes = null;
+						if (issue.hasProperty(TrackerNames.TRACKER_COMPONENT_IDS)) {
+							Value[] values = issue.getProperty(TrackerNames.TRACKER_COMPONENT_IDS).getValues();
+							nodes = new Node[values.length];
+							for (int i = 0; i < values.length; i++)
+								nodes[i] = TrackerUtils.getComponentById(project, values[i].getString());
+						}
+						populateMuliValueClickableList(componentsCmp, nodes);
+					} catch (RepositoryException e) {
+						throw new TrackerException("Cannot update info for " + issue, e);
 					}
-					changeAssignationLk.setText(manager);
-					reporterLk.setText(TrackerUtils.getCreationLabel(getUserAdminService(), issue));
-					statusCmb.setText(ConnectJcrUtils.get(issue, ActivitiesNames.ACTIVITIES_TASK_STATUS));
-					Long importance = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_IMPORTANCE);
-					if (importance != null) {
-						String strVal = importance + "";
-						String iv = TrackerUtils.MAPS_ISSUE_IMPORTANCES.get(strVal);
-						importanceCmb.setText(iv);
-					}
-					Long priority = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_PRIORITY);
-					if (priority != null) {
-						String strVal = priority + "";
-						String iv = TrackerUtils.MAPS_ISSUE_PRIORITIES.get(strVal);
-						priorityCmb.setText(iv);
-					}
-					String target = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_MILESTONE_ID);
-					targetDD.reset(target);
 
 					String desc = ConnectJcrUtils.get(issue, Property.JCR_DESCRIPTION);
-					descTxt.setText(desc);
-					statusCmb.getParent().layout();
+					descLbl.setText(desc);
 
+					parent.layout(true, true);
+					section.setFocus();
 					super.refresh();
 				}
 			};
 			addStatusCmbSelListener(part, statusCmb, issue, ActivitiesNames.ACTIVITIES_TASK_STATUS,
 					PropertyType.STRING);
-			addLongCmbSelListener(part, importanceCmb, issue, TrackerNames.TRACKER_IMPORTANCE,
-					TrackerUtils.MAPS_ISSUE_IMPORTANCES);
-			addLongCmbSelListener(part, priorityCmb, issue, TrackerNames.TRACKER_PRIORITY,
-					TrackerUtils.MAPS_ISSUE_PRIORITIES);
-			addFocusOutListener(part, targetTxt, issue, TrackerNames.TRACKER_MILESTONE_ID);
-			addFocusOutListener(part, descTxt, issue, Property.JCR_DESCRIPTION);
-			addChangeAssignListener(part, changeAssignationLk);
+
 			getManagedForm().addPart(part);
 			addMainSectionMenu(part);
-		}
-
-		private void addChangeAssignListener(final AbstractFormPart myFormPart, final Link changeAssignationLk) {
-			changeAssignationLk.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(final SelectionEvent event) {
-					try {
-						PickUpUserDialog diag = new PickUpUserDialog(changeAssignationLk.getShell(), "Choose a group",
-								getUserAdminService().getUserAdmin());
-						int result = diag.open();
-						if (Window.OK == result) {
-							User newGroup = diag.getSelected();
-							String newGroupDn = newGroup.getName();
-							if (newGroupDn == null || newGroupDn.equals(assignedToGroupDn))
-								return; // nothing has changed
-							else {
-								// Update value
-								issue.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, newGroupDn);
-								// update cache and display.
-								assignedToGroupDn = newGroupDn;
-								changeAssignationLk.setText(
-										getUserAdminService().getUserDisplayName(newGroupDn) + "  ~ <a>Change</a>");
-								myFormPart.markDirty();
-							}
-						}
-					} catch (RepositoryException re) {
-						throw new TrackerException("Unable to change assignation for node " + issue, re);
-					}
-				}
-			});
 		}
 
 		// THE COMMENT LIST
@@ -490,18 +439,18 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 	// SECTION MENU
 	private void addMainSectionMenu(SectionPart sectionPart) {
 		ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getSection());
-		String tooltip = "Edit the title of this issue";
-		Action action = new EditTitle(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
+		String tooltip = "Edit this issue main information";
+		Action action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
 		toolBarManager.add(action);
 		toolBarManager.update(true);
 	}
 
 	// MENU ACTIONS
-	private class EditTitle extends Action {
+	private class OpenConfigureDialog extends Action {
 		private static final long serialVersionUID = -6798429720348536525L;
 		private final SectionPart sectionPart;
 
-		private EditTitle(String name, ImageDescriptor img, SectionPart sectionPart) {
+		private OpenConfigureDialog(String name, ImageDescriptor img, SectionPart sectionPart) {
 			super(name, img);
 			this.sectionPart = sectionPart;
 		}
@@ -509,19 +458,18 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		@Override
 		public void run() {
 			Shell currShell = sectionPart.getSection().getShell();
-			EditFreeTextDialog dialog = new EditFreeTextDialog(currShell, "Update issue title", issue,
-					Property.JCR_TITLE);
-			if (dialog.open() == Window.OK) {
-				String newTitle = dialog.getEditedText();
-				if (EclipseUiUtils.isEmpty(newTitle)) {
-					MessageDialog.openError(currShell, "Title cannot be null or empty", "Please provide a valid title");
-					return;
-				}
-				if (ConnectJcrUtils.setJcrProperty(issue, Property.JCR_TITLE, PropertyType.STRING, newTitle)) {
-					sectionPart.getSection().setText(getIssueTitle());
+			ConfigureIssueWizard wizard = new ConfigureIssueWizard(getUserAdminService(), getTrackerService(), issue);
+			WizardDialog dialog = new WizardDialog(currShell, wizard);
+			try {
+				if (dialog.open() == Window.OK && issue.getSession().hasPendingChanges()) {
 					updatePartName();
+					sectionPart.getSection().setText(getIssueTitle());
+					sectionPart.refresh();
 					sectionPart.markDirty();
+					sectionPart.getSection().setFocus();
 				}
+			} catch (RepositoryException e) {
+				throw new TrackerException("Cannot check session state on " + issue, e);
 			}
 		}
 	}
@@ -549,44 +497,6 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		});
 	}
 
-	private void addLongCmbSelListener(final AbstractFormPart part, final Combo combo, final Node entity,
-			final String propName, final Map<String, String> map) {
-		combo.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int index = combo.getSelectionIndex();
-				if (index != -1) {
-					String selectedValue = combo.getItem(index);
-					String longStr = TrackerUtils.getKeyByValue(map, selectedValue);
-					long value = new Long(longStr).longValue();
-					if (ConnectJcrUtils.setJcrProperty(entity, propName, PropertyType.LONG, value))
-						part.markDirty();
-				}
-			}
-		});
-	}
-
-	private void addFocusOutListener(final AbstractFormPart part, final Text text, final Node entity,
-			final String propName) {
-		text.addFocusListener(new FocusListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void focusLost(FocusEvent event) {
-				// TODO check if the value is correct
-				String newValue = text.getText();
-				if (ConnectJcrUtils.setJcrProperty(entity, propName, PropertyType.STRING, newValue))
-					part.markDirty();
-			}
-
-			@Override
-			public void focusGained(FocusEvent event) {
-			}
-		});
-	}
-
 	/** Override this to add specific rights for status change */
 	protected void refreshStatusCombo(Combo combo, Node currTask) {
 		List<String> values = getResourcesService().getTemplateCatalogue(session, TrackerTypes.TRACKER_ISSUE,
@@ -608,72 +518,66 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		return "#" + id + " " + name;
 	}
 
-	private class VersionListFormPart extends TagListFormPart {
-		private static final long serialVersionUID = -6810842097242400473L;
+	// LOCAL HELPERS
+	private void populateMuliValueClickableList(Composite parent, Node[] nodes) {
+		CmsUtils.clear(parent);
+		TableWrapData twd = ((TableWrapData) parent.getLayoutData());
+		if (nodes == null || nodes.length < 1) {
+			twd.heightHint = 0;
+			return;
+		} else
+			twd.heightHint = SWT.DEFAULT;
 
-		public VersionListFormPart(IManagedForm form, Composite parent, int style) {
-			super(IssueEditor.this, form, parent, style, getNode(), TrackerNames.TRACKER_VERSION_IDS);
+		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		rl.wrap = true;
+		rl.marginLeft = rl.marginTop = rl.marginBottom = 0;
+		rl.marginRight = 8;
+		parent.setLayout(rl);
+
+		for (Node node : nodes) {
+			String value = ConnectJcrUtils.get(node, Property.JCR_TITLE);
+			Link link = new Link(parent, SWT.NONE);
+			CmsUtils.markup(link);
+			link.setText(" <a>" + value + "</a>");
+
+			link.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(final SelectionEvent event) {
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
+				}
+			});
 		}
-
-		@Override
-		protected List<String> getFilteredValues(String filter) {
-			NodeIterator nit = TrackerUtils.getAllVersions(project, filter);
-			List<String> values = new ArrayList<String>();
-			while (nit.hasNext()) {
-				values.add(getTagKey(nit.nextNode()));
-			}
-			return values;
-		}
-
-		@Override
-		protected Node createTag(String tagKey) throws RepositoryException {
-			return getTrackerService().createVersion(project, tagKey, null, null, null);
-		}
-
-		protected String getTagKey(Node tagDefinition) {
-			return ConnectJcrUtils.get(tagDefinition, TrackerNames.TRACKER_ID);
-		}
-
-		protected void callOpenEditor(String tagKey) {
-			Node node = TrackerUtils.getVersionById(project, tagKey);
-			if (node != null)
-				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
-		}
-
 	}
 
-	private class ComponentListFormPart extends TagListFormPart {
-		private static final long serialVersionUID = -5392419310704426378L;
+	private void configureOpenLink(Link link, Node targetNode) {
+		link.setText("<a>" + ConnectJcrUtils.get(targetNode, Property.JCR_TITLE) + "</a>");
 
-		public ComponentListFormPart(IManagedForm form, Composite parent, int style) {
-			super(IssueEditor.this, form, parent, style, getNode(), TrackerNames.TRACKER_COMPONENT_IDS);
-		}
+		// Remove existing if necessary
+		Listener[] existings = link.getListeners(SWT.Selection);
+		for (Listener l : existings)
+			link.removeListener(SWT.Selection, l);
 
-		@Override
-		protected List<String> getFilteredValues(String filter) {
-			List<String> values = new ArrayList<String>();
-			NodeIterator nit = TrackerUtils.getComponents(project, filter);
-			while (nit != null && nit.hasNext()) {
-				values.add(getTagKey(nit.nextNode()));
-			}
-			return values;
-		}
+		link.addSelectionListener(new SelectionAdapter() {
+			private static final long serialVersionUID = 1L;
 
-		@Override
-		protected Node createTag(String tagKey) throws RepositoryException {
-			return getTrackerService().createComponent(project, tagKey, tagKey, null);
-		}
-
-		protected String getTagKey(Node tagDefinition) {
-			return ConnectJcrUtils.get(tagDefinition, TrackerNames.TRACKER_ID);
-		}
-
-		protected void callOpenEditor(String tagKey) {
-			Node node = TrackerUtils.getComponentById(project, tagKey);
-			if (node != null)
+			@Override
+			public void widgetSelected(SelectionEvent e) {
 				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
-		}
+						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+			}
+		});
+	}
+
+	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
+		// We add a blank space before to workaround the cropping of the word
+		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
+		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		TableWrapData twd = new TableWrapData(TableWrapData.RIGHT, TableWrapData.BOTTOM);
+		label.setLayoutData(twd);
+		return label;
 	}
 }

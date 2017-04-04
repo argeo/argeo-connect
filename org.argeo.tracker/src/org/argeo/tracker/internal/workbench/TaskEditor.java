@@ -2,6 +2,7 @@ package org.argeo.tracker.internal.workbench;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 import static org.eclipse.ui.forms.widgets.TableWrapData.BOTTOM;
+import static org.eclipse.ui.forms.widgets.TableWrapData.FILL;
 import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
 
 import java.util.ArrayList;
@@ -72,8 +73,9 @@ import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 /** Default editor to display and edit a Tracker's task */
 public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
-	private static final long serialVersionUID = -5501994143125392009L;
 	// private final static Log log = LogFactory.getLog(IssueEditor.class);
+	private static final long serialVersionUID = 1027157523552831925L;
+
 	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".taskEditor";
 
 	// Context
@@ -121,7 +123,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	// Specific pages
 	private class TaskMainPage extends FormPage implements ArgeoNames {
-		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".issueEditor.issueMainPage";
+		public final static String PAGE_ID = ID + ".taskMainPage";
 
 		private Combo statusCmb;
 		private Link projectLk;
@@ -132,7 +134,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		private Label descLbl;
 
 		public TaskMainPage(FormEditor editor) {
-			super(editor, ID, "Main");
+			super(editor, PAGE_ID, "Main");
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
@@ -159,7 +161,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			// Status
 			createFormBoldLabel(tk, body, "Status");
 			statusCmb = new Combo(body, SWT.READ_ONLY);
-			statusCmb.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
+			statusCmb.setLayoutData(new TableWrapData(FILL, BOTTOM));
 
 			// Project
 			createFormBoldLabel(tk, body, "Project");
@@ -175,7 +177,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			// Assigned to
 			createFormBoldLabel(tk, body, "Assigned to");
 			assignedToLk = new Link(body, SWT.NONE);
-			assignedToLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
+			assignedToLk.setLayoutData(new TableWrapData(FILL, BOTTOM));
 
 			// Due Date
 			TrackerUiUtils.createFormBoldLabel(tk, body, "Due Date");

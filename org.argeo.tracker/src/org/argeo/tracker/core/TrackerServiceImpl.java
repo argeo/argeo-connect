@@ -216,15 +216,16 @@ public class TrackerServiceImpl implements TrackerService {
 		issue.setProperty(TrackerNames.TRACKER_IMPORTANCE, importance);
 		if (milestone != null) {
 			issue.setProperty(TrackerNames.TRACKER_MILESTONE_UID,
-					project.getProperty(ConnectNames.CONNECT_UID).getString());
-			String targetId = ConnectJcrUtils.get(milestone, TrackerNames.TRACKER_ID);
-			if (EclipseUiUtils.notEmpty(targetId))
-				issue.setProperty(TrackerNames.TRACKER_MILESTONE_ID, targetId);
+					milestone.getProperty(ConnectNames.CONNECT_UID).getString());
+			// String targetId = ConnectJcrUtils.get(milestone,
+			// TrackerNames.TRACKER_ID);
+			// if (EclipseUiUtils.notEmpty(targetId))
+			// issue.setProperty(TrackerNames.TRACKER_MILESTONE_ID, targetId);
 		} else {
 			if (issue.hasProperty(TrackerNames.TRACKER_MILESTONE_UID))
 				issue.getProperty(TrackerNames.TRACKER_MILESTONE_UID).remove();
-			if (issue.hasProperty(TrackerNames.TRACKER_MILESTONE_ID))
-				issue.getProperty(TrackerNames.TRACKER_MILESTONE_ID).remove();
+			// if (issue.hasProperty(TrackerNames.TRACKER_MILESTONE_ID))
+			// issue.getProperty(TrackerNames.TRACKER_MILESTONE_ID).remove();
 		}
 
 		if (versionIds != null && !versionIds.isEmpty()) {
@@ -232,7 +233,6 @@ public class TrackerServiceImpl implements TrackerService {
 		}
 		if (componentIds != null && !componentIds.isEmpty())
 			issue.setProperty(TrackerNames.TRACKER_COMPONENT_IDS, componentIds.toArray(new String[0]));
-
 	}
 
 	@Override
@@ -249,6 +249,17 @@ public class TrackerServiceImpl implements TrackerService {
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_MANAGER, STRING, managerId);
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_DEFAULT_ASSIGNEE, STRING, defaultAssigneeId);
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_TARGET_DATE, DATE, targetDate);
+	}
+
+	@Override
+	public void configureVersion(Node version, Node project, String id, String description, Calendar releaseDate)
+			throws RepositoryException {
+		ConnectJcrUtils.setJcrProperty(version, TRACKER_PROJECT_UID, STRING, get(project, CONNECT_UID));
+		ConnectJcrUtils.setJcrProperty(version, TrackerNames.TRACKER_ID, STRING, id);
+		if (!version.isNodeType(TrackerTypes.TRACKER_MILESTONE))
+			ConnectJcrUtils.setJcrProperty(version, JCR_TITLE, STRING, id);
+		ConnectJcrUtils.setJcrProperty(version, JCR_DESCRIPTION, STRING, description);
+		ConnectJcrUtils.setJcrProperty(version, TrackerNames.TRACKER_RELEASE_DATE, DATE, releaseDate);
 	}
 
 	public NodeIterator getMyMilestones(Session session, boolean onlyOpenMilestones) {

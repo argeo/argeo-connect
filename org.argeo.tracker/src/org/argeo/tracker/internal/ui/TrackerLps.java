@@ -64,26 +64,28 @@ public class TrackerLps {
 		}
 	}
 
-	public class MilestoneDateLabelProvider extends ColumnLabelProvider {
+	public class DateLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = 8003688506253830216L;
 
+		private final String propName;
+		
+		public DateLabelProvider(String propName){
+			this.propName = propName;
+		}
+		
 		@Override
 		public String getText(Object element) {
 			Node milestone = (Node) element;
 			String dateStr = "";
 			try {
-				if (milestone.hasProperty(ConnectNames.CONNECT_CLOSE_DATE))
-					// "Closed on " +
-					dateStr = ConnectJcrUtils.getDateFormattedAsString(milestone, ConnectNames.CONNECT_CLOSE_DATE,
-							SIMPLE_DATE_PATTERN);
-				else if (milestone.hasProperty(TrackerNames.TRACKER_TARGET_DATE))
-					// "Due to " +
-					dateStr = ConnectJcrUtils.getDateFormattedAsString(milestone, TrackerNames.TRACKER_TARGET_DATE,
+				if (milestone.hasProperty(propName))
+					dateStr = ConnectJcrUtils.getDateFormattedAsString(milestone, propName,
 							SIMPLE_DATE_PATTERN);
 				else
 					dateStr = " - ";
 			} catch (RepositoryException e) {
-				throw new TrackerException("Cannot retrieve milstone relevant date for " + milestone, e);
+				throw new TrackerException("Cannot retrieve "+ propName
+						+ " date for " + milestone, e);
 			}
 			return dateStr;
 		}

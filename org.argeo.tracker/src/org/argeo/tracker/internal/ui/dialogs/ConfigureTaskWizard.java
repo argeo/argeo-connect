@@ -18,7 +18,6 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
-import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.tracker.internal.ui.controls.ProjectDropDown;
@@ -47,10 +46,10 @@ public class ConfigureTaskWizard extends Wizard {
 
 	private final UserAdminService userAdminService;
 	private final TrackerService trackerService;
+	private final Node project;
 	private final Node task;
 
 	// Business objects
-	private Node project;
 	private Node chosenProject;
 
 	// This page widgets
@@ -59,7 +58,8 @@ public class ConfigureTaskWizard extends Wizard {
 	private Text titleTxt;
 	private AssignedToDropDown assignedToDD;
 	private DateText dueDateCmp;
-	private DateText wakeUpDateCmp;
+	// TODO add wake up date management
+	// private DateText wakeUpDateCmp;
 
 	protected Combo importanceCmb;
 	protected Combo priorityCmb;
@@ -69,28 +69,18 @@ public class ConfigureTaskWizard extends Wizard {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
 		this.task = draftEntity;
-		try {
-			if (task.hasProperty(TrackerNames.TRACKER_PROJECT_UID)) {
-				project = trackerService.getEntityByUid(task.getSession(), null,
-						task.getProperty(TrackerNames.TRACKER_PROJECT_UID).getString());
-				chosenProject = project;
-			} else
-				project = null;
-		} catch (RepositoryException e) {
-			throw new TrackerException("Cannot retrieve project for " + task, e);
-		}
+		project = TrackerUtils.getRelatedProject(trackerService, task);
+		chosenProject = project;
 	}
 
 	@Override
 	public void addPages() {
 		setWindowTitle("Task configuration");
-		ConfigureIssuePage page = new ConfigureIssuePage("Main page");
-		addPage(page);
+		addPage(new ConfigureTaskPage("Main page"));
 	}
 
 	@Override
 	public boolean performFinish() {
-		// Sanity check
 		String msg = null;
 		String title = titleTxt.getText();
 		if (chosenProject == null)
@@ -121,10 +111,11 @@ public class ConfigureTaskWizard extends Wizard {
 			if (dueDate != null)
 				task.setProperty(ActivitiesNames.ACTIVITIES_DUE_DATE, dueDate);
 
-			Calendar wakeUpDate = wakeUpDateCmp.getCalendar();
-			if (wakeUpDate != null) {
-				task.setProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE, wakeUpDate);
-			}
+			// Calendar wakeUpDate = wakeUpDateCmp.getCalendar();
+			// if (wakeUpDate != null) {
+			// task.setProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE,
+			// wakeUpDate);
+			// }
 
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to create issue on project " + project, e);
@@ -142,12 +133,12 @@ public class ConfigureTaskWizard extends Wizard {
 		return true;
 	}
 
-	protected class ConfigureIssuePage extends WizardPage {
-		private static final long serialVersionUID = 3061153468301727903L;
+	protected class ConfigureTaskPage extends WizardPage {
+		private static final long serialVersionUID = -4341854690472102086L;
 
 		private Text projectTxt;
 
-		public ConfigureIssuePage(String pageName) {
+		public ConfigureTaskPage(String pageName) {
 			super(pageName);
 			setMessage("Please complete below information.");
 		}
@@ -184,6 +175,15 @@ public class ConfigureTaskWizard extends Wizard {
 			} else
 				projectTxt.setEditable(false);
 
+			// Target milestone
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Milestone");
+			Text milestoneTxt = new Text(parent, SWT.BORDER);
+			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
+			milestoneTxt.setLayoutData(gd);
+			milestoneDD = new MilestoneDropDown(ConnectJcrUtils.getSession(task), milestoneTxt, false);
+			if (project != null)
+				milestoneDD.setProject(project);
+
 			// Title
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
@@ -197,14 +197,17 @@ public class ConfigureTaskWizard extends Wizard {
 					"Choose a group or person to manage this issue", 1);
 			assignedToDD = new AssignedToDropDown(assignedToTxt, userAdminService, true, false);
 
-			// Target milestone
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Milestone");
-			Text milestoneTxt = new Text(parent, SWT.BORDER);
-			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
-			milestoneTxt.setLayoutData(gd);
-			milestoneDD = new MilestoneDropDown(ConnectJcrUtils.getSession(task), milestoneTxt, false);
-			if (project != null)
-				milestoneDD.setProject(project);
+			// DUE DATE
+			ConnectWorkbenchUtils.createBoldLabel(parent, "Due date");
+			dueDateCmp = new DateText(parent, SWT.NO_FOCUS);
+
+			// // WAKE UP DATE
+			// Label lbl = ConnectWorkbenchUtils.createBoldLabel(parent, "Wake
+			// up date");
+			// gd = new GridData();
+			// gd.horizontalIndent = 15;
+			// lbl.setLayoutData(gd);
+			// wakeUpDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// Importance
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Importance");
@@ -221,17 +224,6 @@ public class ConfigureTaskWizard extends Wizard {
 			priorityCmb.setLayoutData(gd);
 			priorityCmb.setItems(TrackerUtils.MAPS_ISSUE_PRIORITIES.values().toArray(new String[0]));
 			priorityCmb.select(0);
-
-			// DUE DATE
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Due date");
-			dueDateCmp = new DateText(parent, SWT.NO_FOCUS);
-
-			// WAKE UP DATE
-			Label lbl = ConnectWorkbenchUtils.createBoldLabel(parent, "Wake up date");
-			gd = new GridData();
-			gd.horizontalIndent = 15;
-			lbl.setLayoutData(gd);
-			wakeUpDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// Description
 			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);
@@ -258,8 +250,9 @@ public class ConfigureTaskWizard extends Wizard {
 					projectTxt.setText(ConnectJcrUtils.get(project, Property.JCR_TITLE));
 				if (task.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE))
 					dueDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate());
-				if (task.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE))
-					wakeUpDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate());
+				// if
+				// (task.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE))
+				// wakeUpDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate());
 				String muid = ConnectJcrUtils.get(task, TrackerNames.TRACKER_MILESTONE_UID);
 				if (EclipseUiUtils.notEmpty(muid))
 					milestoneDD.resetMilestone(
@@ -281,7 +274,7 @@ public class ConfigureTaskWizard extends Wizard {
 				// TODO: handle exception
 			}
 			// Don't forget this.
-			if (projectTxt != null) {
+			if (project == null) {
 				setControl(projectTxt);
 				projectTxt.setFocus();
 			} else {

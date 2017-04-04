@@ -464,12 +464,11 @@ public class TrackerUtils {
 	}
 
 	public static Node getRelatedProject(AppService appService, Node node) {
-		try {
-			String refUid = ConnectJcrUtils.get(node, TrackerNames.TRACKER_PROJECT_UID);
-			return appService.getEntityByUid(node.getSession(), null, refUid);
-		} catch (RepositoryException e) {
-			throw new TrackerException("Unable to get project for " + node, e);
-		}
+		String refUid = ConnectJcrUtils.get(node, TrackerNames.TRACKER_PROJECT_UID);
+		if (EclipseUiUtils.notEmpty(refUid))
+			return appService.getEntityByUid(ConnectJcrUtils.getSession(node), null, refUid);
+		else
+			return null;
 	}
 
 	public static Node getMilestone(AppService appService, Node task) {

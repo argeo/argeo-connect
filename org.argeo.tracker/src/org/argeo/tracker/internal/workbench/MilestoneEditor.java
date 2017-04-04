@@ -153,8 +153,16 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			Composite overview = appendOverviewPart(body, mf);
 			overview.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.TOP));
 
-			Composite issues = appendIssuePart(body, mf);
-			issues.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB));
+			Composite filterCmp = new Composite(body, SWT.NO_FOCUS);
+			createFilterPart(filterCmp);
+			filterCmp.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.TOP));
+
+			Composite tableCmp = new Composite(body, SWT.NO_FOCUS);
+			appendIssuesPart(tableCmp, mf);
+			TableWrapData twd = new TableWrapData(TableWrapData.FILL_GRAB, TableWrapData.FILL_GRAB);
+			twd.heightHint = 300;
+
+			tableCmp.setLayoutData(twd);
 
 			form.reflow(true);
 		}
@@ -163,7 +171,6 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			FormToolkit tk = mf.getToolkit();
 
 			final Section section = TrackerUiUtils.addFormSection(tk, parent, getMilestoneTitle());
-			// section.setLayoutData(new TableWrapData(FILL_GRAB));
 
 			Composite body = (Composite) section.getClient();
 			TableWrapLayout layout = new TableWrapLayout();
@@ -269,31 +276,21 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			try {
 				builder.append(XPathUtils.descendantFrom(project.getPath()));
 				builder.append("//element(*, ").append(ActivitiesTypes.ACTIVITIES_TASK).append(")");
+
+				String milestoneCond = XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MILESTONE_UID, milestoneUid);
+
 				// Past due date
 				Calendar now = GregorianCalendar.getInstance();
 				String overdueCond = XPathUtils.getPropertyDateComparaison(ACTIVITIES_DUE_DATE, now, "<");
 				// Only opened tasks
 				String notClosedCond = "not(@" + ConnectNames.CONNECT_CLOSE_DATE + ")";
-				builder.append("[").append(XPathUtils.localAnd(overdueCond, notClosedCond)).append("]");
+
+				builder.append("[").append(XPathUtils.localAnd(milestoneCond, overdueCond, notClosedCond)).append("]");
 				Query query = XPathUtils.createQuery(getSession(), builder.toString());
 				return query.execute().getNodes().getSize();
 			} catch (RepositoryException e) {
 				throw new ActivitiesException("Unable to get overdue tasks number for " + milestone);
 			}
-		}
-
-		private Composite appendIssuePart(Composite parent, IManagedForm mf) {
-			Composite body = new Composite(parent, SWT.NO_FOCUS);
-			GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
-			layout.verticalSpacing = 5;
-			body.setLayout(layout);
-			Composite filterCmp = new Composite(body, SWT.NO_FOCUS);
-			createFilterPart(filterCmp);
-			filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
-			Composite tableCmp = new Composite(body, SWT.NO_FOCUS);
-			appendIssuesPart(tableCmp, mf);
-			tableCmp.setLayoutData(EclipseUiUtils.fillAll());
-			return body;
 		}
 
 		/** Creates the list of issues relevant for this category */
