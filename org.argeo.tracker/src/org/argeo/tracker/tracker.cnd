@@ -3,60 +3,58 @@
 // A project for a given account 
 [tracker:project] > connect:entity, tracker:managed, mix:title 
 mixin
-//- tracker:cpGroupId (STRING) // ID of the group that contains external users registered for this counterparty
-//// + data (nt:folder) 
-////+ spec (cms:text) 
 + milestones (nt:unstructured) // tracks milestones 
 + issues (nt:unstructured)
-//+ components (nt:unstructured) // Specific Tasks list or tag 
+
+//- tracker:cpGroupId (STRING) // ID of the group that contains external users registered for this counterparty
+//// + data (nt:folder) 
+
 
 [tracker:itProject] > tracker:project
 mixin
++ components (nt:unstructured) // IT Project specific tag like property Tasks list or tag 
 //- tracker:cpGroupId (STRING) // ID of the group that contains external users registered for this counterparty
 //+ data (nt:folder) 
-////+ spec (cms:text) 
-//+ versions (nt:unstructured) // tracks also future milestones 
-//+ components (nt:unstructured) 
-//+ issues (nt:unstructured)
+//+ spec (cms:text) 
 
 
 // Additional mixin for tasks
 [tracker:task] > activities:task
 mixin 
-//- tracker:id (STRING) // Automatically incremented long ID
-//- tracker:projectUid (STRING) 
-//- tracker:milestoneUid (STRING) 
-//- tracker:componentIds (STRING) * // Ids the components to which this task belongs 
-//- tracker:priority (LONG) // highest, high, normal, low, lowest
-//- tracker:importance (LONG) // blocker, critical, major, normal, minor ...
-//+ comments (nt:unstructured) 
+- tracker:id (STRING) // Automatically incremented long ID
+- tracker:projectUid (STRING) 
+- tracker:milestoneUid (STRING) 
+- tracker:priority (LONG) // highest, high, normal, low, lowest
+- tracker:importance (LONG) // blocker, critical, major, normal, minor ...
++ comments (nt:unstructured) 
 
 
 [tracker:issue] > tracker:task 
 mixin 
-//- tracker:versionIds (STRING) * // Ids of the versions in which the issue appears 
+- tracker:versionIds (STRING) * // Ids of the versions in which the issue appears 
+- tracker:componentIds (STRING) * // Ids of the component that are related to this issue 
 
 [tracker:comment] > mix:title, mix:created, mix:lastModified
 mixin 
 
-[tracker:milestone] > connect:entity, tracker:managed, mix:title
+[tracker:milestone] > mix:title, connect:entity, connect:closable, tracker:managed
 mixin
 - tracker:targetDate (DATE) 
 
 
 [tracker:version] > mix:title 
 mixin
-- tracker:id (STRING) 
-- tracker:releaseDate (DATE) 
+- tracker:id (STRING) //m
+- tracker:releaseDate (DATE) //m
 
 [tracker:component] > mix:title 
 mixin
-//- tracker:id (STRING) 
+- tracker:id (STRING) 
 
 
-[tracker:managed] // > mix:referenceable
+[tracker:managed] 
 mixin
-//- tracker:manager (STRING) //  DN of the user or group that is responsible for this business object
-//- tracker:defaultAssignee (STRING) //  Children business objects will be assigned to this user or group's DN by default
+- tracker:manager (STRING) //  DN of the user or group that is responsible for this business object
+- tracker:defaultAssignee (STRING) //  Children business objects will be assigned to this user or group's DN by default
 
  

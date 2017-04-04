@@ -3,7 +3,7 @@
 // ACTIVITIES AND TASKS
 
 // Activities
-[activities:activity] > connect:entity
+[activities:activity] > connect:entity, mix:title
 mixin
 - activities:activityDate (DATE) // References the relevant date for this activity. Generally, the creation date. 
 - activities:reportedBy (STRING) // Tracks the user that has reported (and generally created) this activity. 
@@ -12,7 +12,7 @@ mixin
 - activities:relatedTo (REFERENCE) * // Related entities like persons, orgs or documents
 - activities:parentUid (STRING) // Optionnal connect UID of a parent activity 
 
-+ activities (nt:unstructured) // Child activities
+// + activities (nt:unstructured) // Child activities
 
 // + activities:attachments (nt:unstructured) // an optional list of related documents
 // - activities:boundActivities (REFERENCE) * // Enable linking activities together, especially enable referencing of related tasks and workflows.
@@ -63,10 +63,10 @@ mixin
 - activities:assignedTo (String) // the dn of a group or a user
 - activities:dueDate (DATE) 
 - activities:wakeUpDate (DATE) 
+
 //various sub nodes
-// + activities:activities (nt:unstructured)
 // - activities:dependsOn (REFERENCE) *
-// + activities:tasks (nt:unstructured)
+// + tasks (nt:unstructured)
 
 
 // Gathers user feedback and votes (rates)
