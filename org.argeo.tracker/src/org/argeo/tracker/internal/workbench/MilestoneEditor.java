@@ -55,6 +55,7 @@ import org.argeo.tracker.internal.ui.dialogs.ConfigureTaskWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -136,6 +137,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 		private Link managerLk;
 		private Link overdueTasksLk;
 		private Link dueDateLk;
+		private Label dueDateLbl;
 		private Composite chartCmp;
 		private Label descLbl;
 
@@ -202,7 +204,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			overdueTasksLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
 			// Due Date
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Due Date");
+			dueDateLbl = TrackerUiUtils.createFormBoldLabel(tk, body, "Due Date");
 			dueDateLk = new Link(body, SWT.NONE);
 			dueDateLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
@@ -259,6 +261,14 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 					// Overdue tasks
 					Long nb = getOverdueTaskNumber();
 					overdueTasksLk.setText(nb < 0 ? "-" : nb.toString());
+
+					String closedOn = ConnectJcrUtils.getDateFormattedAsString(milestone,
+							ConnectNames.CONNECT_CLOSE_DATE, ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+
+					if (EclipseUiUtils.notEmpty(closedOn)) {
+						dueDateLbl.setText("Close date");
+						dueDateLk.setText(closedOn);
+					}
 
 					parent.layout(true, true);
 					section.setFocus();
@@ -384,8 +394,12 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 		private void addMainSectionMenu(SectionPart sectionPart) {
 			ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getSection());
 
-			String tooltip = "Edit the milestone main information";
-			Action action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
+			String tooltip = "Mark this milestone as closed";
+			Action action = new CloseMilestone(tooltip, TrackerImages.IMG_DESC_CLOSE, sectionPart);
+			toolBarManager.add(action);
+
+			tooltip = "Edit the milestone main information";
+			action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
 			toolBarManager.add(action);
 
 			tooltip = "Add the task to this milestone";
@@ -415,6 +429,36 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 				try {
 					if (dialog.open() == Window.OK && milestone.getSession().hasPendingChanges()) {
 						updatePartName();
+						sectionPart.getSection().setText(getMilestoneTitle());
+						sectionPart.refresh();
+						sectionPart.markDirty();
+						sectionPart.getSection().setFocus();
+					}
+				} catch (RepositoryException e) {
+					throw new TrackerException("Cannot check session state on " + milestone, e);
+				}
+			}
+		}
+
+		private class CloseMilestone extends Action {
+			private static final long serialVersionUID = -6798429720348536525L;
+			private final SectionPart sectionPart;
+
+			private CloseMilestone(String name, ImageDescriptor img, SectionPart sectionPart) {
+				super(name, img);
+				this.sectionPart = sectionPart;
+			}
+
+			@Override
+			public void run() {
+				Shell currShell = sectionPart.getSection().getShell();
+				boolean doIt = MessageDialog.openConfirm(currShell, "Confirm before close",
+						"Are you sure you want to close milestone ["
+								+ ConnectJcrUtils.get(milestone, Property.JCR_TITLE) + "] ?");
+				try {
+					if (doIt) {
+						milestone.setProperty(ConnectNames.CONNECT_CLOSE_DATE, new GregorianCalendar());
+						milestone.setProperty(ConnectNames.CONNECT_CLOSED_BY, milestone.getSession().getUserID());
 						sectionPart.getSection().setText(getMilestoneTitle());
 						sectionPart.refresh();
 						sectionPart.markDirty();
@@ -558,7 +602,14 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			String pname = ConnectJcrUtils.get(project, Property.JCR_TITLE);
 			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
 		}
-		return "#" + id + " " + name;
+		String title = "#" + id + " " + name;
+		String closedBy = ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_CLOSED_BY);
+		String closedOn = ConnectJcrUtils.getDateFormattedAsString(milestone, ConnectNames.CONNECT_CLOSE_DATE,
+				ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+
+		if (EclipseUiUtils.notEmpty(closedOn))
+			title += " closed on " + closedOn + " by " + getUserAdminService().getUserDisplayName(closedBy);
+		return title;
 	}
 
 	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {

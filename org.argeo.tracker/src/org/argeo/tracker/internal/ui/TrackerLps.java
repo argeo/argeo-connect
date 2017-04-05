@@ -68,24 +68,24 @@ public class TrackerLps {
 		private static final long serialVersionUID = 8003688506253830216L;
 
 		private final String propName;
-		
-		public DateLabelProvider(String propName){
+
+		public DateLabelProvider(String propName) {
 			this.propName = propName;
 		}
-		
+
 		@Override
 		public String getText(Object element) {
 			Node milestone = (Node) element;
 			String dateStr = "";
 			try {
 				if (milestone.hasProperty(propName))
-					dateStr = ConnectJcrUtils.getDateFormattedAsString(milestone, propName,
-							SIMPLE_DATE_PATTERN);
+					dateStr = ConnectJcrUtils.getDateFormattedAsString(milestone, propName, SIMPLE_DATE_PATTERN);
+				else if (ConnectNames.CONNECT_CLOSE_DATE.equals(propName))
+					dateStr = " Open ";
 				else
 					dateStr = " - ";
 			} catch (RepositoryException e) {
-				throw new TrackerException("Cannot retrieve "+ propName
-						+ " date for " + milestone, e);
+				throw new TrackerException("Cannot retrieve " + propName + " date for " + milestone, e);
 			}
 			return dateStr;
 		}
