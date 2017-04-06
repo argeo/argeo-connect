@@ -3,11 +3,15 @@ package org.argeo.tracker.internal.workbench;
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionManager;
 
 import org.argeo.activities.ActivitiesService;
@@ -17,9 +21,11 @@ import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.workbench.parts.IStatusLineProvider;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
@@ -38,7 +44,8 @@ import org.eclipse.ui.forms.editor.FormEditor;
  * Base Editor for a tracker entity. Centralise some methods to ease business
  * specific development
  */
-public abstract class AbstractTrackerEditor extends FormEditor implements CmsEditable, Refreshable {
+public abstract class AbstractTrackerEditor extends FormEditor
+		implements CmsEditable, Refreshable, IStatusLineProvider {
 	private static final long serialVersionUID = -6765842363698806619L;
 
 	/* DEPENDENCY INJECTION */
@@ -53,6 +60,8 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	// Context
 	private Session session;
 	private Node node;
+
+	private final static DateFormat df = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
@@ -85,6 +94,28 @@ public abstract class AbstractTrackerEditor extends FormEditor implements CmsEdi
 	}
 
 	protected abstract void addPages();
+
+	@Override
+	public String getStatusLineMessage() {
+		Node currNode = getNode();
+		StringBuilder builder = new StringBuilder();
+		try {
+			if (currNode.isNodeType(NodeType.MIX_TITLE)) {
+				builder.append(ConnectJcrUtils.get(currNode, Property.JCR_TITLE)).append(" - ");
+			}
+			if (currNode.isNodeType(NodeType.MIX_LAST_MODIFIED)) {
+				builder.append("Last updated on ");
+				builder.append(df.format(currNode.getProperty(Property.JCR_LAST_MODIFIED).getDate().getTime()));
+				builder.append(", by ");
+				String lstModByDn = currNode.getProperty(Property.JCR_LAST_MODIFIED_BY).getString();
+				builder.append(userAdminService.getUserDisplayName(lstModByDn));
+				builder.append(". ");
+			}
+			return builder.toString();
+		} catch (RepositoryException re) {
+			throw new ConnectException("Unable to create last " + "modified message for " + currNode, re);
+		}
+	}
 
 	// Exposes
 	protected Node getNode() {

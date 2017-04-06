@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.RemoteJcrUtils;
 import org.argeo.connect.util.XPathUtils;
+import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeUtils;
 
@@ -43,9 +44,17 @@ public interface AppService {
 			if (parent == null)
 				parent = srcNode.getSession().getNode("/" + getBaseRelPath(nodeType));
 
-			//  TODO check duplicate
-			createdNode = parent.addNode(relPath); // JcrUtils.mkdirs(parent, relPath);
-			
+			// TODO check duplicate
+			String parRelPath = ConnectJcrUtils.parentRelPath(relPath);
+
+			Node tmpParent = null;
+			if (EclipseUiUtils.isEmpty(parRelPath))
+				tmpParent = parent;
+			else
+				tmpParent = JcrUtils.mkdirs(parent, parRelPath);
+
+			createdNode = tmpParent.addNode(ConnectJcrUtils.lastRelPathElement(relPath));
+
 			RemoteJcrUtils.copy(srcNode, createdNode, true);
 			createdNode.addMixin(nodeType);
 			JcrUtils.updateLastModified(createdNode);
@@ -72,13 +81,14 @@ public interface AppService {
 	 */
 	default public Node saveEntity(Node entity, boolean publish) {
 		try {
-			if (entity.getSession().hasPendingChanges()) {
+			Session session = entity.getSession();
+			if (session.hasPendingChanges()) {
 				JcrUtils.updateLastModified(entity);
-				entity.getSession().save();
+				session.save();
 			}
 			if (entity.isNodeType(NodeType.MIX_VERSIONABLE))
 				// TODO check if some changes happened since last checkpoint
-				entity.getSession().getWorkspace().getVersionManager().checkpoint(entity.getPath());
+				session.getWorkspace().getVersionManager().checkpoint(entity.getPath());
 			return entity;
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot save " + entity, e);

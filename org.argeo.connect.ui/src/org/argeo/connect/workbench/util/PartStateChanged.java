@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
+import org.argeo.connect.workbench.parts.IStatusLineProvider;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
@@ -72,9 +73,9 @@ public class PartStateChanged implements IPartListener, IStartup {
 			esp.setCurrentItemEditingState(false, true);
 
 		// Update the status bar
-		if (part instanceof AbstractConnectEditor) {
+		if (part instanceof IStatusLineProvider) {
 			IStatusLineManager manager = ((IEditorPart) part).getEditorSite().getActionBars().getStatusLineManager();
-			manager.setMessage(((AbstractConnectEditor) part).getLastModifiedMessage());
+			manager.setMessage(((IStatusLineProvider) part).getStatusLineMessage());
 		}
 	}
 

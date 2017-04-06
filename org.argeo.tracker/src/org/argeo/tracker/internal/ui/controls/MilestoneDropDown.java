@@ -19,6 +19,7 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerTypes;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 
 /** Simple DropDown that displays the list of milestones for this project */
@@ -31,7 +32,7 @@ public class MilestoneDropDown extends ConnectAbstractDropDown {
 	private Map<String, Node> filteredMilestones;
 
 	public MilestoneDropDown(Session session, Text text, boolean onlyOpenMilestons) {
-		super(text);
+		super(text, SWT.NONE, true);
 		this.session = session;
 		this.onlyOpenMilestons = onlyOpenMilestons;
 		init();
@@ -41,6 +42,7 @@ public class MilestoneDropDown extends ConnectAbstractDropDown {
 		this.project = project;
 		populateMilestoneList();
 	}
+	
 
 	public void resetMilestone(Node milestone) {
 		if (milestone != null)

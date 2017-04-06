@@ -28,10 +28,10 @@ import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.UserNameLP;
@@ -51,7 +51,6 @@ import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.controls.RepartitionChart;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureMilestoneWizard;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureTaskWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
@@ -402,7 +401,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
 			toolBarManager.add(action);
 
-			tooltip = "Add the task to this milestone";
+			tooltip = "Add a task to this milestone";
 			action = new AddTask(sectionPart.getSection().getShell(), tooltip, TrackerImages.IMG_DESC_ADD);
 			toolBarManager.add(action);
 
@@ -481,33 +480,17 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 
 			@Override
 			public void run() {
-				Session tmpSession = null;
-				try {
-					AppService as = getAppService();
-					tmpSession = milestone.getSession().getRepository().login();
-					Node draftTask = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_TASK);
-					draftTask.setProperty(TrackerNames.TRACKER_PROJECT_UID,
-							ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID));
-					draftTask.setProperty(TrackerNames.TRACKER_MILESTONE_UID,
-							ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_UID));
+				Session session = ConnectJcrUtils.getSession(project);
+				String mainMixin = TrackerTypes.TRACKER_MILESTONE;
+				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
+				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
+				String propName2 = TrackerNames.TRACKER_MILESTONE_UID;
+				String value2 = ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_UID);
 
-					ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getTrackerService(),
-							draftTask);
-
-					WizardDialog dialog = new WizardDialog(shell, wizard);
-					if (dialog.open() == Window.OK) {
-						String issueBasePath = as.getBaseRelPath(TrackerTypes.TRACKER_TASK);
-						Node parent = tmpSession.getNode("/" + issueBasePath);
-						Node task = as.publishEntity(parent, TrackerTypes.TRACKER_TASK, draftTask);
-						task = as.saveEntity(task, false);
-						milestone.getSession().refresh(true);
-						refreshViewer(filterTxt.getText());
-					}
-				} catch (RepositoryException e1) {
-					throw new TrackerException("Unable to create issue on " + project, e1);
-				} finally {
-					JcrUtils.logoutQuietly(tmpSession);
-				}
+				String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, session, getTrackerService(),
+						getAppWorkbenchService(), mainMixin, propName1, value1, propName2, value2);
+				if (EclipseUiUtils.notEmpty(pathCreated))
+					refreshViewer(filterTxt.getText());
 			}
 		}
 	}

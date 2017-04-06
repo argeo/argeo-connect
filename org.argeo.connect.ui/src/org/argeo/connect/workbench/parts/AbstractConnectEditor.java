@@ -62,7 +62,8 @@ import org.eclipse.ui.services.ISourceProviderService;
  * cycle of the JCR session that is bound to it. It provides no UI layout except
  * from the header with some buttons.
  */
-public abstract class AbstractConnectEditor extends EditorPart implements CmsEditable, Refreshable {
+public abstract class AbstractConnectEditor extends EditorPart
+		implements CmsEditable, Refreshable, IStatusLineProvider {
 	private final static Log log = LogFactory.getLog(AbstractConnectEditor.class);
 
 	/* DEPENDENCY INJECTION */
@@ -447,6 +448,10 @@ public abstract class AbstractConnectEditor extends EditorPart implements CmsEdi
 	 */
 	protected boolean canSave() {
 		return true;
+	}
+
+	public String getStatusLineMessage() {
+		return getLastModifiedMessage();
 	}
 
 	public String getLastModifiedMessage() {

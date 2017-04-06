@@ -15,11 +15,13 @@ import org.argeo.connect.AppService;
  */
 public interface TrackerService extends AppService {
 
-	/** Simply configure an IT Project node */
-	public Node configureItProject(Node project, String title, String description, String managerId,
-			String counterpartyGroupId) throws RepositoryException;
 
 	public void configureCustomACL(Node node);
+
+
+	/** Simply configure an IT Project node */
+	public void configureItProject(Node itProject, String title, String description, String managerId,
+			String counterpartyGroupId) throws RepositoryException;
 
 	/**
 	 * 

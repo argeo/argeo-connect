@@ -148,31 +148,6 @@ public class TrackerServiceImpl implements TrackerService {
 		return false;
 	}
 
-	/** No check is done to see if a similar project already exists */
-	@Override
-	public Node configureItProject(Node draftProject, String title, String description, String managerId,
-			String counterpartyGroupId) throws RepositoryException {
-		draftProject.setProperty(TrackerNames.TRACKER_CP_GROUP_ID, counterpartyGroupId);
-		draftProject.setProperty(Property.JCR_TITLE, title);
-		draftProject.setProperty(Property.JCR_DESCRIPTION, description);
-		JcrUtils.mkdirs(draftProject, TrackerNames.TRACKER_DATA, NodeType.NT_FOLDER);
-		JcrUtils.mkdirs(draftProject, TrackerNames.TRACKER_SPEC, CmsTypes.CMS_TEXT);
-		JcrUtils.mkdirs(draftProject, TrackerNames.TRACKER_MILESTONES);
-		JcrUtils.mkdirs(draftProject, TrackerNames.TRACKER_ISSUES);
-
-		// // Nodes must be saved before the rights are assigned.
-		// if (project.getSession().hasPendingChanges())
-		// project.getSession().save();
-		//
-		// // TODO refine privileges for client group
-		// JcrUtils.addPrivilege(project.getSession(), project.getPath(),
-		// counterpartyGroupId, Privilege.JCR_READ);
-		// JcrUtils.addPrivilege(project.getSession(), issuesParent.getPath(),
-		// counterpartyGroupId, Privilege.JCR_ALL);
-		// session.save();
-		return draftProject;
-	}
-
 	@Override
 	public void configureCustomACL(Node node) {
 		try {
@@ -190,7 +165,36 @@ public class TrackerServiceImpl implements TrackerService {
 			throw new TrackerException("Cannot onfigure ACL on" + node, re);
 		}
 	}
+	
+	/** No check is done to see if a similar project already exists */
+	@Override
+	public void configureItProject(Node itProject, String title, String description, String managerId,
+			String counterpartyGroupId) throws RepositoryException {
+		itProject.setProperty(TrackerNames.TRACKER_CP_GROUP_ID, counterpartyGroupId);
+		itProject.setProperty(Property.JCR_TITLE, title);
+		itProject.setProperty(Property.JCR_DESCRIPTION, description);
+		JcrUtils.mkdirs(itProject, TrackerNames.TRACKER_DATA, NodeType.NT_FOLDER);
+		JcrUtils.mkdirs(itProject, TrackerNames.TRACKER_SPEC, CmsTypes.CMS_TEXT);
+		JcrUtils.mkdirs(itProject, TrackerNames.TRACKER_MILESTONES);
+		JcrUtils.mkdirs(itProject, TrackerNames.TRACKER_ISSUES);
+		
+		if (itProject.getSession().hasPendingChanges())
+			JcrUtils.updateLastModified(itProject);
+	}
 
+
+	public void configureProject(Node project, String title, String description, String managerId)
+			throws RepositoryException {
+		ConnectJcrUtils.setJcrProperty(project, JCR_TITLE, STRING, title);
+		ConnectJcrUtils.setJcrProperty(project, JCR_DESCRIPTION, STRING, description);
+		// TODO check if users are really existing
+		ConnectJcrUtils.setJcrProperty(project, TrackerNames.TRACKER_MANAGER, STRING, managerId);
+
+		if (project.getSession().hasPendingChanges())
+			JcrUtils.updateLastModified(project);
+	}
+
+	
 	@Override
 	public void configureTask(Node task, Node project, Node milestone, String title, String description,
 			String managerId) throws RepositoryException {
@@ -201,8 +205,11 @@ public class TrackerServiceImpl implements TrackerService {
 					milestone.getProperty(ConnectNames.CONNECT_UID).getString());
 		else if (task.hasProperty(TrackerNames.TRACKER_MILESTONE_UID))
 			task.getProperty(TrackerNames.TRACKER_MILESTONE_UID).remove();
-
+		
 		activitiesService.setTaskDefaultStatus(task, TrackerTypes.TRACKER_TASK);
+		
+		if (task.getSession().hasPendingChanges())
+			JcrUtils.updateLastModified(task);
 	}
 
 	@Override
@@ -233,6 +240,9 @@ public class TrackerServiceImpl implements TrackerService {
 		}
 		if (componentIds != null && !componentIds.isEmpty())
 			issue.setProperty(TrackerNames.TRACKER_COMPONENT_IDS, componentIds.toArray(new String[0]));
+		
+		if (issue.getSession().hasPendingChanges())
+		JcrUtils.updateLastModified(issue);
 	}
 
 	@Override
@@ -249,6 +259,9 @@ public class TrackerServiceImpl implements TrackerService {
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_MANAGER, STRING, managerId);
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_DEFAULT_ASSIGNEE, STRING, defaultAssigneeId);
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_TARGET_DATE, DATE, targetDate);
+		
+		if (milestone.getSession().hasPendingChanges())
+			JcrUtils.updateLastModified(milestone);
 	}
 
 	@Override
@@ -260,6 +273,9 @@ public class TrackerServiceImpl implements TrackerService {
 			ConnectJcrUtils.setJcrProperty(version, JCR_TITLE, STRING, id);
 		ConnectJcrUtils.setJcrProperty(version, JCR_DESCRIPTION, STRING, description);
 		ConnectJcrUtils.setJcrProperty(version, TrackerNames.TRACKER_RELEASE_DATE, DATE, releaseDate);
+		
+		if (version.getSession().hasPendingChanges())
+			JcrUtils.updateLastModified(version);
 	}
 
 	@Override
@@ -353,13 +369,6 @@ public class TrackerServiceImpl implements TrackerService {
 		}
 	}
 
-	public void configureProject(Node project, String title, String description, String managerId)
-			throws RepositoryException {
-		ConnectJcrUtils.setJcrProperty(project, JCR_TITLE, STRING, title);
-		ConnectJcrUtils.setJcrProperty(project, JCR_DESCRIPTION, STRING, description);
-		// TODO check if users are really existing
-		ConnectJcrUtils.setJcrProperty(project, TrackerNames.TRACKER_MANAGER, STRING, managerId);
-	}
 
 	private final static DateFormat isobdf = new SimpleDateFormat(TrackerUiConstants.isoDateBasicFormat);
 

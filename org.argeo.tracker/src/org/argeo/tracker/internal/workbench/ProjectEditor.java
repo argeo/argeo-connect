@@ -26,8 +26,10 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.ColumnDefinition;
@@ -43,7 +45,6 @@ import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.controls.RepartitionChart;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureProjectWizard;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureTaskWizard;
 import org.argeo.tracker.ui.MilestoneListComposite;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
@@ -265,6 +266,10 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			Action action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
 			toolBarManager.add(action);
 
+			tooltip = "Add a milestone to this project";
+			action = new AddMilestone(sectionPart.getSection().getShell(), tooltip, TrackerImages.IMG_DESC_ADD);
+			toolBarManager.add(action);
+
 			toolBarManager.update(true);
 		}
 
@@ -297,6 +302,33 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				}
 			}
 		}
+
+		private class AddMilestone extends Action {
+			private static final long serialVersionUID = 5112793747049604434L;
+			final Shell shell;
+
+			private AddMilestone(Shell shell, String name, ImageDescriptor img) {
+				super(name, img);
+				this.shell = shell;
+			}
+
+			@Override
+			public void run() {
+				String mainMixin = TrackerTypes.TRACKER_MILESTONE;
+				Session referenceSession = ConnectJcrUtils.getSession(project);
+				AppService appService = getAppService();
+				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
+				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
+				String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, referenceSession, appService,
+						getAppWorkbenchService(), mainMixin, propName1, value1);
+				if (EclipseUiUtils.notEmpty(pathCreated)) {
+					Node created = ConnectJcrUtils.getNode(referenceSession, pathCreated);
+					ConnectWorkbenchUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(created));
+				}
+			}
+		}
+
 	}
 
 	private class TasksPage extends FormPage implements ArgeoNames {
@@ -384,30 +416,16 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-
-					Session tmpSession = null;
-					try {
-						AppService as = getAppService();
-						tmpSession = project.getSession().getRepository().login();
-						Node draftTask = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_TASK);
-						draftTask.setProperty(TrackerNames.TRACKER_PROJECT_UID,
-								ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID));
-						ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getTrackerService(),
-								draftTask);
-						WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
-						if (dialog.open() == Window.OK) {
-							String taskBasePath = as.getBaseRelPath(TrackerTypes.TRACKER_TASK);
-							Node parent = tmpSession.getNode("/" + taskBasePath);
-							Node task = getTrackerService().publishEntity(parent, TrackerTypes.TRACKER_TASK, draftTask);
-							task = getTrackerService().saveEntity(task, false);
-							project.getSession().refresh(true);
-							refreshViewer(filterTxt.getText());
-						}
-					} catch (RepositoryException e1) {
-						throw new TrackerException("Unable to create issue on " + project, e1);
-					} finally {
-						JcrUtils.logoutQuietly(tmpSession);
-					}
+					String mainMixin = TrackerTypes.TRACKER_TASK;
+					Session referenceSession = ConnectJcrUtils.getSession(project);
+					Shell shell = addBtn.getShell();
+					AppService appService = getAppService();
+					String propName1 = TrackerNames.TRACKER_PROJECT_UID;
+					String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
+					String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, referenceSession, appService,
+							getAppWorkbenchService(), mainMixin, propName1, value1);
+					if (EclipseUiUtils.notEmpty(pathCreated))
+						refreshViewer(filterTxt.getText());
 				}
 			});
 		}

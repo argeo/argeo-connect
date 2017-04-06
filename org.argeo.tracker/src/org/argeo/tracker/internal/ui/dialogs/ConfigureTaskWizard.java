@@ -9,6 +9,8 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.activities.ActivitiesNames;
+import org.argeo.activities.ActivitiesService;
+import org.argeo.activities.ActivitiesTypes;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.widgets.AssignedToDropDown;
 import org.argeo.connect.ui.widgets.DateText;
@@ -18,6 +20,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
+import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.tracker.internal.ui.controls.ProjectDropDown;
@@ -46,6 +49,7 @@ public class ConfigureTaskWizard extends Wizard {
 
 	private final UserAdminService userAdminService;
 	private final TrackerService trackerService;
+	private final ActivitiesService activitiesService;
 	private final Node project;
 	private final Node task;
 
@@ -65,9 +69,11 @@ public class ConfigureTaskWizard extends Wizard {
 	protected Combo priorityCmb;
 	protected Text descTxt;
 
-	public ConfigureTaskWizard(UserAdminService userAdminService, TrackerService trackerService, Node draftEntity) {
+	public ConfigureTaskWizard(UserAdminService userAdminService, ActivitiesService activitiesService,
+			TrackerService trackerService, Node draftEntity) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
+		this.activitiesService = activitiesService;
 		this.task = draftEntity;
 		project = TrackerUtils.getRelatedProject(trackerService, task);
 		chosenProject = project;
@@ -83,7 +89,7 @@ public class ConfigureTaskWizard extends Wizard {
 	public boolean performFinish() {
 		String msg = null;
 		String title = titleTxt.getText();
-		if (chosenProject == null)
+		if (chosenProject == null && ConnectJcrUtils.isNodeType(task, TrackerTypes.TRACKER_TASK))
 			msg = "Please pick up a project";
 		else if (isEmpty(title))
 			msg = "Please give at least a title";
@@ -94,8 +100,23 @@ public class ConfigureTaskWizard extends Wizard {
 		}
 
 		try {
-			trackerService.configureTask(task, chosenProject, milestoneDD.getChosenMilestone(), title,
-					descTxt.getText(), assignedToDD.getText()); // priority,
+			// TODO implement a cleaner overwritting of default
+			// ActivitiesService task creation
+			if (ConnectJcrUtils.isNodeType(task, ActivitiesTypes.ACTIVITIES_TASK)
+					&& !ConnectJcrUtils.isNodeType(task, TrackerTypes.TRACKER_TASK)) {
+				if (chosenProject == null)
+					// simple task
+					activitiesService.configureTask(task, ActivitiesTypes.ACTIVITIES_TASK, title, descTxt.getText(),
+							assignedToDD.getText());
+
+				else {
+					task.addMixin(TrackerTypes.TRACKER_TASK);
+					trackerService.configureTask(task, chosenProject, milestoneDD.getChosenMilestone(), title,
+							descTxt.getText(), assignedToDD.getText()); // priority,
+				}
+			} else
+				trackerService.configureTask(task, chosenProject, milestoneDD.getChosenMilestone(), title,
+						descTxt.getText(), assignedToDD.getText()); // priority,
 
 			// Additionnal values
 			String importanceStr = TrackerUtils.getKeyByValue(TrackerUtils.MAPS_ISSUE_IMPORTANCES,

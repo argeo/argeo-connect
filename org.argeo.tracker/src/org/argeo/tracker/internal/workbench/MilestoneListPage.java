@@ -18,6 +18,7 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
@@ -36,7 +37,6 @@ import org.argeo.tracker.core.VersionComparator;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureMilestoneWizard;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureVersionWizard;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -89,7 +89,8 @@ public class MilestoneListPage extends FormPage implements ArgeoNames {
 	private boolean canEdit() {
 		boolean isDataAdmin = CurrentUser.isInRole(NodeConstants.ROLE_DATA_ADMIN);
 		String managerId = ConnectJcrUtils.get(project, TrackerNames.TRACKER_MANAGER);
-		// FIXME known issue: manager ID is uid=... where as CurrentUser own role is UID=... 
+		// FIXME known issue: manager ID is uid=... where as CurrentUser own
+		// role is UID=...
 		boolean isManager = (EclipseUiUtils.notEmpty(managerId)
 				&& (CurrentUser.getUsername().equalsIgnoreCase(managerId)) || CurrentUser.isInRole(managerId));
 		return isDataAdmin || isManager;
@@ -194,30 +195,15 @@ public class MilestoneListPage extends FormPage implements ArgeoNames {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				Session session = ConnectJcrUtils.getSession(project);
+				String mainMixin = TrackerTypes.TRACKER_MILESTONE;
+				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
+				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
 
-				Session tmpSession = null;
-				try {
-					tmpSession = project.getSession().getRepository().login();
-					Node draftMilestone = trackerService.createDraftEntity(tmpSession, TrackerTypes.TRACKER_MILESTONE);
-					draftMilestone.setProperty(TrackerNames.TRACKER_PROJECT_UID,
-							ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID));
-					ConfigureMilestoneWizard wizard = new ConfigureMilestoneWizard(userAdminService, trackerService,
-							draftMilestone);
-					WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
-					if (dialog.open() == Window.OK) {
-						Node parent = tmpSession
-								.getNode("/" + trackerService.getBaseRelPath(TrackerTypes.TRACKER_MILESTONE));
-						Node milestone = trackerService.publishEntity(parent, TrackerTypes.TRACKER_MILESTONE,
-								draftMilestone);
-						milestone = trackerService.saveEntity(milestone, false);
-						project.getSession().refresh(true);
-						refreshViewer(filterTxt.getText());
-					}
-				} catch (RepositoryException e1) {
-					throw new TrackerException("Unable to create issue on " + project, e1);
-				} finally {
-					JcrUtils.logoutQuietly(tmpSession);
-				}
+				String pathCreated = ConnectUiUtils.createAndConfigureEntity(addBtn.getShell(), session, trackerService,
+						appWorkbenchService, mainMixin, propName1, value1);
+				if (EclipseUiUtils.notEmpty(pathCreated))
+					refreshViewer(filterTxt.getText());
 			}
 		});
 	}

@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.ArgeoJcrException;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -128,10 +129,10 @@ public class ConnectJcrUtils {
 	// PATH MANAGEMENT
 	/** Simply retrieves the parent rel path of the provided relative path */
 	public static String parentRelPath(String relPath) {
-		// Remove trailing slash ?
-		// String pathT = relPath;
-		// if (pathT.charAt(pathT.length() - 1) == '/')
-		// pathT = pathT.substring(0, pathT.length() - 2);
+		// Remove trailing slash
+		if (relPath.charAt(relPath.length() - 1) == '/')
+			relPath = relPath.substring(0, relPath.length() - 2);
+		
 		int index = relPath.lastIndexOf('/');
 		if (index < 0)
 			return "";
@@ -139,6 +140,19 @@ public class ConnectJcrUtils {
 			return relPath.substring(0, index);
 	}
 
+	/** The last element of a relative path. */
+	public static String lastRelPathElement(String relPath) {
+		// Remove trailing slash
+		if (relPath.charAt(relPath.length() - 1) == '/')
+			relPath = relPath.substring(0, relPath.length() - 2);
+
+		int index = relPath.lastIndexOf('/');
+		if (index < 0)
+			return relPath;
+		return relPath.substring(index + 1);
+	}
+
+	
 	public static boolean canEdit(Node entity) {
 		boolean canEdit = false;
 		try {

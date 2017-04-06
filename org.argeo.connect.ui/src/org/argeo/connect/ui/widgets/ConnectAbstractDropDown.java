@@ -75,7 +75,7 @@ public abstract class ConnectAbstractDropDown {
 	 * event
 	 */
 	protected boolean refreshOnFocus() {
-		return false;
+		return refreshOnFocus;
 	}
 
 	public String getText() {

@@ -224,7 +224,8 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 					String dueDateStr = ConnectJcrUtils.getDateFormattedAsString(task,
 							ActivitiesNames.ACTIVITIES_DUE_DATE, ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
-					dueDateLk.setText(dueDateStr);
+					if (EclipseUiUtils.notEmpty(dueDateStr))
+						dueDateLk.setText(dueDateStr);
 
 					reporterLk.setText(TrackerUtils.getCreationLabel(getUserAdminService(), task));
 
@@ -442,7 +443,8 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		@Override
 		public void run() {
 			Shell currShell = sectionPart.getSection().getShell();
-			ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getTrackerService(), task);
+			ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getActivitiesService(),
+					getTrackerService(), task);
 			WizardDialog dialog = new WizardDialog(currShell, wizard);
 			try {
 				if (dialog.open() == Window.OK && task.getSession().hasPendingChanges()) {
@@ -495,7 +497,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		String id = ConnectJcrUtils.get(getNode(), TrackerNames.TRACKER_ID);
 		String name = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
 		if (notEmpty(name)) {
-			Node project = TrackerUtils.getProjectFromChild(getNode());
+			Node project = TrackerUtils.getRelatedProject(getTrackerService(), getNode());
 			String pname = ConnectJcrUtils.get(project, Property.JCR_TITLE);
 			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
 		}

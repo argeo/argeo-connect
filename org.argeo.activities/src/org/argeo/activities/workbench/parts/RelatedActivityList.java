@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -254,16 +255,18 @@ public class RelatedActivityList extends LazyCTabControl {
 	}
 
 	private boolean createTask(Shell shell, Node relatedEntity) {
-		Session session = null;
+		Session tmpSession = null;
 		try {
-			session = relatedEntity.getSession().getRepository().login();
-			Node draftTask = activitiesService.createDraftEntity(session, ActivitiesTypes.ACTIVITIES_TASK);
-			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(userAdminService, activitiesService, draftTask);
-			List<Node> relatedTo = new ArrayList<Node>();
-			relatedTo.add(relatedEntity);
-			wizard.setRelatedTo(relatedTo);
+			tmpSession = relatedEntity.getSession().getRepository().login();
+			Node draftTask = activitiesService.createDraftEntity(tmpSession, ActivitiesTypes.ACTIVITIES_TASK);
+			Wizard wizard = systemWorkbenchService.getCreationWizard(draftTask);
+
 			WizardDialog dialog = new WizardDialog(shell, wizard);
 			if (dialog.open() == Window.OK) {
+				List<Node> relatedTo = new ArrayList<Node>();
+				relatedTo.add(tmpSession.getNode(relatedEntity.getPath()));
+				ConnectJcrUtils.setMultipleReferences(draftTask, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
+
 				Node newTask = activitiesService.publishEntity(null, ActivitiesTypes.ACTIVITIES_TASK, draftTask);
 				activitiesService.saveEntity(newTask, false);
 				relatedEntity.getSession().refresh(true);
@@ -272,26 +275,27 @@ public class RelatedActivityList extends LazyCTabControl {
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create task node related to " + relatedEntity, e);
 		} finally {
-			JcrUtils.logoutQuietly(session);
+			JcrUtils.logoutQuietly(tmpSession);
 		}
 		return false;
 	}
 
 	private boolean createActivity(Node relatedEntity, String type, String title, String desc) {
-		Session session = null;
+		Session tmpSession = null;
 		try {
-			session = relatedEntity.getSession().getRepository().login();
+			tmpSession = relatedEntity.getSession().getRepository().login();
 			List<Node> relatedTo = new ArrayList<Node>();
-			relatedTo.add(relatedEntity);
-			Node draftActivity = activitiesService.createDraftEntity(session, type);
+			relatedTo.add(tmpSession.getNode(relatedEntity.getPath()));
+			Node draftActivity = activitiesService.createDraftEntity(tmpSession, type);
 			activitiesService.configureActivity(draftActivity, type, title, desc, relatedTo);
 			Node createdActivity = activitiesService.publishEntity(null, type, draftActivity);
-			activitiesService.saveEntity(createdActivity, true);
+			activitiesService.saveEntity(createdActivity, false);
+			relatedEntity.getSession().refresh(true);
 			return true;
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create activity node related to " + relatedEntity, e);
 		} finally {
-			JcrUtils.logoutQuietly(session);
+			JcrUtils.logoutQuietly(tmpSession);
 		}
 	}
 }

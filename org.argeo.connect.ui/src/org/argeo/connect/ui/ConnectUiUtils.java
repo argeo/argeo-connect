@@ -1,14 +1,24 @@
 package org.argeo.connect.ui;
 
 import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
+import org.argeo.connect.AppService;
+import org.argeo.connect.ConnectException;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.JcrUtils;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 /** Helper methods for various Connect UIs */
@@ -38,8 +48,8 @@ public class ConnectUiUtils {
 	}
 
 	/**
-	 * Calls <code>ConnectJcrUtils.get(Node node, String propName)</code> method and
-	 * replace any '&' by its html encoding '&amp;' to avoid
+	 * Calls <code>ConnectJcrUtils.get(Node node, String propName)</code> method
+	 * and replace any '&' by its html encoding '&amp;' to avoid
 	 * <code>IllegalArgumentException</code> while rendering html read only
 	 * snippets
 	 */
@@ -62,7 +72,7 @@ public class ConnectUiUtils {
 	// for (Control child : oldChildren)
 	// child.dispose();
 	// }
-	
+
 	public static boolean isNumbers(String content) {
 		int length = content.length();
 		for (int i = 0; i < length; i++) {
@@ -89,8 +99,7 @@ public class ConnectUiUtils {
 	 * Shortcut to refresh the value of a <code>Text</code> given a Node and a
 	 * property Name
 	 */
-	public static String refreshTextWidgetValue(Text text, Node entity,
-			String propName) {
+	public static String refreshTextWidgetValue(Text text, Node entity, String propName) {
 		String tmpStr = ConnectJcrUtils.get(entity, propName);
 		if (EclipseUiUtils.notEmpty(tmpStr))
 			text.setText(tmpStr);
@@ -102,8 +111,36 @@ public class ConnectUiUtils {
 	 * insure they are displayed in SWT.Link controls
 	 */
 	public static String replaceAmpersandforSWTLink(String value) {
-		value = value.replaceAll("&",
-				"&&");
+		value = value.replaceAll("&", "&&");
 		return value;
+	}
+
+	public static String createAndConfigureEntity(Shell shell, Session referenceSession, AppService appService,
+			AppWorkbenchService appWorkbenchService, String mainMixin, String... additionnalProps) {
+
+		Session tmpSession = null;
+		Session mainSession = null;
+		try {
+			tmpSession = referenceSession.getRepository().login();
+			Node draftNode = appService.createDraftEntity(tmpSession, mainMixin);
+			Wizard wizard = appWorkbenchService.getCreationWizard(draftNode);
+			WizardDialog dialog = new WizardDialog(shell, wizard);
+			if (dialog.open() == Window.OK) {
+				String parentPath = "/" + appService.getBaseRelPath(mainMixin);
+				mainSession = referenceSession.getRepository().login();
+				Node parent = mainSession.getNode(parentPath);
+				Node task = appService.publishEntity(parent, mainMixin, draftNode);
+				task = appService.saveEntity(task, false);
+				referenceSession.refresh(true);
+				return task.getPath();
+			}
+			return null;
+		} catch (RepositoryException e1) {
+			throw new ConnectException(
+					"Unable to create " + mainMixin + " entity with session " + referenceSession.toString(), e1);
+		} finally {
+			JcrUtils.logoutQuietly(tmpSession);
+			JcrUtils.logoutQuietly(mainSession);
+		}
 	}
 }
