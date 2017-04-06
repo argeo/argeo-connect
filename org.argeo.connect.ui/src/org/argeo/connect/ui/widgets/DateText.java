@@ -133,6 +133,7 @@ public class DateText extends Composite {
 			newValueStr = dateFormat.format(cal.getTime());
 		if (!newValueStr.equals(dateTxt.getText()))
 			dateTxt.setText(newValueStr);
+		calendar = cal;
 	}
 
 	private Calendar parseDate(String newVal) throws ParseException {

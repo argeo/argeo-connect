@@ -258,26 +258,34 @@ public class ConfigureTaskWizard extends Wizard {
 			gd.heightHint = 150;
 			descTxt.setLayoutData(gd);
 
+			Node milestone = null;
 			// Initialise
 			try {
 				if (task.hasProperty(Property.JCR_TITLE))
 					titleTxt.setText(task.getProperty(Property.JCR_TITLE).getString());
 				if (task.hasProperty(Property.JCR_DESCRIPTION))
 					descTxt.setText(task.getProperty(Property.JCR_DESCRIPTION).getString());
-				if (task.hasProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO))
-					assignedToDD.resetDN(task.getProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO).getString());
-
 				if (project != null)
 					projectTxt.setText(ConnectJcrUtils.get(project, Property.JCR_TITLE));
-				if (task.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE))
-					dueDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate());
+
 				// if
 				// (task.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE))
 				// wakeUpDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate());
 				String muid = ConnectJcrUtils.get(task, TrackerNames.TRACKER_MILESTONE_UID);
-				if (EclipseUiUtils.notEmpty(muid))
-					milestoneDD.resetMilestone(
-							trackerService.getEntityByUid(ConnectJcrUtils.getSession(task), null, muid));
+				if (EclipseUiUtils.notEmpty(muid)) {
+					milestone = trackerService.getEntityByUid(ConnectJcrUtils.getSession(task), null, muid);
+					milestoneDD.resetMilestone(milestone);
+				}
+
+				if (task.hasProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO))
+					assignedToDD.resetDN(task.getProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO).getString());
+				else if (milestone != null && milestone.hasProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE))
+					assignedToDD.resetDN(milestone.getProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE).getString());
+
+				if (task.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE))
+					dueDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate());
+				else if (milestone != null && milestone.hasProperty(TrackerNames.TRACKER_TARGET_DATE))
+					dueDateCmp.setText(milestone.getProperty(TrackerNames.TRACKER_TARGET_DATE).getDate());
 
 				Long importance = ConnectJcrUtils.getLongValue(task, TrackerNames.TRACKER_IMPORTANCE);
 				if (importance != null) {
@@ -294,10 +302,36 @@ public class ConfigureTaskWizard extends Wizard {
 				throw new TrackerException("Cannot initialise widgets with existing data on " + task, e);
 				// TODO: handle exception
 			}
+
+			milestoneTxt.addFocusListener(new FocusAdapter() {
+				private static final long serialVersionUID = 1719432159240562984L;
+
+				@Override
+				public void focusLost(FocusEvent event) {
+					Node milestone = milestoneDD.getChosenMilestone();
+					if (milestone != null) {
+						try {
+							if (EclipseUiUtils.isEmpty(assignedToDD.getText())
+									&& milestone.hasProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE))
+								assignedToDD.resetDN(
+										milestone.getProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE).getString());
+							if (dueDateCmp.getCalendar() == null
+									&& milestone.hasProperty(TrackerNames.TRACKER_TARGET_DATE))
+								dueDateCmp.setText(milestone.getProperty(TrackerNames.TRACKER_TARGET_DATE).getDate());
+						} catch (RepositoryException e) {
+							throw new TrackerException("Cannot set default values for milestone " + milestone, e);
+						}
+					}
+				}
+			});
+
 			// Don't forget this.
 			if (project == null) {
 				setControl(projectTxt);
 				projectTxt.setFocus();
+			} else if (milestone == null) {
+				setControl(milestoneTxt);
+				milestoneTxt.setFocus();
 			} else {
 				setControl(titleTxt);
 				titleTxt.setFocus();

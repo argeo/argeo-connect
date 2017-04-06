@@ -123,6 +123,9 @@ public class ConnectUiUtils {
 		try {
 			tmpSession = referenceSession.getRepository().login();
 			Node draftNode = appService.createDraftEntity(tmpSession, mainMixin);
+			for (int i = 0; i < additionnalProps.length - 1; i += 2) {
+				draftNode.setProperty(additionnalProps[i], additionnalProps[i + 1]);
+			}
 			Wizard wizard = appWorkbenchService.getCreationWizard(draftNode);
 			WizardDialog dialog = new WizardDialog(shell, wizard);
 			if (dialog.open() == Window.OK) {

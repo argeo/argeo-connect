@@ -481,7 +481,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			@Override
 			public void run() {
 				Session session = ConnectJcrUtils.getSession(project);
-				String mainMixin = TrackerTypes.TRACKER_MILESTONE;
+				String mainMixin = TrackerTypes.TRACKER_TASK;
 				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
 				String propName2 = TrackerNames.TRACKER_MILESTONE_UID;
