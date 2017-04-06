@@ -207,6 +207,10 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node parent = primaryChild.getParent();
 			String thisNodeType = peopleService.getMainNodeType(primaryChild);
 
+			if (PeopleTypes.PEOPLE_CONTACT.equals(thisNodeType))
+				throw new PeopleException("Unknown node type for "+ primaryChild
+						+ ", cannot be maked as primary.\n Mixin for this node: "+primaryChild.getMixinNodeTypes().toString());
+			
 			if (isPrimary(parentNode, primaryChild)) {
 				primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, false);
 				return true;
