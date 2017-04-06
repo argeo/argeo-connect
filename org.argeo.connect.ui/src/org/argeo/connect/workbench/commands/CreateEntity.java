@@ -37,28 +37,41 @@ public class CreateEntity extends AbstractHandler {
 	private SystemWorkbenchService systemWorkbenchService;
 
 	public Object execute(final ExecutionEvent event) throws ExecutionException {
+
+		// FIXME : Known bug (or limitation?) in Jackrabbit: When a user does
+		// not have JCR_READ privileges on the root of the workspace, trying to
+		// save a session that have transient issues in distinct subtrees of the
+		// workspace will fail
+
 		Session draftSession = null;
+		Session mainSession = null;
 		String jcrId = null;
 
 		String nodeType = event.getParameter(PARAM_TARGET_NODE_TYPE);
 		try {
 			draftSession = repository.login();
+			mainSession = repository.login();
+
 			Node tmpNode = systemAppService.createDraftEntity(draftSession, nodeType);
 			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);
 			WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");
 			if (dialog.open() == WizardDialog.OK) {
-				// Why did we use a new session?
-				// mainSession = repository.login();
+				
+				mainSession = repository.login();
 
 				// By default, all entities are stored at the same place,
 				// depending on their types.
 				// We will enhance this in the future, typically to enable
 				// (partially) private entities
-				Node parent = draftSession.getNode("/" + systemAppService.getBaseRelPath(nodeType));
-				// Node parent = mainSession.getNode("/" +
-				// systemAppService.getBaseRelPath(nodeType));
+				Node parent = mainSession.getNode("/" + systemAppService.getBaseRelPath(nodeType));
 				Node newNode = systemAppService.publishEntity(parent, nodeType, tmpNode);
+
+				// Enable testing right issue for user that does not
+				// have read privileges on root.
+				// Session session = newNode.getSession();
+				// newNode.getSession().save();
+
 				newNode = systemAppService.saveEntity(newNode, false);
 				jcrId = newNode.getIdentifier();
 			} else {
@@ -71,6 +84,7 @@ public class CreateEntity extends AbstractHandler {
 			throw new ConnectException("Cannot create " + nodeType + "entity", e);
 		} finally {
 			JcrUtils.logoutQuietly(draftSession);
+			JcrUtils.logoutQuietly(mainSession);
 		}
 
 		if (jcrId != null)

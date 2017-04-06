@@ -18,6 +18,7 @@ public interface ActivitiesTypes {
 	String ACTIVITIES_REVIEW = "activities:review";
 	String ACTIVITIES_CHAT = "activities:chat";
 	String ACTIVITIES_TWEET = "activities:tweet";
+	String ACTIVITIES_CONNECTION = "activities:connection";
 	String ACTIVITIES_BLOG_POST = "activities:blogPost";
 	String ACTIVITIES_RATE = "activities:rate";
 	// base mixin

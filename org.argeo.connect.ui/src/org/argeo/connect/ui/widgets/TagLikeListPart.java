@@ -11,8 +11,6 @@ import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
@@ -25,6 +23,7 @@ import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -48,7 +47,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
  */
 public class TagLikeListPart extends Composite {
 	private static final long serialVersionUID = -312141685147619814L;
-	private final static Log log = LogFactory.getLog(TagLikeListPart.class);
+	// private final static Log log = LogFactory.getLog(TagLikeListPart.class);
 
 	// UI Context
 	private final AbstractConnectEditor editor;
@@ -67,7 +66,7 @@ public class TagLikeListPart extends Composite {
 	private final Session session;
 
 	// Cache to trace newly created versionable tag like objects.
-	private final List<String> createdTagPath = new ArrayList<String>();
+	// private final List<String> createdTagPath = new ArrayList<String>();
 
 	/**
 	 * 
@@ -119,28 +118,31 @@ public class TagLikeListPart extends Composite {
 		@Override
 		public void commit(boolean onSave) {
 
-			boolean isEmpty = createdTagPath.isEmpty();
-			if (onSave && !isEmpty) {
-				try {
-					Session session = taggable.getSession();
-					if (session.hasPendingChanges()) {
-						log.warn("Session have been saved before commit of newly created tags when saving node "
-								+ taggable);
-						session.save();
-					}
-					VersionManager manager = session.getWorkspace().getVersionManager();
-					for (String path : createdTagPath) {
-						Node newTag = session.getNode(path);
-						if (newTag.isCheckedOut()) {
-							manager.checkin(path);
-						}
-					}
-					createdTagPath.clear();
-				} catch (RepositoryException re) {
-					throw new ConnectException("Error while committing tagrefreshing tag like list for " + taggable,
-							re);
-				}
-			}
+			// boolean isEmpty = createdTagPath.isEmpty();
+			// if (onSave && !isEmpty) {
+			// try {
+			// Session session = taggable.getSession();
+			// if (session.hasPendingChanges()) {
+			// log.warn("Session have been saved before commit of newly created
+			// tags when saving node "
+			// + taggable);
+			// session.save();
+			// }
+			// VersionManager manager =
+			// session.getWorkspace().getVersionManager();
+			// for (String path : createdTagPath) {
+			// Node newTag = session.getNode(path);
+			// if (newTag.isCheckedOut()) {
+			// manager.checkin(path);
+			// }
+			// }
+			// createdTagPath.clear();
+			// } catch (RepositoryException re) {
+			// throw new ConnectException("Error while committing tagrefreshing
+			// tag like list for " + taggable,
+			// re);
+			// }
+			// }
 			super.commit(onSave);
 		}
 
@@ -168,18 +170,21 @@ public class TagLikeListPart extends Composite {
 							@Override
 							public void widgetSelected(final SelectionEvent event) {
 								Node tag = resourcesService.getRegisteredTag(tagParent, tagValue);
-								try {
-									if (createdTagPath.contains(tag.getPath())) {
-										String msg = "This category is still in a draft state.\n"
-												+ "Please save first.";
-										MessageDialog.openInformation(parentCmp.getShell(), "Forbidden action", msg);
-									} else
-										CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-												OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
-								} catch (RepositoryException e) {
-									throw new ConnectException("unable to get path for resource tag node " + tag
-											+ " while editing " + taggable, e);
-								}
+								// try {
+								// if (createdTagPath.contains(tag.getPath())) {
+								// String msg = "This category is still in a
+								// draft state.\n"
+								// + "Please save first.";
+								// MessageDialog.openInformation(parentCmp.getShell(),
+								// "Forbidden action", msg);
+								// } else
+								CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+										OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
+								// } catch (RepositoryException e) {
+								// throw new ConnectException("unable to get
+								// path for resource tag node " + tag
+								// + " while editing " + taggable, e);
+								// }
 							}
 						});
 
@@ -276,6 +281,32 @@ public class TagLikeListPart extends Composite {
 		});
 	}
 
+	private Node registerNewTag(String newTag) {
+		// We must create the tag in a distinct session, they are stored in a
+		// distinct subtree of the workspace as the business object.
+		// thus session.save will fail for user that does not have read
+		// privileges on the root node of the workspace (~ all users except
+		// sysadmin...)
+		Session tagSession = null;
+		try {
+			Session session = taggable.getSession();
+			tagSession = session.getRepository().login();
+			Node registered = resourcesService.registerTag(tagSession, tagId, newTag);
+			tagSession.save();
+			if (registered.isNodeType(NodeType.MIX_VERSIONABLE)) {
+				VersionManager manager = session.getWorkspace().getVersionManager();
+				manager.checkpoint(registered.getPath());
+			}
+			session.refresh(true);
+			Node newTagNode = session.getNode(registered.getPath());
+			return newTagNode;
+		} catch (RepositoryException re) {
+			throw new ConnectException("Unable to set " + taggablePropName + " on " + taggable, re);
+		} finally {
+			JcrUtils.logoutQuietly(tagSession);
+		}
+	}
+
 	private void addTag(Shell shell, final AbstractFormPart part, String newTag) {
 		String msg = null;
 
@@ -289,10 +320,7 @@ public class TagLikeListPart extends Composite {
 					// Ask end user if we create a new tag
 					msg = "\"" + newTag + "\" is not yet registered.\n Are you sure you want to create it?";
 					if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
-						registered = resourcesService.registerTag(session, tagId, newTag);
-						if (registered.isNodeType(NodeType.MIX_VERSIONABLE))
-							createdTagPath.add(registered.getPath());
-
+						registered = registerNewTag(newTag);
 					} else
 						return;
 				} else {

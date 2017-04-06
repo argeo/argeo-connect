@@ -12,9 +12,12 @@ public interface ActivitiesNames {
 	String ACTIVITIES_REPORTED_BY = "activities:reportedBy";
 	String ACTIVITIES_RELATED_TO = "activities:relatedTo";
 	String ACTIVITIES_PARENT_UID = "activities:parentUid";
-	// String ACTIVITIES_BOUND_ACTIVITIES = "activities:boundActivities";
-	String ACTIVITIES_ATTACHEMENTS = "activities:attachments";
 	String ACTIVITIES_ACTIVITY_DATE = "activities:activityDate";
+
+	// String ACTIVITIES_BOUND_ACTIVITIES = "activities:boundActivities";
+	String ACTIVITIES_ATTACHEMENTS = "attachments";
+
+	String ACTIVITIES_FROM_IP = "activities:fromIp"; // (String) to be validated
 
 	String ACTIVITIES_ACTIVITIES = "activities";
 
@@ -37,7 +40,7 @@ public interface ActivitiesNames {
 	// Management of user rating
 	String ACTIVITIES_POLL_NAME = "activities:pollName";
 	String ACTIVITIES_CACHE_AVG_RATE = "activities:cacheAvgRate";
-	String ACTIVITIES_RATES = "activities:rates";
+	String ACTIVITIES_RATES = "rates";
 	String ACTIVITIES_RATE = "activities:rate"; // (LONG)
 
 }

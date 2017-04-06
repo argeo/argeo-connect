@@ -14,7 +14,7 @@ mixin
 
 // + activities (nt:unstructured) // Child activities
 
-// + activities:attachments (nt:unstructured) // an optional list of related documents
+// + attachments (nt:unstructured) // an optional list of related documents
 // - activities:boundActivities (REFERENCE) * // Enable linking activities together, especially enable referencing of related tasks and workflows.
 
 
@@ -49,6 +49,10 @@ mixin
 [activities:tweet] > activities:activity
 mixin 
 
+[activities:connection] > activities:activity
+mixin 
+// - activities:fromIp (String) // to be validated 
+
 [activities:blogPost] > activities:activity
 mixin 
 
@@ -75,4 +79,4 @@ mixin
 - activities:pollName (STRING) // a specific name. Useful?
 - activities:cacheAvgRate (DOUBLE) IGNORE // caches the current average of the children rates
 // Contains the child rating activities
-// + activities:rates (nt:unstructured)
+// + rates (nt:unstructured)
