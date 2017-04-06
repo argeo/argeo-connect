@@ -50,14 +50,12 @@ public class CreateEntity extends AbstractHandler {
 		String nodeType = event.getParameter(PARAM_TARGET_NODE_TYPE);
 		try {
 			draftSession = repository.login();
-			mainSession = repository.login();
 
 			Node tmpNode = systemAppService.createDraftEntity(draftSession, nodeType);
 			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);
 			WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
 			dialog.setTitle("New...");
 			if (dialog.open() == WizardDialog.OK) {
-				
 				mainSession = repository.login();
 
 				// By default, all entities are stored at the same place,
@@ -66,11 +64,6 @@ public class CreateEntity extends AbstractHandler {
 				// (partially) private entities
 				Node parent = mainSession.getNode("/" + systemAppService.getBaseRelPath(nodeType));
 				Node newNode = systemAppService.publishEntity(parent, nodeType, tmpNode);
-
-				// Enable testing right issue for user that does not
-				// have read privileges on root.
-				// Session session = newNode.getSession();
-				// newNode.getSession().save();
 
 				newNode = systemAppService.saveEntity(newNode, false);
 				jcrId = newNode.getIdentifier();
