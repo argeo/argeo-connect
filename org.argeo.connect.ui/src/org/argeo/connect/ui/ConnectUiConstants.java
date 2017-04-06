@@ -44,6 +44,8 @@ public interface ConnectUiConstants {
 	// browsing using links in table / label / trees
 	String HREF_SEPARATOR = "/";
 
+	int SEARCH_DEFAULT_LIMIT = 100;
+	
 	// Various types for list label providers
 	int LIST_TYPE_OVERVIEW_TITLE = 0;
 	// public final static int LIST_TYPE_OVERVIEW_DETAIL = 1;

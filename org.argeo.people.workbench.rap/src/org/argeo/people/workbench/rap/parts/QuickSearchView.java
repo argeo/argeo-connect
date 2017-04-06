@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -194,7 +195,7 @@ public class QuickSearchView extends ViewPart implements Refreshable {
 			long begin = System.currentTimeMillis();
 			Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
 
-			// xpathQuery.setLimit(TrackerUiConstants.SEARCH_DEFAULT_LIMIT);
+			xpathQuery.setLimit(ConnectUiConstants.SEARCH_DEFAULT_LIMIT);
 			QueryResult result = xpathQuery.execute();
 
 			NodeIterator nit = result.getNodes();
