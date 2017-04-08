@@ -113,7 +113,7 @@ public abstract class AbstractConnectContextMenu extends Shell {
 		}
 	}
 
-	protected abstract void performAction(String actionId);
+	protected abstract boolean performAction(String actionId);
 
 	protected abstract boolean aboutToShow(Control source, Point location, IStructuredSelection selection);
 

@@ -203,36 +203,30 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 
-					String targetMilestone = null;
-					List<String> versionIds = null;
-					List<String> componentIds = null;
-					if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_COMPONENT)) {
-						componentIds = new ArrayList<>();
-						componentIds.add(officeID);
-					} else if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_VERSION)) {
-						versionIds = new ArrayList<>();
-						versionIds.add(officeID);
-						targetMilestone = officeID;
-					}
-
 					Session tmpSession = null;
+					Session targetSession = null;
 					try {
 						AppService as = getAppService();
 						tmpSession = project.getSession().getRepository().login();
 						Node draftIssue = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_ISSUE);
 						draftIssue.setProperty(TrackerNames.TRACKER_PROJECT_UID,
 								ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID));
-						if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_MILESTONE))
-							draftIssue.setProperty(TrackerNames.TRACKER_MILESTONE_UID,
-									ConnectJcrUtils.get(category, ConnectNames.CONNECT_UID));
+
+						if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_COMPONENT))
+							ConnectJcrUtils.setMultiValueStringPropFromString(draftIssue,
+									TrackerNames.TRACKER_COMPONENT_IDS, officeID, "; ");
+						else if (ConnectJcrUtils.isNodeType(category, TrackerTypes.TRACKER_VERSION))
+							ConnectJcrUtils.setMultiValueStringPropFromString(draftIssue,
+									TrackerNames.TRACKER_VERSION_IDS, officeID, "; ");
 
 						ConfigureIssueWizard wizard = new ConfigureIssueWizard(getUserAdminService(),
 								getTrackerService(), draftIssue);
 
 						WizardDialog dialog = new WizardDialog(addBtn.getShell(), wizard);
 						if (dialog.open() == Window.OK) {
+							targetSession = category.getSession().getRepository().login();
 							String issueBasePath = as.getBaseRelPath(TrackerTypes.TRACKER_ISSUE);
-							Node parent = tmpSession.getNode("/" + issueBasePath);
+							Node parent = targetSession.getNode("/" + issueBasePath);
 							Node issue = as.publishEntity(parent, TrackerTypes.TRACKER_ISSUE, draftIssue);
 							issue = as.saveEntity(issue, false);
 							project.getSession().refresh(true);
@@ -242,8 +236,8 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 						throw new TrackerException("Unable to create issue on " + project, e1);
 					} finally {
 						JcrUtils.logoutQuietly(tmpSession);
+						JcrUtils.logoutQuietly(targetSession);
 					}
-
 				}
 			});
 		}

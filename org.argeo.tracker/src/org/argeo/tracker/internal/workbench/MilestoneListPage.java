@@ -311,7 +311,7 @@ public class MilestoneListPage extends FormPage implements ArgeoNames {
 									project.getSession().save();
 							}
 						} else if (node.isNodeType(TrackerTypes.TRACKER_VERSION)) {
-							ConfigureVersionWizard wizard = new ConfigureVersionWizard(trackerService, project, node);
+							ConfigureVersionWizard wizard = new ConfigureVersionWizard(trackerService, node);
 							WizardDialog dialog = new WizardDialog(shell, wizard);
 							if (dialog.open() == Window.OK) {
 								if (project.getSession().hasPendingChanges()) {

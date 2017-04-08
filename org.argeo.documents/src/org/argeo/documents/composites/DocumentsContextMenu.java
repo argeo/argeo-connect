@@ -94,7 +94,7 @@ public class DocumentsContextMenu extends AbstractConnectContextMenu {
 	}
 
 	@Override
-	protected void performAction(String actionId) {
+	protected boolean performAction(String actionId) {
 		switch (actionId) {
 		case ACTION_ID_CREATE_FOLDER:
 			createFolder();
@@ -122,6 +122,7 @@ public class DocumentsContextMenu extends AbstractConnectContextMenu {
 			// return "Download as zip archive";
 		}
 		browser.setFocus();
+		return false;
 	}
 
 	@Override

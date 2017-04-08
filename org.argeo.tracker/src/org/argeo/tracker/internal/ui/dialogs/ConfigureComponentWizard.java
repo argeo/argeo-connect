@@ -6,15 +6,11 @@ import static org.argeo.connect.util.ConnectJcrUtils.get;
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 import static org.argeo.tracker.TrackerNames.TRACKER_PROJECT_UID;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -38,81 +34,65 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
-/** Dialog to simply configure a new milestone or version */
-public class ConfigureVersionWizard extends Wizard implements ModifyListener {
+/** Dialog to simply configure a component */
+public class ConfigureComponentWizard extends Wizard implements ModifyListener {
 	private static final long serialVersionUID = -8365425809976445458L;
 
 	// Context
+	private final TrackerService trackerService;
 	private final Node project;
-	private Node version;
+	private final Node component;
 
-	// UI objects
-	private ProjectDropDown projectDD;
-	private Text idTxt;
-	private DateText releaseDateCmp;
-	private Text descTxt;
-
-	// Ease implementation
 	private Node chosenProject;
 
-	public ConfigureVersionWizard(TrackerService trackerService, Node version) {
-		this.version = version;
-		project = TrackerUtils.getRelatedProject(trackerService, version);
+	// UI controls
+	private Text idTxt;
+	private ProjectDropDown projectDD;
+	private Text descTxt;
+
+	public ConfigureComponentWizard(TrackerService trackerService, Node component) {
+		this.trackerService = trackerService;
+		this.component = component;
+		project = TrackerUtils.getRelatedProject(trackerService, component);
 		chosenProject = project;
 	}
 
 	@Override
 	public void addPages() {
-		setWindowTitle("Create a new version");
-		ConfigureVersionPage page = new ConfigureVersionPage("Main page");
-		addPage(page);
+		setWindowTitle("Create a new component");
+		addPage(new MainPage("Main page"));
 	}
 
 	@Override
 	public boolean performFinish() {
-		String msg = null;
-		Calendar now = new GregorianCalendar();
-		now.add(Calendar.DAY_OF_YEAR, 1);
-
 		String id = idTxt.getText();
-
-		if (chosenProject == null)
-			msg = "Please pick up a project";
-		else if (EclipseUiUtils.isEmpty(id))
-			MessageDialog.openError(getShell(), "Compulsory ID", "Please define the version ID");
-//		else if (TrackerUtils.getVersionById(project, id) != null)
-//			msg = "A version with ID " + id + " already exists, cannot create";
-		else if (releaseDateCmp.getCalendar() == null)
-			msg = "Release date is compulsory, please define it";
-		else if (releaseDateCmp.getCalendar().after(now))
-			msg = "A release date can only be defined when the release "
-					+ "has been done, and thus must be now or in the past.";
-
-		if (msg != null) {
-			MessageDialog.openError(getShell(), "Unvalid information", msg);
+		if (EclipseUiUtils.isEmpty(id)) {
+			MessageDialog.openError(getShell(), "Compulsory ID", "Please define the component ID");
 			return false;
+			// } else if (TrackerUtils.getComponentById(project, getId()) !=
+			// null) {
+			// MessageDialog.openError(getShell(), "Already existing component",
+			// "A component with ID " + getId() + " already exists, cannot
+			// create");
+			// return false;
 		}
-
 		try {
-			ConnectJcrUtils.setJcrProperty(version, TRACKER_PROJECT_UID, STRING, get(chosenProject, CONNECT_UID));
-			ConnectJcrUtils.setJcrProperty(version, TrackerNames.TRACKER_ID, PropertyType.STRING, id);
-			ConnectJcrUtils.setJcrProperty(version, Property.JCR_TITLE, PropertyType.STRING, id);
-			ConnectJcrUtils.setJcrProperty(version, Property.JCR_DESCRIPTION, PropertyType.STRING, descTxt.getText());
-			ConnectJcrUtils.setJcrProperty(version, TrackerNames.TRACKER_RELEASE_DATE, PropertyType.DATE,
-					releaseDateCmp.getCalendar());
+			ConnectJcrUtils.setJcrProperty(component, TRACKER_PROJECT_UID, STRING, get(chosenProject, CONNECT_UID));
+			ConnectJcrUtils.setJcrProperty(component, TrackerNames.TRACKER_ID, PropertyType.STRING, id);
+			ConnectJcrUtils.setJcrProperty(component, Property.JCR_TITLE, PropertyType.STRING, id);
+			ConnectJcrUtils.setJcrProperty(component, Property.JCR_DESCRIPTION, PropertyType.STRING, descTxt.getText());
 
-			if (version.getSession().hasPendingChanges())
-				JcrUtils.updateLastModified(version);
+			if (component.getSession().hasPendingChanges())
+				JcrUtils.updateLastModified(component);
 		} catch (RepositoryException e1) {
-			throw new TrackerException("Unable to create version with ID " + id + " on " + project, e1);
+			throw new TrackerException("Unable to create component with ID " + getId() + " on " + project, e1);
 		}
-
 		return true;
 	}
 
 	@Override
 	public boolean canFinish() {
-		if (EclipseUiUtils.isEmpty(idTxt.getText()))
+		if (EclipseUiUtils.isEmpty(getId()))
 			return false;
 		else
 			return true;
@@ -123,14 +103,13 @@ public class ConfigureVersionWizard extends Wizard implements ModifyListener {
 		return true;
 	}
 
-	protected class ConfigureVersionPage extends WizardPage {
+	protected class MainPage extends WizardPage {
 		private static final long serialVersionUID = 3061153468301727903L;
-
 		private Text projectTxt;
 
-		public ConfigureVersionPage(String pageName) {
+		public MainPage(String pageName) {
 			super(pageName);
-			setMessage("Please complete below information");
+			setMessage("Please complete belowinformation.");
 		}
 
 		public void createControl(Composite parent) {
@@ -143,7 +122,7 @@ public class ConfigureVersionWizard extends Wizard implements ModifyListener {
 			projectTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			if (project == null) {
-				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(version), projectTxt, false);
+				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(component), projectTxt, false);
 
 				projectTxt.addFocusListener(new FocusAdapter() {
 					private static final long serialVersionUID = 1L;
@@ -162,31 +141,21 @@ public class ConfigureVersionWizard extends Wizard implements ModifyListener {
 			} else
 				projectTxt.setEditable(false);
 
-			createLabel(parent, "ID", SWT.CENTER);
+			createLabel(parent, "Name", SWT.CENTER);
 			idTxt = new Text(parent, SWT.BORDER);
-			idTxt.setMessage("Major.Minor.Micro: 2.1.37");
+			idTxt.setMessage("A short name for this component, that is also used as ID within this project");
 			idTxt.setLayoutData(EclipseUiUtils.fillWidth());
-			idTxt.addModifyListener(ConfigureVersionWizard.this);
-
-			// Label lbl =
-			createLabel(parent, "Release Date ", SWT.CENTER);
-			// gd = new GridData();
-			// gd.horizontalIndent = 15;
-			// lbl.setLayoutData(gd);
-			releaseDateCmp = new DateText(parent, SWT.NO_FOCUS);
-			releaseDateCmp.setToolTipText("The release date of the version to create,\n "
-					+ "typically in the case of reporting a bug for a version that was not yet listed.");
+			idTxt.addModifyListener(ConfigureComponentWizard.this);
 
 			createLabel(parent, "Description", SWT.TOP);
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			GridData gd = EclipseUiUtils.fillAll();
 			gd.heightHint = 150;
 			descTxt.setLayoutData(gd);
-			descTxt.setMessage("An optional description for this version");
+			descTxt.setMessage("An optional description for this component");
 
-			String id = ConnectJcrUtils.get(version, TrackerNames.TRACKER_ID);
-			String desc = ConnectJcrUtils.get(version, Property.JCR_DESCRIPTION);
-			Calendar releaseDate = ConnectJcrUtils.getDateValue(version, TrackerNames.TRACKER_RELEASE_DATE);
+			String id = ConnectJcrUtils.get(component, TrackerNames.TRACKER_ID);
+			String desc = ConnectJcrUtils.get(component, Property.JCR_DESCRIPTION);
 			if (project != null)
 				projectTxt.setText(ConnectJcrUtils.get(project, Property.JCR_TITLE));
 
@@ -196,8 +165,6 @@ public class ConfigureVersionWizard extends Wizard implements ModifyListener {
 			}
 			if (EclipseUiUtils.notEmpty(desc))
 				descTxt.setText(desc);
-			if (releaseDate != null)
-				releaseDateCmp.setText(releaseDate);
 
 			if (project == null) {
 				setControl(projectTxt);
@@ -207,10 +174,18 @@ public class ConfigureVersionWizard extends Wizard implements ModifyListener {
 				idTxt.setFocus();
 			} else
 				setControl(idTxt);
+
 		}
 	}
 
-	// local helpers
+	private String getId() {
+		return idTxt.getText();
+	}
+
+	private String getDescription() {
+		return descTxt.getText();
+	}
+
 	private Label createLabel(Composite parent, String label, int verticalAlign) {
 		Label lbl = new Label(parent, SWT.NONE);
 		lbl.setText(label);

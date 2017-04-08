@@ -54,7 +54,8 @@ public class TrackerServiceImpl implements TrackerService {
 			throws RepositoryException {
 		Node createdNode = null;
 		if (TrackerTypes.TRACKER_ISSUE.equals(nodeType) || TrackerTypes.TRACKER_TASK.equals(nodeType)
-				|| TrackerTypes.TRACKER_MILESTONE.equals(nodeType) || TrackerTypes.TRACKER_VERSION.equals(nodeType)) {
+				|| TrackerTypes.TRACKER_COMPONENT.equals(nodeType) || TrackerTypes.TRACKER_MILESTONE.equals(nodeType)
+				|| TrackerTypes.TRACKER_VERSION.equals(nodeType)) {
 			Session session = parent.getSession();
 			Node project = getEntityByUid(session, parent.getPath(), get(srcNode, TRACKER_PROJECT_UID));
 			if (TrackerTypes.TRACKER_ISSUE.equals(nodeType) || TrackerTypes.TRACKER_TASK.equals(nodeType))
@@ -109,6 +110,10 @@ public class TrackerServiceImpl implements TrackerService {
 			String title = entity.getProperty(Property.JCR_TITLE).getString();
 			String name = cleanTitle(title);
 			return TrackerNames.TRACKER_MILESTONES + "/" + name;
+		} else if (entity.isNodeType(TrackerTypes.TRACKER_COMPONENT)) {
+			String title = entity.getProperty(Property.JCR_TITLE).getString();
+			String name = cleanTitle(title);
+			return TrackerNames.TRACKER_COMPONENTS + "/" + name;
 		}
 		return null;
 	}
@@ -165,7 +170,7 @@ public class TrackerServiceImpl implements TrackerService {
 			throw new TrackerException("Cannot onfigure ACL on" + node, re);
 		}
 	}
-	
+
 	/** No check is done to see if a similar project already exists */
 	@Override
 	public void configureItProject(Node itProject, String title, String description, String managerId,
@@ -177,11 +182,10 @@ public class TrackerServiceImpl implements TrackerService {
 		JcrUtils.mkdirs(itProject, TrackerNames.TRACKER_SPEC, CmsTypes.CMS_TEXT);
 		JcrUtils.mkdirs(itProject, TrackerNames.TRACKER_MILESTONES);
 		JcrUtils.mkdirs(itProject, TrackerNames.TRACKER_ISSUES);
-		
+
 		if (itProject.getSession().hasPendingChanges())
 			JcrUtils.updateLastModified(itProject);
 	}
-
 
 	public void configureProject(Node project, String title, String description, String managerId)
 			throws RepositoryException {
@@ -194,7 +198,6 @@ public class TrackerServiceImpl implements TrackerService {
 			JcrUtils.updateLastModified(project);
 	}
 
-	
 	@Override
 	public void configureTask(Node task, Node project, Node milestone, String title, String description,
 			String managerId) throws RepositoryException {
@@ -205,9 +208,9 @@ public class TrackerServiceImpl implements TrackerService {
 					milestone.getProperty(ConnectNames.CONNECT_UID).getString());
 		else if (task.hasProperty(TrackerNames.TRACKER_MILESTONE_UID))
 			task.getProperty(TrackerNames.TRACKER_MILESTONE_UID).remove();
-		
+
 		activitiesService.setTaskDefaultStatus(task, TrackerTypes.TRACKER_TASK);
-		
+
 		if (task.getSession().hasPendingChanges())
 			JcrUtils.updateLastModified(task);
 	}
@@ -240,9 +243,9 @@ public class TrackerServiceImpl implements TrackerService {
 		}
 		if (componentIds != null && !componentIds.isEmpty())
 			issue.setProperty(TrackerNames.TRACKER_COMPONENT_IDS, componentIds.toArray(new String[0]));
-		
+
 		if (issue.getSession().hasPendingChanges())
-		JcrUtils.updateLastModified(issue);
+			JcrUtils.updateLastModified(issue);
 	}
 
 	@Override
@@ -259,7 +262,7 @@ public class TrackerServiceImpl implements TrackerService {
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_MANAGER, STRING, managerId);
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_DEFAULT_ASSIGNEE, STRING, defaultAssigneeId);
 		ConnectJcrUtils.setJcrProperty(milestone, TrackerNames.TRACKER_TARGET_DATE, DATE, targetDate);
-		
+
 		if (milestone.getSession().hasPendingChanges())
 			JcrUtils.updateLastModified(milestone);
 	}
@@ -273,7 +276,7 @@ public class TrackerServiceImpl implements TrackerService {
 			ConnectJcrUtils.setJcrProperty(version, JCR_TITLE, STRING, id);
 		ConnectJcrUtils.setJcrProperty(version, JCR_DESCRIPTION, STRING, description);
 		ConnectJcrUtils.setJcrProperty(version, TrackerNames.TRACKER_RELEASE_DATE, DATE, releaseDate);
-		
+
 		if (version.getSession().hasPendingChanges())
 			JcrUtils.updateLastModified(version);
 	}
@@ -368,7 +371,6 @@ public class TrackerServiceImpl implements TrackerService {
 			throw new ActivitiesException("Unable to get milestones for groups " + roles.toString());
 		}
 	}
-
 
 	private final static DateFormat isobdf = new SimpleDateFormat(TrackerUiConstants.isoDateBasicFormat);
 

@@ -65,9 +65,9 @@ public class ConfigureTaskWizard extends Wizard {
 	// TODO add wake up date management
 	// private DateText wakeUpDateCmp;
 
-	protected Combo importanceCmb;
-	protected Combo priorityCmb;
-	protected Text descTxt;
+	private Combo importanceCmb;
+	private Combo priorityCmb;
+	private Text descTxt;
 
 	public ConfigureTaskWizard(UserAdminService userAdminService, ActivitiesService activitiesService,
 			TrackerService trackerService, Node draftEntity) {
@@ -170,7 +170,7 @@ public class ConfigureTaskWizard extends Wizard {
 			// Project
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Project");
 			projectTxt = new Text(parent, SWT.BORDER);
-			projectTxt.setMessage("Choose relevant project");
+			projectTxt.setMessage("Choose a relevant project");
 			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			gd.horizontalSpan = 3;
 			projectTxt.setLayoutData(gd);
@@ -199,6 +199,7 @@ public class ConfigureTaskWizard extends Wizard {
 			// Target milestone
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Milestone");
 			Text milestoneTxt = new Text(parent, SWT.BORDER);
+			milestoneTxt.setMessage("Choose a milestone");
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 			milestoneTxt.setLayoutData(gd);
 			milestoneDD = new MilestoneDropDown(ConnectJcrUtils.getSession(task), milestoneTxt, false);
@@ -208,14 +209,14 @@ public class ConfigureTaskWizard extends Wizard {
 			// Title
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
-			titleTxt.setMessage("To be shown in the various lists");
+			titleTxt.setMessage("A precise and concise description of the task");
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			gd.horizontalSpan = 3;
 			titleTxt.setLayoutData(gd);
 
 			// Assigned to
-			Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
-					"Choose a group or person to manage this issue", 1);
+			Text assignedToTxt = createBoldLT(parent, "Assigned to", "Choose a group or a person",
+					"Pick up the group or person that will be responsible for doing this task", 1);
 			assignedToDD = new AssignedToDropDown(assignedToTxt, userAdminService, true, false);
 
 			// DUE DATE
@@ -300,7 +301,6 @@ public class ConfigureTaskWizard extends Wizard {
 
 			} catch (RepositoryException e) {
 				throw new TrackerException("Cannot initialise widgets with existing data on " + task, e);
-				// TODO: handle exception
 			}
 
 			milestoneTxt.addFocusListener(new FocusAdapter() {

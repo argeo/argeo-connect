@@ -119,7 +119,6 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 				ConnectJcrUtils.get(milestone, TrackerNames.TRACKER_PROJECT_UID));
 		milestoneUid = ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_UID);
 		try {
-
 			addPage(new MainPage(this));
 
 			if (isInRole(ROLE_ADMIN))
@@ -254,7 +253,8 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 						RepartitionChart coc = new RepartitionChart(chartCmp, SWT.NO_FOCUS);
 						twd.heightHint = CHART_HEIGHT;
 						coc.setLayoutData(EclipseUiUtils.fillAll());
-						coc.setInput("Open tasks by assignee", ot, CHART_WIDTH, CHART_HEIGHT);
+						coc.setInput("Repartition by assignee - " + getOpenTaskNumber() + " open tasks", ot,
+								CHART_WIDTH, CHART_HEIGHT);
 					}
 
 					// Overdue tasks
@@ -280,11 +280,26 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			return section;
 		}
 
-		private long getOverdueTaskNumber() {
+		private long getOpenTaskNumber() {
 			StringBuilder builder = new StringBuilder();
 			try {
 				builder.append(XPathUtils.descendantFrom(project.getPath()));
 				builder.append("//element(*, ").append(ActivitiesTypes.ACTIVITIES_TASK).append(")");
+				String milestoneCond = XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MILESTONE_UID, milestoneUid);
+				String notClosedCond = "not(@" + ConnectNames.CONNECT_CLOSE_DATE + ")";
+				builder.append("[").append(XPathUtils.localAnd(milestoneCond, notClosedCond)).append("]");
+				Query query = XPathUtils.createQuery(getSession(), builder.toString());
+				return query.execute().getNodes().getSize();
+			} catch (RepositoryException e) {
+				throw new ActivitiesException("Unable to get overdue tasks number for " + milestone);
+			}
+		}
+
+		private long getOverdueTaskNumber() {
+			StringBuilder builder = new StringBuilder();
+			try {
+				builder.append(XPathUtils.descendantFrom(project.getPath()));
+				builder.append("//element(*, ").append(TrackerTypes.TRACKER_ISSUE).append(")");
 
 				String milestoneCond = XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MILESTONE_UID, milestoneUid);
 
@@ -481,7 +496,8 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			@Override
 			public void run() {
 				Session session = ConnectJcrUtils.getSession(project);
-				String mainMixin = TrackerTypes.TRACKER_TASK;
+				String mainMixin = ConnectJcrUtils.isNodeType(project, TrackerTypes.TRACKER_IT_PROJECT)
+						? TrackerTypes.TRACKER_ISSUE : TrackerTypes.TRACKER_TASK;
 				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
 				String propName2 = TrackerNames.TRACKER_MILESTONE_UID;
@@ -580,12 +596,24 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 	private String getMilestoneTitle() {
 		String id = ConnectJcrUtils.get(getNode(), TrackerNames.TRACKER_ID);
 		String name = ConnectJcrUtils.get(getNode(), Property.JCR_TITLE);
-		if (notEmpty(name)) {
+
+		String title = null;
+		if (notEmpty(id) && notEmpty(id))
+			if (id.equals(name))
+				title = "v" + id;
+			else
+				title = "v" + id + "  aka " + name;
+		else if (notEmpty(id))
+			title = "v" + id;
+		else
+			title = name;
+
+		if (notEmpty(title)) {
 			Node project = TrackerUtils.getProjectFromChild(getNode());
 			String pname = ConnectJcrUtils.get(project, Property.JCR_TITLE);
-			name = name + (notEmpty(pname) ? " (" + pname + ")" : "");
+			title = title + (notEmpty(pname) ? " (" + pname + ")" : "");
 		}
-		String title = "#" + id + " " + name;
+
 		String closedBy = ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_CLOSED_BY);
 		String closedOn = ConnectJcrUtils.getDateFormattedAsString(milestone, ConnectNames.CONNECT_CLOSE_DATE,
 				ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);

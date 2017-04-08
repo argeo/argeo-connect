@@ -31,14 +31,14 @@ public class BookmarksContextMenu extends AbstractConnectContextMenu {
 		createControl();
 	}
 
-	protected void performAction(String actionId) {
+	protected boolean performAction(String actionId) {
 		switch (actionId) {
 		case ACTION_ID_DELETE_BOOKMARK:
-			deleteBookmark();
-			break;
+			return deleteBookmark();
+		// break;
 		case ACTION_ID_RENAME_BOOKMARK:
-			renameBookmark();
-			break;
+			return renameBookmark();
+		// break;
 		default:
 			throw new IllegalArgumentException("Unimplemented action " + actionId);
 		}
@@ -58,14 +58,14 @@ public class BookmarksContextMenu extends AbstractConnectContextMenu {
 		return true;
 	}
 
-	private void deleteBookmark() {
+	private boolean deleteBookmark() {
 		IStructuredSelection selection = ((IStructuredSelection) viewer.getSelection());
-		documentsUiService.deleteBookmark(getShell(), selection, bookmarkParent);
+		return documentsUiService.deleteBookmark(getShell(), selection, bookmarkParent);
 	}
 
-	private void renameBookmark() {
+	private boolean renameBookmark() {
 		IStructuredSelection selection = ((IStructuredSelection) viewer.getSelection());
-		documentsUiService.renameBookmark(selection);
+		return documentsUiService.renameBookmark(selection);
 	}
 
 	@Override

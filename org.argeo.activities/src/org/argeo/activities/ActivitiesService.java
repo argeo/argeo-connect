@@ -21,15 +21,6 @@ import org.argeo.connect.AppService;
 public interface ActivitiesService extends AppService {
 
 	/* ACTIVITIES */
-	// /**
-	// * Returns a canonical path for an activity parent only given a session.
-	// It
-	// * will return something of the form:
-	// * people:system/people:activities/Y2014/M01/D14/H12/myUser if myUser is
-	// the
-	// * id of the user that is currently logged in the JCR Session.
-	// **/
-	// public String getActivityParentCanonicalPath(Session session);
 
 	/**
 	 * Simply configures a simple activity using default manager (the current
@@ -74,44 +65,6 @@ public interface ActivitiesService extends AppService {
 	 */
 	public Node configureTask(Node task, String taskNodeType, String title, String description, String assignedTo)
 			throws RepositoryException;
-
-	// /**
-	// * Creates a new draft task with the given information. Reporter is by
-	// * default current logged in User
-	// *
-	// * @param session
-	// * @param title
-	// * @param description
-	// * @param assignedTo
-	// * @param relatedTo
-	// * @param dueDate
-	// * @param wakeUpDate
-	// * @return
-	// */
-	// public Node createDraftTask(Session session, String title, String
-	// description, String assignedTo,
-	// List<Node> relatedTo, Calendar dueDate, Calendar wakeUpDate) throws
-	// RepositoryException;
-	//
-	// /**
-	// * Creates a new draft task with the given information.
-	// *
-	// * @param session
-	// * @param reporterId
-	// * @param title
-	// * @param description
-	// * @param assignedTo
-	// * @param relatedTo
-	// * @param creationDate
-	// * @param dueDate
-	// * @param wakeUpDate
-	// * @return
-	// */
-	// public Node createDraftTask(Session session, String reporterId, String
-	// title, String description, String assignedTo,
-	// List<Node> relatedTo, Calendar creationDate, Calendar dueDate, Calendar
-	// wakeUpDate)
-	// throws RepositoryException;
 
 	/**
 	 * Creates a new draft task with the given information.

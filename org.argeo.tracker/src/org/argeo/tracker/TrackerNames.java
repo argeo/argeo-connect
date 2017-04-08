@@ -20,7 +20,7 @@ public interface TrackerNames {
 	String TRACKER_TARGET_DATE = "tracker:targetDate"; // "office:targetDate";
 
 	/* VERSION */
-	String TRACKER_RELEASE_DATE = "office:releaseDate";
+	String TRACKER_RELEASE_DATE = "tracker:releaseDate"; // "office:releaseDate";
 
 	/* ISSUE */
 

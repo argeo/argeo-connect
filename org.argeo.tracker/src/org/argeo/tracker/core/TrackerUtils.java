@@ -1,5 +1,6 @@
 package org.argeo.tracker.core;
 
+import static org.argeo.activities.ActivitiesNames.ACTIVITIES_DUE_DATE;
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
 import java.text.DateFormat;
@@ -7,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,8 +25,10 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
+import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
+import org.argeo.activities.ActivitiesTypes;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
@@ -319,7 +323,7 @@ public class TrackerUtils {
 
 			Map<String, Long> nodeCount = countAndLimit(result.getNodes(), ActivitiesNames.ACTIVITIES_ASSIGNED_TO,
 					maxSize);
-			Map<String, String> openTasks = new LinkedHashMap();
+			Map<String, String> openTasks = new LinkedHashMap<String, String>();
 			for (String key : nodeCount.keySet()) {
 				String dName;
 				if (OTHERS.equals(key) || UNKNOWN.equals(key))
@@ -352,7 +356,7 @@ public class TrackerUtils {
 			return nodeCount;
 
 		Map<String, Long> orderedCount = sortByValue(nodeCount);
-		Map<String, Long> limitedCount = new LinkedHashMap();
+		Map<String, Long> limitedCount = new LinkedHashMap<String, Long>();
 
 		int i = 0;
 		long otherCount = 0;
@@ -559,13 +563,14 @@ public class TrackerUtils {
 					.append(TrackerUtils.getPriorityLabel(issue)).append("] - ");
 
 			// milestone, version
-			String targetId = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_MILESTONE_ID);
-			if (notEmpty(targetId))
-				builder.append("<b>Target milestone: </b> ").append(targetId).append(" - ");
+			Node milestone = TrackerUtils.getMilestone(activityService, issue);
+			if (milestone != null)
+				builder.append("<b>Target milestone: </b> ").append(ConnectJcrUtils.get(milestone, Property.JCR_TITLE))
+						.append(" - ");
 			String versionId = ConnectJcrUtils.getMultiAsString(issue, TrackerNames.TRACKER_VERSION_IDS, ", ");
 			builder.append(" - ");
 			if (notEmpty(versionId))
-				builder.append("<b>Affected version: </b> ").append(versionId).append(" - ");
+				builder.append("<b>Affect version: </b> ").append(versionId).append(" - ");
 
 			// assigned to
 			if (activityService.isTaskDone(issue)) {
@@ -611,5 +616,23 @@ public class TrackerUtils {
 		String lowerCased = dn.replaceAll("UID=", "uid=").replaceAll("CN=", "cn=").replaceAll("DC=", "dc=")
 				.replaceAll("OU=", "ou=").replaceAll(", ", ",");
 		return lowerCased;
+	}
+
+	public static long getProjectOverdueTasksNumber(Node project) {
+		StringBuilder builder = new StringBuilder();
+		try {
+			builder.append(XPathUtils.descendantFrom(project.getPath()));
+			builder.append("//element(*, ").append(ActivitiesTypes.ACTIVITIES_TASK).append(")");
+			// Past due date
+			Calendar now = GregorianCalendar.getInstance();
+			String overdueCond = XPathUtils.getPropertyDateComparaison(ACTIVITIES_DUE_DATE, now, "<");
+			// Only opened tasks
+			String notClosedCond = "not(@" + ConnectNames.CONNECT_CLOSE_DATE + ")";
+			builder.append("[").append(XPathUtils.localAnd(overdueCond, notClosedCond)).append("]");
+			Query query = XPathUtils.createQuery(project.getSession(), builder.toString());
+			return query.execute().getNodes().getSize();
+		} catch (RepositoryException e) {
+			throw new ActivitiesException("Unable to get overdue tasks number for " + project);
+		}
 	}
 }

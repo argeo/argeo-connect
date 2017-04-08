@@ -1,10 +1,14 @@
 package org.argeo.tracker.ui;
 
+import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.activities.ActivitiesNames;
+import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -69,13 +73,20 @@ public class TaskListLabelProvider extends LabelProvider {
 					currProjStr = ConnectJcrUtils.get(currProject, Property.JCR_TITLE);
 			}
 		}
-		String tmpStr = ConnectJcrUtils.concatIfNotEmpty(currMSStr, currProjStr, ", ");
-		if (EclipseUiUtils.notEmpty(tmpStr))
-			builder.append("[").append(tmpStr).append("]  ");
 
 		builder.append("<b>");
 		builder.append(ConnectJcrUtils.get(task, Property.JCR_TITLE));
-		builder.append(" </b>");
+		builder.append(" </b> ");
+		String tmpStr = ConnectJcrUtils.concatIfNotEmpty(currMSStr, currProjStr, ", ");
+		if (notEmpty(tmpStr))
+			builder.append(" [").append(tmpStr).append("]  ");
+
+		String ddStr = ConnectJcrUtils.getDateFormattedAsString(task, ActivitiesNames.ACTIVITIES_DUE_DATE,
+				ConnectUiConstants.DEFAULT_DATE_FORMAT);
+		if (notEmpty(ddStr))
+			builder.append(" due to ").append(ddStr);
+
+		builder.append(" <br />");
 
 		String desc = ConnectJcrUtils.get(task, Property.JCR_DESCRIPTION).replaceAll("\\n", " ");
 

@@ -4,12 +4,9 @@ import static org.argeo.eclipse.ui.jcr.JcrUiUtils.getNodeSelectionAdapter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.jcr.Node;
@@ -29,7 +26,6 @@ import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.activities.workbench.util.ActivityViewerComparator;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.widgets.AbstractConnectContextMenu;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
@@ -52,7 +48,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.part.ViewPart;
 
@@ -67,10 +62,6 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	private SystemWorkbenchService systemWorkbenchService;
 
 	private TableViewer tableViewer;
-
-	// Default known actions
-	private final static String ACTION_ID_MARK_AS_DONE = "markAsDone";
-	private final static String ACTION_ID_CANCEL = "cancel";
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -87,7 +78,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		tableViewer.addDoubleClickListener(new ViewDoubleClickListener());
 
 		// The context menu
-		final TodoListContextMenu contextMenu = new TodoListContextMenu(activitiesService);
+		final TaskViewerContextMenu contextMenu = new TaskViewerContextMenu(tableViewer, session, activitiesService);
 		tableViewer.getTable().addMouseListener(new MouseAdapter() {
 			private static final long serialVersionUID = 6737579410648595940L;
 
@@ -337,106 +328,6 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 		}
 	}
 
-	private final static String[] DEFAULT_ACTIONS = { ACTION_ID_MARK_AS_DONE, ACTION_ID_CANCEL };
-
-	private class TodoListContextMenu extends AbstractConnectContextMenu {
-		private static final long serialVersionUID = 1028389681695028210L;
-
-		private final ActivitiesService activityService;
-
-		public TodoListContextMenu(ActivitiesService activityService) {
-			super(MyTodoListView.this.getViewSite().getPage().getWorkbenchWindow().getShell().getDisplay(),
-					DEFAULT_ACTIONS);
-			this.activityService = activityService;
-			createControl();
-		}
-
-		protected void performAction(String actionId) {
-			boolean hasChanged = false;
-			switch (actionId) {
-			case ACTION_ID_MARK_AS_DONE:
-				hasChanged = markAsDone();
-				break;
-			case ACTION_ID_CANCEL:
-				hasChanged = cancel();
-				break;
-			default:
-				throw new IllegalArgumentException("Unimplemented action " + actionId);
-			}
-			if (hasChanged) {
-				refreshFilteredList();
-				tableViewer.getTable().setFocus();
-			}
-		}
-
-		protected String getLabel(String actionId) {
-			switch (actionId) {
-			case ACTION_ID_MARK_AS_DONE:
-				return "Mark as done";
-			case ACTION_ID_CANCEL:
-				return "Cancel";
-			default:
-				throw new IllegalArgumentException("Unimplemented action " + actionId);
-			}
-		}
-
-		@Override
-		protected boolean aboutToShow(Control source, Point location, IStructuredSelection selection) {
-			boolean emptySel = selection == null || selection.isEmpty();
-			if (emptySel)
-				return false;
-			else {
-				setVisible(true, ACTION_ID_MARK_AS_DONE, ACTION_ID_CANCEL);
-				return true;
-			}
-		}
-
-		private boolean markAsDone() {
-			IStructuredSelection selection = ((IStructuredSelection) tableViewer.getSelection());
-			@SuppressWarnings("unchecked")
-			Iterator<Node> it = (Iterator<Node>) selection.iterator();
-			List<String> modifiedPaths = new ArrayList<>();
-			boolean hasChanged = false;
-			try {
-				while (it.hasNext()) {
-					Node currNode = it.next();
-					hasChanged |= activityService.updateStatus(ActivitiesTypes.ACTIVITIES_TASK, currNode, "Done",
-							modifiedPaths);
-				}
-				if (hasChanged) {
-					session.save();
-					ConnectJcrUtils.checkPoint(session, modifiedPaths, true);
-				}
-				return hasChanged;
-			} catch (RepositoryException e1) {
-				throw new ActivitiesException("Cannot mark tasks as done", e1);
-			}
-		}
-
-		private boolean cancel() {
-			IStructuredSelection selection = ((IStructuredSelection) tableViewer.getSelection());
-			@SuppressWarnings("unchecked")
-			Iterator<Node> it = (Iterator<Node>) selection.iterator();
-			List<String> modifiedPaths = new ArrayList<>();
-			boolean hasChanged = false;
-			try {
-				while (it.hasNext()) {
-					Node currNode = it.next();
-					hasChanged |= activityService.updateStatus(ActivitiesTypes.ACTIVITIES_TASK, currNode, "Canceled",
-							modifiedPaths);
-				}
-				if (hasChanged) {
-					session.save();
-					ConnectJcrUtils.checkPoint(session, modifiedPaths, true);
-				}
-				return hasChanged;
-			} catch (RepositoryException e1) {
-				throw new ActivitiesException("Cannot mark tasks as done", e1);
-			}
-
-		}
-	}
-
 	protected Session getSession() {
 		return session;
 	}
@@ -455,6 +346,6 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	}
 
 	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
-		this.systemWorkbenchService = systemWorkbenchService;    
+		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

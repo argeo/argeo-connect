@@ -16,7 +16,7 @@ public class TrackerImages {
 	public final static ImageDescriptor IMG_DESC_CLOSE = getDesc(ACTION_RELPATH + "close.png");
 	public final static Image ICON_ADD = IMG_DESC_ADD.createImage();
 
-	public final static Image ICON_ISSUE = getImage(TYPE_RELPATH + "issue.png");
+	public final static Image ICON_ISSUE = getImage(TYPE_RELPATH + "bug.gif");
 	public final static Image ICON_PROJECT = getImage(TYPE_RELPATH + "project.gif");
 	public final static Image ICON_SPEC = getImage(TYPE_RELPATH + "specification.gif");
 

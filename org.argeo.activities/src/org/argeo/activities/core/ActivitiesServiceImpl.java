@@ -45,29 +45,9 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		return ActivitiesNames.ACTIVITIES_APP_BASE_NAME;
 	}
 
-	// @Override
-	// public String getActivityParentCanonicalPath(Session session) {
-	// String currentUser = session.getUserID();
-	// Calendar currentTime = GregorianCalendar.getInstance();
-	// String path = "/" + getAppBaseName() + "/" + dateAsRelPath(currentTime) +
-	// currentUser;
-	// return path;
-	// }
-
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
 		if (entity.isNodeType(ActivitiesTypes.ACTIVITIES_ACTIVITY)) {
-
-			// String puid = ConnectJcrUtils.get(entity, ACTIVITIES_PARENT_UID);
-			// if (EclipseUiUtils.notEmpty(puid)) {
-			// Node parentActivity = getEntityByUid(entity.getSession(), null,
-			// puid);
-			// String relPath = getDefaultRelPath(parentActivity) + "/" +
-			// ACTIVITIES_ACTIVITIES;
-			// // JcrUtils.mkdirs(parentActivity, ACTIVITIES_ACTIVITIES);
-			// return relPath;
-			// }
-
 			String currentUser = null;
 			if (entity.hasProperty(ACTIVITIES_REPORTED_BY))
 				currentUser = entity.getProperty(ACTIVITIES_REPORTED_BY).getString();
@@ -86,7 +66,10 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 				if (log.isDebugEnabled())
 					log.warn("Activity at " + entity.getPath() + "has no activity date ");
 			}
-			return dateAsRelPath(currentTime) + "/" + userId;
+
+			String nodeType = getMainNodeType(entity);
+
+			return dateAsRelPath(currentTime) + "/" + userId + "/" + nodeType;
 		}
 		return null;
 	}
@@ -184,17 +167,19 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	/* ACTIVITIES APP SPECIFIC METHODS */
 
 	private String dateAsRelPath(Calendar cal) {
-		StringBuffer buf = new StringBuffer(9);
-		buf.append('Y');
-		buf.append(cal.get(Calendar.YEAR));
-		buf.append('/');
-
-		int woy = cal.get(Calendar.WEEK_OF_YEAR);
-		buf.append('W');
-		if (woy < 10)
-			buf.append(0);
-		buf.append(woy);
-		return buf.toString();
+		// StringBuffer buf = new StringBuffer(9);
+		// buf.append('Y');
+		// buf.append(cal.get(Calendar.YEAR));
+		// buf.append('/');
+		//
+		// int woy = cal.get(Calendar.WEEK_OF_YEAR);
+		// buf.append('W');
+		// if (woy < 10)
+		// buf.append(0);
+		// buf.append(woy);
+		// return buf.toString();
+		//
+		return JcrUtils.dateAsPath(cal, true);
 	}
 
 	/* ACTIVITIES */
@@ -299,7 +284,8 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			if (EclipseUiUtils.notEmpty(allCond))
 				builder.append("[").append(allCond).append("]");
 
-			builder.append(" order by @").append(Property.JCR_LAST_MODIFIED).append(" descending");
+			builder.append(" order by @").append(ActivitiesNames.ACTIVITIES_DUE_DATE).append(", @")
+					.append(Property.JCR_LAST_MODIFIED).append(" ascending");
 			if (log.isDebugEnabled())
 				log.debug("Getting todo list for " + CurrentUser.getDisplayName() + " (DN: " + CurrentUser.getUsername()
 						+ ") with query: " + builder.toString());

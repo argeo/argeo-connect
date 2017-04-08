@@ -252,9 +252,9 @@ public class DocumentsUiService {
 		return false;
 	}
 
-	public void deleteBookmark(Shell shell, IStructuredSelection selection, Node bookmarkParent) {
+	public boolean deleteBookmark(Shell shell, IStructuredSelection selection, Node bookmarkParent) {
 		if (selection.isEmpty())
-			return;
+			return false;
 
 		StringBuilder builder = new StringBuilder();
 		@SuppressWarnings("unchecked")
@@ -276,21 +276,26 @@ public class DocumentsUiService {
 				for (Node path : nodes)
 					path.remove();
 				bookmarkParent.getSession().save();
+				return true;
 			} catch (RepositoryException e) {
 				JcrUtils.discardQuietly(session);
 				throw new DocumentsException("Cannot delete bookmarks " + builder.toString(), e);
 			}
 		}
+		return false;
 	}
 
-	public void renameBookmark(IStructuredSelection selection) {
+	public boolean renameBookmark(IStructuredSelection selection) {
 		if (selection.isEmpty() || selection.size() > 1)
-			return;
+			return false;
 		Node toRename = (Node) selection.getFirstElement();
 		String msg = "Please provide a new name.";
 		String name = SingleQuestion.ask("Rename bookmark", msg, ConnectJcrUtils.get(toRename, Property.JCR_TITLE));
 		if (EclipseUiUtils.notEmpty(name)
-				&& ConnectJcrUtils.setJcrProperty(toRename, Property.JCR_TITLE, PropertyType.STRING, name))
+				&& ConnectJcrUtils.setJcrProperty(toRename, Property.JCR_TITLE, PropertyType.STRING, name)) {
 			ConnectJcrUtils.saveIfNecessary(toRename);
+			return true;
+		}
+		return false;
 	}
 }

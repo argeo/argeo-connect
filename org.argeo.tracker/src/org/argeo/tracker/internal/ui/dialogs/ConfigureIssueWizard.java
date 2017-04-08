@@ -3,6 +3,7 @@ package org.argeo.tracker.internal.ui.dialogs;
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -12,8 +13,8 @@ import javax.jcr.Value;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.ui.widgets.AssignedToDropDown;
 import org.argeo.connect.ui.widgets.DateText;
-import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -52,9 +53,8 @@ public class ConfigureIssueWizard extends Wizard {
 	private final Node project;
 	private final Node issue;
 
-	// Business objects
+	// Local business objects
 	private Node chosenProject;
-
 	private List<String> versionIds;
 	private List<String> componentIds;
 
@@ -63,7 +63,7 @@ public class ConfigureIssueWizard extends Wizard {
 	private ProjectDropDown projectDD;
 	private MilestoneDropDown milestoneDD;
 	private Text titleTxt;
-	private ExistingGroupsDropDown assignedToDD;
+	private AssignedToDropDown assignedToDD;
 	private DateText dueDateCmp;
 
 	private Combo importanceCmb;
@@ -93,13 +93,13 @@ public class ConfigureIssueWizard extends Wizard {
 					componentIds.add(value.getString());
 			}
 		} catch (RepositoryException e) {
-			throw new TrackerException("Cannot update info for " + issue, e);
+			throw new TrackerException("Cannot retrieve info on " + issue, e);
 		}
 	}
 
 	@Override
 	public void addPages() {
-		setWindowTitle("Create an issue");
+		setWindowTitle("Issue configuration");
 		addPage(new ConfigureIssuePage("Main page"));
 	}
 
@@ -128,6 +128,11 @@ public class ConfigureIssueWizard extends Wizard {
 			trackerService.configureIssue(issue, chosenProject, milestoneDD.getChosenMilestone(), title,
 					descTxt.getText(), versionsCmp.getChosenValues(), componentsCmp.getChosenValues(), priority,
 					importance, assignedToDD.getText());
+
+			Calendar dueDate = dueDateCmp.getCalendar();
+			if (dueDate != null)
+				issue.setProperty(ActivitiesNames.ACTIVITIES_DUE_DATE, dueDate);
+
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to create issue on project " + project, e);
 		}
@@ -202,7 +207,7 @@ public class ConfigureIssueWizard extends Wizard {
 			// Assigned to
 			Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
 					"Choose a group or person to manage this issue", 1);
-			assignedToDD = new ExistingGroupsDropDown(assignedToTxt, userAdminService, true, false);
+			assignedToDD = new AssignedToDropDown(assignedToTxt, userAdminService, true, false);
 
 			// DUE DATE
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Due date");
@@ -265,25 +270,34 @@ public class ConfigureIssueWizard extends Wizard {
 			descTxt.setLayoutData(gd);
 
 			// Initialise
+			Node milestone = null;
 			try {
 				if (issue.hasProperty(Property.JCR_TITLE))
 					titleTxt.setText(issue.getProperty(Property.JCR_TITLE).getString());
 				if (issue.hasProperty(Property.JCR_DESCRIPTION))
 					descTxt.setText(issue.getProperty(Property.JCR_DESCRIPTION).getString());
-				if (issue.hasProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO))
-					assignedToDD.resetDN(issue.getProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO).getString());
-
 				if (project != null)
 					projectTxt.setText(ConnectJcrUtils.get(project, Property.JCR_TITLE));
+
+				String muid = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_MILESTONE_UID);
+				if (EclipseUiUtils.notEmpty(muid)) {
+					milestone = trackerService.getEntityByUid(ConnectJcrUtils.getSession(issue), null, muid);
+					milestoneDD.resetMilestone(milestone);
+				}
+
+				if (issue.hasProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO))
+					assignedToDD.resetDN(issue.getProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO).getString());
+				else if (milestone != null && milestone.hasProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE))
+					assignedToDD.resetDN(milestone.getProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE).getString());
+
 				if (issue.hasProperty(ActivitiesNames.ACTIVITIES_DUE_DATE))
 					dueDateCmp.setText(issue.getProperty(ActivitiesNames.ACTIVITIES_DUE_DATE).getDate());
+				else if (milestone != null && milestone.hasProperty(TrackerNames.TRACKER_TARGET_DATE))
+					dueDateCmp.setText(milestone.getProperty(TrackerNames.TRACKER_TARGET_DATE).getDate());
+
 				// if
 				// (issue.hasProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE))
 				// wakeUpDateCmp.setText(issue.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate());
-				String muid = ConnectJcrUtils.get(issue, TrackerNames.TRACKER_MILESTONE_UID);
-				if (EclipseUiUtils.notEmpty(muid))
-					milestoneDD.resetMilestone(
-							trackerService.getEntityByUid(ConnectJcrUtils.getSession(issue), null, muid));
 
 				Long importance = ConnectJcrUtils.getLongValue(issue, TrackerNames.TRACKER_IMPORTANCE);
 				if (importance != null) {
@@ -298,13 +312,37 @@ public class ConfigureIssueWizard extends Wizard {
 
 			} catch (RepositoryException e) {
 				throw new TrackerException("Cannot initialise widgets with existing data on " + issue, e);
-				// TODO: handle exception
 			}
+
+			milestoneTxt.addFocusListener(new FocusAdapter() {
+				private static final long serialVersionUID = -5599617250726559371L;
+
+				@Override
+				public void focusLost(FocusEvent event) {
+					Node milestone = milestoneDD.getChosenMilestone();
+					if (milestone != null) {
+						try {
+							if (EclipseUiUtils.isEmpty(assignedToDD.getText())
+									&& milestone.hasProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE))
+								assignedToDD.resetDN(
+										milestone.getProperty(TrackerNames.TRACKER_DEFAULT_ASSIGNEE).getString());
+							if (dueDateCmp.getCalendar() == null
+									&& milestone.hasProperty(TrackerNames.TRACKER_TARGET_DATE))
+								dueDateCmp.setText(milestone.getProperty(TrackerNames.TRACKER_TARGET_DATE).getDate());
+						} catch (RepositoryException e) {
+							throw new TrackerException("Cannot set default values for milestone " + milestone, e);
+						}
+					}
+				}
+			});
 
 			// Don't forget this.
 			if (project == null) {
 				setControl(projectTxt);
 				projectTxt.setFocus();
+			} else if (milestone == null) {
+				setControl(milestoneTxt);
+				milestoneTxt.setFocus();
 			} else {
 				setControl(titleTxt);
 				titleTxt.setFocus();

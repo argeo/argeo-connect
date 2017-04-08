@@ -248,25 +248,32 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 					assignedToLk.setText(manager);
 
 					// Versions
-					Node[] nodes = null;
+					List<Node> nodes = new ArrayList<Node>();
 					try {
 						if (issue.hasProperty(TrackerNames.TRACKER_VERSION_IDS)) {
 							Value[] values = issue.getProperty(TrackerNames.TRACKER_VERSION_IDS).getValues();
-							nodes = new Node[values.length];
-							for (int i = 0; i < values.length; i++)
-								nodes[i] = TrackerUtils.getVersionById(project, values[i].getString());
+							for (int i = 0; i < values.length; i++) {
+								Node version = TrackerUtils.getVersionById(project, values[i].getString());
+								if (version != null)
+									nodes.add(version);
+							}
 						}
-						populateMuliValueClickableList(versionsCmp, nodes);
+						// if (!nodes.isEmpty())
+						populateMuliValueClickableList(versionsCmp, nodes.toArray(new Node[0]));
 
 						// Components
-						nodes = null;
+						nodes = new ArrayList<Node>();
 						if (issue.hasProperty(TrackerNames.TRACKER_COMPONENT_IDS)) {
 							Value[] values = issue.getProperty(TrackerNames.TRACKER_COMPONENT_IDS).getValues();
-							nodes = new Node[values.length];
-							for (int i = 0; i < values.length; i++)
-								nodes[i] = TrackerUtils.getComponentById(project, values[i].getString());
+							for (int i = 0; i < values.length; i++) {
+								Node component = TrackerUtils.getComponentById(project, values[i].getString());
+								if (component != null)
+									nodes.add(component);
+							}
 						}
-						populateMuliValueClickableList(componentsCmp, nodes);
+						// if (!nodes.isEmpty())
+						populateMuliValueClickableList(componentsCmp, nodes.toArray(new Node[0]));
+
 					} catch (RepositoryException e) {
 						throw new TrackerException("Cannot update info for " + issue, e);
 					}

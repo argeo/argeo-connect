@@ -1,12 +1,9 @@
 package org.argeo.tracker.internal.workbench;
 
-import static org.argeo.activities.ActivitiesNames.ACTIVITIES_DUE_DATE;
 import static org.eclipse.ui.forms.widgets.TableWrapData.BOTTOM;
 import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +12,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Query;
 
-import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
-import org.argeo.activities.ActivitiesTypes;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
@@ -28,7 +22,6 @@ import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
@@ -82,7 +75,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
-/** Default editor to display and edit a project definition */
+/** Default editor to display and edit a project */
 public class ProjectEditor extends AbstractTrackerEditor {
 	private static final long serialVersionUID = -2589214457345896922L;
 	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor";
@@ -204,7 +197,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					}
 
 					// Overdue tasks
-					Long nb = getOverdueTaskNumber();
+					Long nb = TrackerUtils.getProjectOverdueTasksNumber(project);
 					overdueTasksLk.setText(nb < 0 ? "-" : nb.toString());
 
 					parent.layout(true, true);
@@ -214,24 +207,6 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			};
 			getManagedForm().addPart(part);
 			addMainSectionMenu(part);
-		}
-
-		private long getOverdueTaskNumber() {
-			StringBuilder builder = new StringBuilder();
-			try {
-				builder.append(XPathUtils.descendantFrom(project.getPath()));
-				builder.append("//element(*, ").append(ActivitiesTypes.ACTIVITIES_TASK).append(")");
-				// Past due date
-				Calendar now = GregorianCalendar.getInstance();
-				String overdueCond = XPathUtils.getPropertyDateComparaison(ACTIVITIES_DUE_DATE, now, "<");
-				// Only opened tasks
-				String notClosedCond = "not(@" + ConnectNames.CONNECT_CLOSE_DATE + ")";
-				builder.append("[").append(XPathUtils.localAnd(overdueCond, notClosedCond)).append("]");
-				Query query = XPathUtils.createQuery(getSession(), builder.toString());
-				return query.execute().getNodes().getSize();
-			} catch (RepositoryException e) {
-				throw new ActivitiesException("Unable to get overdue tasks number for " + project);
-			}
 		}
 
 		private Section appendOpenMilestonePart(Composite parent) {
@@ -362,7 +337,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				}
 			};
 			mf.addPart(part);
-			form.reflow(true);
+			// form.reflow(true);
 		}
 
 		private void appendIssuesPart(Composite parent) {

@@ -5,6 +5,8 @@ import static javax.jcr.Property.JCR_TITLE;
 import static org.argeo.connect.util.ConnectJcrUtils.get;
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
+import java.util.Calendar;
+
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
@@ -90,10 +92,18 @@ public class ConfigureMilestoneWizard extends Wizard {
 	public boolean performFinish() {
 		String msg = null;
 		String title = titleTxt.getText();
+
+		boolean isVersion = isVersionBtn.getSelection();
+		String versionId = versionIdTxt != null && !versionIdTxt.isDisposed() ? versionIdTxt.getText() : null;
+		Calendar releaseDate = releaseDateCmp != null && !releaseDateCmp.isDisposed() ? releaseDateCmp.getCalendar()
+				: null;
 		if (chosenProject == null)
 			msg = "Please pick up a project";
 		else if (isEmpty(title))
 			msg = "Please give at least a title";
+		else if (isVersion && (EclipseUiUtils.isEmpty(versionId) || releaseDate == null)) {
+			msg = "You have to provide a version ID *and* a release date to mark this milestone as version";
+		}
 
 		if (msg != null) {
 			MessageDialog.openError(getShell(), "Uncomplete information", msg);
@@ -103,6 +113,14 @@ public class ConfigureMilestoneWizard extends Wizard {
 		try {
 			trackerService.configureMilestone(milestone, chosenProject, null, title, descTxt.getText(),
 					managerDD.getText(), defaultAssigneeDD.getText(), targetDateCmp.getCalendar());
+
+			if (isVersion) {
+				if (!milestone.isNodeType(TrackerTypes.TRACKER_VERSION))
+					milestone.addMixin(TrackerTypes.TRACKER_VERSION);
+				milestone.setProperty(TrackerNames.TRACKER_ID, versionId);
+				milestone.setProperty(TrackerNames.TRACKER_RELEASE_DATE, releaseDate);
+			}
+
 			if (milestone.getSession().hasPendingChanges())
 				JcrUtils.updateLastModified(milestone);
 			return true;
@@ -131,7 +149,7 @@ public class ConfigureMilestoneWizard extends Wizard {
 
 		public MainPage(String pageName) {
 			super(pageName);
-			setMessage("Please complete following information.");
+			setMessage("Please complete below information");
 		}
 
 		public void createControl(final Composite parent) {
@@ -213,8 +231,9 @@ public class ConfigureMilestoneWizard extends Wizard {
 			descTxt.setMessage("An optional description for this milestone");
 
 			// Initialise values
+			String titleStr = get(milestone, JCR_TITLE);
 			try {
-				titleTxt.setText(get(milestone, JCR_TITLE));
+				titleTxt.setText(titleStr);
 				descTxt.setText(get(milestone, JCR_DESCRIPTION));
 				targetDateCmp.setText(ConnectJcrUtils.getDateValue(milestone, TrackerNames.TRACKER_TARGET_DATE));
 				if (milestone.hasProperty(TrackerNames.TRACKER_MANAGER))
@@ -232,10 +251,11 @@ public class ConfigureMilestoneWizard extends Wizard {
 			if (project == null) {
 				setControl(projectTxt);
 				projectTxt.setFocus();
-			} else {
+			} else if (isEmpty(titleStr)){
 				setControl(titleTxt);
 				titleTxt.setFocus();
-			}
+			} else setControl(titleTxt);
+			
 
 			isVersionBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = -9065523003707104389L;
