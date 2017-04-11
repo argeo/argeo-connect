@@ -17,7 +17,12 @@ public class TrackerImages {
 	public final static Image ICON_ADD = IMG_DESC_ADD.createImage();
 
 	public final static Image ICON_ISSUE = getImage(TYPE_RELPATH + "bug.gif");
+	public final static Image ICON_TASK = getImage(TYPE_RELPATH + "task.png");
 	public final static Image ICON_PROJECT = getImage(TYPE_RELPATH + "project.gif");
+	public final static Image ICON_MILESTONE = getImage(TYPE_RELPATH + "milestone.gif");
+//	public final static Image ICON_VERSION = getImage(TYPE_RELPATH + "version.png");
+//	public final static Image ICON_COMPONENT = getImage(TYPE_RELPATH + "component.png");
+	
 	public final static Image ICON_SPEC = getImage(TYPE_RELPATH + "specification.gif");
 
 	// FIXME: currently use an image created by the plugin to create the color
