@@ -10,7 +10,7 @@
 	<packaging>pom</packaging>
 	<name>Argeo Connect</name>
 	<description>Real world IT</description>
-	<version>1.5.2</version>
+	<version>1.5.3-SNAPSHOT</version>
 	<properties>
 		<version.argeo-connect>1.5.2</version.argeo-connect>
 		<version.argeo-tp-extras>2.1.9</version.argeo-tp-extras>
@@ -41,7 +41,7 @@
 		<connection>scm:git:http://git.argeo.org/apache2/argeo-connect.git</connection>
 		<url>http://git.argeo.org/?p=apache2/argeo-connect.git;a=summary</url>
 		<developerConnection>scm:git:https://code.argeo.org/git/apache2/argeo-connect.git</developerConnection>
-	  <tag>argeo-connect-1.5.2</tag>
+	  <tag>argeo-connect-1.5</tag>
   </scm>
 	<licenses>
 		<license>
