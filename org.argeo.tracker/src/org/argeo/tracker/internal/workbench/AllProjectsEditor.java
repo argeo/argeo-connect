@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.Query;
@@ -16,7 +17,9 @@ import org.argeo.connect.workbench.parts.AbstractSearchEntityEditor;
 import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
+import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.core.TrackerUtils;
+import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.ui.IEditorInput;
@@ -36,8 +39,14 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 		super.init(site, input);
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
-		colDefs.add(new ConnectColumnDefinition("Account", new AccountLp(), 300));
+		colDefs.add(new ConnectColumnDefinition("Manager",
+				new TrackerLps().new DnLabelProvider(getUserAdminService(), TrackerNames.TRACKER_MANAGER), 
+				160));
+		colDefs.add(new ConnectColumnDefinition("Description", new JcrHtmlLabelProvider(Property.JCR_DESCRIPTION), 300));
 		colDefs.add(new ConnectColumnDefinition("Open Milestones", new CountLp(), 150));
+		colDefs.add(new ConnectColumnDefinition("Open / All Tasks", getMSIssuesLP(), 120));
+
+		// colDefs.add(new ColumnDefinition("Account", new AccountLp(), 300));
 	}
 
 	protected boolean showStaticFilterSection() {
@@ -80,23 +89,40 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 		}
 	}
 
-	private class AccountLp extends ColumnLabelProvider {
-		private static final long serialVersionUID = 1349855402929072597L;
+	private ColumnLabelProvider getMSIssuesLP() {
+		return new ColumnLabelProvider() {
+			private static final long serialVersionUID = -998161071505982347L;
 
-		@Override
-		public String getText(Object element) {
-			Node project = (Node) element;
-			try {
-				// TODO this is defined in a client app.
-				if (project.getReferences().hasNext()) {
-					Node account = project.getReferences().nextProperty().getParent().getParent().getParent();
-					return ConnectJcrUtils.get(account, Property.JCR_TITLE);
-				} else
-					return "-";
-			} catch (RepositoryException e) {
-				throw new TrackerException("unable to retrieve related account ", e);
-
+			@Override
+			public String getText(Object element) {
+				Node project = (Node) element;
+				NodeIterator nit = TrackerUtils.getIssues(project, null, null, null, true);
+				long openNb = nit.getSize();
+				nit = TrackerUtils.getIssues(project, null, null, null, false);
+				long allNb = nit.getSize();
+				return openNb + " / " + allNb;
 			}
-		}
+		};
 	}
+
+	// private class AccountLp extends ColumnLabelProvider {
+	// private static final long serialVersionUID = 1349855402929072597L;
+	//
+	// @Override
+	// public String getText(Object element) {
+	// Node project = (Node) element;
+	// try {
+	// // TODO this is defined in a client app.
+	// if (project.getReferences().hasNext()) {
+	// Node account =
+	// project.getReferences().nextProperty().getParent().getParent().getParent();
+	// return ConnectJcrUtils.get(account, Property.JCR_TITLE);
+	// } else
+	// return "-";
+	// } catch (RepositoryException e) {
+	// throw new TrackerException("unable to retrieve related account ", e);
+	//
+	// }
+	// }
+	// }
 }

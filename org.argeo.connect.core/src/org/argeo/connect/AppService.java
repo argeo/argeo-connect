@@ -12,6 +12,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -41,8 +42,12 @@ public interface AppService {
 		Node createdNode = null;
 		if (isKnownType(nodeType)) {
 			String relPath = getDefaultRelPath(srcNode);
-			if (parent == null)
+			if (parent == null) {
+				log.error(
+						"Trying to publish a node with no parent, this approach will soon be forbidden. Calling stack:\n"
+								+ StringUtils.join(Thread.currentThread().getStackTrace(), "\n"));
 				parent = srcNode.getSession().getNode("/" + getBaseRelPath(nodeType));
+			}
 
 			// TODO check duplicate
 			String parRelPath = ConnectJcrUtils.parentRelPath(relPath);
@@ -154,7 +159,7 @@ public interface AppService {
 	 * type or one of its mixin, typically for the People App.
 	 */
 	default public String getMainNodeType(Node node) {
-		return ConnectJcrUtils.get(node, Property.JCR_PRIMARY_TYPE);
+		return null;
 	}
 
 	/**

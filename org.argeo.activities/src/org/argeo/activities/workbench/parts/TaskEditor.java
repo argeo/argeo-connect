@@ -49,7 +49,7 @@ public class TaskEditor extends AbstractConnectCTabEditor {
 		// Activities and tasks
 		String tooltip = "Activities and tasks related to " + JcrUtils.get(task, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new ActivityChildrenList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourcesService(), getActivitiesService(), getSystemWorkbenchService(), task);
+				getResourcesService(), getActivitiesService(), getSystemAppService(), getSystemWorkbenchService(), task);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", RelatedActivityList.CTAB_ID, tooltip);
 	}

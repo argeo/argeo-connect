@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
@@ -27,36 +26,29 @@ import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -154,7 +146,10 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			TableWrapLayout layout = new TableWrapLayout();
 			body.setLayout(layout);
 			appendOverviewPart(body);
-			appendCommentListPart(body);
+
+			Composite commentFormPart = new CommentListFormPart(getManagedForm(), body, SWT.NO_FOCUS,
+					getTrackerService(), getNode());
+			commentFormPart.setLayoutData(new TableWrapData(FILL_GRAB));
 		}
 
 		/** Creates the general section */
@@ -293,154 +288,6 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			addMainSectionMenu(part);
 		}
 
-		// THE COMMENT LIST
-		private Section appendCommentListPart(Composite parent) {
-			FormToolkit tk = getManagedForm().getToolkit();
-			Section section = TrackerUiUtils.addFormSection(tk, parent, "Comments");
-			section.setLayoutData(new TableWrapData(FILL_GRAB));
-
-			Composite body = ((Composite) section.getClient());
-			body.setLayout(new TableWrapLayout());
-
-			Composite newCommentCmp = new Composite(body, SWT.NO_FOCUS);
-			TableWrapLayout layout = new TableWrapLayout();
-			layout.numColumns = 2;
-			newCommentCmp.setLayout(layout);
-
-			// Add a new comment fields
-			final Text newCommentTxt = new Text(newCommentCmp, SWT.MULTI | SWT.WRAP | SWT.BORDER);
-			TableWrapData twd = new TableWrapData(FILL_GRAB);
-			newCommentTxt.setLayoutData(twd);
-
-			newCommentTxt.setMessage("Enter a new comment...");
-			newCommentTxt.addFocusListener(new FocusListener() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void focusLost(FocusEvent event) {
-					String currText = newCommentTxt.getText();
-					if (EclipseUiUtils.isEmpty(currText)) {
-						TableWrapData twd = ((TableWrapData) newCommentTxt.getLayoutData());
-						twd.heightHint = SWT.DEFAULT;
-						newCommentTxt.getParent().layout(true, true);
-						getManagedForm().reflow(true);
-					}
-				}
-
-				@Override
-				public void focusGained(FocusEvent event) {
-					TableWrapData twd = ((TableWrapData) newCommentTxt.getLayoutData());
-					twd.heightHint = 200;
-					newCommentTxt.getParent().layout(true, true);
-					getManagedForm().reflow(true);
-				}
-			});
-			Button okBtn = new Button(newCommentCmp, SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
-			okBtn.setLayoutData(new TableWrapData(TableWrapData.CENTER, TableWrapData.TOP));
-			okBtn.setText("OK");
-
-			// Existing comment list
-			final Composite commentsCmp = new Composite(body, SWT.NO_FOCUS);
-			commentsCmp.setLayout(new TableWrapLayout());
-			commentsCmp.setLayoutData(new TableWrapData(TableWrapData.FILL_GRAB));
-
-			SectionPart part = new SectionPart(section) {
-
-				private ColumnLabelProvider lp = new TrackerLps().new IssueCommentOverviewLabelProvider();
-
-				@Override
-				public void refresh() {
-					if (commentsCmp.isDisposed())
-						return;
-					CmsUtils.clear(commentsCmp);
-
-					List<Node> comments = getComments();
-					for (Node comment : comments)
-						addCommentCmp(commentsCmp, lp, null, comment);
-
-					parent.layout(true, true);
-					super.refresh();
-				}
-			};
-			part.initialize(getManagedForm());
-			getManagedForm().addPart(part);
-			// addListSectionMenu(part);
-
-			okBtn.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = -5295361445564398576L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					String newTag = newCommentTxt.getText();
-					if (EclipseUiUtils.notEmpty(newTag)) {
-						Session tmpSession = null;
-						try {
-							// We use a new session that is saved
-							String issuePath = issue.getPath();
-							tmpSession = issue.getSession().getRepository().login();
-							Node issueExt = tmpSession.getNode(issuePath);
-							getTrackerService().addComment(issueExt, newTag);
-							tmpSession.save();
-							session.refresh(true);
-						} catch (RepositoryException re) {
-							throw new TrackerException("Unable to add comment " + newTag + " on " + issue, re);
-						} finally {
-							JcrUtils.logoutQuietly(tmpSession);
-						}
-						part.refresh();
-						// part.markDirty();
-					}
-					// Reset the "new comment" field
-					newCommentTxt.setText("");
-					// okBtn.setFocus();
-					TableWrapData twd = ((TableWrapData) newCommentTxt.getLayoutData());
-					twd.heightHint = SWT.DEFAULT;
-					newCommentTxt.getParent().layout(true, true);
-					getManagedForm().reflow(true);
-				}
-			});
-			return section;
-		}
-	}
-
-	private List<Node> getComments() {
-		List<Node> comments = new ArrayList<Node>();
-		try {
-			if (issue.hasNode(TrackerNames.TRACKER_COMMENTS)) {
-				NodeIterator nit = issue.getNode(TrackerNames.TRACKER_COMMENTS).getNodes();
-				// We want to have last created node first
-				// TODO not reliable, enhance
-				while (nit.hasNext())
-					comments.add(0, nit.nextNode());
-			}
-		} catch (RepositoryException re) {
-			throw new TrackerException("Unable retrieve comments for " + issue, re);
-		}
-		return comments;
-	}
-
-	private void addCommentCmp(Composite parent, ColumnLabelProvider lp, AbstractFormPart formPart, Node comment) {
-		// retrieve properties
-		String description = ConnectJcrUtils.get(comment, Property.JCR_DESCRIPTION);
-
-		Composite commentCmp = new Composite(parent, SWT.NO_FOCUS);
-		commentCmp.setLayoutData(new TableWrapData(FILL_GRAB));
-		commentCmp.setLayout(new TableWrapLayout());
-
-		// First line
-		Label overviewLabel = new Label(commentCmp, SWT.WRAP);
-		overviewLabel.setLayoutData(new TableWrapData(FILL_GRAB));
-		overviewLabel.setText(lp.getText(comment));
-		overviewLabel.setFont(EclipseUiUtils.getBoldFont(parent));
-
-		// Second line: description
-		Label descLabel = new Label(commentCmp, SWT.WRAP);
-		descLabel.setLayoutData(new TableWrapData(FILL_GRAB));
-		descLabel.setText(description);
-
-		// third line: separator
-		Label sepLbl = new Label(commentCmp, SWT.HORIZONTAL | SWT.SEPARATOR);
-		sepLbl.setLayoutData(new TableWrapData(FILL_GRAB));
 	}
 
 	// SECTION MENU

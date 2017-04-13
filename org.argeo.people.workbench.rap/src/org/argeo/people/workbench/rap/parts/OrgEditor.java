@@ -107,7 +107,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 		// Activities and tasks
 		tooltip = "Activities and tasks related to " + JcrUtils.get(org, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new RelatedActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourcesService(), getActivitiesService(), getSystemWorkbenchService(), org);
+				getResourcesService(), getActivitiesService(), getSystemAppService(), getSystemWorkbenchService(), org);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 

@@ -17,6 +17,7 @@ import org.argeo.activities.ActivityValueCatalogs;
 import org.argeo.activities.ui.ActivityTable;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.util.LazyCTabControl;
@@ -60,6 +61,7 @@ public class RelatedActivityList extends LazyCTabControl {
 	private final UserAdminService userAdminService;
 	private final ResourcesService resourcesService;
 	private final ActivitiesService activitiesService;
+	private final SystemAppService systemAppService;
 	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node entity;
 	private final AbstractConnectEditor editor;
@@ -77,11 +79,12 @@ public class RelatedActivityList extends LazyCTabControl {
 
 	public RelatedActivityList(Composite parent, int style, AbstractConnectEditor editor,
 			UserAdminService userAdminService, ResourcesService resourcesService, ActivitiesService activitiesService,
-			SystemWorkbenchService systemWorkbenchService, Node entity) {
+			SystemAppService systemAppService, SystemWorkbenchService systemWorkbenchService, Node entity) {
 		super(parent, style);
 		this.userAdminService = userAdminService;
 		this.resourcesService = resourcesService;
 		this.activitiesService = activitiesService;
+		this.systemAppService = systemAppService;
 		this.systemWorkbenchService = systemWorkbenchService;
 		this.entity = entity;
 		this.editor = editor;
@@ -256,9 +259,10 @@ public class RelatedActivityList extends LazyCTabControl {
 
 	private boolean createTask(Shell shell, Node relatedEntity) {
 		Session tmpSession = null;
+		Session targetSession = null;
 		try {
 			tmpSession = relatedEntity.getSession().getRepository().login();
-			Node draftTask = activitiesService.createDraftEntity(tmpSession, ActivitiesTypes.ACTIVITIES_TASK);
+			Node draftTask = systemAppService.createDraftEntity(tmpSession, ActivitiesTypes.ACTIVITIES_TASK);
 			Wizard wizard = systemWorkbenchService.getCreationWizard(draftTask);
 
 			WizardDialog dialog = new WizardDialog(shell, wizard);
@@ -267,8 +271,12 @@ public class RelatedActivityList extends LazyCTabControl {
 				relatedTo.add(tmpSession.getNode(relatedEntity.getPath()));
 				ConnectJcrUtils.setMultipleReferences(draftTask, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
 
-				Node newTask = activitiesService.publishEntity(null, ActivitiesTypes.ACTIVITIES_TASK, draftTask);
-				activitiesService.saveEntity(newTask, false);
+				targetSession = relatedEntity.getSession().getRepository().login();
+				Node targetParent = targetSession
+						.getNode("/" + systemAppService.getBaseRelPath(ActivitiesTypes.ACTIVITIES_TASK));
+				String currMainType = systemAppService.getMainNodeType(draftTask);
+				Node newTask = systemAppService.publishEntity(targetParent, currMainType, draftTask);
+				systemAppService.saveEntity(newTask, false);
 				relatedEntity.getSession().refresh(true);
 				return true;
 			}
@@ -276,26 +284,34 @@ public class RelatedActivityList extends LazyCTabControl {
 			throw new ActivitiesException("Unable to create task node related to " + relatedEntity, e);
 		} finally {
 			JcrUtils.logoutQuietly(tmpSession);
+			JcrUtils.logoutQuietly(targetSession);
 		}
 		return false;
 	}
 
 	private boolean createActivity(Node relatedEntity, String type, String title, String desc) {
 		Session tmpSession = null;
+		Session targetSession = null;
+
 		try {
 			tmpSession = relatedEntity.getSession().getRepository().login();
 			List<Node> relatedTo = new ArrayList<Node>();
 			relatedTo.add(tmpSession.getNode(relatedEntity.getPath()));
-			Node draftActivity = activitiesService.createDraftEntity(tmpSession, type);
+			Node draftActivity = systemAppService.createDraftEntity(tmpSession, type);
 			activitiesService.configureActivity(draftActivity, type, title, desc, relatedTo);
-			Node createdActivity = activitiesService.publishEntity(null, type, draftActivity);
-			activitiesService.saveEntity(createdActivity, false);
+
+			targetSession = relatedEntity.getSession().getRepository().login();
+			Node targetParent = targetSession
+					.getNode("/" + systemAppService.getBaseRelPath(ActivitiesTypes.ACTIVITIES_ACTIVITY));
+			Node createdActivity = systemAppService.publishEntity(targetParent, type, draftActivity);
+			systemAppService.saveEntity(createdActivity, false);
 			relatedEntity.getSession().refresh(true);
 			return true;
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create activity node related to " + relatedEntity, e);
 		} finally {
 			JcrUtils.logoutQuietly(tmpSession);
+			JcrUtils.logoutQuietly(targetSession);
 		}
 	}
 }

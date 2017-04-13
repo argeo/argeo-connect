@@ -219,6 +219,7 @@ public class ConfigureIssueWizard extends Wizard {
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			importanceCmb.setLayoutData(gd);
 			importanceCmb.setItems(TrackerUtils.MAPS_ISSUE_IMPORTANCES.values().toArray(new String[0]));
+			importanceCmb.select(0);
 
 			// Priority
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Priority");
@@ -226,6 +227,7 @@ public class ConfigureIssueWizard extends Wizard {
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			priorityCmb.setLayoutData(gd);
 			priorityCmb.setItems(TrackerUtils.MAPS_ISSUE_PRIORITIES.values().toArray(new String[0]));
+			priorityCmb.select(0);
 
 			// Versions
 			ConnectWorkbenchUtils.createBoldLabel(parent, "Impacted Version");

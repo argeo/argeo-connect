@@ -14,7 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -28,6 +28,7 @@ import javax.jcr.query.Query;
 import javax.jcr.security.Privilege;
 
 import org.argeo.activities.ActivitiesException;
+import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.cms.CmsTypes;
 import org.argeo.cms.auth.CurrentUser;
@@ -57,7 +58,7 @@ public class TrackerServiceImpl implements TrackerService {
 				|| TrackerTypes.TRACKER_COMPONENT.equals(nodeType) || TrackerTypes.TRACKER_MILESTONE.equals(nodeType)
 				|| TrackerTypes.TRACKER_VERSION.equals(nodeType)) {
 			Session session = parent.getSession();
-			Node project = getEntityByUid(session, parent.getPath(), get(srcNode, TRACKER_PROJECT_UID));
+			Node project = getEntityByUid(session, null, get(srcNode, TRACKER_PROJECT_UID));
 			if (TrackerTypes.TRACKER_ISSUE.equals(nodeType) || TrackerTypes.TRACKER_TASK.equals(nodeType))
 				createIssueIdIfNeeded(project, srcNode);
 			String relPath = getDefaultRelPath(srcNode);
@@ -377,11 +378,17 @@ public class TrackerServiceImpl implements TrackerService {
 	@Override
 	public Node addComment(Node parentIssue, String description) throws RepositoryException {
 		Node comments = JcrUtils.mkdirs(parentIssue, TrackerNames.TRACKER_COMMENTS);
-		String currUid = UserAdminUtils.getUserLocalId(CurrentUser.getUsername());
-		String timeStamp = isobdf.format(new Date());
+		String reporterId = parentIssue.getSession().getUserID();
+		String currUid = UserAdminUtils.getUserLocalId(reporterId);
+		Calendar creationDate = new GregorianCalendar();
+		String timeStamp = isobdf.format(creationDate.getTime());
 		Node comment = comments.addNode(timeStamp + "_" + currUid);
 		comment.addMixin(TrackerTypes.TRACKER_COMMENT);
 		ConnectJcrUtils.setJcrProperty(comment, Property.JCR_DESCRIPTION, PropertyType.STRING, description);
+		// We rather use these activity like properties to be robuster in case
+		// of migration for instance
+		comment.setProperty(ActivitiesNames.ACTIVITIES_ACTIVITY_DATE, creationDate);
+		comment.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
 		return comment;
 	}
 

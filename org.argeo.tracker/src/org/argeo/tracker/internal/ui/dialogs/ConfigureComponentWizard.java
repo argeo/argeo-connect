@@ -39,7 +39,6 @@ public class ConfigureComponentWizard extends Wizard implements ModifyListener {
 	private static final long serialVersionUID = -8365425809976445458L;
 
 	// Context
-	private final TrackerService trackerService;
 	private final Node project;
 	private final Node component;
 
@@ -51,7 +50,7 @@ public class ConfigureComponentWizard extends Wizard implements ModifyListener {
 	private Text descTxt;
 
 	public ConfigureComponentWizard(TrackerService trackerService, Node component) {
-		this.trackerService = trackerService;
+		// this.trackerService = trackerService;
 		this.component = component;
 		project = TrackerUtils.getRelatedProject(trackerService, component);
 		chosenProject = project;
@@ -180,10 +179,6 @@ public class ConfigureComponentWizard extends Wizard implements ModifyListener {
 
 	private String getId() {
 		return idTxt.getText();
-	}
-
-	private String getDescription() {
-		return descTxt.getText();
 	}
 
 	private Label createLabel(Composite parent, String label, int verticalAlign) {

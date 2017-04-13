@@ -8,6 +8,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
@@ -184,8 +185,12 @@ public class TrackerLps {
 		@Override
 		public String getText(Object element) {
 			Node comment = (Node) element;
-			String createdBy = ConnectJcrUtils.get(comment, Property.JCR_CREATED_BY);
-			Calendar createdOn = ConnectJcrUtils.getDateValue(comment, Property.JCR_CREATED);
+			String createdBy = ConnectJcrUtils.get(comment, ActivitiesNames.ACTIVITIES_REPORTED_BY);
+			if (EclipseUiUtils.isEmpty(createdBy))
+				createdBy = ConnectJcrUtils.get(comment, Property.JCR_CREATED_BY);
+			Calendar createdOn = ConnectJcrUtils.getDateValue(comment, ActivitiesNames.ACTIVITIES_ACTIVITY_DATE);
+			if (createdOn == null)
+				createdOn = ConnectJcrUtils.getDateValue(comment, Property.JCR_CREATED);
 			String lastUpdatedBy = ConnectJcrUtils.get(comment, Property.JCR_LAST_MODIFIED_BY);
 			Calendar lastUpdatedOn = ConnectJcrUtils.getDateValue(comment, Property.JCR_LAST_MODIFIED);
 

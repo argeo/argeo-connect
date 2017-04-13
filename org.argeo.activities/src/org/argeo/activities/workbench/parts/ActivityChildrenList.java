@@ -17,6 +17,7 @@ import org.argeo.activities.ui.ActivityTable;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.util.LazyCTabControl;
@@ -60,6 +61,7 @@ public class ActivityChildrenList extends LazyCTabControl {
 	private final UserAdminService userAdminService;
 	private final ResourcesService resourcesService;
 	private final ActivitiesService activitiesService;
+	private final SystemAppService systemAppService;
 	private final SystemWorkbenchService systemWorkbenchService;
 	private final Node activity;
 	private final AbstractConnectEditor editor;
@@ -77,12 +79,13 @@ public class ActivityChildrenList extends LazyCTabControl {
 
 	public ActivityChildrenList(Composite parent, int style, AbstractConnectEditor editor,
 			UserAdminService userAdminService, ResourcesService resourcesService, ActivitiesService activitiesService,
-			SystemWorkbenchService systemWorkbenchService, Node entity) {
+			SystemAppService systemAppService, SystemWorkbenchService systemWorkbenchService, Node entity) {
 		super(parent, style);
 		this.userAdminService = userAdminService;
 		this.resourcesService = resourcesService;
 		this.activitiesService = activitiesService;
 		this.systemWorkbenchService = systemWorkbenchService;
+		this.systemAppService = systemAppService;
 		this.activity = entity;
 		this.editor = editor;
 		this.toolkit = editor.getFormToolkit();
@@ -262,44 +265,54 @@ public class ActivityChildrenList extends LazyCTabControl {
 	}
 
 	private boolean createChildTask(Shell shell) {
-		Session session = null;
+		Session tmpSession = null;
+		Session targetSession = null;
 		try {
-			session = activity.getSession().getRepository().login();
-			Node tmpTask = activitiesService.createDraftEntity(session, ActivitiesTypes.ACTIVITIES_TASK);
+			tmpSession = activity.getSession().getRepository().login();
+			Node tmpTask = activitiesService.createDraftEntity(tmpSession, ActivitiesTypes.ACTIVITIES_TASK);
 			tmpTask.setProperty(ActivitiesNames.ACTIVITIES_PARENT_UID,
 					activity.getProperty(ConnectNames.CONNECT_UID).getString());
 			NewSimpleTaskWizard wizard = new NewSimpleTaskWizard(userAdminService, activitiesService, tmpTask);
 			WizardDialog dialog = new WizardDialog(shell, wizard);
 			if (dialog.open() == Window.OK) {
-				Node childTask = activitiesService.publishEntity(null, ActivitiesTypes.ACTIVITIES_TASK, tmpTask);
-				childTask = activitiesService.saveEntity(childTask, false);
+				targetSession = activity.getSession().getRepository().login();
+				Node targetParent = targetSession
+						.getNode("/" + systemAppService.getBaseRelPath(ActivitiesTypes.ACTIVITIES_TASK));
+				Node childTask = systemAppService.publishEntity(targetParent, ActivitiesTypes.ACTIVITIES_TASK, tmpTask);
+				childTask = systemAppService.saveEntity(childTask, false);
 				activity.getSession().refresh(true);
 				return true;
 			}
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create child task on " + activity, e);
 		} finally {
-			JcrUtils.logoutQuietly(session);
+			JcrUtils.logoutQuietly(tmpSession);
+			JcrUtils.logoutQuietly(targetSession);
 		}
 		return false;
 	}
 
 	private boolean createActivity(String type, String title, String desc) {
-		Session session = null;
+		Session tmpSession = null;
+		Session targetSession = null;
 		try {
-			session = activity.getSession().getRepository().login();
-			Node tmpChild = activitiesService.createDraftEntity(session, type);
+			tmpSession = activity.getSession().getRepository().login();
+			Node tmpChild = activitiesService.createDraftEntity(tmpSession, type);
 			tmpChild.setProperty(ActivitiesNames.ACTIVITIES_PARENT_UID,
 					activity.getProperty(ConnectNames.CONNECT_UID).getString());
 			activitiesService.configureActivity(tmpChild, type, title, desc, null);
-			Node childActivity = activitiesService.publishEntity(null, type, tmpChild);
-			childActivity = activitiesService.saveEntity(childActivity, false);
+			targetSession = activity.getSession().getRepository().login();
+			Node targetParent = targetSession
+					.getNode("/" + systemAppService.getBaseRelPath(ActivitiesTypes.ACTIVITIES_ACTIVITY));
+			Node childActivity = systemAppService.publishEntity(targetParent, type, tmpChild);
+			childActivity = systemAppService.saveEntity(childActivity, false);
 			activity.getSession().refresh(true);
 			return true;
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to create child activity under " + activity, e);
 		} finally {
-			JcrUtils.logoutQuietly(session);
+			JcrUtils.logoutQuietly(tmpSession);
+			JcrUtils.logoutQuietly(targetSession);
 		}
 	}
 }
