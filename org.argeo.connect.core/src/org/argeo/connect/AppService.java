@@ -12,7 +12,6 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -42,10 +41,16 @@ public interface AppService {
 		Node createdNode = null;
 		if (isKnownType(nodeType)) {
 			String relPath = getDefaultRelPath(srcNode);
+
 			if (parent == null) {
-				log.error(
-						"Trying to publish a node with no parent, this approach will soon be forbidden. Calling stack:\n"
-								+ StringUtils.join(Thread.currentThread().getStackTrace(), "\n"));
+				StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+				StringBuilder builder = new StringBuilder();
+				builder.append("Trying to publish a node with no parent, "
+						+ "this approach will soon be forbidden. Calling stack:\n");
+				for (StackTraceElement el : stack) {
+					builder.append(el.toString() + "\n");
+				}
+				log.error(builder.toString());
 				parent = srcNode.getSession().getNode("/" + getBaseRelPath(nodeType));
 			}
 

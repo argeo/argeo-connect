@@ -19,12 +19,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.argeo.tp.apache.commons</groupId>
-			<artifactId>org.apache.commons.lang3</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.jcr</artifactId>
 			<version>${version.argeo-commons}</version>
