@@ -19,5 +19,10 @@
 			<groupId>org.argeo.tp.payment</groupId>
 			<artifactId>com.stripe</artifactId>
 		</dependency>
+	        <!-- Must be manually added. TODO check why and fix -->
+		<dependency>
+			<groupId>org.argeo.tp.apache.commons</groupId>
+			<artifactId>org.apache.commons.lang3</artifactId>
+		</dependency>
 	</dependencies>
 </project>
