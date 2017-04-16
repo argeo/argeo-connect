@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.jcr.ArgeoJcrException;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -52,6 +51,10 @@ public class ConnectJcrUtils {
 	/**
 	 * Replace the generic namespace with the local "jcr:" value. It is a
 	 * workaround that must be later cleaned
+	 * 
+	 * @param name
+	 *            the property name which prefix has to be cleaned
+	 * @return the short property name
 	 */
 	public static String getLocalJcrItemName(String name) {
 		String jcr = "{" + NS_JCR + "}";
@@ -132,7 +135,7 @@ public class ConnectJcrUtils {
 		// Remove trailing slash
 		if (relPath.charAt(relPath.length() - 1) == '/')
 			relPath = relPath.substring(0, relPath.length() - 2);
-		
+
 		int index = relPath.lastIndexOf('/');
 		if (index < 0)
 			return "";
@@ -152,7 +155,6 @@ public class ConnectJcrUtils {
 		return relPath.substring(index + 1);
 	}
 
-	
 	public static boolean canEdit(Node entity) {
 		boolean canEdit = false;
 		try {
@@ -464,7 +466,7 @@ public class ConnectJcrUtils {
 		}
 	}
 
-	/** Centralizes exception management to call {@link Node#getSession()} */
+	/** Centralises exception management to call {@link Node#getSession()} */
 	public static Session getSession(Node node) {
 		try {
 			return node.getSession();
@@ -474,8 +476,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Centralizes exception management to call
-	 * {@link Node#getSession()#getRepository}
+	 * Centralises exception management to call
+	 * {@link Node#getSession()#getRepository()}
 	 */
 	public static Repository getRepository(Node node) {
 		try {
@@ -485,7 +487,7 @@ public class ConnectJcrUtils {
 		}
 	}
 
-	/** Centralizes exception management to call {@link Node#getIdentifier()} */
+	/** Centralises exception management to call {@link Node#getIdentifier()} */
 	public static String getIdentifier(Node node) {
 		try {
 			return node.getIdentifier();
@@ -494,7 +496,7 @@ public class ConnectJcrUtils {
 		}
 	}
 
-	/** Centralizes exception management to call {@link Node#getName()} */
+	/** Centralises exception management to call {@link Node#getName()} */
 	public static String getName(Node node) {
 		try {
 			return node.getName();
@@ -504,7 +506,7 @@ public class ConnectJcrUtils {
 
 	}
 
-	/** Centralizes exception management to call {@link Node#getPath()} */
+	/** Centralises exception management to call {@link Node#getPath()} */
 	public static String getPath(Node node) {
 		try {
 			return node.getPath();
@@ -1060,7 +1062,7 @@ public class ConnectJcrUtils {
 	/**
 	 * Insert a reference to a given node in a multi value reference property
 	 * just before the reference that is passed as target parameter. Usefull
-	 * among other in the UI drag & drop mechanisms. If the target reference is
+	 * among other in the UI drag and drop mechanisms. If the target reference is
 	 * not found, the new reference is added at the end of the list. This
 	 * mechanism also check if another occurence of the source reference is
 	 * present and remove it
@@ -1227,8 +1229,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Convert a {@link rowIterator} to a list of {@link Node} given a selector
-	 * name. It relies on the <code>Row.getNode(String selectorName)</code>
+	 * Convert a {@link RowIterator} to a list of {@link Node} given a selector
+	 * name. It relies on the &lt;code&gt;Row.getNode(String selectorName)&lt;/code&gt;
 	 * method.
 	 */
 	public static List<Node> rowIteratorToNodeList(RowIterator rowIterator, String selectorName)

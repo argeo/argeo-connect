@@ -81,7 +81,7 @@ public class XPathUtils {
 	 * @param calendar
 	 *            the reference date
 	 * @param lowerOrGreater
-	 *            "<", ">" TODO validate ">="
+	 *            "&lt;", "&gt;" TODO validate "&gt;="
 	 * @return
 	 * @throws RepositoryException
 	 */
