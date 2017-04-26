@@ -27,6 +27,7 @@ import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.parts.IStatusLineProvider;
 import org.argeo.connect.workbench.util.EntityEditorInput;
+import org.argeo.documents.DocumentsService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerRole;
@@ -53,6 +54,7 @@ public abstract class AbstractTrackerEditor extends FormEditor
 	private UserAdminService userAdminService;
 	private ResourcesService resourcesService;
 	private ActivitiesService activitiesService;
+	private DocumentsService documentsService;
 	private TrackerService trackerService;
 	private AppService appService;
 	private AppWorkbenchService appWorkbenchService;
@@ -136,6 +138,10 @@ public abstract class AbstractTrackerEditor extends FormEditor
 
 	protected ResourcesService getResourcesService() {
 		return resourcesService;
+	}
+
+	protected DocumentsService getDocumentsService() {
+		return documentsService;
 	}
 
 	protected ActivitiesService getActivitiesService() {
@@ -241,6 +247,10 @@ public abstract class AbstractTrackerEditor extends FormEditor
 
 	public void setActivitiesService(ActivitiesService activitiesService) {
 		this.activitiesService = activitiesService;
+	}
+
+	public void setDocumentsService(DocumentsService documentsService) {
+		this.documentsService = documentsService;
 	}
 
 	public void setTrackerService(TrackerService trackerService) {

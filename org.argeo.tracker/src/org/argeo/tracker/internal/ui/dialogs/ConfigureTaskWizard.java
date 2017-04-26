@@ -2,7 +2,9 @@ package org.argeo.tracker.internal.ui.dialogs;
 
 import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -15,6 +17,7 @@ import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.widgets.AssignedToDropDown;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
@@ -24,6 +27,7 @@ import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.controls.MilestoneDropDown;
 import org.argeo.tracker.internal.ui.controls.ProjectDropDown;
+import org.argeo.tracker.internal.ui.controls.RelatedToList;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -50,6 +54,7 @@ public class ConfigureTaskWizard extends Wizard {
 	private final UserAdminService userAdminService;
 	private final TrackerService trackerService;
 	private final ActivitiesService activitiesService;
+	private final AppWorkbenchService appWorkbenchService;
 	private final Node project;
 	private final Node task;
 
@@ -64,16 +69,17 @@ public class ConfigureTaskWizard extends Wizard {
 	private DateText dueDateCmp;
 	// TODO add wake up date management
 	// private DateText wakeUpDateCmp;
-
 	private Combo importanceCmb;
 	private Combo priorityCmb;
+	private RelatedToList relatedToCmp;
 	private Text descTxt;
 
 	public ConfigureTaskWizard(UserAdminService userAdminService, ActivitiesService activitiesService,
-			TrackerService trackerService, Node draftEntity) {
+			TrackerService trackerService, AppWorkbenchService appWorkbenchService, Node draftEntity) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
 		this.activitiesService = activitiesService;
+		this.appWorkbenchService = appWorkbenchService;
 		this.task = draftEntity;
 		project = TrackerUtils.getRelatedProject(trackerService, task);
 		chosenProject = project;
@@ -137,7 +143,16 @@ public class ConfigureTaskWizard extends Wizard {
 			// task.setProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE,
 			// wakeUpDate);
 			// }
-
+			if (relatedToCmp != null) {
+				List<String> relatedTos = relatedToCmp.getChosenValues();
+				if (relatedTos != null && !relatedTos.isEmpty()) {
+					List<Node> nodes = new ArrayList<>();
+					for (String uid : relatedTos) {
+						nodes.add(ConnectJcrUtils.getNodeByIdentifier(task, uid));
+					}
+					ConnectJcrUtils.setMultipleReferences(task, ActivitiesNames.ACTIVITIES_RELATED_TO, nodes);
+				}
+			}
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to create issue on project " + project, e);
 		}
@@ -247,9 +262,19 @@ public class ConfigureTaskWizard extends Wizard {
 			priorityCmb.setItems(TrackerUtils.MAPS_ISSUE_PRIORITIES.values().toArray(new String[0]));
 			priorityCmb.select(0);
 
+			// Related to list
+			// TODO we do not yet have access to the AppWorkbenchService when
+			// creating a task from the coolbar via Eclipse command mechanism
+			if (appWorkbenchService != null) {
+				ConnectWorkbenchUtils.createBoldLabel(parent, "Related to");
+				relatedToCmp = new RelatedToList(parent, SWT.NO_FOCUS, task, ActivitiesNames.ACTIVITIES_RELATED_TO,
+						appWorkbenchService);
+				relatedToCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+			}
 			// Description
 			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);
 			label.setText("Description");
+			label.setFont(EclipseUiUtils.getBoldFont(parent));
 			gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 			label.setLayoutData(gd);
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);

@@ -7,6 +7,7 @@ import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.documents.composites.DocumentsFolderComposite;
 import org.argeo.documents.workbench.DocumentsUiPlugin;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -16,7 +17,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
-/** Default editor to display and edit an issue */
+/** Default editor to display and edit a document folder */
 public class FolderEditor extends AbstractDocumentsEditor {
 	public static final String ID = DocumentsUiPlugin.PLUGIN_ID + ".folderEditor";
 
@@ -37,8 +38,8 @@ public class FolderEditor extends AbstractDocumentsEditor {
 				Session session = ConnectJcrUtils.getSession(getNode());
 				Node currNode = ConnectJcrUtils.getNode(session, path.toString());
 				String nodeId = ConnectJcrUtils.getIdentifier(currNode);
-				// FIXME hard coded parameter name
-				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(), "param.jcrId", nodeId);
+				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
+						OpenEntityEditor.PARAM_JCR_ID, nodeId);
 			}
 		};
 		dfc.setLayoutData(EclipseUiUtils.fillAll());

@@ -8,18 +8,16 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
+import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.util.TitleIconHtmlLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
@@ -52,7 +50,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 
 	// Context
 	private Session session;
-	private SystemWorkbenchService systemWorkbenchService;
+	private AppWorkbenchService appWorkbenchService;
 
 	// UI Objects
 	private TableViewer entityViewer;
@@ -63,7 +61,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 	private String nodeType = ConnectTypes.CONNECT_ENTITY;
 
 	public FilterEntitiesVirtualTable(Composite parent, int style, Session session,
-			SystemWorkbenchService systemWorkbenchService, String nodeType) {
+			AppWorkbenchService systemWorkbenchService, String nodeType) {
 		this(parent, style, session, systemWorkbenchService, nodeType, false);
 	}
 
@@ -73,10 +71,10 @@ public class FilterEntitiesVirtualTable extends Composite {
 	 * definition of other column
 	 */
 	public FilterEntitiesVirtualTable(Composite parent, int style, Session session,
-			SystemWorkbenchService systemWorkbenchService, String nodeType, boolean lazy) {
+			AppWorkbenchService appWorkbenchService, String nodeType, boolean lazy) {
 		super(parent, SWT.NONE);
 		this.session = session;
-		this.systemWorkbenchService = systemWorkbenchService;
+		this.appWorkbenchService = appWorkbenchService;
 		this.tableStyle = style;
 		if (EclipseUiUtils.notEmpty(nodeType))
 			this.nodeType = nodeType;
@@ -94,7 +92,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 		this.layout();
 		EclipseUiSpecificUtils.enableToolTipSupport(entityViewer);
 
-		if (!systemWorkbenchService.lazyLoadLists())
+		if (!appWorkbenchService.lazyLoadLists())
 			refreshFilteredList();
 	}
 
@@ -104,12 +102,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 
 	private void createTableViewer(final Composite parent) {
 		Composite listCmp = new Composite(parent, SWT.NO_FOCUS);
-		// TODO Workaround to force display of the scroll bar
-		// Seems to be useless.
-		// GridData gd = EclipseUiUtils.fillWidth();
-		// gd.heightHint = getTableHeight();
 		GridData gd = EclipseUiUtils.fillAll();
-		// gd.heightHint = getTableHeight();
 		listCmp.setLayoutData(gd);
 
 		entityViewer = new TableViewer(listCmp, SWT.VIRTUAL | tableStyle);
@@ -159,7 +152,7 @@ public class FilterEntitiesVirtualTable extends Composite {
 	protected List<ConnectColumnDefinition> getColumnsDef() {
 		List<ConnectColumnDefinition> colDefs;
 		colDefs = new ArrayList<ConnectColumnDefinition>();
-		colDefs.add(new ConnectColumnDefinition("Name", new TitleIconHtmlLP(systemWorkbenchService), 300));
+		colDefs.add(new ConnectColumnDefinition("Name", new TitleIconHtmlLP(appWorkbenchService), 300));
 		return colDefs;
 	}
 
@@ -170,8 +163,6 @@ public class FilterEntitiesVirtualTable extends Composite {
 
 	/* MANAGE FILTER */
 	private void createFilterPart(Composite parent) {
-		// Text Area for the filter
-
 		Composite filterCmp = new Composite(parent, SWT.NO_FOCUS);
 		GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(2, false));
 		layout.horizontalSpacing = 5;
@@ -179,9 +170,9 @@ public class FilterEntitiesVirtualTable extends Composite {
 		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
-		boolean isDyn = systemWorkbenchService.queryWhenTyping();
+		boolean isDyn = appWorkbenchService.queryWhenTyping();
 		if (isDyn)
-			filterTxt = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
+			filterTxt = new DelayedText(filterCmp, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
 		else
 			filterTxt = new Text(filterCmp, style);
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
@@ -241,17 +232,16 @@ public class FilterEntitiesVirtualTable extends Composite {
 	}
 
 	/**
-	 * Build repository request : caller might overwrite in order to display a
+	 * Build repository request: caller might overwrite in order to display a
 	 * subset
 	 */
 	protected NodeIterator listFilteredElements(Session session, String filter) throws RepositoryException {
-		QueryManager queryManager = session.getWorkspace().getQueryManager();
 		String xpathQueryStr = "//element(*, " + nodeType + ")";
 		String attrQuery = XPathUtils.getFreeTextConstraint(filter);
 		if (EclipseUiUtils.notEmpty(attrQuery))
 			xpathQueryStr += "[" + attrQuery + "]";
-		Query xpathQuery = queryManager.createQuery(xpathQueryStr, ConnectConstants.QUERY_XPATH);
-		// xpathQuery.setLimit(PeopleConstants.QUERY_DEFAULT_LIMIT);
+		Query xpathQuery = XPathUtils.createQuery(session, xpathQueryStr);
+		xpathQuery.setLimit(ConnectUiConstants.SEARCH_DEFAULT_LIMIT);
 		QueryResult result = xpathQuery.execute();
 		return result.getNodes();
 

@@ -21,6 +21,12 @@
 
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.documents</artifactId>
+			<version>2.1.77-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.activities</artifactId>
 			<version>2.1.77-SNAPSHOT</version>
 		</dependency>

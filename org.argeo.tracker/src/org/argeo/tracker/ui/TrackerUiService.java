@@ -35,7 +35,7 @@ public class TrackerUiService implements AppUiService {
 			return new ConfigureIssueWizard(userAdminService, trackerService, node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_TASK)
 				|| ConnectJcrUtils.isNodeType(node, ActivitiesTypes.ACTIVITIES_TASK))
-			return new ConfigureTaskWizard(userAdminService, activitiesService, trackerService, node);
+			return new ConfigureTaskWizard(userAdminService, activitiesService, trackerService, null, node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_MILESTONE))
 			return new ConfigureMilestoneWizard(userAdminService, trackerService, node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_VERSION))

@@ -9,7 +9,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
-/** Default editor to display and edit an issue */
+/** Default editor to display and edit a file */
 public class FileEditor extends AbstractDocumentsEditor {
 	public static final String ID = DocumentsUiPlugin.PLUGIN_ID + ".fileEditor";
 

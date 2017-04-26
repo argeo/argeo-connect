@@ -3,6 +3,8 @@ package org.argeo.tracker.internal.workbench;
 import static org.eclipse.ui.forms.widgets.TableWrapData.BOTTOM;
 import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
 
+import java.nio.file.Path;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +14,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.security.AccessControlException;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.ArgeoNames;
@@ -25,6 +29,7 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
+import org.argeo.documents.composites.DocumentsFolderComposite;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -80,6 +85,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	private static final long serialVersionUID = -2589214457345896922L;
 	public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor";
 
+	private FileSystemProvider fileSystemProvider;
+
 	// Ease implementation
 	private Node project;
 
@@ -92,7 +99,30 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	protected void addPages() {
 		project = getNode();
 		try {
+			try {
+				// TODO enhance default parent node creation
+				Session session = project.getSession();
+				session.checkPermission(project.getPath(), Session.ACTION_ADD_NODE);
+				Node documents = JcrUtils.mkdirs(project, TrackerNames.TRACKER_DATA, NodeType.NT_FOLDER);
+				if (session.hasPendingChanges()) {
+					documents.addMixin(NodeType.MIX_TITLE);
+					documents.setProperty(Property.JCR_TITLE, "Documents"); // FIXME
+					session.save();
+				}
+			} catch (AccessControlException e) {
+				// Expected exception for users with limited permission
+			} catch (RepositoryException e) {
+				throw new TrackerException("Cannot initialise documents for project " + project, e);
+			}
+
 			addPage(new MainPage(this));
+			try {
+				if (project.hasNode(TrackerNames.TRACKER_DATA))
+					addPage(new DocumentsPage(this));
+			} catch (RepositoryException e) {
+				throw new TrackerException("Cannot initialise document page for project " + project, e);
+			}
+
 			addPage(new TasksPage(this));
 			addPage(new MilestoneListPage(this, ID + ".milestoneList", project, getUserAdminService(),
 					getTrackerService(), getAppWorkbenchService()));
@@ -306,14 +336,48 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 	}
 
+	private class DocumentsPage extends FormPage {
+		private final static String PAGE_ID = ID + ".documentsPage";
+
+		public DocumentsPage(FormEditor editor) {
+			super(editor, PAGE_ID, "Related Documents");
+		}
+
+		@Override
+		protected void createFormContent(IManagedForm managedForm) {
+			Composite parent = managedForm.getForm().getBody();
+			parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
+			DocumentsFolderComposite dfc = new DocumentsFolderComposite(parent, SWT.NO_FOCUS, getNode(),
+					getDocumentsService()) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected void externalNavigateTo(Path path) {
+					// TODO rather directly use the jcrPath / an URI?
+					Session session = ConnectJcrUtils.getSession(getNode());
+					Node currNode = ConnectJcrUtils.getNode(session, path.toString());
+					String nodeId = ConnectJcrUtils.getIdentifier(currNode);
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+							OpenEntityEditor.PARAM_JCR_ID, nodeId);
+				}
+			};
+			dfc.setLayoutData(EclipseUiUtils.fillAll());
+			String jcrPath = ConnectJcrUtils.getPath(project) + "/" + TrackerNames.TRACKER_DATA;
+			Path path = getDocumentsService().getPath(fileSystemProvider, jcrPath);
+			dfc.populate(path);
+			parent.layout(true, true);
+		}
+
+	}
+
 	private class TasksPage extends FormPage implements ArgeoNames {
-		public final static String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor.issuesPage";
+		private final static String PAGE_ID = ID + ".tasksPage";
 
 		private TableViewer tableViewer;
 		private Text filterTxt;
 
 		public TasksPage(FormEditor editor) {
-			super(editor, ID, "All tasks");
+			super(editor, PAGE_ID, "All tasks");
 		}
 
 		protected void createFormContent(final IManagedForm mf) {
@@ -431,5 +495,10 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		TableWrapData twd = new TableWrapData(TableWrapData.RIGHT, TableWrapData.BOTTOM);
 		label.setLayoutData(twd);
 		return label;
+	}
+
+	/* DEPENDENCY INJECTION */
+	public void setFileSystemProvider(FileSystemProvider fileSystemProvider) {
+		this.fileSystemProvider = fileSystemProvider;
 	}
 }

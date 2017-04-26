@@ -10,6 +10,7 @@ javax.servlet.http,\
 org.argeo.cms.ui.fs,\
 org.argeo.connect,\
 org.argeo.connect.ui,\
+org.argeo.connect.workbench.commands,\
 org.argeo.eclipse.spring,\
 org.argeo.eclipse.ui.specific,\
 org.eclipse.core.commands,\

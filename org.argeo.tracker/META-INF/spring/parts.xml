@@ -12,6 +12,8 @@
 		<property name="userAdminService" ref="userAdminService" />
 		<property name="resourcesService" ref="resourcesService" />
 		<property name="activitiesService" ref="activitiesService" />
+		<property name="fileSystemProvider" ref="fsProvider" />
+		<property name="documentsService" ref="documentsService" />
 		<property name="trackerService" ref="trackerService" />
 		<property name="appService" ref="systemAppService" />
 		<property name="appWorkbenchService" ref="systemWorkbenchService" />

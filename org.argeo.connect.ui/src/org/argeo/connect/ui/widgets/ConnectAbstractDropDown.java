@@ -32,13 +32,13 @@ public abstract class ConnectAbstractDropDown {
 	boolean readOnly;
 	boolean refreshOnFocus;
 
-	/** Implementers should call refreshValues() once init has been done. */
+	/** Implementing classes should call refreshValues() after initialisation */
 	public ConnectAbstractDropDown(Text text) {
 		this(text, SWT.NONE, false);
 	}
 
 	/**
-	 * Implementers should call refreshValues() once init has been done.
+	 * Implementing classes should call refreshValues() after initialisation
 	 * 
 	 * @param text
 	 * @param style
@@ -83,9 +83,7 @@ public abstract class ConnectAbstractDropDown {
 	}
 
 	public void init() {
-		List<String> filteredValues = getFilteredValues(text.getText());
-		values = filteredValues.toArray(new String[filteredValues.size()]);
-		dropDown.setItems(values);
+		refreshValues();
 	}
 
 	public void reset(String value) {
@@ -129,8 +127,7 @@ public abstract class ConnectAbstractDropDown {
 
 			public void focusLost(FocusEvent event) {
 				dropDown.setVisible(false);
-				if (readOnly && values != null
-						&& !Arrays.asList(values).contains(userText)) {
+				if (readOnly && values != null && !Arrays.asList(values).contains(userText)) {
 					modifyFromList = true;
 					text.setText("");
 					refreshValues();
@@ -181,9 +178,8 @@ public abstract class ConnectAbstractDropDown {
 				if (!modifyFromList) {
 					userText = text.getText();
 					refreshValues();
-					if (values.length == 1) {
+					if (values.length == 1)
 						dropDown.setSelectionIndex(0);
-					}
 					dropDown.setVisible(true);
 				}
 			}

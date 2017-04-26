@@ -1,5 +1,6 @@
 package org.argeo.tracker.internal.workbench;
 
+import static org.argeo.activities.ActivitiesNames.ACTIVITIES_RELATED_TO;
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 import static org.eclipse.ui.forms.widgets.TableWrapData.BOTTOM;
 import static org.eclipse.ui.forms.widgets.TableWrapData.FILL;
@@ -13,6 +14,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.Value;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesTypes;
@@ -20,6 +22,7 @@ import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
@@ -42,6 +45,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -122,6 +126,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		private Link dueDateLk;
 		private Link reporterLk;
 		private Link assignedToLk;
+		private Composite relatedCmp;
 		private Label descLbl;
 
 		public TaskMainPage(FormEditor editor) {
@@ -183,10 +188,17 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			reporterLk = new Link(body, SWT.NONE);
 			reporterLk.setLayoutData(new TableWrapData(FILL_GRAB, BOTTOM));
 
+			// Related entities
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Related to");
+			relatedCmp = new Composite(body, SWT.NO_FOCUS);
+			TableWrapData twd = new TableWrapData(FILL_GRAB, BOTTOM);
+			twd.colspan = 5;
+			relatedCmp.setLayoutData(twd);
+
 			// TODO add linked documents
 
 			// Description
-			TableWrapData twd = (TableWrapData) TrackerUiUtils.createFormBoldLabel(tk, body, "Details").getLayoutData();
+			twd = (TableWrapData) TrackerUiUtils.createFormBoldLabel(tk, body, "Details").getLayoutData();
 			twd.valign = TableWrapData.TOP;
 			descLbl = new Label(body, SWT.WRAP);
 			twd = new TableWrapData(FILL_GRAB, TableWrapData.TOP);
@@ -223,8 +235,24 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 					reporterLk.setText(TrackerUtils.getCreationLabel(getUserAdminService(), task));
 
+					try {
+						List<Node> relatedTo = new ArrayList<>();
+						if (task.hasProperty(ACTIVITIES_RELATED_TO)) {
+							Value[] values = task.getProperty(ACTIVITIES_RELATED_TO).getValues();
+							for (Value value : values) {
+								String valueStr = value.getString();
+								Node targetNode = task.getSession().getNodeByIdentifier(valueStr);
+								relatedTo.add(targetNode);
+							}
+						}
+						populateMultiValueClickableList(relatedCmp, relatedTo);
+					} catch (RepositoryException re) {
+						throw new TrackerException("Unable to refresh related to composite on " + task, re);
+					}
+
 					String desc = ConnectJcrUtils.get(task, Property.JCR_DESCRIPTION);
 					descLbl.setText(desc);
+
 					parent.layout(true, true);
 					section.setFocus();
 					super.refresh();
@@ -266,6 +294,39 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		}
 	}
 
+	private void populateMultiValueClickableList(Composite parent, List<Node> nodes) {
+		CmsUtils.clear(parent);
+		// TableWrapData twd = ((TableWrapData) parent.getLayoutData());
+		// if (nodes == null || nodes.size() < 1) {
+		// twd.heightHint = 0;
+		// return;
+		// } else
+		// twd.heightHint = SWT.DEFAULT;
+
+		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		rl.wrap = true;
+		rl.marginLeft = rl.marginTop = rl.marginBottom = 0;
+		rl.marginRight = 8;
+		parent.setLayout(rl);
+
+		for (Node node : nodes) {
+			String value = ConnectJcrUtils.get(node, Property.JCR_TITLE);
+			Link link = new Link(parent, SWT.NONE);
+			CmsUtils.markup(link);
+			link.setText(" <a>" + value + "</a>");
+
+			link.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void widgetSelected(final SelectionEvent event) {
+					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
+				}
+			});
+		}
+	}
+
 	// SECTION MENU
 	private void addMainSectionMenu(SectionPart sectionPart) {
 		ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getSection());
@@ -289,7 +350,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		public void run() {
 			Shell currShell = sectionPart.getSection().getShell();
 			ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getActivitiesService(),
-					getTrackerService(), task);
+					getTrackerService(), getAppWorkbenchService(),task);
 			WizardDialog dialog = new WizardDialog(currShell, wizard);
 			try {
 				if (dialog.open() == Window.OK && task.getSession().hasPendingChanges()) {
@@ -350,7 +411,8 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 	}
 
 	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
-		// We add a blank space before to workaround the cropping of the word
+		// We add a blank space before to workaround the cropping of the
+		// word
 		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
 		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));

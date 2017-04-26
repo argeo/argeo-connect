@@ -12,6 +12,9 @@
 	<reference id="userAdminService" interface="org.argeo.connect.UserAdminService" />
 	<reference id="resourcesService" interface="org.argeo.connect.resources.ResourcesService" />
 	<reference id="activitiesService" interface="org.argeo.activities.ActivitiesService" />
+	<reference id="fsProvider" interface="java.nio.file.spi.FileSystemProvider"
+		filter="(service.pid=org.argeo.node.fsProvider)" />
+	<reference id="documentsService" interface="org.argeo.documents.DocumentsService" />
 	<reference id="trackerService" interface="org.argeo.tracker.TrackerService" />
 	<reference id="systemAppService" interface="org.argeo.connect.SystemAppService" />
 	<reference id="systemWorkbenchService"
