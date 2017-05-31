@@ -70,7 +70,7 @@ public class SingleQuestion extends TrayDialog {
 		if (multiline)
 			return new Point(450, 350);
 		else
-			return new Point(400, 150);
+			return new Point(400, 200);
 	}
 
 	protected Control createDialogArea(Composite parent) {
@@ -78,7 +78,7 @@ public class SingleQuestion extends TrayDialog {
 		dialogarea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		Composite composite = new Composite(dialogarea, SWT.NONE);
 		composite.setLayoutData(EclipseUiUtils.fillAll());
-		GridLayout layout = new GridLayout(2, false);
+		GridLayout layout = new GridLayout();
 		// layout.marginWidth = layout.marginHeight = 20;
 		composite.setLayout(layout);
 

@@ -138,7 +138,7 @@ public class DocumentsUiService {
 	}
 
 	public boolean renameItem(Shell shell, Path parentFolderPath, Path toRenamePath) {
-		String msg = "Please provide a new name";
+		String msg = "Enter a new name:";
 		String name = SingleQuestion.ask("Rename item", msg, toRenamePath.getFileName().toString());
 		// TODO enhance check of name validity
 		if (EclipseUiUtils.notEmpty(name)) {
@@ -161,7 +161,7 @@ public class DocumentsUiService {
 	}
 
 	public boolean createFolder(Shell shell, Path currFolderPath) {
-		String msg = "Please provide a name.";
+		String msg = "Enter a name:";
 		String name = SingleQuestion.ask("Create folder", msg);
 		// TODO enhance check of name validity
 		if (EclipseUiUtils.notEmpty(name)) {
@@ -185,7 +185,7 @@ public class DocumentsUiService {
 	}
 
 	public void bookmarkFolder(Path toBookmarkPath, Repository repository, DocumentsService documentsService) {
-		String msg = "Please provide a name.";
+		String msg = "Provide a name:";
 		String name = SingleQuestion.ask("Create bookmark", msg, toBookmarkPath.getFileName().toString());
 		if (EclipseUiUtils.notEmpty(name))
 			documentsService.createFolderBookmark(toBookmarkPath, name, repository);
