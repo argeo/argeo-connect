@@ -3,6 +3,7 @@ package org.argeo.people.util;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Dictionary;
 import java.util.List;
 
 import javax.jcr.Binary;
@@ -21,11 +22,15 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.naming.LdapAttrs;
+import org.argeo.naming.NamingUtils;
+import org.argeo.node.NodeUtils;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
+import org.osgi.service.useradmin.User;
 
 /**
  * Static utility methods to manage generic CRM concepts within JCR. Rather use
@@ -33,6 +38,22 @@ import org.argeo.people.PeopleTypes;
  */
 public class PeopleJcrUtils implements PeopleNames {
 	// private final static Log log = LogFactory.getLog(PeopleJcrUtils.class);
+
+	public static Node getProfile(Session session, String username) throws RepositoryException {
+		if (username == null)
+			username = session.getUserID();
+		Node userHome = NodeUtils.getUserHome(session, username);
+		Node profile = null;
+		NodeIterator children = userHome.getNodes();
+		while (children.hasNext()) {
+			Node child = children.nextNode();
+			if (child.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+				profile = child;
+				break;
+			}
+		}
+		return profile;
+	}
 
 	/* GROUP MANAGEMENT */
 	/**
@@ -208,9 +229,10 @@ public class PeopleJcrUtils implements PeopleNames {
 			String thisNodeType = peopleService.getMainNodeType(primaryChild);
 
 			if (PeopleTypes.PEOPLE_CONTACT.equals(thisNodeType))
-				throw new PeopleException("Unknown node type for "+ primaryChild
-						+ ", cannot be maked as primary.\n Mixin for this node: "+primaryChild.getMixinNodeTypes().toString());
-			
+				throw new PeopleException("Unknown node type for " + primaryChild
+						+ ", cannot be maked as primary.\n Mixin for this node: "
+						+ primaryChild.getMixinNodeTypes().toString());
+
 			if (isPrimary(parentNode, primaryChild)) {
 				primaryChild.setProperty(PeopleNames.PEOPLE_IS_PRIMARY, false);
 				return true;
@@ -534,6 +556,14 @@ public class PeopleJcrUtils implements PeopleNames {
 				country, null, isPrimary, title, description);
 	}
 
+	public static Node createAddress(ResourcesService resourcesService, PeopleService peopleService, Node contactable,
+			Dictionary<String, Object> p, boolean isPrimary, String title, String description) {
+		// TODO deal with multiline street
+		return createAddress(resourcesService, peopleService, contactable, get(p, LdapAttrs.street), null,
+				get(p, LdapAttrs.postalCode), get(p, LdapAttrs.l), get(p, LdapAttrs.st), get(p, LdapAttrs.c), null,
+				isPrimary, title, description);
+	}
+
 	/**
 	 * Create an address with a geopoint for the current entity
 	 * 
@@ -702,5 +732,34 @@ public class PeopleJcrUtils implements PeopleNames {
 				+ appService.getDefaultRelPath(session, ConnectTypes.CONNECT_ENTITY, session.getUserID());
 		Node parent = JcrUtils.mkdirs(peopleDraftParent, ConnectJcrUtils.parentRelPath(relPath));
 		return parent.addNode(session.getUserID());
+	}
+
+	public static void syncPerson(Dictionary<String, Object> user, Node person) throws RepositoryException {
+		sync(user, LdapAttrs.mail, person, PeopleNames.PEOPLE_PRIMARY_EMAIL);
+		sync(user, LdapAttrs.givenName, person, PeopleNames.PEOPLE_FIRST_NAME);
+		sync(user, LdapAttrs.sn, person, PeopleNames.PEOPLE_LAST_NAME);
+		sync(user, LdapAttrs.displayName, person, PeopleNames.PEOPLE_DISPLAY_NAME);
+		Object dateOfBirth = user.get(LdapAttrs.dateOfBirth.name());
+		if (dateOfBirth != null) {
+			Calendar calendar = NamingUtils.ldapDateToCalendar(dateOfBirth.toString());
+			person.setProperty(PeopleNames.PEOPLE_BIRTH_DATE, calendar);
+		}
+	}
+
+	/** From {@link User} to a person or contact */
+	private static void sync(Dictionary<String, Object> properties, LdapAttrs key, Node node, String property)
+			throws RepositoryException {
+		Object value = properties.get(key.name());
+		if (value == null)
+			return;
+		node.setProperty(property, value.toString());
+	}
+
+	/** Safe get */
+	private static String get(Dictionary<String, Object> properties, LdapAttrs key) {
+		Object value = properties.get(key.name());
+		if (value == null)
+			return null;
+		return value.toString();
 	}
 }
