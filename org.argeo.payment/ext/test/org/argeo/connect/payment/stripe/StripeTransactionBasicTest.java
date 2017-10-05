@@ -36,22 +36,22 @@ public class StripeTransactionBasicTest extends TestCase implements
 	public void testManagedAccount() throws Exception {
 		// This test will fail until the platform corresponding stripe account
 		// has been registered
-		boolean doIt = false;
-		if (!doTest || !doIt)
-			return;
-
-		// Create a managed account
-		StripeService ss = new StripeService();
-		String accId = ss.createManagedAccount("FR");
-		Account account = Account.retrieve(accId, (RequestOptions) null);
-		Map<String, Object> tosAcceptanceParams = new HashMap<String, Object>();
-		long date = (long) System.currentTimeMillis() / 1000L;
-		tosAcceptanceParams.put(STRIPE_DATE, date);
-		// FIXME Assumes you're not using a proxy
-		tosAcceptanceParams.put(STRIPE_IP, "8.8.8.8");
-		Map<String, Object> accountParams = new HashMap<String, Object>();
-		accountParams.put(STRIPE_TOS_ACCEPTANCE, tosAcceptanceParams);
-		account.update(accountParams);
+//		boolean doIt = false;
+//		if (!doTest || !doIt)
+//			return;
+//
+//		// Create a managed account
+//		StripeService ss = new StripeService();
+//		String accId = ss.createManagedAccount("FR");
+//		Account account = Account.retrieve(accId, (RequestOptions) null);
+//		Map<String, Object> tosAcceptanceParams = new HashMap<String, Object>();
+//		long date = (long) System.currentTimeMillis() / 1000L;
+//		tosAcceptanceParams.put(STRIPE_DATE, date);
+//		// FIXME Assumes you're not using a proxy
+//		tosAcceptanceParams.put(STRIPE_IP, "8.8.8.8");
+//		Map<String, Object> accountParams = new HashMap<String, Object>();
+//		accountParams.put(STRIPE_TOS_ACCEPTANCE, tosAcceptanceParams);
+//		account.update(accountParams);
 	}
 
 	/** from https://stripe.com/docs/api?lang=java */
