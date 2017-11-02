@@ -11,6 +11,16 @@
 	<name>Connect Payment</name>
 	<dependencies>
 		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.core</artifactId>
+			<version>2.1.78-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.people.core</artifactId>
+			<version>2.1.78-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.cms.ui</artifactId>
 			<version>${version.argeo-commons}</version>

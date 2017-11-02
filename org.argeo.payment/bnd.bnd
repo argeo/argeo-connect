@@ -2,6 +2,8 @@ Import-Package:com.stripe.net;resolution:=optional,\
 com.google.gson;resolution:=optional,\
 org.eclipse.swt,\
 org.argeo.cms.text,\
+org.argeo.node,\
+org.argeo.connect,\
 *
 
 
