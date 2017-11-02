@@ -639,6 +639,8 @@ public class ResourcesServiceImpl implements ResourcesService {
 	public List<String> getRegisteredTagValueList(Session session, String tagId, String filter) {
 		Node tagParent = getTagLikeResourceParent(session, tagId);
 		List<String> values = new ArrayList<String>();
+		if (tagParent == null)// workaround
+			return values;
 		try {
 			NodeIterator nit = getRegisteredTags(tagParent, filter);
 			while (nit.hasNext()) {

@@ -46,7 +46,11 @@ public class OtherTagsLabelProvider extends ColumnLabelProvider {
 		this.tagId = tagId;
 		this.currentTag = currentTag;
 		tagLikeResPar = resourcesService.getTagLikeResourceParent(session, tagId);
+		if(tagLikeResPar!=null){// workaround
 		taggablePropName = ConnectJcrUtils.getMultiAsString(tagLikeResPar, RESOURCES_TAGGABLE_PROP_NAME, ",");
+		}else{
+			taggablePropName = null;
+		}
 	}
 
 	public OtherTagsLabelProvider(ResourcesService resourcesService, AppWorkbenchService appWorkbenchService,
@@ -67,6 +71,8 @@ public class OtherTagsLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public String getText(Object element) {
+//		if(true)
+//			return "";
 		// try {
 		Node currNode = ConnectJcrUtils.getNodeFromElement(element, selectorName);
 		// TODO also handle encoded tag case.
