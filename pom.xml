@@ -35,7 +35,7 @@
 
 		<!-- Depends on org.eclipse.ui.form that must be added to eclipse RCP repo -->
 		<!-- <module>org.argeo.photo.manager.ui</module> -->
-		<module>org.argeo.payment</module>
+<!-- 		<module>org.argeo.payment</module> -->
 		<!-- Depends on com.sun.syndication that must be added to argeo-extras 
 			repo -->
 		<!-- <module>org.argeo.streams</module> -->
@@ -81,29 +81,20 @@ which are used as well as that of the covered work.]]>
 			</comments>
 		</license>
 	</licenses>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+<!-- 	<build> -->
+<!-- 		<plugins> -->
+<!-- 			<plugin> -->
+<!-- 				<artifactId>maven-javadoc-plugin</artifactId> -->
+<!-- 				<configuration> -->
+<!-- 					<skip>true</skip> -->
+<!-- 				</configuration> -->
+<!-- 			</plugin> -->
+<!-- 		</plugins> -->
+<!-- 	</build> -->
 	<repositories>
 		<repository>
 			<id>argeo</id>
 			<url>http://forge.argeo.org/data/java/argeo-2.1/</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>daily</updatePolicy>
-				<checksumPolicy>warn</checksumPolicy>
-			</releases>
-		</repository>
-		<repository>
-			<id>argeo-extras</id>
-			<url>http://forge.argeo.org/data/java/argeo-extras-2.1</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -122,58 +113,58 @@ which are used as well as that of the covered work.]]>
 			</snapshots>
 		</repository>
 	</repositories>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.argeo.tp.extras</groupId>
-				<artifactId>argeo-tp-extras</artifactId>
-				<version>${version.argeo-tp-extras}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<distributionManagement>
-		<repository>
-			<id>staging</id>
-			<url>dav:https://forge.argeo.org/data/java/argeo-extras-2.1</url>
-			<uniqueVersion>false</uniqueVersion>
-		</repository>
-	</distributionManagement>
-	<profiles>
-		<profile>
-			<id>localrepo</id>
-			<repositories>
-				<repository>
-					<id>argeo</id>
-					<url>http://localhost:7080/data/java/argeo-2.1</url>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-				</repository>
-				<repository>
-					<id>argeo-extras</id>
-					<url>http://localhost:7080/data/java/argeo-extras-2.1</url>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-				</repository>
-			</repositories>
-			<distributionManagement>
-				<repository>
-					<id>staging</id>
-					<url>dav:http://localhost:7080/data/java/argeo-extras-${developmentCycle.argeo-commons}</url>
-					<uniqueVersion>false</uniqueVersion>
-				</repository>
-				<site>
-					<id>staging</id>
-					<url>dav:http://localhost:7080/data/docs/argeo-extras-${developmentCycle.argeo-commons}</url>
-				</site>
-			</distributionManagement>
-		</profile>
-	</profiles>
+<!-- 	<dependencyManagement> -->
+<!-- 		<dependencies> -->
+<!-- 			<dependency> -->
+<!-- 				<groupId>org.argeo.tp.extras</groupId> -->
+<!-- 				<artifactId>argeo-tp-extras</artifactId> -->
+<!-- 				<version>${version.argeo-tp-extras}</version> -->
+<!-- 				<type>pom</type> -->
+<!-- 				<scope>import</scope> -->
+<!-- 			</dependency> -->
+<!-- 		</dependencies> -->
+<!-- 	</dependencyManagement> -->
+<!-- 	<distributionManagement> -->
+<!-- 		<repository> -->
+<!-- 			<id>staging</id> -->
+<!-- 			<url>dav:https://forge.argeo.org/data/java/argeo-extras-2.1</url> -->
+<!-- 			<uniqueVersion>false</uniqueVersion> -->
+<!-- 		</repository> -->
+<!-- 	</distributionManagement> -->
+<!-- 	<profiles> -->
+<!-- 		<profile> -->
+<!-- 			<id>localrepo</id> -->
+<!-- 			<repositories> -->
+<!-- 				<repository> -->
+<!-- 					<id>argeo</id> -->
+<!-- 					<url>http://localhost:7080/data/java/argeo-2.1</url> -->
+<!-- 					<releases> -->
+<!-- 						<enabled>true</enabled> -->
+<!-- 						<updatePolicy>daily</updatePolicy> -->
+<!-- 						<checksumPolicy>warn</checksumPolicy> -->
+<!-- 					</releases> -->
+<!-- 				</repository> -->
+<!-- 				<repository> -->
+<!-- 					<id>argeo-extras</id> -->
+<!-- 					<url>http://localhost:7080/data/java/argeo-extras-2.1</url> -->
+<!-- 					<releases> -->
+<!-- 						<enabled>true</enabled> -->
+<!-- 						<updatePolicy>daily</updatePolicy> -->
+<!-- 						<checksumPolicy>warn</checksumPolicy> -->
+<!-- 					</releases> -->
+<!-- 				</repository> -->
+<!-- 			</repositories> -->
+<!-- 			<distributionManagement> -->
+<!-- 				<repository> -->
+<!-- 					<id>staging</id> -->
+<!-- 					<url>dav:http://localhost:7080/data/java/argeo-extras-${developmentCycle.argeo-commons}</url> -->
+<!-- 					<uniqueVersion>false</uniqueVersion> -->
+<!-- 				</repository> -->
+<!-- 				<site> -->
+<!-- 					<id>staging</id> -->
+<!-- 					<url>dav:http://localhost:7080/data/docs/argeo-extras-${developmentCycle.argeo-commons}</url> -->
+<!-- 				</site> -->
+<!-- 			</distributionManagement> -->
+<!-- 		</profile> -->
+<!-- 	</profiles> -->
 </project>
