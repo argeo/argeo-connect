@@ -40,6 +40,19 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<!-- SDK -->
+		<dependency>
+			<groupId>org.argeo.tp.equinox</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.sdk</groupId>
+			<artifactId>org.junit</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 	<profiles>
 		<profile>
 			<id>check-osgi</id>
