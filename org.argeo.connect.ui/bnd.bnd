@@ -1,5 +1,6 @@
 Bundle-Activator: org.argeo.connect.workbench.ConnectUiPlugin
 Bundle-SymbolicName: org.argeo.connect.ui;singleton:=true
+Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.core.runtime
 
 Require-Capability: cms.datamodel; filter:="(name=connect)"
