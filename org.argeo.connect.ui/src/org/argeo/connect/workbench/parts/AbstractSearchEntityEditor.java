@@ -462,19 +462,19 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		boolean isDyn = systemWorkbenchService.queryWhenTyping();
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
-		if (isDyn)
-			filterTxt = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
-		else
-			filterTxt = new Text(parent, style);
-		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
+//		if (isDyn)
+//			filterTxt = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
+//		else
+//			filterTxt = new Text(parent, style);
 
 		if (isDyn) {
+			final DelayedText delayedText = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
 			final ServerPushSession pushSession = new ServerPushSession();
-			((DelayedText) filterTxt).addDelayedModifyListener(pushSession, new ModifyListener() {
+			(delayedText).addDelayedModifyListener(pushSession, new ModifyListener() {
 				private static final long serialVersionUID = 5003010530960334977L;
 
 				public void modifyText(ModifyEvent event) {
-					filterTxt.getDisplay().asyncExec(new Runnable() {
+					delayedText.getText().getDisplay().asyncExec(new Runnable() {
 						@Override
 						public void run() {
 							refreshFilteredList();
@@ -483,7 +483,11 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 					pushSession.stop();
 				}
 			});
+			filterTxt = delayedText.getText();
+		}else {
+			filterTxt = new Text(parent, style);
 		}
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		traverseListener = new TraverseListener() {
 			private static final long serialVersionUID = 1914600503113422597L;

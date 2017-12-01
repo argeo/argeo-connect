@@ -73,8 +73,16 @@ import org.eclipse.swt.widgets.Shell;
  * 
  * @since 1.0
  */
-public class NoProgressBarWizardDialog extends TitleAreaDialog implements
-		IWizardContainer2, IPageChangeProvider {
+public class NoProgressBarWizardDialog extends TitleAreaDialog implements IWizardContainer2, IPageChangeProvider {
+	// FIXME centralizes, internationalize
+	// see IDialogConstants in RAP and RCP
+	private static String OK_LABEL = "Ok";
+	private static String CANCEL_LABEL = "Cancel";
+	private static String NEXT_LABEL = "Next";
+	private static String BACK_LABEL = "Back";
+	private static String FINISH_LABEL = "Finish";
+	private static String HELP_LABEL = "Help";
+
 	/**
 	 * 
 	 */
@@ -130,11 +138,11 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	private long activeRunningOperations = 0;
 
 	/**
-	 * The time in milliseconds where the last job finished. 'Enter' key presses
-	 * are ignored for the next {@link #RESTORE_ENTER_DELAY} milliseconds.
+	 * The time in milliseconds where the last job finished. 'Enter' key presses are
+	 * ignored for the next {@link #RESTORE_ENTER_DELAY} milliseconds.
 	 * <p>
-	 * The value <code>-1</code> indicates that the traverse listener needs to
-	 * be installed.
+	 * The value <code>-1</code> indicates that the traverse listener needs to be
+	 * installed.
 	 * </p>
 	 * 
 	 * @since 1.3
@@ -177,8 +185,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	private Composite pageContainer;
 
-	private PageContainerFillLayout pageContainerLayout = new PageContainerFillLayout(
-			5, 5, 300, 225);
+	private PageContainerFillLayout pageContainerLayout = new PageContainerFillLayout(5, 5, 300, 225);
 
 	private int pageWidth = SWT.DEFAULT;
 
@@ -203,9 +210,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	/**
 	 * A layout for a container which includes several pages, like a notebook,
-	 * wizard, or preference dialog. The size computed by this layout is the
-	 * maximum width and height of all pages currently inserted into the
-	 * container.
+	 * wizard, or preference dialog. The size computed by this layout is the maximum
+	 * width and height of all pages currently inserted into the container.
 	 */
 	protected class PageContainerFillLayout extends Layout {
 		/**
@@ -250,8 +256,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 		/*
 		 * (non-Javadoc) Method declared on Layout.
 		 */
-		public Point computeSize(Composite composite, int wHint, int hHint,
-				boolean force) {
+		public Point computeSize(Composite composite, int wHint, int hHint, boolean force) {
 			if (wHint != SWT.DEFAULT && hHint != SWT.DEFAULT) {
 				return new Point(wHint, hHint);
 			}
@@ -282,8 +287,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 		}
 
 		/**
-		 * Returns the client area for the given composite according to this
-		 * layout.
+		 * Returns the client area for the given composite according to this layout.
 		 * 
 		 * @param c
 		 *            the composite
@@ -320,8 +324,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 		}
 
 		/**
-		 * Sets the location of the page so that its origin is in the upper left
-		 * corner.
+		 * Sets the location of the page so that its origin is in the upper left corner.
 		 * 
 		 * @param w
 		 *            the control
@@ -341,8 +344,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	 */
 	public NoProgressBarWizardDialog(Shell parentShell, IWizard newWizard) {
 		super(parentShell);
-		setShellStyle(SWT.CLOSE | SWT.MAX | SWT.TITLE | SWT.BORDER
-				| SWT.APPLICATION_MODAL | SWT.RESIZE | getDefaultOrientation());
+		setShellStyle(SWT.CLOSE | SWT.MAX | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL | SWT.RESIZE
+				| getDefaultOrientation());
 		setWizard(newWizard);
 		// since VAJava can't initialize an instance var with an anonymous
 		// class outside a constructor we do it here:
@@ -354,9 +357,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * About to start a long running operation triggered through the wizard.
-	 * Shows the progress monitor and disables the wizard's buttons and
-	 * controls.
+	 * About to start a long running operation triggered through the wizard. Shows
+	 * the progress monitor and disables the wizard's buttons and controls.
 	 * 
 	 * @param enableCancelButton
 	 *            <code>true</code> if the Cancel button should be enabled, and
@@ -386,8 +388,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			}
 
 			// Deactivate shell
-			savedState = saveUIState(useCustomProgressMonitorPart
-					&& needsProgressMonitor && enableCancelButton);
+			savedState = saveUIState(useCustomProgressMonitorPart && needsProgressMonitor && enableCancelButton);
 			if (focusControl != null) {
 				savedState.put(FOCUS_CONTROL, focusControl);
 			}
@@ -491,12 +492,10 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			// control not created yet
 			return new Point(0, 0);
 		}
-		Point contentSize = pageControl.computeSize(SWT.DEFAULT, SWT.DEFAULT,
-				true);
+		Point contentSize = pageControl.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 		Rectangle rect = pageContainerLayout.getClientArea(pageContainer);
 		Point containerSize = new Point(rect.width, rect.height);
-		return new Point(Math.max(0, contentSize.x - containerSize.x),
-				Math.max(0, contentSize.y - containerSize.y));
+		return new Point(Math.max(0, contentSize.x - containerSize.x), Math.max(0, contentSize.y - containerSize.y));
 	}
 
 	/*
@@ -546,10 +545,9 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	/**
 	 * Creates the buttons for this dialog's button bar.
 	 * <p>
-	 * The <code>NoProgressBarWizardDialog</code> implementation of this
-	 * framework method prevents the parent composite's columns from being made
-	 * equal width in order to remove the margin between the Back and Next
-	 * buttons.
+	 * The <code>NoProgressBarWizardDialog</code> implementation of this framework
+	 * method prevents the parent composite's columns from being made equal width in
+	 * order to remove the margin between the Back and Next buttons.
 	 * </p>
 	 * 
 	 * @param parent
@@ -558,14 +556,12 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	protected void createButtonsForButtonBar(Composite parent) {
 		((GridLayout) parent.getLayout()).makeColumnsEqualWidth = false;
 		if (wizard.isHelpAvailable()) {
-			helpButton = createButton(parent, IDialogConstants.HELP_ID,
-					IDialogConstants.get().HELP_LABEL, false);
+			helpButton = createButton(parent, IDialogConstants.HELP_ID, HELP_LABEL, false);
 		}
 		if (wizard.needsPreviousAndNextButtons()) {
 			createPreviousAndNextButtons(parent);
 		}
-		finishButton = createButton(parent, IDialogConstants.FINISH_ID,
-				IDialogConstants.get().FINISH_LABEL, true);
+		finishButton = createButton(parent, IDialogConstants.FINISH_ID, FINISH_LABEL, true);
 		cancelButton = createCancelButton(parent);
 
 		if (parent.getDisplay().getDismissalAlignment() == SWT.RIGHT) {
@@ -579,8 +575,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jface.dialogs.Dialog#setButtonLayoutData(org.eclipse.swt.
+	 * @see org.eclipse.jface.dialogs.Dialog#setButtonLayoutData(org.eclipse.swt.
 	 * widgets.Button)
 	 */
 	protected void setButtonLayoutData(Button button) {
@@ -588,8 +583,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 		int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
 
 		// On large fonts this can make this dialog huge
-		widthHint = Math.min(widthHint,
-				button.getDisplay().getBounds().width / 5);
+		widthHint = Math.min(widthHint, button.getDisplay().getBounds().width / 5);
 		Point minSize = button.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 		data.widthHint = Math.max(widthHint, minSize.x);
 
@@ -598,10 +592,9 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	/**
 	 * Creates the Cancel button for this wizard dialog. Creates a standard (
-	 * <code>SWT.PUSH</code>) button and registers for its selection events.
-	 * Note that the number of columns in the button bar composite is
-	 * incremented. The Cancel button is created specially to give it a
-	 * removeable listener.
+	 * <code>SWT.PUSH</code>) button and registers for its selection events. Note
+	 * that the number of columns in the button bar composite is incremented. The
+	 * Cancel button is created specially to give it a removeable listener.
 	 * 
 	 * @param parent
 	 *            the parent button bar
@@ -611,7 +604,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 		// increment the number of columns in the button bar
 		((GridLayout) parent.getLayout()).numColumns++;
 		Button button = new Button(parent, SWT.PUSH);
-		button.setText(IDialogConstants.get().CANCEL_LABEL);
+		button.setText(CANCEL_LABEL);
 		setButtonLayoutData(button);
 		button.setFont(parent.getFont());
 		button.setData(new Integer(IDialogConstants.CANCEL_ID));
@@ -635,12 +628,12 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	/**
 	 * The <code>NoProgressBarWizardDialog</code> implementation of this
-	 * <code>Window</code> method calls call <code>IWizard.addPages</code> to
-	 * allow the current wizard to add extra pages, then
-	 * <code>super.createContents</code> to create the controls. It then calls
-	 * <code>IWizard.createPageControls</code> to allow the wizard to pre-create
-	 * their page controls prior to opening, so that the wizard opens to the
-	 * correct size. And finally it shows the first page.
+	 * <code>Window</code> method calls call <code>IWizard.addPages</code> to allow
+	 * the current wizard to add extra pages, then <code>super.createContents</code>
+	 * to create the controls. It then calls <code>IWizard.createPageControls</code>
+	 * to allow the wizard to pre-create their page controls prior to opening, so
+	 * that the wizard opens to the correct size. And finally it shows the first
+	 * page.
 	 */
 	protected Control createContents(Composite parent) {
 		// Allow the wizard to add pages to itself
@@ -658,8 +651,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	/**
 	 * Hook method for subclasses to create a custom progress monitor part.
 	 * <p>
-	 * The default implementation creates a progress monitor with a stop button
-	 * will be created.
+	 * The default implementation creates a progress monitor with a stop button will
+	 * be created.
 	 * </p>
 	 * 
 	 * @param composite
@@ -668,8 +661,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	 *            the layout
 	 * @return ProgressMonitorPart the progress monitor part
 	 */
-	protected ProgressMonitorPart createProgressMonitorPart(
-			Composite composite, GridLayout pmlayout) {
+	protected ProgressMonitorPart createProgressMonitorPart(Composite composite, GridLayout pmlayout) {
 		useCustomProgressMonitorPart = false;
 		return new ProgressMonitorPart(composite, pmlayout, true) {
 			String currentTask = null;
@@ -677,15 +669,13 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see
-			 * org.eclipse.jface.wizard.ProgressMonitorPart#setBlocked(org.eclipse
+			 * @see org.eclipse.jface.wizard.ProgressMonitorPart#setBlocked(org.eclipse
 			 * .core.runtime.IStatus)
 			 */
 			public void setBlocked(IStatus reason) {
 				super.setBlocked(reason);
 				if (!lockedUI) {
-					getBlockedHandler().showBlocked(getShell(), this, reason,
-							currentTask);
+					getBlockedHandler().showBlocked(getShell(), this, reason, currentTask);
 				}
 			}
 
@@ -704,8 +694,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see
-			 * org.eclipse.jface.wizard.ProgressMonitorPart#beginTask(java.lang
+			 * @see org.eclipse.jface.wizard.ProgressMonitorPart#beginTask(java.lang
 			 * .String, int)
 			 */
 			public void beginTask(String name, int totalWork) {
@@ -716,8 +705,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see
-			 * org.eclipse.jface.wizard.ProgressMonitorPart#setTaskName(java
+			 * @see org.eclipse.jface.wizard.ProgressMonitorPart#setTaskName(java
 			 * .lang.String)
 			 */
 			public void setTaskName(String name) {
@@ -728,9 +716,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			/*
 			 * (non-Javadoc)
 			 * 
-			 * @see
-			 * org.eclipse.jface.wizard.ProgressMonitorPart#subTask(java.lang
-			 * .String)
+			 * @see org.eclipse.jface.wizard.ProgressMonitorPart#subTask(java.lang .String)
 			 */
 			public void subTask(String name) {
 				super.subTask(name);
@@ -756,8 +742,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Allow the wizard's pages to pre-create their page controls. This allows
-	 * the wizard dialog to open to the correct size.
+	 * Allow the wizard's pages to pre-create their page controls. This allows the
+	 * wizard dialog to open to the correct size.
 	 */
 	private void createPageControls() {
 		// Allow the wizard pages to precreate their page controls
@@ -775,10 +761,10 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	/**
 	 * Creates the Previous and Next buttons for this wizard dialog. Creates
-	 * standard (<code>SWT.PUSH</code>) buttons and registers for their
-	 * selection events. Note that the number of columns in the button bar
-	 * composite is incremented. These buttons are created specially to prevent
-	 * any space between them.
+	 * standard (<code>SWT.PUSH</code>) buttons and registers for their selection
+	 * events. Note that the number of columns in the button bar composite is
+	 * incremented. These buttons are created specially to prevent any space between
+	 * them.
 	 * 
 	 * @param parent
 	 *            the parent button bar
@@ -797,14 +783,11 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 		layout.horizontalSpacing = 0;
 		layout.verticalSpacing = 0;
 		composite.setLayout(layout);
-		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_CENTER
-				| GridData.VERTICAL_ALIGN_CENTER);
+		GridData data = new GridData(GridData.HORIZONTAL_ALIGN_CENTER | GridData.VERTICAL_ALIGN_CENTER);
 		composite.setLayoutData(data);
 		composite.setFont(parent.getFont());
-		backButton = createButton(composite, IDialogConstants.BACK_ID,
-				IDialogConstants.get().BACK_LABEL, false);
-		nextButton = createButton(composite, IDialogConstants.NEXT_ID,
-				IDialogConstants.get().NEXT_LABEL, false);
+		backButton = createButton(composite, IDialogConstants.BACK_ID, BACK_LABEL, false);
+		nextButton = createButton(composite, IDialogConstants.NEXT_ID, NEXT_LABEL, false);
 		return composite;
 	}
 
@@ -814,13 +797,9 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	 * @return MessageDalog
 	 */
 	private MessageDialog createWizardClosingDialog() {
-		MessageDialog result = new MessageDialog(
-				getShell(),
-				JFaceResources.getString("WizardClosingDialog.title"), //$NON-NLS-1$
-				null,
-				JFaceResources.getString("WizardClosingDialog.message"), //$NON-NLS-1$
-				MessageDialog.QUESTION,
-				new String[] { IDialogConstants.get().OK_LABEL }, 0) {
+		MessageDialog result = new MessageDialog(getShell(), JFaceResources.getString("WizardClosingDialog.title"), //$NON-NLS-1$
+				null, JFaceResources.getString("WizardClosingDialog.message"), //$NON-NLS-1$
+				MessageDialog.QUESTION, new String[] { OK_LABEL }, 0) {
 			protected int getShellStyle() {
 				return super.getShellStyle() | SWT.SHEET;
 			}
@@ -862,8 +841,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	/**
 	 * Returns the progress monitor for this wizard dialog (if it has one).
 	 * 
-	 * @return the progress monitor, or <code>null</code> if this wizard dialog
-	 *         does not have one
+	 * @return the progress monitor, or <code>null</code> if this wizard dialog does
+	 *         not have one
 	 */
 	protected IProgressMonitor getProgressMonitor() {
 		return progressMonitorPart;
@@ -891,8 +870,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			try {
 				createdWizard.dispose();
 			} catch (Exception e) {
-				Status status = new Status(IStatus.ERROR, Policy.JFACE,
-						IStatus.ERROR, e.getMessage(), e);
+				Status status = new Status(IStatus.ERROR, Policy.JFACE, IStatus.ERROR, e.getMessage(), e);
 				Policy.getLog().log(status);
 			}
 			// Remove this dialog as a parent from the managed wizard.
@@ -937,12 +915,11 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	 * processing to the sender.
 	 * 
 	 * @param eventType
-	 * @return <code>true</code> if page changing listener completes
-	 *         successfully, <code>false</code> otherwise
+	 * @return <code>true</code> if page changing listener completes successfully,
+	 *         <code>false</code> otherwise
 	 */
 	private boolean doPageChanging(IWizardPage targetPage) {
-		PageChangingEvent e = new PageChangingEvent(this, getCurrentPage(),
-				targetPage);
+		PageChangingEvent e = new PageChangingEvent(this, getCurrentPage(), targetPage);
 		firePageChanging(e);
 		// Prevent navigation if necessary
 		return e.doit;
@@ -950,9 +927,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	/**
 	 * Checks whether it is alright to close this wizard dialog and performed
-	 * standard cancel processing. If there is a long running operation in
-	 * progress, this method posts an alert message saying that the wizard
-	 * cannot be closed.
+	 * standard cancel processing. If there is a long running operation in progress,
+	 * this method posts an alert message saying that the wizard cannot be closed.
 	 * 
 	 * @return <code>true</code> if it is alright to close this dialog, and
 	 *         <code>false</code> if it is not
@@ -993,8 +969,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Restores the enabled/disabled state of the wizard dialog's buttons and
-	 * the tree of controls for the currently showing page.
+	 * Restores the enabled/disabled state of the wizard dialog's buttons and the
+	 * tree of controls for the currently showing page.
 	 * 
 	 * @param state
 	 *            a map containing the saved state as returned by
@@ -1015,22 +991,21 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	/**
 	 * This implementation of IRunnableContext#run(boolean, boolean,
-	 * IRunnableWithProgress) blocks until the runnable has been run, regardless
-	 * of the value of <code>fork</code>. It is recommended that
-	 * <code>fork</code> is set to true in most cases. If <code>fork</code> is
-	 * set to <code>false</code>, the runnable will run in the UI thread and it
-	 * is the runnable's responsibility to call
-	 * <code>Display.readAndDispatch()</code> to ensure UI responsiveness.
+	 * IRunnableWithProgress) blocks until the runnable has been run, regardless of
+	 * the value of <code>fork</code>. It is recommended that <code>fork</code> is
+	 * set to true in most cases. If <code>fork</code> is set to <code>false</code>,
+	 * the runnable will run in the UI thread and it is the runnable's
+	 * responsibility to call <code>Display.readAndDispatch()</code> to ensure UI
+	 * responsiveness.
 	 * 
 	 * UI state is saved prior to executing the long-running operation and is
-	 * restored after the long-running operation completes executing. Any
-	 * attempt to change the UI state of the wizard in the long-running
-	 * operation will be nullified when original UI state is restored.
+	 * restored after the long-running operation completes executing. Any attempt to
+	 * change the UI state of the wizard in the long-running operation will be
+	 * nullified when original UI state is restored.
 	 * 
 	 */
-	public void run(boolean fork, boolean cancelable,
-			IRunnableWithProgress runnable) throws InvocationTargetException,
-			InterruptedException {
+	public void run(boolean fork, boolean cancelable, IRunnableWithProgress runnable)
+			throws InvocationTargetException, InterruptedException {
 		// The operation can only be canceled if it is executed in a separate
 		// thread.
 		// Otherwise the UI is blocked anyway.
@@ -1043,8 +1018,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			if (!fork) {
 				lockedUI = true;
 			}
-			ModalContext.run(runnable, fork, getProgressMonitor(), getShell()
-					.getDisplay());
+			ModalContext.run(runnable, fork, getProgressMonitor(), getShell().getDisplay());
 			lockedUI = false;
 		} finally {
 			// explicitly invoke done() on our progress monitor so that its
@@ -1062,8 +1036,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Saves the enabled/disabled state of the given control in the given map,
-	 * which must be modifiable.
+	 * Saves the enabled/disabled state of the given control in the given map, which
+	 * must be modifiable.
 	 * 
 	 * @param w
 	 *            the control, or <code>null</code> if none
@@ -1073,12 +1047,11 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	 * @param key
 	 *            the key
 	 * @param enabled
-	 *            <code>true</code> to enable the control, and
-	 *            <code>false</code> to disable it
+	 *            <code>true</code> to enable the control, and <code>false</code> to
+	 *            disable it
 	 * @see #restoreEnableState(Control, Map, String)
 	 */
-	private void saveEnableStateAndSet(Control w, Map h, String key,
-			boolean enabled) {
+	private void saveEnableStateAndSet(Control w, Map h, String key, boolean enabled) {
 		if (w != null) {
 			h.put(key, w.getEnabled() ? Boolean.TRUE : Boolean.FALSE);
 			w.setEnabled(enabled);
@@ -1087,15 +1060,15 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	/**
 	 * Captures and returns the enabled/disabled state of the wizard dialog's
-	 * buttons and the tree of controls for the currently showing page. All
-	 * these controls are disabled in the process, with the possible exception
-	 * of the Cancel button.
+	 * buttons and the tree of controls for the currently showing page. All these
+	 * controls are disabled in the process, with the possible exception of the
+	 * Cancel button.
 	 * 
 	 * @param keepCancelEnabled
-	 *            <code>true</code> if the Cancel button should remain enabled,
-	 *            and <code>false</code> if it should be disabled
-	 * @return a map containing the saved state suitable for restoring later
-	 *         with <code>restoreUIState</code>
+	 *            <code>true</code> if the Cancel button should remain enabled, and
+	 *            <code>false</code> if it should be disabled
+	 * @return a map containing the saved state suitable for restoring later with
+	 *         <code>restoreUIState</code>
 	 * @see #restoreUIState
 	 */
 	private Map saveUIState(boolean keepCancelEnabled) {
@@ -1103,12 +1076,10 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 		saveEnableStateAndSet(backButton, savedState, "back", false); //$NON-NLS-1$
 		saveEnableStateAndSet(nextButton, savedState, "next", false); //$NON-NLS-1$
 		saveEnableStateAndSet(finishButton, savedState, "finish", false); //$NON-NLS-1$
-		saveEnableStateAndSet(cancelButton, savedState,
-				"cancel", keepCancelEnabled); //$NON-NLS-1$
+		saveEnableStateAndSet(cancelButton, savedState, "cancel", keepCancelEnabled); //$NON-NLS-1$
 		saveEnableStateAndSet(helpButton, savedState, "help", false); //$NON-NLS-1$
 		if (currentPage != null) {
-			savedState
-					.put("page", ControlEnableState.disable(currentPage.getControl())); //$NON-NLS-1$
+			savedState.put("page", ControlEnableState.disable(currentPage.getControl())); //$NON-NLS-1$
 		}
 		return savedState;
 	}
@@ -1264,11 +1235,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 			page.createControl(pageContainer);
 			// the page is responsible for ensuring the created control is
 			// accessible via getControl.
-			Assert.isNotNull(
-					page.getControl(),
-					JFaceResources.format(
-							JFaceResources
-									.getString("NoProgressBarWizardDialog.missingSetControl"), //$NON-NLS-1$
+			Assert.isNotNull(page.getControl(),
+					JFaceResources.format(JFaceResources.getString("NoProgressBarWizardDialog.missingSetControl"), //$NON-NLS-1$
 							new Object[] { page.getName() }));
 			// ensure the dialog is large enough for this page
 			updateSize(page);
@@ -1310,9 +1278,9 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * A long running operation triggered through the wizard was stopped either
-	 * by user input or by normal end. Hides the progress monitor and restores
-	 * the enable state wizard's buttons and controls.
+	 * A long running operation triggered through the wizard was stopped either by
+	 * user input or by normal end. Hides the progress monitor and restores the
+	 * enable state wizard's buttons and controls.
 	 * 
 	 * @param savedState
 	 *            the saved UI state as returned by <code>aboutToStart</code>
@@ -1414,8 +1382,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Changes the shell size to the given size, ensuring that it is no larger
-	 * than the display bounds.
+	 * Changes the shell size to the given size, ensuring that it is no larger than
+	 * the display bounds.
 	 * 
 	 * @param width
 	 *            the shell width
@@ -1430,8 +1398,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Computes the correct dialog size for the current page and resizes its
-	 * shell if necessary. Also causes the container to refresh its layout.
+	 * Computes the correct dialog size for the current page and resizes its shell
+	 * if necessary. Also causes the container to refresh its layout.
 	 * 
 	 * @param page
 	 *            the wizard page to use to resize the dialog
@@ -1454,8 +1422,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Computes the correct dialog size for the given page and resizes its shell
-	 * if necessary.
+	 * Computes the correct dialog size for the given page and resizes its shell if
+	 * necessary.
 	 * 
 	 * @param page
 	 *            the wizard page
@@ -1473,8 +1441,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Computes the correct dialog size for the given wizard and resizes its
-	 * shell if necessary.
+	 * Computes the correct dialog size for the given wizard and resizes its shell
+	 * if necessary.
 	 * 
 	 * @param sizingWizard
 	 *            the wizard
@@ -1542,8 +1510,7 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jface.dialog.IPageChangeProvider#addPageChangedListener()
+	 * @see org.eclipse.jface.dialog.IPageChangeProvider#addPageChangedListener()
 	 */
 	public void addPageChangedListener(IPageChangedListener listener) {
 		pageChangedListeners.add(listener);
@@ -1552,17 +1519,15 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.eclipse.jface.dialog.IPageChangeProvider#removePageChangedListener()
+	 * @see org.eclipse.jface.dialog.IPageChangeProvider#removePageChangedListener()
 	 */
 	public void removePageChangedListener(IPageChangedListener listener) {
 		pageChangedListeners.remove(listener);
 	}
 
 	/**
-	 * Notifies any selection changed listeners that the selected page has
-	 * changed. Only listeners registered at the time this method is called are
-	 * notified.
+	 * Notifies any selection changed listeners that the selected page has changed.
+	 * Only listeners registered at the time this method is called are notified.
 	 * 
 	 * @param event
 	 *            a selection changed event
@@ -1584,8 +1549,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 
 	/**
 	 * Adds a listener for page changes to the list of page changing listeners
-	 * registered for this dialog. Has no effect if an identical listener is
-	 * already registered.
+	 * registered for this dialog. Has no effect if an identical listener is already
+	 * registered.
 	 * 
 	 * @param listener
 	 *            a page changing listener
@@ -1595,8 +1560,8 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Removes the provided page changing listener from the list of page
-	 * changing listeners registered for the dialog.
+	 * Removes the provided page changing listener from the list of page changing
+	 * listeners registered for the dialog.
 	 * 
 	 * @param listener
 	 *            a page changing listener
@@ -1606,9 +1571,9 @@ public class NoProgressBarWizardDialog extends TitleAreaDialog implements
 	}
 
 	/**
-	 * Notifies any page changing listeners that the currently selected dialog
-	 * page is changing. Only listeners registered at the time this method is
-	 * called are notified.
+	 * Notifies any page changing listeners that the currently selected dialog page
+	 * is changing. Only listeners registered at the time this method is called are
+	 * notified.
 	 * 
 	 * @param event
 	 *            a selection changing event

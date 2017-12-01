@@ -17,6 +17,8 @@ import org.argeo.documents.DocumentsUiService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -164,4 +166,11 @@ public class BookmarksTableViewer extends TableViewer {
 			return appUiService.getIconForType(node);
 		}
 	}
+
+	/** Single-sourcing */
+	public IStructuredSelection getStructuredSelection() throws ClassCastException {
+		ISelection selection = getSelection();
+		return (IStructuredSelection) selection;
+	}
+
 }

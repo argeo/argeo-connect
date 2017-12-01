@@ -26,7 +26,6 @@ import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -183,7 +182,7 @@ public class TagLikeListSmallPart extends Composite {
 						Composite tagCmp = toolkit.createComposite(parentCmp, SWT.NO_FOCUS);
 						tagCmp.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
-						link.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+						CmsUtils.markup(link);
 
 						if (taggablePropName.equals(ResourcesNames.CONNECT_TAGS)) {
 							link.setText(" #<a>" + tagValue + "</a>");

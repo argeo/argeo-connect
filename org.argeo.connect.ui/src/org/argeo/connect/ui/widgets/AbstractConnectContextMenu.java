@@ -24,9 +24,10 @@ import org.eclipse.swt.widgets.Shell;
  * Generic popup context menu for TableViewer to enable single sourcing between
  * CMS and Workbench
  */
-public abstract class AbstractConnectContextMenu extends Shell {
+public abstract class AbstractConnectContextMenu {
 	private static final long serialVersionUID = 5355397086046402434L;
 
+	private Shell shell;
 	// Local context
 
 	private final static String KEY_ACTION_ID = "actionId";
@@ -34,17 +35,17 @@ public abstract class AbstractConnectContextMenu extends Shell {
 	private Map<String, Button> actionButtons = new HashMap<String, Button>();
 
 	public AbstractConnectContextMenu(Display display, String[] defaultActions) {
-		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
+		shell = new Shell(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 		this.defaultActions = defaultActions;
 	}
 
 	protected void createControl() {
-		setLayout(EclipseUiUtils.noSpaceGridLayout());
-		Composite boxCmp = new Composite(this, SWT.NO_FOCUS | SWT.BORDER);
+		shell.setLayout(EclipseUiUtils.noSpaceGridLayout());
+		Composite boxCmp = new Composite(shell, SWT.NO_FOCUS | SWT.BORDER);
 		boxCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		CmsUtils.style(boxCmp, ConnectUiStyles.CONTEXT_MENU_BOX);
 		createContextMenu(boxCmp);
-		addShellListener(new ActionsShellListener());
+		shell.addShellListener(new ActionsShellListener());
 	}
 
 	protected void createContextMenu(Composite boxCmp) {
@@ -71,16 +72,20 @@ public abstract class AbstractConnectContextMenu extends Shell {
 	}
 
 	public void show(Control source, Point location, IStructuredSelection selection) {
-		if (isVisible())
-			setVisible(false);
+		if (shell.isVisible())
+			shell.setVisible(false);
 
 		if (aboutToShow(source, location, selection)) {
-			pack();
-			layout();
+			shell.pack();
+			shell.layout();
 			if (source instanceof Control)
-				setLocation(((Control) source).toDisplay(location.x, location.y));
-			open();
+				shell.setLocation(((Control) source).toDisplay(location.x, location.y));
+			shell.open();
 		}
+	}
+
+	protected Shell getShell() {
+		return shell;
 	}
 
 	class StyleButton extends Label {

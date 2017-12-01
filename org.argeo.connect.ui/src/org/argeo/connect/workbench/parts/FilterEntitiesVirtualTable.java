@@ -170,23 +170,40 @@ public class FilterEntitiesVirtualTable extends Composite {
 		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
-		boolean isDyn = appWorkbenchService.queryWhenTyping();
-		if (isDyn)
-			filterTxt = new DelayedText(filterCmp, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
-		else
-			filterTxt = new Text(filterCmp, style);
-		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
-
 		Button okBtn = new Button(filterCmp, SWT.FLAT);
 		okBtn.setText("Find");
-
+		boolean isDyn = appWorkbenchService.queryWhenTyping();
+//		if (isDyn)
+//			filterTxt = new DelayedText(filterCmp, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
+//		else
+//			filterTxt = new Text(filterCmp, style);
+//		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
+//
+//
+//		if (isDyn) {
+//			final ServerPushSession pushSession = new ServerPushSession();
+//			((DelayedText) filterTxt).addDelayedModifyListener(pushSession, new ModifyListener() {
+//				private static final long serialVersionUID = 5003010530960334977L;
+//
+//				public void modifyText(ModifyEvent event) {
+//					filterTxt.getDisplay().asyncExec(new Runnable() {
+//						@Override
+//						public void run() {
+//							refreshFilteredList();
+//						}
+//					});
+//					pushSession.stop();
+//				}
+//			});
+//		}
 		if (isDyn) {
+			final DelayedText delayedText = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
 			final ServerPushSession pushSession = new ServerPushSession();
-			((DelayedText) filterTxt).addDelayedModifyListener(pushSession, new ModifyListener() {
+			(delayedText).addDelayedModifyListener(pushSession, new ModifyListener() {
 				private static final long serialVersionUID = 5003010530960334977L;
 
 				public void modifyText(ModifyEvent event) {
-					filterTxt.getDisplay().asyncExec(new Runnable() {
+					delayedText.getText().getDisplay().asyncExec(new Runnable() {
 						@Override
 						public void run() {
 							refreshFilteredList();
@@ -195,7 +212,11 @@ public class FilterEntitiesVirtualTable extends Composite {
 					pushSession.stop();
 				}
 			});
+			filterTxt = delayedText.getText();
+		}else {
+			filterTxt = new Text(parent, style);
 		}
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		filterTxt.addTraverseListener(new TraverseListener() {
 			private static final long serialVersionUID = 3946973977865345010L;

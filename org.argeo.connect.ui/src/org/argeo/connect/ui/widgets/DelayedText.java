@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Text;
  * this delayed text only manages one listener at a time.
  *
  */
-public class DelayedText extends Text {
+public class DelayedText {
 	private static final long serialVersionUID = 5415229346092946190L;
 
 	final int delay;
@@ -26,6 +26,8 @@ public class DelayedText extends Text {
 	private MyTimer timer = new MyTimer(DelayedText.this.toString());
 	private ModifyListener delayedModifyListener;
 	private ServerPushSession pushSession;
+	
+	private Text text;
 
 	private ModifyListener modifyListener = new ModifyListener() {
 		private static final long serialVersionUID = 1117506414462641980L;
@@ -35,7 +37,7 @@ public class DelayedText extends Text {
 			synchronized (lock) {
 				if (delayedModifyListener != null) {
 					Event tmpEvent = new Event();
-					tmpEvent.widget = DelayedText.this;
+					tmpEvent.widget = text;
 					tmpEvent.display = e.display;
 					tmpEvent.data = e.data;
 					tmpEvent.time = e.time;
@@ -80,9 +82,10 @@ public class DelayedText extends Text {
 	};
 
 	public DelayedText(Composite parent, int style, int delayInMs) {
-		super(parent, style);
+//		super(parent, style);
+		text = new Text(parent,style);
 		this.delay = delayInMs;
-		this.addModifyListener(modifyListener);
+		text.addModifyListener(modifyListener);
 	}
 
 	
@@ -112,5 +115,11 @@ public class DelayedText extends Text {
 		public MyTimer(String name) {
 			super(name);
 		}
+	}
+
+	public Text getText() {
+		return text;
 	};
+	
+	
 }

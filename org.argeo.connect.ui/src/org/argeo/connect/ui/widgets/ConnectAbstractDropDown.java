@@ -12,6 +12,7 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 
 /**
  * Enable easy addition of a {@code DropDown} widget to a text with listeners
@@ -57,22 +58,23 @@ public abstract class ConnectAbstractDropDown {
 	 *            only SWT.READ_ONLY is understood, check if the entered text is
 	 *            part of the legal choices.
 	 * @param refreshOnFocus
-	 *            if true, the possible values are computed each time the focus
-	 *            is gained. It enables, among other to fine tune the
-	 *            getFilteredValues method depending on the current context
+	 *            if true, the possible values are computed each time the focus is
+	 *            gained. It enables, among other to fine tune the getFilteredValues
+	 *            method depending on the current context
 	 */
 	public ConnectAbstractDropDown(Text text, int style, boolean refreshOnFocus) {
 		this.text = text;
 		dropDown = new DropDown(text);
-		CmsUtils.markup(dropDown);
+		Object obj = dropDown;
+		if (obj instanceof Widget)
+			CmsUtils.markup((Widget) obj);
 		readOnly = (style & SWT.READ_ONLY) != 0;
 		this.refreshOnFocus = refreshOnFocus;
 		addListeners();
 	}
 
 	/**
-	 * Overwrite to force the refresh of the possible values on focus gained
-	 * event
+	 * Overwrite to force the refresh of the possible values on focus gained event
 	 */
 	protected boolean refreshOnFocus() {
 		return refreshOnFocus;
@@ -138,36 +140,40 @@ public abstract class ConnectAbstractDropDown {
 	}
 
 	private void addSelectionListener() {
-		dropDown.addListener(SWT.Selection, new Listener() {
-			private static final long serialVersionUID = -2357157809365135142L;
+		Object obj = dropDown;
+		if (obj instanceof Widget)
+			((Widget) obj).addListener(SWT.Selection, new Listener() {
+				private static final long serialVersionUID = -2357157809365135142L;
 
-			public void handleEvent(Event event) {
-				if (event.index != -1) {
-					modifyFromList = true;
-					text.setText(values[event.index]);
-					modifyFromList = false;
-					text.selectAll();
-				} else {
-					text.setText(userText);
-					text.setSelection(userText.length(), userText.length());
-					text.setFocus();
+				public void handleEvent(Event event) {
+					if (event.index != -1) {
+						modifyFromList = true;
+						text.setText(values[event.index]);
+						modifyFromList = false;
+						text.selectAll();
+					} else {
+						text.setText(userText);
+						text.setSelection(userText.length(), userText.length());
+						text.setFocus();
+					}
 				}
-			}
-		});
+			});
 	}
 
 	private void addDefaultSelectionListener() {
-		dropDown.addListener(SWT.DefaultSelection, new Listener() {
-			private static final long serialVersionUID = -5958008322630466068L;
+		Object obj = dropDown;
+		if (obj instanceof Widget)
+			((Widget) obj).addListener(SWT.DefaultSelection, new Listener() {
+				private static final long serialVersionUID = -5958008322630466068L;
 
-			public void handleEvent(Event event) {
-				if (event.index != -1) {
-					text.setText(values[event.index]);
-					text.setSelection(event.text.length());
-					dropDown.setVisible(false);
+				public void handleEvent(Event event) {
+					if (event.index != -1) {
+						text.setText(values[event.index]);
+						text.setSelection(event.text.length());
+						dropDown.setVisible(false);
+					}
 				}
-			}
-		});
+			});
 	}
 
 	private void addModifyListener() {

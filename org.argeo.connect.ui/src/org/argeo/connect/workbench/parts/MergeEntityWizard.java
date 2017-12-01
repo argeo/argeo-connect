@@ -19,7 +19,6 @@ import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -37,7 +36,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -156,7 +154,7 @@ public class MergeEntityWizard extends Wizard {
 			headerCmp.setLayoutData(EclipseUiUtils.fillWidth());
 			headerCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			chosenItemLabel = new Label(headerCmp, SWT.NONE);
-			chosenItemLabel.setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
+			CmsUtils.markup(chosenItemLabel);
 
 			ArrayList<ConnectColumnDefinition> colDefs = new ArrayList<ConnectColumnDefinition>();
 			colDefs.add(new ConnectColumnDefinition("Display Name",

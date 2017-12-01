@@ -76,6 +76,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
 /** Browse the node file system. */
@@ -88,7 +89,7 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 	private FileSystemProvider nodeFileSystemProvider;
 	private DocumentsService documentsService;
 
-	private DelayedText filterTxt;
+	private Text filterTxt;
 	private TableViewer searchResultsViewer;
 	private Composite searchCmp;
 	private Composite bookmarkCmp;
@@ -121,15 +122,16 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 		// Use a delayed text: the query won't be done until the user stop
 		// typing for 800ms
 		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL;
-		filterTxt = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
+		DelayedText delayedText = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
+		filterTxt = delayedText.getText();
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		final ServerPushSession pushSession = new ServerPushSession();
-		filterTxt.addDelayedModifyListener(pushSession, new ModifyListener() {
+		delayedText.addDelayedModifyListener(pushSession, new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 
 			public void modifyText(ModifyEvent event) {
-				filterTxt.getDisplay().asyncExec(new Runnable() {
+				delayedText.getText().getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
 						int resultNb = refreshFilteredList();

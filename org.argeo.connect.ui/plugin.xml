@@ -156,7 +156,7 @@
 		
 		<!-- Generic commands provided by the people app --> 
 		<menuContribution
-			locationURI="toolbar:org.argeo.cms.ui.workbench.rap.userToolbar?before=org.eclipse.ui.file.save"> 
+			locationURI="toolbar:org.argeo.cms.ui.workbench.userToolbar?before=org.eclipse.ui.file.save"> 
 			<!-- Force resfresh if possible --> 
 			<command
 				commandId="org.argeo.connect.ui.forceRefresh"
@@ -173,7 +173,7 @@
 		</menuContribution>
 		
 		<menuContribution
-			locationURI="toolbar:org.argeo.cms.ui.workbench.rap.userToolbar?after=org.eclipse.ui.file.saveAll"> 
+			locationURI="toolbar:org.argeo.cms.ui.workbench.userToolbar?after=org.eclipse.ui.file.saveAll"> 
 			<!-- Check in and out management --> 
  			<command
 				commandId="org.argeo.connect.ui.changeEditingState"
@@ -217,7 +217,7 @@
     		</command>
 		</menuContribution>
 		
-		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.rap.userToolbar">
+		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.userToolbar">
 			<toolbar id="org.argeo.connect.ui.dropDownsToolbar">
 				<!-- Create entity dropdown menu --> 
 				<command

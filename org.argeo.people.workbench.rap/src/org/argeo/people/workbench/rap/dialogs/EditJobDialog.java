@@ -336,24 +336,15 @@ public class EditJobDialog extends TrayDialog {
 		parent.setLayout(layout);
 
 		boolean isDyn = systemWorkbenchService.queryWhenTyping();
-		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
-		if (isDyn)
-			filterTxt = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
-		else
-			filterTxt = new Text(parent, style);
-		filterTxt.setMessage("Search and choose a corresponding entity");
-		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
-
-		okBtn = new Button(parent, SWT.FLAT);
-		okBtn.setText("Find");
-
+		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;	
 		if (isDyn) {
+			DelayedText delayedText = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
 			final ServerPushSession pushSession = new ServerPushSession();
-			((DelayedText) filterTxt).addDelayedModifyListener(pushSession, new ModifyListener() {
+			delayedText.addDelayedModifyListener(pushSession, new ModifyListener() {
 				private static final long serialVersionUID = 5003010530960334977L;
 
 				public void modifyText(ModifyEvent event) {
-					filterTxt.getDisplay().asyncExec(new Runnable() {
+					delayedText.getText().getDisplay().asyncExec(new Runnable() {
 						@Override
 						public void run() {
 							refreshFilteredList(toSearchNodeType);
@@ -362,7 +353,15 @@ public class EditJobDialog extends TrayDialog {
 					pushSession.stop();
 				}
 			});
+			filterTxt = delayedText.getText();
 		}
+		else
+			filterTxt = new Text(parent, style);
+		filterTxt.setMessage("Search and choose a corresponding entity");
+		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
+
+		okBtn = new Button(parent, SWT.FLAT);
+		okBtn.setText("Find");
 
 		filterTxt.addTraverseListener(new TraverseListener() {
 			private static final long serialVersionUID = 3886722799404099828L;
