@@ -3,6 +3,7 @@ package org.argeo.tracker.workbench;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerTypes;
@@ -13,7 +14,6 @@ import org.argeo.tracker.internal.workbench.ItProjectEditor;
 import org.argeo.tracker.internal.workbench.MilestoneEditor;
 import org.argeo.tracker.internal.workbench.ProjectEditor;
 import org.argeo.tracker.internal.workbench.TaskEditor;
-import org.argeo.tracker.internal.workbench.TrackerImages;
 import org.argeo.tracker.ui.TrackerUiService;
 import org.eclipse.swt.graphics.Image;
 
@@ -59,13 +59,13 @@ public class TrackerWorkbenchService extends TrackerUiService implements AppWork
 	public Image getIconForType(Node entity) {
 		try {
 			if (entity.isNodeType(TrackerTypes.TRACKER_ISSUE))
-				return TrackerImages.ICON_ISSUE;
+				return ConnectImages.ICON_ISSUE;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_TASK))
-				return TrackerImages.ICON_TASK;
+				return ConnectImages.ICON_TASK;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_PROJECT))
-				return TrackerImages.ICON_PROJECT;
+				return ConnectImages.ICON_PROJECT;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_MILESTONE))
-				return TrackerImages.ICON_MILESTONE;
+				return ConnectImages.ICON_MILESTONE;
 			else
 				return super.getIconForType(entity);
 		} catch (RepositoryException re) {

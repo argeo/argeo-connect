@@ -16,6 +16,7 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -180,7 +181,7 @@ public class MilestoneListPage extends FormPage implements ArgeoNames {
 
 		final Button addBtn = new Button(parent, SWT.PUSH);
 		addBtn.setToolTipText("Create a milestone");
-		addBtn.setImage(TrackerImages.ICON_ADD);
+		addBtn.setImage(ConnectImages.ICON_ADD);
 
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 8130545587125370689L;

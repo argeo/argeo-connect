@@ -33,35 +33,13 @@ import org.eclipse.swt.graphics.Image;
 public class ActivitiesImages {
 
 	private final static String BASE_PREFIX = "theme/icons/";
-	private final static String ACT_PREFIX = BASE_PREFIX + "activities/";
+	public final static String ACT_PREFIX = BASE_PREFIX + "activities/";
 
-	// Activities icons
-	// TODO We still use contact images: get more specific icons
-	public final static Image NOTE = img(ACT_PREFIX, "note.gif");
-	public final static Image SENT_MAIL = img(ACT_PREFIX, "sentMail.png");
-	public final static Image PHONE_CALL = img(ACT_PREFIX, "phoneCall.png");
-	public final static Image SENT_FAX = img(ACT_PREFIX, "sentFax.png");
-	// TODO find icons for other types:
-	private final static Image DUMMY_UNDEFINED = img(ACT_PREFIX, "noImage.gif");
-	public final static Image MEETING = DUMMY_UNDEFINED;
-	public final static Image POST_MAIL = DUMMY_UNDEFINED;
-	public final static Image PAYMENT = DUMMY_UNDEFINED;
-	public final static Image REVIEW = DUMMY_UNDEFINED;
-	public final static Image CHAT = DUMMY_UNDEFINED;
-	public final static Image TWEET = DUMMY_UNDEFINED;
-	public final static Image BLOG = DUMMY_UNDEFINED;
-
-	// TASKS icons
-	public final static Image DONE_TASK = img(ACT_PREFIX, "doneTask.png");
-	public final static Image TODO = img(ACT_PREFIX, "todo.gif");
-
-	public final static ImageDescriptor TODO_IMGDESC = getDesc(ACT_PREFIX, "todo.gif");
-
-	private static Image img(String prefix, String fileName) {
-		return getDesc(prefix, fileName).createImage();
-	}
-
-	private static ImageDescriptor getDesc(String prefix, String fileName) {
-		return PeopleRapPlugin.getImageDescriptor(prefix + fileName);
-	}
+//	public static Image img(String prefix, String fileName) {
+//		return getDesc(prefix, fileName).createImage();
+//	}
+//
+//	public static ImageDescriptor getDesc(String prefix, String fileName) {
+//		return PeopleRapPlugin.getImageDescriptor(prefix + fileName);
+//	}
 }

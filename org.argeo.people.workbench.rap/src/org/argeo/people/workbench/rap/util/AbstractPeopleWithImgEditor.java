@@ -7,10 +7,10 @@ import javax.jcr.Property;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.people.workbench.rap.PeopleRapImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -125,7 +125,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractConnectCTabEdi
 	@Override
 	public void dispose() {
 		// Free the resources.
-		if (itemPicture != null && !itemPicture.equals(PeopleRapImages.NO_PICTURE))
+		if (itemPicture != null && !itemPicture.equals(ConnectImages.NO_PICTURE))
 			itemPicture.dispose();
 		super.dispose();
 	}

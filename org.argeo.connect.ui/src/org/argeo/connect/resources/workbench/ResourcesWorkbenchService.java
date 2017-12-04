@@ -3,9 +3,9 @@ package org.argeo.connect.resources.workbench;
 import javax.jcr.Node;
 
 import org.argeo.connect.resources.ResourcesTypes;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
-import org.argeo.connect.workbench.ConnectWorkbenchImages;
 import org.eclipse.swt.graphics.Image;
 
 public class ResourcesWorkbenchService implements AppWorkbenchService {
@@ -27,7 +27,7 @@ public class ResourcesWorkbenchService implements AppWorkbenchService {
 	@Override
 	public Image getIconForType(Node entity) {
 		if (ConnectJcrUtils.isNodeType(entity, ResourcesTypes.RESOURCES_TAG))
-			return ConnectWorkbenchImages.ICON_TAG;
+			return ConnectImages.ICON_TAG;
 		return null;
 	}
 }

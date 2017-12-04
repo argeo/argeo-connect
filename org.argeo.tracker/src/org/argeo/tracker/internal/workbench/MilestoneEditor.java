@@ -30,6 +30,7 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.IJcrTableViewer;
@@ -409,15 +410,15 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getSection());
 
 			String tooltip = "Mark this milestone as closed";
-			Action action = new CloseMilestone(tooltip, TrackerImages.IMG_DESC_CLOSE, sectionPart);
+			Action action = new CloseMilestone(tooltip, ConnectImages.IMG_DESC_CLOSE, sectionPart);
 			toolBarManager.add(action);
 
 			tooltip = "Edit the milestone main information";
-			action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
+			action = new OpenConfigureDialog(tooltip, ConnectImages.IMG_DESC_EDIT, sectionPart);
 			toolBarManager.add(action);
 
 			tooltip = "Add a task to this milestone";
-			action = new AddTask(sectionPart.getSection().getShell(), tooltip, TrackerImages.IMG_DESC_ADD);
+			action = new AddTask(sectionPart.getSection().getShell(), tooltip, ConnectImages.IMG_DESC_ADD);
 			toolBarManager.add(action);
 
 			toolBarManager.update(true);

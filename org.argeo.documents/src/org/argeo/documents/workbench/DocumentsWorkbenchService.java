@@ -3,6 +3,7 @@ package org.argeo.documents.workbench;
 import javax.jcr.Node;
 import javax.jcr.nodetype.NodeType;
 
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.documents.DocumentsTypes;
@@ -30,11 +31,11 @@ public class DocumentsWorkbenchService implements AppWorkbenchService {
 	@Override
 	public Image getIconForType(Node entity) {
 		if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FILE))
-			return DocumentsImages.ICON_FILE;
+			return ConnectImages.ICON_FILE;
 		else if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FOLDER))
-			return DocumentsImages.ICON_FOLDER;
+			return ConnectImages.ICON_FOLDER;
 		else if (ConnectJcrUtils.isNodeType(entity, DocumentsTypes.DOCUMENTS_BOOKMARK))
-			return DocumentsImages.ICON_BOOKMARK;
+			return ConnectImages.ICON_BOOKMARK;
 		else
 			return null;
 	}

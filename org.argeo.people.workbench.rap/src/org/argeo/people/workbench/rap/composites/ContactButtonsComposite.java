@@ -5,6 +5,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.workbench.SystemWorkbenchService;
@@ -13,7 +14,6 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.util.PeopleJcrUtils;
-import org.argeo.people.workbench.rap.PeopleRapImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -97,7 +97,7 @@ public class ContactButtonsComposite extends Composite {
 	private Button createDeleteButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
 		CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
-		btn.setImage(PeopleRapImages.DELETE_BTN);
+		btn.setImage(ConnectImages.DELETE_BTN);
 		GridData gd = new GridData();
 		gd.widthHint = 16;
 		gd.heightHint = 16;
@@ -114,9 +114,9 @@ public class ContactButtonsComposite extends Composite {
 			boolean isPrimary = (contactNode.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
 					&& contactNode.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean());
 			if (isPrimary)
-				btn.setImage(PeopleRapImages.PRIMARY_BTN);
+				btn.setImage(ConnectImages.PRIMARY_BTN);
 			else
-				btn.setImage(PeopleRapImages.PRIMARY_NOT_BTN);
+				btn.setImage(ConnectImages.PRIMARY_NOT_BTN);
 			btn.setEnabled(isEditing);
 			// primaryBtn.setGrayed(false);
 

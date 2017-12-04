@@ -19,6 +19,7 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.UserNameLP;
@@ -187,7 +188,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create a new issue");
-			addBtn.setImage(TrackerImages.ICON_ADD);
+			addBtn.setImage(ConnectImages.ICON_ADD);
 
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 8130545587125370689L;

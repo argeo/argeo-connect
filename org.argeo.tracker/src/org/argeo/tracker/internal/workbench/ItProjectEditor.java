@@ -22,6 +22,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -257,11 +258,11 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 		ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getSection());
 
 		String tooltip = "Edit the project main information";
-		Action action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
+		Action action = new OpenConfigureDialog(tooltip, ConnectImages.IMG_DESC_EDIT, sectionPart);
 		toolBarManager.add(action);
 
 		tooltip = "Add a milestone to this project";
-		action = new AddMilestone(sectionPart.getSection().getShell(), tooltip, TrackerImages.IMG_DESC_ADD);
+		action = new AddMilestone(sectionPart.getSection().getShell(), tooltip, ConnectImages.IMG_DESC_ADD);
 		toolBarManager.add(action);
 
 		toolBarManager.update(true);
@@ -460,7 +461,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create an issue");
-			addBtn.setImage(TrackerImages.ICON_ADD);
+			addBtn.setImage(ConnectImages.ICON_ADD);
 
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 8130545587125370689L;
@@ -609,7 +610,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create a new version");
-			addBtn.setImage(TrackerImages.ICON_ADD);
+			addBtn.setImage(ConnectImages.ICON_ADD);
 
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 8130545587125370689L;
@@ -741,7 +742,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create a new component");
-			addBtn.setImage(TrackerImages.ICON_ADD);
+			addBtn.setImage(ConnectImages.ICON_ADD);
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 8130545587125370689L;
 

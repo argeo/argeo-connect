@@ -8,6 +8,7 @@ import org.argeo.activities.workbench.parts.ActivityEditor;
 import org.argeo.activities.workbench.parts.RateEditor;
 import org.argeo.activities.workbench.parts.SearchActivityEditor;
 import org.argeo.activities.workbench.parts.TaskEditor;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.eclipse.swt.graphics.Image;
@@ -35,11 +36,11 @@ public class ActivitiesWorkbenchService extends ActivitiesUiService implements A
 	@Override
 	public Image getIconForType(Node entity) {
 		if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_RATE))
-			return ActivitiesImages.RATE;
+			return ConnectImages.RATE;
 		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_TASK))
-			return ActivitiesImages.TODO;
+			return ConnectImages.TODO;
 		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_ACTIVITY))
-			return ActivitiesImages.ACTIVITY;
+			return ConnectImages.ACTIVITY;
 		return null;
 	}
 }

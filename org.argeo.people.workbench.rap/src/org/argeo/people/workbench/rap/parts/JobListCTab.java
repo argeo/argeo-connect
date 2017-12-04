@@ -13,6 +13,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.util.LazyCTabControl;
@@ -30,7 +31,6 @@ import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.util.PeopleJcrUtils;
-import org.argeo.people.workbench.rap.PeopleRapImages;
 import org.argeo.people.workbench.rap.commands.EditJob;
 import org.argeo.people.workbench.rap.providers.BooleanFlagLabelProvider;
 import org.argeo.people.workbench.rap.providers.OrgOverviewLabelProvider;
@@ -172,7 +172,7 @@ public class JobListCTab extends LazyCTabControl {
 			PrimaryEditingSupport editingSupport = new PrimaryEditingSupport(viewer, PeopleNames.PEOPLE_IS_PRIMARY);
 			col.setEditingSupport(editingSupport);
 			col.setLabelProvider(new BooleanFlagLabelProvider(PeopleNames.PEOPLE_IS_PRIMARY,
-					PeopleRapImages.PRIMARY_BTN, PeopleRapImages.PRIMARY_NOT_BTN));
+					ConnectImages.PRIMARY_BTN, ConnectImages.PRIMARY_NOT_BTN));
 			tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(0, 26, true));
 		}
 

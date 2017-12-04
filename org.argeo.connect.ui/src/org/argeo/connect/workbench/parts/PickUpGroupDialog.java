@@ -24,7 +24,7 @@ import javax.naming.ldap.Rdn;
 
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.workbench.ConnectWorkbenchImages;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.parts.LdifUsersTable;
@@ -277,12 +277,12 @@ public class PickUpGroupDialog extends TrayDialog {
 			User user = (User) element;
 			// String dn = user.getName();
 			if (user.getType() == Role.GROUP)
-				return ConnectWorkbenchImages.ICON_GROUP;
+				return ConnectImages.ICON_GROUP;
 			else if (user.getType() == Role.USER)
-				return ConnectWorkbenchImages.ICON_USER;
+				return ConnectImages.ICON_USER;
 			// dn.matches(".*(" + NodeConstants.ROLES_BASEDN + ")")
 			else if (user.getType() == Role.ROLE)
-				return ConnectWorkbenchImages.ICON_ROLE;
+				return ConnectImages.ICON_ROLE;
 			else
 				return null;
 		}

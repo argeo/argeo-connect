@@ -21,6 +21,7 @@ import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
@@ -294,7 +295,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 	private void addMainSectionMenu(SectionPart sectionPart) {
 		ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getSection());
 		String tooltip = "Edit this issue main information";
-		Action action = new OpenConfigureDialog(tooltip, TrackerImages.IMG_DESC_EDIT, sectionPart);
+		Action action = new OpenConfigureDialog(tooltip, ConnectImages.IMG_DESC_EDIT, sectionPart);
 		toolBarManager.add(action);
 		toolBarManager.update(true);
 	}

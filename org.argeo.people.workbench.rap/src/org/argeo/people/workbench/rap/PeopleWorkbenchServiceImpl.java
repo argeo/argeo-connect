@@ -4,6 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
@@ -62,11 +63,11 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	public Image getIconForType(Node entity) {
 		try {
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON))
-				return PeopleRapImages.ICON_PERSON;
+				return ConnectImages.ICON_PERSON;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_ORG))
-				return PeopleRapImages.ICON_ORG;
+				return ConnectImages.ICON_ORG;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST))
-				return PeopleRapImages.ICON_MAILING_LIST;
+				return ConnectImages.ICON_MAILING_LIST;
 			else if (entity.isNodeType(PeopleTypes.PEOPLE_CONTACT))
 				return getContactIcon(entity);
 			else
@@ -110,45 +111,45 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 
 		// EMAIL
 		if (entity.isNodeType(PeopleTypes.PEOPLE_MAIL)) {
-			return ContactImages.DEFAULT_MAIL;
+			return ConnectImages.DEFAULT_MAIL;
 		}
 		// PHONES
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_MOBILE))
-			return ContactImages.MOBILE;
+			return ConnectImages.MOBILE;
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_FAX))
-			return ContactImages.FAX;
+			return ConnectImages.FAX;
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_TELEPHONE_NUMBER) || entity.isNodeType(PeopleTypes.PEOPLE_PHONE))
-			return ContactImages.DEFAULT_PHONE;
+			return ConnectImages.DEFAULT_PHONE;
 		// ADDRESS
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 			if (contactable.isNodeType(PeopleTypes.PEOPLE_PERSON))
 				if (entity.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF))
-					return ContactImages.WORK;
+					return ConnectImages.WORK;
 				else
-					return ContactImages.DEFAULT_ADDRESS;
+					return ConnectImages.DEFAULT_ADDRESS;
 			else
-				return ContactImages.WORK;
+				return ConnectImages.WORK;
 		}
 		// URL
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_URL)) {
 			// return ContactImages.PRIVATE_HOME_PAGE;
-			return ContactImages.DEFAULT_URL;
+			return ConnectImages.DEFAULT_URL;
 		}
 		// SOCIAL MEDIA
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_SOCIAL_MEDIA)) {
 			if (ContactValueCatalogs.CONTACT_CAT_GOOGLEPLUS.equals(category))
-				return ContactImages.GOOGLEPLUS;
+				return ConnectImages.GOOGLEPLUS;
 			else if (ContactValueCatalogs.CONTACT_CAT_FACEBOOK.equals(category))
-				return ContactImages.FACEBOOK;
+				return ConnectImages.FACEBOOK;
 			else if (ContactValueCatalogs.CONTACT_CAT_LINKEDIN.equals(category))
-				return ContactImages.LINKEDIN;
+				return ConnectImages.LINKEDIN;
 			else if (ContactValueCatalogs.CONTACT_CAT_XING.equals(category))
-				return ContactImages.XING;
-			return ContactImages.DEFAULT_SOCIAL_MEDIA;
+				return ConnectImages.XING;
+			return ConnectImages.DEFAULT_SOCIAL_MEDIA;
 		}
 		// IMPP
 		else if (entity.isNodeType(PeopleTypes.PEOPLE_IMPP)) {
-			return ContactImages.DEFAULT_IMPP;
+			return ConnectImages.DEFAULT_IMPP;
 		}
 		return null;
 	}
