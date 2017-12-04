@@ -93,6 +93,14 @@ public class DocumentsService implements AppService {
 				String cn = (String) ln.getRdn(ln.size() - 1).getValue();
 				Node workgroupHome = NodeUtils.getGroupHome(session, cn);
 				if (workgroupHome != null) {
+//					URI uri = nodePathToURI(workgroupHome.getPath());
+//					Path path = getPath(nodeFileSystemProvider, uri);
+//					Path docPath = path.resolve(getAppBaseName());
+//					if(!Files.exists(docPath)){
+//						Files.createDirectory(docPath);
+//					}
+//					paths.add(docPath);
+
 					Node documents = JcrUtils.mkdirs(workgroupHome, getAppBaseName(), NodeType.NT_FOLDER);
 					documents.addMixin(NodeType.MIX_TITLE);
 					if (session.hasPendingChanges()) {
@@ -187,20 +195,24 @@ public class DocumentsService implements AppService {
 	// }
 
 	public Path getPath(FileSystemProvider nodeFileSystemProvider, String nodePath) {
-		try {
+//		try {
 			// URI uri = new URI(NODE_PREFIX + nodePath);
 			URI uri = nodePathToURI(nodePath);
+			return getPath(nodeFileSystemProvider, uri);
 
-			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
-			if (fileSystem == null)
-				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+//			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
+//			if (fileSystem == null)
+//				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+//			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
+//			if (fileSystem == null)
+//			FileSystem	fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
 			// Note that tryAs() is compulsory in the CMS.
 			// fileSystem = CurrentUser.tryAs(() ->
 			// nodeFileSystemProvider.newFileSystem(uri, null));
-			return fileSystem.getPath(nodePath);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to initialise file system for " + nodePath, e);
-		}
+//			return fileSystem.getPath(nodePath);
+//		} catch (IOException e) {
+//			throw new RuntimeException("Unable to initialise file system for " + nodePath, e);
+//		}
 	}
 
 	public NodeIterator getLastUpdatedDocuments(Session session) {
