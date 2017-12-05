@@ -31,7 +31,7 @@ public class ConnectImages {
 		return createImg(CONTACT_TYPES_BASE + name);
 	}
 
-	private static Image createImg(String name) {
+	public static Image createImg(String name) {
 		return createDesc(name).createImage();
 	}
 
