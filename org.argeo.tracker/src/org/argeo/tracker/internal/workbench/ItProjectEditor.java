@@ -110,7 +110,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_PROJECT);
+		setTitleImage(ConnectImages.PROJECT);
 	}
 
 	@Override
@@ -470,7 +470,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create an issue");
-			addBtn.setImage(ConnectImages.ICON_ADD);
+			addBtn.setImage(ConnectImages.ADD);
 
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 8130545587125370689L;
@@ -619,7 +619,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create a new version");
-			addBtn.setImage(ConnectImages.ICON_ADD);
+			addBtn.setImage(ConnectImages.ADD);
 
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 8130545587125370689L;
@@ -751,7 +751,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create a new component");
-			addBtn.setImage(ConnectImages.ICON_ADD);
+			addBtn.setImage(ConnectImages.ADD);
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 8130545587125370689L;
 

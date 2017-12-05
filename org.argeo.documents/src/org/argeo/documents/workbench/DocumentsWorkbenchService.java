@@ -31,11 +31,11 @@ public class DocumentsWorkbenchService implements AppWorkbenchService {
 	@Override
 	public Image getIconForType(Node entity) {
 		if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FILE))
-			return ConnectImages.ICON_FILE;
+			return ConnectImages.FILE;
 		else if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FOLDER))
-			return ConnectImages.ICON_FOLDER;
+			return ConnectImages.FOLDER;
 		else if (ConnectJcrUtils.isNodeType(entity, DocumentsTypes.DOCUMENTS_BOOKMARK))
-			return ConnectImages.ICON_BOOKMARK;
+			return ConnectImages.BOOKMARK;
 		else
 			return null;
 	}

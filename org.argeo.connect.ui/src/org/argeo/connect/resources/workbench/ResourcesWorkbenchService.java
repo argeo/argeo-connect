@@ -27,7 +27,7 @@ public class ResourcesWorkbenchService implements AppWorkbenchService {
 	@Override
 	public Image getIconForType(Node entity) {
 		if (ConnectJcrUtils.isNodeType(entity, ResourcesTypes.RESOURCES_TAG))
-			return ConnectImages.ICON_TAG;
+			return ConnectImages.TAG;
 		return null;
 	}
 }

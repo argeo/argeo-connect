@@ -277,12 +277,12 @@ public class PickUpGroupDialog extends TrayDialog {
 			User user = (User) element;
 			// String dn = user.getName();
 			if (user.getType() == Role.GROUP)
-				return ConnectImages.ICON_GROUP;
+				return ConnectImages.GROUP;
 			else if (user.getType() == Role.USER)
-				return ConnectImages.ICON_USER;
+				return ConnectImages.USER;
 			// dn.matches(".*(" + NodeConstants.ROLES_BASEDN + ")")
 			else if (user.getType() == Role.ROLE)
-				return ConnectImages.ICON_ROLE;
+				return ConnectImages.ROLE;
 			else
 				return null;
 		}

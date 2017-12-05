@@ -42,30 +42,5 @@
 		id="menu:org.eclipse.ui.main.menu"
 		point="org.eclipse.ui.menus">
 		
-		<!-- Contributions to creation submenu --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
-			<!-- We remove simple task addition from the cool bar for the time being --> 
-			<!-- 
-			<command
-				commandId="org.argeo.connect.ui.createEntity"
-				icon="theme/icons/types/todo.gif"
-				label="Task">
-				<parameter
-         		name="param.targetNodeType"
-         		value="activities:task" />
-			</command>	
-			-->
-		</menuContribution>
-		
-		<!-- Contributions to open search editors submenu --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
-			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="theme/icons/types/todo.gif"
-				label="Tasks">
-				<parameter name="param.nodeType" value="activities:task" />
-				<parameter name="param.editorName" value="Tasks" />
-			</command>	
-		</menuContribution>		
 	</extension>
 </plugin>

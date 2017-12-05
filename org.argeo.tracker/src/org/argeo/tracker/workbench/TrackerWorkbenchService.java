@@ -59,13 +59,13 @@ public class TrackerWorkbenchService extends TrackerUiService implements AppWork
 	public Image getIconForType(Node entity) {
 		try {
 			if (entity.isNodeType(TrackerTypes.TRACKER_ISSUE))
-				return ConnectImages.ICON_ISSUE;
+				return ConnectImages.ISSUE;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_TASK))
-				return ConnectImages.ICON_TASK;
+				return ConnectImages.TASK;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_PROJECT))
-				return ConnectImages.ICON_PROJECT;
+				return ConnectImages.PROJECT;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_MILESTONE))
-				return ConnectImages.ICON_MILESTONE;
+				return ConnectImages.MILESTONE;
 			else
 				return super.getIconForType(entity);
 		} catch (RepositoryException re) {

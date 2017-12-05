@@ -31,7 +31,7 @@ public class TaskEditor extends AbstractConnectCTabEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_TASK);
+		setTitleImage(ConnectImages.TASK);
 		task = getNode();
 	}
 

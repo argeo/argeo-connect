@@ -88,7 +88,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_CATEGORY);
+		setTitleImage(ConnectImages.CATEGORY);
 	}
 
 	@Override
@@ -196,7 +196,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 
 			final Button addBtn = new Button(parent, SWT.PUSH);
 			addBtn.setToolTipText("Create a new issue");
-			addBtn.setImage(ConnectImages.ICON_ADD);
+			addBtn.setImage(ConnectImages.ADD);
 
 			filterTxt.addModifyListener(new ModifyListener() {
 				private static final long serialVersionUID = 8130545587125370689L;

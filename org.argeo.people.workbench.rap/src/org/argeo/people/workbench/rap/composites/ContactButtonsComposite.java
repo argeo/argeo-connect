@@ -97,7 +97,7 @@ public class ContactButtonsComposite extends Composite {
 	private Button createDeleteButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
 		CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
-		btn.setImage(ConnectImages.DELETE_BTN);
+		btn.setImage(ConnectImages.DELETE);
 		GridData gd = new GridData();
 		gd.widthHint = 16;
 		gd.heightHint = 16;
@@ -114,9 +114,9 @@ public class ContactButtonsComposite extends Composite {
 			boolean isPrimary = (contactNode.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
 					&& contactNode.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean());
 			if (isPrimary)
-				btn.setImage(ConnectImages.PRIMARY_BTN);
+				btn.setImage(ConnectImages.PRIMARY);
 			else
-				btn.setImage(ConnectImages.PRIMARY_NOT_BTN);
+				btn.setImage(ConnectImages.PRIMARY_NOT);
 			btn.setEnabled(isEditing);
 			// primaryBtn.setGrayed(false);
 

@@ -13,7 +13,7 @@ public class TrackerImages {
 	public final static String TYPE_RELPATH = "types/";
 
 	// FIXME: currently use an image created by the plugin to create the color
-	public final static Color BG_COLOR_RED = new Color(ConnectImages.ICON_ISSUE.getDevice(), 210, 108, 120);
+	public final static Color BG_COLOR_RED = new Color(ConnectImages.ISSUE.getDevice(), 210, 108, 120);
 
 	// local shortcuts
 //	public static Image getImage(String fileName) {

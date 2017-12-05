@@ -45,14 +45,21 @@ public class ConnectImages {
 	//
 	// GENERIC ICONS
 	//
-	public final static Image PRIMARY_BTN = createIcon("primary.gif");
-	public final static Image PRIMARY_NOT_BTN = createIcon("primaryNOT.gif");
-	public final static Image ORIGINAL_BTN = createIcon("first.png");
+	public final static Image PRIMARY = createIcon("primary.gif");
+	public final static Image PRIMARY_NOT = createIcon("primaryNOT.gif");
+	public final static Image ORIGINAL = createIcon("first.png");
 	public final static Image NO_PICTURE = createIcon("noPicture.gif");
-	public final static Image DELETE_BTN = createAction("delete.gif");
-	public final static Image DELETE_BTN_LEFT = createAction("delete_left.gif");
-	public final static Image ADD_BTN = createAction("add.png");
-	public final static Image MERGE_BTN = createAction("merge.gif");
+	// Actions
+	public final static Image DELETE = createAction("delete.gif");
+	public final static Image DELETE_LEFT = createAction("delete_left.gif");
+	public final static Image MERGE = createAction("merge.gif");
+	// Image Descriptors still required for some Actions
+	public final static ImageDescriptor IMG_DESC_EDIT = createDesc(ACTIONS_BASE + "edit.gif");
+	public final static ImageDescriptor IMG_DESC_ADD = createDesc(ACTIONS_BASE + "add.gif");
+	public final static ImageDescriptor IMG_DESC_CLOSE = createDesc(ACTIONS_BASE + "close.png");
+	public final static Image ADD = IMG_DESC_ADD.createImage();
+	public final static Image EDIT = IMG_DESC_EDIT.createImage();
+	public final static Image CLOSE = IMG_DESC_CLOSE.createImage();
 
 	//
 	// ASSEMBLY
@@ -63,13 +70,13 @@ public class ConnectImages {
 	//
 	// PEOPLE
 	//
-	public final static Image ICON_GROUP = createType("group.gif");
-	public final static Image ICON_USER = createType("user.gif");
-	public final static Image ICON_ROLE = createType("role.gif");
-	public final static Image ICON_TAG = createType("tag.png");
-	public final static Image ICON_PERSON = createType("person.gif");
-	public final static Image ICON_ORG = createType("organisation.png");
-	public final static Image ICON_MAILING_LIST = createType("mailingList.gif");
+	public final static Image GROUP = createType("group.gif");
+	public final static Image USER = createType("user.gif");
+	public final static Image ROLE = createType("role.gif");
+	public final static Image TAG = createType("tag.png");
+	public final static Image PERSON = createType("person.gif");
+	public final static Image ORG = createType("organisation.png");
+	public final static Image MAILING_LIST = createType("mailingList.gif");
 	// Contact types
 	public final static Image DEFAULT_MAIL = createContactType("email.png");
 	public final static Image DEFAULT_PHONE = createContactType("defaultPhone.png");
@@ -93,10 +100,10 @@ public class ConnectImages {
 	//
 	// DOCUMENTS
 	//
-	public final static Image ICON_FOLDER = createType("folder.gif");
-	public final static Image ICON_FILE = createType("file.gif");
-	public final static Image ICON_BOOKMARK = createType("folder.gif");
-	public final static Image ICON_SHARED_FOLDER = createType("folder.gif");
+	public final static Image FOLDER = createType("folder.gif");
+	public final static Image FILE = createType("file.gif");
+	public final static Image BOOKMARK = createType("folder.gif");
+	public final static Image SHARED_FOLDER = createType("folder.gif");
 	public final static Image DOCUMENTS = createType("documents.png");
 
 	//
@@ -124,18 +131,10 @@ public class ConnectImages {
 	//
 	// TRACKER
 	//
-	// TODO why do we use descriptors?
-	public final static ImageDescriptor IMG_DESC_EDIT = createDesc(ACTIONS_BASE + "edit.gif");
-	public final static ImageDescriptor IMG_DESC_ADD = createDesc(ACTIONS_BASE + "add.gif");
-	public final static ImageDescriptor IMG_DESC_CLOSE = createDesc(ACTIONS_BASE + "close.png");
-	public final static Image ICON_ADD = IMG_DESC_ADD.createImage();
-	public final static Image ICON_ISSUE = createType("bug.gif");
-	public final static Image ICON_TASK = createType("task.png");
-	public final static Image ICON_PROJECT = createType("project.gif");
-	public final static Image ICON_MILESTONE = createType("milestone.gif");
-	public final static Image ICON_SPEC = createType("specification.gif");
-	public final static Image ICON_CATEGORY = createType("category.gif");
-
-	public final static ImageDescriptor TODO_IMGDESC = createDesc(TYPES_BASE + "todo.gif");
-	
+	public final static Image ISSUE = createType("bug.gif");
+	public final static Image TASK = createType("task.png");
+	public final static Image PROJECT = createType("project.gif");
+	public final static Image MILESTONE = createType("milestone.gif");
+	public final static Image SPECIFICATION = createType("specification.gif");
+	public final static Image CATEGORY = createType("category.gif");
 }

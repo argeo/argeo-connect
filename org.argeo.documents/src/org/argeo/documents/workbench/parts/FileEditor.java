@@ -16,7 +16,7 @@ public class FileEditor extends AbstractDocumentsEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_FILE);
+		setTitleImage(ConnectImages.FILE);
 	}
 
 	@Override

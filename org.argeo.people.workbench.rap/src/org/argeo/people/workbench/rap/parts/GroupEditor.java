@@ -41,7 +41,7 @@ public abstract class GroupEditor extends AbstractConnectCTabEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_GROUP);
+		setTitleImage(ConnectImages.GROUP);
 		group = getNode();
 	}
 

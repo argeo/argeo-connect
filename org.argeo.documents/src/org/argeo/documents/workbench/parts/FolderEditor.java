@@ -24,7 +24,7 @@ public class FolderEditor extends AbstractDocumentsEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_FOLDER);
+		setTitleImage(ConnectImages.FOLDER);
 	}
 
 	@Override

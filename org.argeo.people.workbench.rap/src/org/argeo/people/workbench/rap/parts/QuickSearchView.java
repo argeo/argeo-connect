@@ -66,7 +66,7 @@ public class QuickSearchView extends ViewPart implements Refreshable {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		setTitleImage(ConnectImages.ICON_GROUP);
+		setTitleImage(ConnectImages.GROUP);
 		session = ConnectJcrUtils.login(repository);
 		// MainLayout
 		parent.setLayout(new GridLayout());

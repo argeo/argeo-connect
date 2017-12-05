@@ -181,7 +181,7 @@ public class MilestoneListPage extends FormPage implements ArgeoNames {
 
 		final Button addBtn = new Button(parent, SWT.PUSH);
 		addBtn.setToolTipText("Create a milestone");
-		addBtn.setImage(ConnectImages.ICON_ADD);
+		addBtn.setImage(ConnectImages.ADD);
 
 		filterTxt.addModifyListener(new ModifyListener() {
 			private static final long serialVersionUID = 8130545587125370689L;

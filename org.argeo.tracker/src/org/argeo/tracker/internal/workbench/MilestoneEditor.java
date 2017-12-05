@@ -117,7 +117,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_MILESTONE);
+		setTitleImage(ConnectImages.MILESTONE);
 	}
 
 	@Override

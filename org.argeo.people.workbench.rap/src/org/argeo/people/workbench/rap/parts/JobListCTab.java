@@ -172,7 +172,7 @@ public class JobListCTab extends LazyCTabControl {
 			PrimaryEditingSupport editingSupport = new PrimaryEditingSupport(viewer, PeopleNames.PEOPLE_IS_PRIMARY);
 			col.setEditingSupport(editingSupport);
 			col.setLabelProvider(new BooleanFlagLabelProvider(PeopleNames.PEOPLE_IS_PRIMARY,
-					ConnectImages.PRIMARY_BTN, ConnectImages.PRIMARY_NOT_BTN));
+					ConnectImages.PRIMARY, ConnectImages.PRIMARY_NOT));
 			tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(0, 26, true));
 		}
 

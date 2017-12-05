@@ -113,7 +113,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
-		setTitleImage(ConnectImages.ICON_MAILING_LIST);
+		setTitleImage(ConnectImages.MAILING_LIST);
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 
 		// Initialise context

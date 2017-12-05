@@ -61,7 +61,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_ORG);
+		setTitleImage(ConnectImages.ORG);
 		org = getNode();
 	}
 

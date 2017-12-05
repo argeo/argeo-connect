@@ -81,7 +81,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_TASK);
+		setTitleImage(ConnectImages.TASK);
 	}
 
 	@Override

@@ -78,7 +78,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ICON_ISSUE);
+		setTitleImage(ConnectImages.ISSUE);
 	}
 
 	@Override
