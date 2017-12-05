@@ -69,6 +69,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -95,6 +97,12 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	private final static int CHART_DATA_LIMIT = 8;
 	private final static int CHART_WIDTH = 300;
 	private final static int CHART_HEIGHT = 200;
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		super.init(site, input);
+		setTitleImage(ConnectImages.ICON_PROJECT);
+	}
 
 	@Override
 	protected void addPages() {

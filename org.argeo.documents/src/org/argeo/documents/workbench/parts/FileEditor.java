@@ -1,5 +1,6 @@
 package org.argeo.documents.workbench.parts;
 
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.documents.composites.DocumentsFileComposite;
 import org.argeo.documents.workbench.DocumentsUiPlugin;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -15,6 +16,7 @@ public class FileEditor extends AbstractDocumentsEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(ConnectImages.ICON_FILE);
 	}
 
 	@Override

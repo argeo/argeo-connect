@@ -8,7 +8,6 @@
 		<view
 			id="org.argeo.documents.myFilesView"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="theme/icons/documentsBrowser.png"
 			name="Files"
 			restorable="true">
 		</view>
@@ -20,14 +19,12 @@
 			id="org.argeo.documents.folderEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Folder Editor"
-			icon="theme/icons/types/folder.gif"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.documents.fileEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="File Editor"
-			icon="theme/icons/types/file.gif"
 			default="false">
 		</editor>
 		<!-- search editors -->

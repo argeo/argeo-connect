@@ -13,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.widgets.DelayedText;
@@ -65,6 +66,7 @@ public class QuickSearchView extends ViewPart implements Refreshable {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		setTitleImage(ConnectImages.ICON_GROUP);
 		session = ConnectJcrUtils.login(repository);
 		// MainLayout
 		parent.setLayout(new GridLayout());

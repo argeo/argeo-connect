@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -30,6 +31,7 @@ public class TaskEditor extends AbstractConnectCTabEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(ConnectImages.ICON_TASK);
 		task = getNode();
 	}
 
@@ -49,7 +51,8 @@ public class TaskEditor extends AbstractConnectCTabEditor {
 		// Activities and tasks
 		String tooltip = "Activities and tasks related to " + JcrUtils.get(task, Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new ActivityChildrenList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
-				getResourcesService(), getActivitiesService(), getSystemAppService(), getSystemWorkbenchService(), task);
+				getResourcesService(), getActivitiesService(), getSystemAppService(), getSystemWorkbenchService(),
+				task);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, activitiesCmp, "Activity log", RelatedActivityList.CTAB_ID, tooltip);
 	}

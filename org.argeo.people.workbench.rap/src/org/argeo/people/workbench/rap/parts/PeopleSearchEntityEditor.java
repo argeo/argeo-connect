@@ -18,6 +18,7 @@ import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.resources.workbench.OtherTagsLabelProvider;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.UserNameLP;
@@ -66,6 +67,7 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(ConnectImages.SEARCH);
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Display Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 

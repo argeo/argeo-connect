@@ -6,7 +6,6 @@
 		point="org.eclipse.ui.views">
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="theme/icons/types/todo.gif"
 			id="org.argeo.activities.myTodoListView"
 			name="To Do"
 			restorable="true">
@@ -19,11 +18,9 @@
 		<editor
 			id="org.argeo.activities.activityEditor"
 			name="Activity editor"
-			icon="theme/icons/types/todo.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
-			icon="theme/icons/types/todo.gif"
 			name="Task editor"
 			id="org.argeo.activities.taskEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
@@ -31,7 +28,6 @@
 		<!-- Search editor -->
 		<editor
 			id="org.argeo.activities.searchActivityEditor"
-			icon="theme/icons/actions/search.png"
 			name="Search task editor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>

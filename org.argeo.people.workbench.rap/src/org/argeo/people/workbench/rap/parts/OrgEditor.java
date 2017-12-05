@@ -12,6 +12,7 @@ import org.argeo.activities.workbench.parts.RelatedActivityList;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesNames;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.widgets.TagLikeListPart;
@@ -60,6 +61,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(ConnectImages.ICON_ORG);
 		org = getNode();
 	}
 

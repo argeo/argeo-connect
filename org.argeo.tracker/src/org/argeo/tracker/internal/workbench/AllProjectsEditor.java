@@ -11,6 +11,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.parts.AbstractSearchEntityEditor;
@@ -37,6 +38,7 @@ public class AllProjectsEditor extends AbstractSearchEntityEditor {
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(ConnectImages.SEARCH);
 		colDefs = new ArrayList<ConnectColumnDefinition>();
 		colDefs.add(new ConnectColumnDefinition("Name", new JcrHtmlLabelProvider(Property.JCR_TITLE), 300));
 		colDefs.add(new ConnectColumnDefinition("Manager",

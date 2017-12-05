@@ -6,6 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.documents.composites.DocumentsFolderComposite;
@@ -23,6 +24,7 @@ public class FolderEditor extends AbstractDocumentsEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(ConnectImages.ICON_FOLDER);
 	}
 
 	@Override

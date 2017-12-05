@@ -12,7 +12,6 @@
 		<!-- People specific views -->
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="theme/icons/people.gif"
 			id="org.argeo.people.workbench.rap.quickSearchView"
 			name="Contacts"
 			restorable="true">
@@ -26,19 +25,16 @@
 		<editor
 			id="org.argeo.people.workbench.rap.peopleSearchEntityEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="theme/icons/actions/search.png"
 			name="Search">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.listValuesEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="theme/icons/actions/search.png"
 			name="Search">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.searchByTagEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-			icon="theme/icons/actions/search.png"
 			name="Search by Tag">
 		</editor>
 		
@@ -46,25 +42,21 @@
 		<editor
 			id="org.argeo.people.workbench.rap.personEditor"
 			name="Person editor"
-			icon="theme/icons/types/person.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.orgEditor"
 			name="Organisation editor"
-			icon="theme/icons/types/organisation.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.groupEditor"
 			name="Group"
-			icon="theme/icons/types/group.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.mailingListEditor"
 			name="Mailing List"
-			icon="theme/icons/types/mailingList.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 	</extension>
@@ -119,58 +111,6 @@
 	<extension
 		point="org.eclipse.ui.menus">
 					
-		<!-- People specific entity creation --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
-			<command
-				commandId="org.argeo.connect.ui.createEntity"
-				icon="theme/icons/types/person.gif"
-				label="Person">
-				<parameter
-         		name="param.targetNodeType"
-         		value="people:person" />
-			</command>	
-			<command
-				commandId="org.argeo.connect.ui.createEntity"
-				icon="theme/icons/types/organisation.png"
-				label="Organisation">
-				<parameter
-         		name="param.targetNodeType"
-         		value="people:org" />
-			</command>	
-			<!--<command
-				commandId="org.argeo.people.workbench.rap.createEntity"
-				icon="icons/mailingList.gif"
-				label="Mailing List">
-				<parameter
-         		name="param.targetNodeType"
-         		value="people:mailingList" />
-			</command>-->
-		</menuContribution>
-		
-		<!-- People specific search editors --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
-			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="theme/icons/types/person.gif"
-				label="Persons">
-				<parameter name="param.nodeType" value="people:person" />
-				<parameter name="param.editorName" value="Persons" />
-			</command>	
-			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="theme/icons/types/organisation.png"
-				label="Organisations">
-				<parameter name="param.nodeType" value="people:org" />
-				<parameter name="param.editorName" value="Organisations" />
-			</command>	
-			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="theme/icons/types/mailingList.gif"
-				label="Mailing Lists">
-				<parameter name="param.nodeType" value="people:mailingList" />
-				<parameter name="param.editorName" value="Mailing Lists" />
-			</command>	
-		</menuContribution>		
 	</extension>
 	
 	<extension

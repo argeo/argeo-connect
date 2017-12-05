@@ -12,19 +12,19 @@
 		<editor
 			id="org.argeo.connect.ui.tagEditor"
 			name="Tag"
-			icon="theme/icons/types/tag.png"
+			icon="icons/types/tag.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.connect.ui.searchTagsEditor"
 			name="Search tags"
-			icon="theme/icons/actions/search.png"
+			icon="icons/actions/search.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.connect.ui.defaultSearchEntityEditor"
 			name="Search"
-			icon="theme/icons/actions/search.png"
+			icon="icons/actions/search.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 	</extension>
@@ -160,7 +160,7 @@
 			<!-- Force resfresh if possible --> 
 			<command
 				commandId="org.argeo.connect.ui.forceRefresh"
-				icon="theme/icons/actions/refresh.png"
+				icon="icons/actions/refresh.png"
 				label="Force refresh of the current active part"
 				style="push"
 				tooltip="Force refresh of the current active part">
@@ -177,7 +177,7 @@
 			<!-- Check in and out management --> 
  			<command
 				commandId="org.argeo.connect.ui.changeEditingState"
-				icon="theme/icons/actions/checkout.gif"
+				icon="icons/actions/checkout.gif"
 				label="Check Out"
 				style="push"
 				tooltip="Check Out item for edit">
@@ -198,7 +198,7 @@
 			<!-- Add global life cycle on Editors  -->
 			<command
 				commandId="org.argeo.connect.ui.changeEditingState"
-				icon="theme/icons/actions/cancelEdit.gif"
+				icon="icons/actions/cancelEdit.gif"
 				label="Cancel edit"
 				style="push"
 				tooltip="Abandon changes and check back in">
@@ -225,7 +225,7 @@
 					style="pulldown"
 					label="Create"
 					tooltip="Create a new object"
-					icon="theme/icons/actions/add.gif"
+					icon="icons/actions/add.gif"
 					commandId="org.argeo.cms.ui.workbench.doNothing">
 				</command>
 				<!-- Search entity dropdown menu --> 
@@ -234,7 +234,7 @@
 					style="pulldown"
 					label="Search"
 					tooltip="Open a detailed search page"
-					icon="theme/icons/actions/search.png"
+					icon="icons/actions/search.png"
 					commandId="org.argeo.cms.ui.workbench.doNothing">
 <!--					<visibleWhen checkEnabled="false">
 						<with variable="roles">
@@ -248,7 +248,7 @@
 				<!-- Spreadsheet extracts --> 
 				<command
 					commandId="org.argeo.connect.ui.getJxlExport"
-					icon="theme/icons/actions/jxlExport.gif"
+					icon="icons/actions/jxlExport.gif"
 					label="Generate extract"
 					style="push"
 					tooltip="Generate a spreadsheet export of the current active filtered list">
@@ -267,12 +267,111 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="theme/icons/types/tag.png"
+				icon="icons/types/tag.png"
 				label="Tags">
 				<parameter name="param.nodeType" value="connect:tag" />
 				<parameter name="param.editorName" value="Tags" />
 			</command>	
-		</menuContribution>	
+		</menuContribution>
+		
+		<!-- People specific entity creation --> 
+		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="icons/types/person.gif"
+				label="Person">
+				<parameter
+         		name="param.targetNodeType"
+         		value="people:person" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="icons/types/organisation.png"
+				label="Organisation">
+				<parameter
+         		name="param.targetNodeType"
+         		value="people:org" />
+			</command>	
+			<!--<command
+				commandId="org.argeo.people.workbench.rap.createEntity"
+				icon="icons/mailingList.gif"
+				label="Mailing List">
+				<parameter
+         		name="param.targetNodeType"
+         		value="people:mailingList" />
+			</command>-->
+		</menuContribution>
+		
+		<!-- People specific search editors --> 
+		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+			<command
+				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				icon="icons/types/person.gif"
+				label="Persons">
+				<parameter name="param.nodeType" value="people:person" />
+				<parameter name="param.editorName" value="Persons" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				icon="icons/types/organisation.png"
+				label="Organisations">
+				<parameter name="param.nodeType" value="people:org" />
+				<parameter name="param.editorName" value="Organisations" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				icon="icons/types/mailingList.gif"
+				label="Mailing Lists">
+				<parameter name="param.nodeType" value="people:mailingList" />
+				<parameter name="param.editorName" value="Mailing Lists" />
+			</command>	
+		</menuContribution>		
+		
+		<!-- Tracker specific entity creation --> 
+		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="icons/types/todo.png"
+				label="Task">
+				<parameter
+         			name="param.targetNodeType"
+         			value="tracker:task" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="icons/types/milestone.gif"
+				label="Milestone">
+				<parameter
+         			name="param.targetNodeType"
+         			value="tracker:milestone" />
+			</command>	
+			<command
+				commandId="org.argeo.connect.ui.createEntity"
+				icon="icons/types/project.gif"
+				label="Project">
+				<parameter
+         			name="param.targetNodeType"
+         			value="tracker:project" />
+			</command>	
+		</menuContribution>
+		
+		<!-- tracker specific search editors --> 
+		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+			<command
+				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				icon="icons/types/project.gif"
+				label="Projects">
+				<parameter name="param.nodeType" value="tracker:project" />
+				<parameter name="param.editorName" value="Projects" />
+				<visibleWhen>
+		    		<with variable="roles">
+		      			<iterate ifEmpty="false" operator="or">
+		        			<equals value="cn=org.argeo.tracker.editor,ou=roles,ou=node" />
+		      			</iterate>
+					</with>
+				</visibleWhen>
+			</command>	
+		</menuContribution>		
 	</extension>
 	
 	<!-- Workbench listeners --> 

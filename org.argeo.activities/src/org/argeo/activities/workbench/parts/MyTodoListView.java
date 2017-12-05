@@ -26,6 +26,7 @@ import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.activities.workbench.util.ActivityViewerComparator;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
@@ -65,6 +66,7 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		setTitleImage(ConnectImages.TODO);
 		// Finalise initialisation
 		session = ConnectJcrUtils.login(repository);
 

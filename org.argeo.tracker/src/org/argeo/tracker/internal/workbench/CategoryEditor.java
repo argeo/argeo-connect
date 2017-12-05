@@ -55,6 +55,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -82,6 +84,12 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 	// Ease implementation
 	private Text filterTxt;
 	private AbstractFormPart issueListPart;
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		super.init(site, input);
+		setTitleImage(ConnectImages.ICON_CATEGORY);
+	}
 
 	@Override
 	protected void addPages() {

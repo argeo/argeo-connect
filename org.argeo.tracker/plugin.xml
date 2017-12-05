@@ -13,42 +13,36 @@
 			id="org.argeo.tracker.projectEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="IT Project Editor"
-			icon="theme/icons/types/project.gif"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.tracker.milestoneEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Milestone Editor"
-			icon="theme/icons/types/milestone.gif"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.tracker.itProjectEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="IT Project Editor"
-			icon="theme/icons/types/project.gif"
 			default="false">
 		</editor>
 		<editor
         	id="org.argeo.tracker.categoryEditor"
         	class="org.argeo.eclipse.spring.SpringExtensionFactory"
         	default="false"
-        	icon="theme/icons/types/category.gif"
         	name="Category Editor">
   		</editor>
 		<editor
 			id="org.argeo.tracker.taskEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Task Editor"
-			icon="theme/icons/types/task.png"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.tracker.issueEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Issue Editor"
-			icon="theme/icons/types/issue.png"
 			default="false">
 		</editor>
 		<!-- search editors -->
@@ -56,7 +50,6 @@
 			id="org.argeo.tracker.allProjectsEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Search among projects"
-			icon="theme/icons/actions/search.png"
 			default="false">
 		</editor>
 	</extension>
@@ -70,50 +63,5 @@
 		id="menu:org.eclipse.ui.main.menu"
 		point="org.eclipse.ui.menus">
 		
-		<!-- Tracker specific entity creation --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
-			<command
-				commandId="org.argeo.connect.ui.createEntity"
-				icon="theme/icons/types/todo.png"
-				label="Task">
-				<parameter
-         			name="param.targetNodeType"
-         			value="tracker:task" />
-			</command>	
-			<command
-				commandId="org.argeo.connect.ui.createEntity"
-				icon="theme/icons/types/milestone.gif"
-				label="Milestone">
-				<parameter
-         			name="param.targetNodeType"
-         			value="tracker:milestone" />
-			</command>	
-			<command
-				commandId="org.argeo.connect.ui.createEntity"
-				icon="theme/icons/types/project.gif"
-				label="Project">
-				<parameter
-         			name="param.targetNodeType"
-         			value="tracker:project" />
-			</command>	
-		</menuContribution>
-		
-		<!-- tracker specific search editors --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
-			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="theme/icons/types/project.gif"
-				label="Projects">
-				<parameter name="param.nodeType" value="tracker:project" />
-				<parameter name="param.editorName" value="Projects" />
-				<visibleWhen>
-		    		<with variable="roles">
-		      			<iterate ifEmpty="false" operator="or">
-		        			<equals value="cn=org.argeo.tracker.editor,ou=roles,ou=node" />
-		      			</iterate>
-					</with>
-				</visibleWhen>
-			</command>	
-		</menuContribution>		
 	</extension>
 </plugin>

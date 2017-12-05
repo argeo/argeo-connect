@@ -77,6 +77,8 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
 import org.eclipse.ui.forms.IManagedForm;
@@ -111,6 +113,12 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 	private final static int CHART_DATA_LIMIT = 8;
 	private final static int CHART_WIDTH = 300;
 	private final static int CHART_HEIGHT = 200;
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		super.init(site, input);
+		setTitleImage(ConnectImages.ICON_MILESTONE);
+	}
 
 	@Override
 	protected void addPages() {
@@ -498,7 +506,8 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			public void run() {
 				Session session = ConnectJcrUtils.getSession(project);
 				String mainMixin = ConnectJcrUtils.isNodeType(project, TrackerTypes.TRACKER_IT_PROJECT)
-						? TrackerTypes.TRACKER_ISSUE : TrackerTypes.TRACKER_TASK;
+						? TrackerTypes.TRACKER_ISSUE
+						: TrackerTypes.TRACKER_TASK;
 				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
 				String propName2 = TrackerNames.TRACKER_MILESTONE_UID;

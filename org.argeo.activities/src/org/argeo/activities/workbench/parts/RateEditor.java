@@ -20,6 +20,7 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.core.ActivityUtils;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.widgets.LinkListPart;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -59,6 +60,7 @@ public class RateEditor extends AbstractConnectEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
+		setTitleImage(ConnectImages.RATE);
 		rate = getNode();
 	}
 

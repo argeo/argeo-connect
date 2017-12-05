@@ -85,6 +85,7 @@ public class ConnectImages {
 	public final static Image DELETE_BTN_LEFT = createAction("delete_left.gif");
 	public final static Image ADD_BTN = createAction("add.png");
 	public final static Image MERGE_BTN = createAction("merge.gif");
+	public final static Image SEARCH = createAction("search.png");
 
 	//
 	// DOCUMENTS
@@ -93,6 +94,7 @@ public class ConnectImages {
 	public final static Image ICON_FILE = createType("file.gif");
 	public final static Image ICON_BOOKMARK = createType("folder.gif");
 	public final static Image ICON_SHARED_FOLDER = createType("folder.gif");
+	public final static Image DOCUMENTS = createType("documents.png");
 
 	//
 	// ACTIVITIES
@@ -130,6 +132,7 @@ public class ConnectImages {
 	public final static Image ICON_PROJECT = createType("project.gif");
 	public final static Image ICON_MILESTONE = createType("milestone.gif");
 	public final static Image ICON_SPEC = createType("specification.gif");
+	public final static Image ICON_CATEGORY = createType("category.gif");
 
 	public final static ImageDescriptor TODO_IMGDESC = createDesc(TYPES_BASE + "todo.gif");
 }
