@@ -49,6 +49,16 @@ public class ConnectImages {
 	public final static Image PRIMARY_NOT_BTN = createIcon("primaryNOT.gif");
 	public final static Image ORIGINAL_BTN = createIcon("first.png");
 	public final static Image NO_PICTURE = createIcon("noPicture.gif");
+	public final static Image DELETE_BTN = createAction("delete.gif");
+	public final static Image DELETE_BTN_LEFT = createAction("delete_left.gif");
+	public final static Image ADD_BTN = createAction("add.png");
+	public final static Image MERGE_BTN = createAction("merge.gif");
+
+	//
+	// ASSEMBLY
+	//
+	public final static Image DASHBOARD = createType("dashboard.gif");
+	public final static Image SEARCH = createAction("search.png");
 
 	//
 	// PEOPLE
@@ -78,14 +88,7 @@ public class ConnectImages {
 	public final static Image LINKEDIN = createContactType("linkedin.png");
 	public final static Image FACEBOOK = createContactType("facebook.png");
 	public final static Image XING = createContactType("xing.png");
-	// Impp
 	public final static Image DEFAULT_IMPP = createContactType("impp.png");
-	// Actions Icons
-	public final static Image DELETE_BTN = createAction("delete.gif");
-	public final static Image DELETE_BTN_LEFT = createAction("delete_left.gif");
-	public final static Image ADD_BTN = createAction("add.png");
-	public final static Image MERGE_BTN = createAction("merge.gif");
-	public final static Image SEARCH = createAction("search.png");
 
 	//
 	// DOCUMENTS
@@ -99,7 +102,6 @@ public class ConnectImages {
 	//
 	// ACTIVITIES
 	//
-
 	public final static Image DONE_TASK = createType("doneTask.png");
 	public final static Image TODO = createType("todo.gif");
 	public final static Image RATE = createType("todo.gif");
@@ -135,4 +137,5 @@ public class ConnectImages {
 	public final static Image ICON_CATEGORY = createType("category.gif");
 
 	public final static ImageDescriptor TODO_IMGDESC = createDesc(TYPES_BASE + "todo.gif");
+	
 }
