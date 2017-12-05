@@ -421,8 +421,11 @@
 	
 	<!-- Theme -->
 	<extension point="org.eclipse.rap.ui.themes">
+		
 		<themeContribution themeId="org.eclipse.rap.rwt.theme.Default" file="theme.css" />
-		<!--<theme id="org.argeo.suite.theme.argeo2.Default" name="Argeo 2" file="theme.css"/>-->
- 	</extension>
-	
+		
+		<!--
+		<theme id="org.argeo.suite.theme.argeo2.Default" name="Argeo 2" file="theme.css"/>
+		-->
+	</extension>
 </plugin>

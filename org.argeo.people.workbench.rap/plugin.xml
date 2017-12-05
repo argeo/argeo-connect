@@ -14,7 +14,7 @@
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.people.workbench.rap.quickSearchView"
 			name="Contacts"
-			restorable="true">
+			restorable="false">
 		</view>
 	</extension>
 	

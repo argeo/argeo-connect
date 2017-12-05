@@ -9,7 +9,7 @@
 			id="org.argeo.documents.myFilesView"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Files"
-			restorable="true">
+			restorable="false">
 		</view>
 	</extension>
 	

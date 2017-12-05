@@ -8,7 +8,7 @@
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.activities.myTodoListView"
 			name="To Do"
-			restorable="true">
+			restorable="false">
 		</view>
 	</extension>
 	
