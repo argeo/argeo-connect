@@ -51,7 +51,7 @@ public class ConnectImages {
 	public final static Image ORIGINAL = createIcon("first.png");
 	public final static Image NO_PICTURE = createIcon("noPicture.gif");
 	// Actions
-	public final static Image DELETE = createAction("delete.gif");
+	public final static Image DELETE = createAction("delete.png");
 	public final static Image DELETE_LEFT = createAction("delete_left.gif");
 	public final static Image MERGE = createAction("merge.gif");
 	// Image Descriptors still required for some Actions
@@ -84,7 +84,7 @@ public class ConnectImages {
 	public final static Image PHONE_DIRECT = createContactType("telephone.png");
 	public final static Image FAX = createContactType("fax.png");
 	public final static Image MOBILE = createContactType("mobile.png");
-	public final static Image DEFAULT_ADDRESS = createContactType("home.png");
+	public final static Image DEFAULT_ADDRESS = createContactType("address.png");
 	public final static Image DEFAULT_URL = createContactType("link.png");
 	public final static Image WORK = createContactType("workAddress.png");
 	public final static Image PRIVATE_HOME_PAGE = createContactType("house_link.png");
