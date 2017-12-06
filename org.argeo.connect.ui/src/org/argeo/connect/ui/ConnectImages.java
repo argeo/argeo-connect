@@ -45,8 +45,8 @@ public class ConnectImages {
 	//
 	// GENERIC ICONS
 	//
-	public final static Image PRIMARY = createIcon("primary.gif");
-	public final static Image PRIMARY_NOT = createIcon("primaryNOT.gif");
+	public final static Image PRIMARY = createIcon("primary.png");
+	public final static Image PRIMARY_NOT = createIcon("primaryNOT.png");
 	public final static Image ORIGINAL = createIcon("first.png");
 	public final static Image NO_PICTURE = createIcon("noPicture.gif");
 	// Actions
@@ -55,7 +55,7 @@ public class ConnectImages {
 	public final static Image MERGE = createAction("merge.gif");
 	// Image Descriptors still required for some Actions
 	public final static ImageDescriptor IMG_DESC_EDIT = createDesc(ACTIONS_BASE + "edit.gif");
-	public final static ImageDescriptor IMG_DESC_ADD = createDesc(ACTIONS_BASE + "add.gif");
+	public final static ImageDescriptor IMG_DESC_ADD = createDesc(ACTIONS_BASE + "add.png");
 	public final static ImageDescriptor IMG_DESC_CLOSE = createDesc(ACTIONS_BASE + "close.png");
 	public final static Image ADD = IMG_DESC_ADD.createImage();
 	public final static Image EDIT = IMG_DESC_EDIT.createImage();
@@ -64,17 +64,17 @@ public class ConnectImages {
 	//
 	// ASSEMBLY
 	//
-	public final static Image DASHBOARD = createType("dashboard.gif");
+	public final static Image DASHBOARD = createType("dashboard.png");
 	public final static Image SEARCH = createAction("search.png");
 
 	//
 	// PEOPLE
 	//
-	public final static Image GROUP = createType("group.gif");
-	public final static Image USER = createType("user.gif");
+	public final static Image GROUP = createType("group.png");
+	public final static Image USER = createType("person.png");
 	public final static Image ROLE = createType("role.gif");
 	public final static Image TAG = createType("tag.png");
-	public final static Image PERSON = createType("person.gif");
+	public final static Image PERSON = createType("person.png");
 	public final static Image ORG = createType("organisation.png");
 	public final static Image MAILING_LIST = createType("mailingList.gif");
 	// Contact types
@@ -133,8 +133,8 @@ public class ConnectImages {
 	//
 	public final static Image ISSUE = createType("bug.gif");
 	public final static Image TASK = createType("task.png");
-	public final static Image PROJECT = createType("project.gif");
-	public final static Image MILESTONE = createType("milestone.gif");
+	public final static Image PROJECT = createType("project.png");
+	public final static Image MILESTONE = createType("milestone.png");
 	public final static Image SPECIFICATION = createType("specification.gif");
 	public final static Image CATEGORY = createType("category.gif");
 }
