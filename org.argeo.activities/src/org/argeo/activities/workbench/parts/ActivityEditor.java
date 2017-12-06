@@ -9,7 +9,6 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.widgets.LinkListPart;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
@@ -44,7 +43,6 @@ public class ActivityEditor extends AbstractConnectEditor {
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.ACTIVITY);
 		activity = getNode();
 	}
 

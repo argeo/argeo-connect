@@ -25,37 +25,44 @@
 		<editor
 			id="org.argeo.people.workbench.rap.peopleSearchEntityEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+     		icon="platform:/plugin/org.argeo.connect.ui/icons/actions/search.png"
 			name="Search">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.listValuesEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+     		icon="platform:/plugin/org.argeo.connect.ui/icons/actions/search.png"
 			name="Search">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.searchByTagEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
+      		icon="platform:/plugin/org.argeo.connect.ui/icons/actions/search.png"
 			name="Search by Tag">
 		</editor>
 		
 		<!-- Entities -->
 		<editor
-			id="org.argeo.people.workbench.rap.personEditor"
-			name="Person editor"
-			class="org.argeo.eclipse.spring.SpringExtensionFactory">
+        class="org.argeo.eclipse.spring.SpringExtensionFactory"
+        icon="platform:/plugin/org.argeo.connect.ui/icons/types/person.png"
+        id="org.argeo.people.workbench.rap.personEditor"
+        name="Person editor">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.orgEditor"
 			name="Organisation editor"
+        	icon="platform:/plugin/org.argeo.connect.ui/icons/types/organisation.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.groupEditor"
 			name="Group"
+       		icon="platform:/plugin/org.argeo.connect.ui/icons/types/group.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.people.workbench.rap.mailingListEditor"
+	       	icon="platform:/plugin/org.argeo.connect.ui/icons/types/mailingList.png"
 			name="Mailing List"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>

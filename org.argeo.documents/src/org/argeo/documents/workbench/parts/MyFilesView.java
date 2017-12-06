@@ -32,7 +32,6 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -96,9 +95,7 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 	private Composite bookmarkCmp;
 
 	@Override
-	public void createPartControl(Composite parent) {
-		setTitleImage(ConnectImages.DOCUMENTS);
-		
+	public void createPartControl(Composite parent) {	
 		session = ConnectJcrUtils.login(repository);
 		// MainLayout
 		parent.setLayout(new GridLayout());

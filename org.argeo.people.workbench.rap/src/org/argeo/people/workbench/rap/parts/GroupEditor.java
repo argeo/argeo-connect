@@ -6,7 +6,6 @@ import javax.jcr.PropertyType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
@@ -41,7 +40,6 @@ public abstract class GroupEditor extends AbstractConnectCTabEditor {
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
 		super.init(site, input);
-		setTitleImage(ConnectImages.GROUP);
 		group = getNode();
 	}
 

@@ -4,6 +4,7 @@ import java.net.URL;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
@@ -32,7 +33,7 @@ public class ConnectImages {
 	}
 
 	public static Image createImg(String name) {
-		return createDesc(name).createImage();
+		return createDesc(name).createImage(Display.getDefault());
 	}
 
 	private static ImageDescriptor createDesc(String name) {

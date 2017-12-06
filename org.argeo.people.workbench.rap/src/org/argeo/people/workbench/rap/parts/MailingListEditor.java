@@ -23,7 +23,6 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.resources.workbench.OtherTagsLabelProvider;
 import org.argeo.connect.ui.ConnectColumnDefinition;
-import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -113,7 +112,6 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		setSite(site);
 		setInput(input);
-		setTitleImage(ConnectImages.MAILING_LIST);
 		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 
 		// Initialise context

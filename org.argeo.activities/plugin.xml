@@ -7,6 +7,7 @@
 		<view
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			id="org.argeo.activities.myTodoListView"
+      		icon="platform:/plugin/org.argeo.connect.ui/icons/types/todo.gif"
 			name="To Do"
 			restorable="false">
 		</view>
@@ -18,17 +19,20 @@
 		<editor
 			id="org.argeo.activities.activityEditor"
 			name="Activity editor"
+      		icon="platform:/plugin/org.argeo.connect.ui/icons/types/activity.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			name="Task editor"
 			id="org.argeo.activities.taskEditor"
+     		icon="platform:/plugin/org.argeo.connect.ui/icons/types/task.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<!-- Search editor -->
 		<editor
 			id="org.argeo.activities.searchActivityEditor"
 			name="Search task editor"
+     		icon="platform:/plugin/org.argeo.connect.ui/icons/actions/search.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 	</extension>
