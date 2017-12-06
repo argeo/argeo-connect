@@ -225,7 +225,7 @@
 					style="pulldown"
 					label="Create"
 					tooltip="Create a new object"
-					icon="icons/actions/add.gif"
+					icon="icons/actions/add.png"
 					commandId="org.argeo.cms.ui.workbench.doNothing">
 				</command>
 				<!-- Search entity dropdown menu --> 
@@ -278,7 +278,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
 			<command
 				commandId="org.argeo.connect.ui.createEntity"
-				icon="icons/types/person.gif"
+				icon="icons/types/person.png"
 				label="Person">
 				<parameter
          		name="param.targetNodeType"
@@ -306,7 +306,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="icons/types/person.gif"
+				icon="icons/types/person.png"
 				label="Persons">
 				<parameter name="param.nodeType" value="people:person" />
 				<parameter name="param.editorName" value="Persons" />
@@ -346,7 +346,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="icons/types/todo.gif"
+				icon="icons/types/todo.png"
 				label="Tasks">
 				<parameter name="param.nodeType" value="activities:task" />
 				<parameter name="param.editorName" value="Tasks" />
@@ -365,7 +365,7 @@
 			</command>	
 			<command
 				commandId="org.argeo.connect.ui.createEntity"
-				icon="icons/types/milestone.gif"
+				icon="icons/types/milestone.png"
 				label="Milestone">
 				<parameter
          			name="param.targetNodeType"
@@ -373,7 +373,7 @@
 			</command>	
 			<command
 				commandId="org.argeo.connect.ui.createEntity"
-				icon="icons/types/project.gif"
+				icon="icons/types/project.png"
 				label="Project">
 				<parameter
          			name="param.targetNodeType"
@@ -385,7 +385,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="icons/types/project.gif"
+				icon="icons/types/project.png"
 				label="Projects">
 				<parameter name="param.nodeType" value="tracker:project" />
 				<parameter name="param.editorName" value="Projects" />
