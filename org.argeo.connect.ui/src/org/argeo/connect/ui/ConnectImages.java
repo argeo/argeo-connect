@@ -101,10 +101,10 @@ public class ConnectImages {
 	//
 	// DOCUMENTS
 	//
-	public final static Image FOLDER = createType("folder.gif");
-	public final static Image FILE = createType("file.gif");
-	public final static Image BOOKMARK = createType("folder.gif");
-	public final static Image SHARED_FOLDER = createType("folder.gif");
+	public final static Image FOLDER = createType("folder.png");
+	public final static Image FILE = createType("file.png");
+	public final static Image BOOKMARK = FOLDER;
+	public final static Image SHARED_FOLDER = FOLDER;
 	public final static Image DOCUMENTS = createType("documents.png");
 
 	//

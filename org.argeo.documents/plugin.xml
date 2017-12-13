@@ -19,14 +19,14 @@
 		<editor
 			id="org.argeo.documents.folderEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-     		icon="platform:/plugin/org.argeo.connect.ui/icons/types/folder.gif"
+     		icon="platform:/plugin/org.argeo.connect.ui/icons/types/folder.png"
 			name="Folder Editor"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.documents.fileEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-     		icon="platform:/plugin/org.argeo.connect.ui/icons/types/file.gif"
+     		icon="platform:/plugin/org.argeo.connect.ui/icons/types/file.png"
 			name="File Editor"
 			default="false">
 		</editor>
