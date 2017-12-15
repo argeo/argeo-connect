@@ -154,14 +154,61 @@
 		id="menu:org.eclipse.ui.main.menu"
 		point="org.eclipse.ui.menus">
 		
+		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.userToolbar">
+			<toolbar id="org.argeo.connect.ui.dropDownsToolbar">
+				<!-- Create entity dropdown menu --> 
+				<command
+					id="org.argeo.connect.ui.addEntityToolbar"
+					style="pulldown"
+					label="Create"
+					tooltip="Create a new object"
+					icon="icons/actions/add.png"
+					commandId="org.argeo.cms.ui.workbench.doNothing">
+				</command>
+				<!-- Search entity dropdown menu --> 
+				<command
+					id="org.argeo.connect.ui.openSearchToolbar"
+					style="pulldown"
+					label="Search"
+					tooltip="Open a detailed search page"
+					icon="icons/actions/search.png"
+					commandId="org.argeo.cms.ui.workbench.doNothing">
+<!--					<visibleWhen checkEnabled="false">
+						<with variable="roles">
+		    				<iterate ifEmpty="false" operator="or">
+		      					<equals value="cn=org.argeo.suite.coworker,ou=roles,ou=node" />
+			      			</iterate>
+		    			</with>
+					</visibleWhen> -->
+				</command>
+
+				<!-- Spreadsheet extracts --> 
+				<command
+					commandId="org.argeo.connect.ui.getJxlExport"
+					icon="icons/actions/jxlExport.gif"
+					label="Extract"
+					style="push"
+					tooltip="Generate a spreadsheet export of the current active filtered list">
+					<visibleWhen>
+						<and>
+							<with variable="activePart">
+								<instanceof value="org.argeo.connect.ui.IJcrTableViewer" />
+							</with>
+						</and>
+					</visibleWhen>
+				</command>
+			</toolbar>
+		</menuContribution>		
+
 		<!-- Generic commands provided by the people app --> 
 		<menuContribution
-			locationURI="toolbar:org.argeo.cms.ui.workbench.userToolbar?before=org.eclipse.ui.file.save"> 
+			locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.connect.ui.dropDownsToolbar"> 
+			<toolbar id="org.argeo.connect.ui.editToolbar">
 			<!-- Force resfresh if possible --> 
 			<command
 				commandId="org.argeo.connect.ui.forceRefresh"
 				icon="icons/actions/refresh.png"
-				label="Force refresh of the current active part"
+				label="Refresh"
 				style="push"
 				tooltip="Force refresh of the current active part">
 				<visibleWhen>
@@ -170,10 +217,7 @@
 					</with>
 				</visibleWhen>
 			</command>
-		</menuContribution>
-		
-		<menuContribution
-			locationURI="toolbar:org.argeo.cms.ui.workbench.userToolbar?after=org.eclipse.ui.file.saveAll"> 
+
 			<!-- Check in and out management --> 
  			<command
 				commandId="org.argeo.connect.ui.changeEditingState"
@@ -215,54 +259,10 @@
 				<parameter name="param.newEditingState" value="notEditing" />
   	 			<parameter name="param.priorAction" value="cancel" />
     		</command>
+			</toolbar>
 		</menuContribution>
 		
-		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.userToolbar">
-			<toolbar id="org.argeo.connect.ui.dropDownsToolbar">
-				<!-- Create entity dropdown menu --> 
-				<command
-					id="org.argeo.connect.ui.addEntityToolbar"
-					style="pulldown"
-					label="Create"
-					tooltip="Create a new object"
-					icon="icons/actions/add.png"
-					commandId="org.argeo.cms.ui.workbench.doNothing">
-				</command>
-				<!-- Search entity dropdown menu --> 
-				<command
-					id="org.argeo.connect.ui.openSearchToolbar"
-					style="pulldown"
-					label="Search"
-					tooltip="Open a detailed search page"
-					icon="icons/actions/search.png"
-					commandId="org.argeo.cms.ui.workbench.doNothing">
-<!--					<visibleWhen checkEnabled="false">
-						<with variable="roles">
-		    				<iterate ifEmpty="false" operator="or">
-		      					<equals value="cn=org.argeo.suite.coworker,ou=roles,ou=node" />
-			      			</iterate>
-		    			</with>
-					</visibleWhen> -->
-				</command>
-				
-				<!-- Spreadsheet extracts --> 
-				<command
-					commandId="org.argeo.connect.ui.getJxlExport"
-					icon="icons/actions/jxlExport.gif"
-					label="Generate extract"
-					style="push"
-					tooltip="Generate a spreadsheet export of the current active filtered list">
-					<visibleWhen>
-						<and>
-							<with variable="activePart">
-								<instanceof value="org.argeo.connect.ui.IJcrTableViewer" />
-							</with>
-						</and>
-					</visibleWhen>
-				</command>
-			</toolbar>
-		</menuContribution>		
-			
+							
 		<!-- Contribute resources menu items -->
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
 			<command
