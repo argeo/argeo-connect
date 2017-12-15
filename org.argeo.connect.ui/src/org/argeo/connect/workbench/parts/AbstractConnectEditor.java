@@ -55,6 +55,12 @@ import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.services.ISourceProviderService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.Filter;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Parent Abstract Form editor for all nodes that derive from people:base.
@@ -65,6 +71,8 @@ import org.eclipse.ui.services.ISourceProviderService;
 public abstract class AbstractConnectEditor extends EditorPart
 		implements CmsEditable, Refreshable, IStatusLineProvider {
 	private final static Log log = LogFactory.getLog(AbstractConnectEditor.class);
+
+	private BundleContext bc = FrameworkUtil.getBundle(AbstractConnectEditor.class).getBundleContext();
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
@@ -96,6 +104,25 @@ public abstract class AbstractConnectEditor extends EditorPart
 	private ConnectManagedForm mForm;
 	private FormToolkit toolkit;
 	private Composite main;
+
+	public AbstractConnectEditor() {
+		try {
+			// TODO centralise in Activator?
+			Filter homeRepositoryFilter = bc
+					.createFilter("(&(" + Constants.OBJECTCLASS + "=javax.jcr.Repository)(cn=home))");
+			ServiceTracker<Repository, Repository> repositoryST = new ServiceTracker<>(bc, homeRepositoryFilter, null);
+			repositoryST.open();
+			repository = repositoryST.waitForService(60 * 1000);
+			repositoryST.close();
+
+			userAdminService = bc.getService(bc.getServiceReference(UserAdminService.class));
+			resourcesService = bc.getService(bc.getServiceReference(ResourcesService.class));
+			systemAppService = bc.getService(bc.getServiceReference(SystemAppService.class));
+			systemWorkbenchService = bc.getService(bc.getServiceReference(SystemWorkbenchService.class));
+		} catch (Exception e) {
+			throw new ConnectException("Cannot retrieve services", e);
+		}
+	}
 
 	// LIFE CYCLE
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -520,8 +547,7 @@ public abstract class AbstractConnectEditor extends EditorPart
 		}
 
 		/**
-		 * Enable clean management of the "dirty" status display in this part
-		 * table
+		 * Enable clean management of the "dirty" status display in this part table
 		 */
 		public void commit(boolean onSave) {
 			commitInternalLinkedForm(onSave);
@@ -564,22 +590,27 @@ public abstract class AbstractConnectEditor extends EditorPart
 
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
-		this.repository = repository;
+		log.trace("setRepository is deprecated and ignored");
+//		this.repository = repository;
 	}
 
 	public void setUserAdminService(UserAdminService userAdminService) {
-		this.userAdminService = userAdminService;
+		log.trace("setUserAdminService is deprecated and ignored");
+//		this.userAdminService = userAdminService;
 	}
 
 	public void setResourcesService(ResourcesService resourcesService) {
-		this.resourcesService = resourcesService;
+		log.trace("setResourcesService is deprecated and ignored");
+//		this.resourcesService = resourcesService;
 	}
 
 	public void setSystemAppService(SystemAppService systemAppService) {
-		this.systemAppService = systemAppService;
+		log.trace("setSystemAppService is deprecated and ignored");
+//		this.systemAppService = systemAppService;
 	}
 
 	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
-		this.systemWorkbenchService = systemWorkbenchService;
+		log.trace("setSystemWorkbenchService is deprecated and ignored");
+//		this.systemWorkbenchService = systemWorkbenchService;
 	}
 }
