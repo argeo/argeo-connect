@@ -265,6 +265,7 @@
 							
 		<!-- Contribute resources menu items -->
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+		<!--
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
 				icon="icons/types/tag.png"
@@ -272,6 +273,7 @@
 				<parameter name="param.nodeType" value="connect:tag" />
 				<parameter name="param.editorName" value="Tags" />
 			</command>	
+			-->
 		</menuContribution>
 		
 		<!-- People specific entity creation --> 
@@ -306,13 +308,6 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
-				icon="icons/types/person.png"
-				label="Persons">
-				<parameter name="param.nodeType" value="people:person" />
-				<parameter name="param.editorName" value="Persons" />
-			</command>	
-			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
 				icon="icons/types/organisation.png"
 				label="Organisations">
 				<parameter name="param.nodeType" value="people:org" />
@@ -320,11 +315,20 @@
 			</command>	
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				icon="icons/types/person.png"
+				label="Persons">
+				<parameter name="param.nodeType" value="people:person" />
+				<parameter name="param.editorName" value="Persons" />
+			</command>	
+			<!--
+			<command
+				commandId="org.argeo.connect.ui.openSearchEntityEditor"
 				icon="icons/types/mailingList.gif"
 				label="Mailing Lists">
 				<parameter name="param.nodeType" value="people:mailingList" />
 				<parameter name="param.editorName" value="Mailing Lists" />
 			</command>	
+			-->
 		</menuContribution>		
 
 		<!-- Activites --> 
@@ -342,7 +346,7 @@
 			-->
 		</menuContribution>
 		
-		<!-- Activities search editors --> 
+		<!-- Activities search editors 
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
@@ -352,8 +356,8 @@
 				<parameter name="param.editorName" value="Tasks" />
 			</command>	
 		</menuContribution>		
-		
-		<!-- Tracker specific entity creation --> 
+		 -->
+		<!-- Tracker specific entity creation 
 		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
 			<command
 				commandId="org.argeo.connect.ui.createEntity"
@@ -380,8 +384,8 @@
          			value="tracker:project" />
 			</command>	
 		</menuContribution>
-		
-		<!-- tracker specific search editors --> 
+		 -->
+		<!-- tracker specific search editors
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.openSearchEntityEditor"
@@ -398,8 +402,10 @@
 				</visibleWhen>
 			</command>	
 		</menuContribution>		
+	 --> 
+
 	</extension>
-	
+
 	<!-- Workbench listeners --> 
 	<extension point="org.eclipse.ui.startup">
    		<startup class="org.argeo.eclipse.spring.SpringExtensionFactory"
