@@ -53,25 +53,27 @@ public class CreateEntity extends AbstractHandler {
 
 			Node tmpNode = systemAppService.createDraftEntity(draftSession, nodeType);
 			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);
-			WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
-			dialog.setTitle("New...");
-			if (dialog.open() == WizardDialog.OK) {
-				mainSession = repository.login();
-
-				// By default, all entities are stored at the same place,
-				// depending on their types.
-				// We will enhance this in the future, typically to enable
-				// (partially) private entities
-				Node parent = mainSession.getNode("/" + systemAppService.getBaseRelPath(nodeType));
-				Node newNode = systemAppService.publishEntity(parent, nodeType, tmpNode);
-
-				newNode = systemAppService.saveEntity(newNode, false);
-				jcrId = newNode.getIdentifier();
-			} else {
-				// This will try to remove the newly created temporary Node if
-				// the process fails before first save
-				JcrUtils.discardQuietly(draftSession);
+			if (wizard != null) {
+				WizardDialog dialog = new WizardDialog(HandlerUtil.getActiveShell(event), wizard);
+				dialog.setTitle("New...");
+				if (dialog.open() != WizardDialog.OK) {
+					// This will try to remove the newly created temporary Node if
+					// the process fails before first save
+					JcrUtils.discardQuietly(draftSession);
+					return null;
+				}
 			}
+			mainSession = repository.login();
+
+			// By default, all entities are stored at the same place,
+			// depending on their types.
+			// We will enhance this in the future, typically to enable
+			// (partially) private entities
+			Node parent = mainSession.getNode("/" + systemAppService.getBaseRelPath(nodeType));
+			Node newNode = systemAppService.publishEntity(parent, nodeType, tmpNode);
+
+			newNode = systemAppService.saveEntity(newNode, false);
+			jcrId = newNode.getIdentifier();
 
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot create " + nodeType + "entity", e);
