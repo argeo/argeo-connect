@@ -32,8 +32,8 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 
 	// This page widgets
 	private Text legalNameTxt;
-	private Button useDistinctDisplayNameBtn;
-	private Text displayNameTxt;
+//	private Button useDistinctDisplayNameBtn;
+//	private Text displayNameTxt;
 	private Text legalFormTxt;
 
 	public NewOrgWizard(Node org) {
@@ -58,19 +58,19 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		String legalName = legalNameTxt.getText();
-		boolean useDistinctDisplayName = useDistinctDisplayNameBtn.getSelection();
+//		boolean useDistinctDisplayName = useDistinctDisplayNameBtn.getSelection();
 		String legalForm = legalFormTxt.getText();
-		String displayName = displayNameTxt.getText();
+//		String displayName = displayNameTxt.getText();
 
-		if (EclipseUiUtils.isEmpty(legalName) && EclipseUiUtils.isEmpty(displayName)) {
+		if (EclipseUiUtils.isEmpty(legalName) ) {
 			MessageDialog.openError(getShell(), "Non-valid information",
 					"Please enter at least a legal or a display name that is not empty.");
 			return false;
 		}
 
 		ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME, PropertyType.STRING, legalName);
-		if (useDistinctDisplayName)
-			ConnectJcrUtils.setJcrProperty(org, PEOPLE_DISPLAY_NAME, PropertyType.STRING, displayName);
+//		if (useDistinctDisplayName)
+//			ConnectJcrUtils.setJcrProperty(org, PEOPLE_DISPLAY_NAME, PropertyType.STRING, displayName);
 		if (EclipseUiUtils.notEmpty(legalForm))
 			ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM, PropertyType.STRING, legalForm);
 		return true;
@@ -111,24 +111,24 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// Display Name
-			useDistinctDisplayNameBtn = new Button(parent, SWT.CHECK);
-			useDistinctDisplayNameBtn.setText("Define a display name that is not the legal name");
-			useDistinctDisplayNameBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Display Name");
-			displayNameTxt = new Text(parent, SWT.BORDER);
-			displayNameTxt.setMessage("an optional display name");
-			displayNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-			displayNameTxt.setEnabled(false);
-
-			useDistinctDisplayNameBtn.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					displayNameTxt.setEnabled(useDistinctDisplayNameBtn.getSelection());
-				}
-			});
+//			useDistinctDisplayNameBtn = new Button(parent, SWT.CHECK);
+//			useDistinctDisplayNameBtn.setText("Define a display name that is not the legal name");
+//			useDistinctDisplayNameBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+//
+//			ConnectWorkbenchUtils.createBoldLabel(parent, "Display Name");
+//			displayNameTxt = new Text(parent, SWT.BORDER);
+//			displayNameTxt.setMessage("an optional display name");
+//			displayNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+//			displayNameTxt.setEnabled(false);
+//
+//			useDistinctDisplayNameBtn.addSelectionListener(new SelectionAdapter() {
+//				private static final long serialVersionUID = 1L;
+//
+//				@Override
+//				public void widgetSelected(SelectionEvent e) {
+//					displayNameTxt.setEnabled(useDistinctDisplayNameBtn.getSelection());
+//				}
+//			});
 
 			// Don't forget this.
 			setControl(legalNameTxt);

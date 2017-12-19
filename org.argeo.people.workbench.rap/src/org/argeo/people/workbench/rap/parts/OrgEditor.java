@@ -168,9 +168,9 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 					String roText = orgLP.getText(org);
 					orgInfoROLbl.setText(roText);
 
-					if (isEditing())
-						editPanelCmp.moveAbove(roPanelCmp);
-					else
+//					if (isEditing())
+//						editPanelCmp.moveAbove(roPanelCmp);
+//					else
 						editPanelCmp.moveBelow(roPanelCmp);
 					orgInfoROLbl.pack();
 					editPanelCmp.getParent().layout();
