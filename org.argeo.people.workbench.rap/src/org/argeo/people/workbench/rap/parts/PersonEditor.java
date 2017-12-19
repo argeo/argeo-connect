@@ -90,17 +90,17 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		titleCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		populateTitleComposite(titleCmp);
 
-		// Tags Management
-		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, ResourcesNames.CONNECT_TAGS,
-				"Add a tag");
-		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-		// Mailing lists management
-		Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getSystemWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, person, PEOPLE_MAILING_LISTS,
-				"Add a mailing");
-		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+//		// Tags Management
+//		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
+//				getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, ResourcesNames.CONNECT_TAGS,
+//				"Add a tag");
+//		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+//
+//		// Mailing lists management
+//		Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
+//				getSystemWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, person, PEOPLE_MAILING_LISTS,
+//				"Add a mailing");
+//		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 
 	@Override
@@ -162,96 +162,96 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		rl.wrap = false;
 		secondCmp.setLayout(rl);
 
-		// Third Line: other Names
-		Composite thirdCmp = getFormToolkit().createComposite(editPanelCmp, SWT.NO_FOCUS);
-		thirdCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-		rl = new RowLayout(SWT.HORIZONTAL);
-		rl.wrap = false;
-		thirdCmp.setLayout(rl);
-
-		// Fourth Line: Polite form & spoken languages
-		Composite fourthCmp = getFormToolkit().createComposite(editPanelCmp, SWT.NO_FOCUS);
-		fourthCmp.setLayoutData(EclipseUiUtils.fillWidth());
-		fourthCmp.setLayout(new GridLayout(4, false));
+//		// Third Line: other Names
+//		Composite thirdCmp = getFormToolkit().createComposite(editPanelCmp, SWT.NO_FOCUS);
+//		thirdCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+//		rl = new RowLayout(SWT.HORIZONTAL);
+//		rl.wrap = false;
+//		thirdCmp.setLayout(rl);
+//
+//		// Fourth Line: Polite form & spoken languages
+//		Composite fourthCmp = getFormToolkit().createComposite(editPanelCmp, SWT.NO_FOCUS);
+//		fourthCmp.setLayoutData(EclipseUiUtils.fillWidth());
+//		fourthCmp.setLayout(new GridLayout(4, false));
 
 		// Create edit text
-		final Text displayNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), firstCmp, "Display name",
-				"Default display name for this person", 300);
-		final Button defineDistinctBtn = getFormToolkit().createButton(firstCmp, "Define a distinct display name",
-				SWT.CHECK);
-		if (!EclipseUiUtils.isEmpty(ConnectJcrUtils.get(person, PeopleNames.PEOPLE_DISPLAY_NAME)))
-			defineDistinctBtn.setSelection(true);
+//		final Text displayNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), firstCmp, "Display name",
+//				"Default display name for this person", 300);
+//		final Button defineDistinctBtn = getFormToolkit().createButton(firstCmp, "Define a distinct display name",
+//				SWT.CHECK);
+//		if (!EclipseUiUtils.isEmpty(ConnectJcrUtils.get(person, PeopleNames.PEOPLE_DISPLAY_NAME)))
+//			defineDistinctBtn.setSelection(true);
 
 		final Text salutationTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Salutation",
 				"Mr, Mrs...", 60);
 		final Text firstNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "First Name",
 				"Usual first name for this person", 100);
-		final Text middleNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Middle Name",
-				"The second name if it exists", 100);
+//		final Text middleNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Middle Name",
+//				"The second name if it exists", 100);
 		final Text lastNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Last Name",
 				"Usual last name for this person", 100);
-		final Text suffixTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Suffix",
-				"Junior, the third...", 80);
+//		final Text suffixTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Suffix",
+//				"Junior, the third...", 80);
 
 		// final Text genderTxt = entityTK.createText(thirdCmp, "Gender", "...",
 		// 80);
-		final Text titleTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Title", "Doc., Sir...",
-				60);
-		final Text maidenNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Maiden Name",
-				"Birth Name before getting maried", 100);
-		final Text nickNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Nickame",
-				"A pseudonym...", 100);
-		final Text latinPhoneticTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Latin Phonetic",
-				"A helper to know how to pronounce this name", 100);
+//		final Text titleTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Title", "Doc., Sir...",
+//				60);
+//		final Text maidenNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Maiden Name",
+//				"Birth Name before getting maried", 100);
+//		final Text nickNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Nickame",
+//				"A pseudonym...", 100);
+//		final Text latinPhoneticTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), thirdCmp, "Latin Phonetic",
+//				"A helper to know how to pronounce this name", 100);
 
 		// Fourth Line
-		ConnectWorkbenchUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Form Of Address");
-		Composite politeCmp = getFormToolkit().createComposite(fourthCmp, SWT.NO_FOCUS);
-		politeCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-		GridLayout layout = new GridLayout(2, false);
-		layout.marginHeight = layout.marginTop = layout.marginBottom = layout.verticalSpacing = 0;
-		politeCmp.setLayout(layout);
-		final Button formalBtn = new Button(politeCmp, SWT.RADIO);
-		formalBtn.setText("Formal");
-		final Button informalBtn = new Button(politeCmp, SWT.RADIO);
-		informalBtn.setText("Informal");
-
-		ConnectWorkbenchUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Language");
-		Composite languageCmp = getFormToolkit().createComposite(fourthCmp, SWT.NO_FOCUS);
-		languageCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
-		layout = new GridLayout(2, false);
-		layout.marginHeight = layout.marginTop = layout.marginBottom = layout.verticalSpacing = 0;
-		languageCmp.setLayout(layout);
-		final Button deBtn = new Button(languageCmp, SWT.RADIO);
-		deBtn.setText("German");
-		final Button enBtn = new Button(languageCmp, SWT.RADIO);
-		enBtn.setText("English");
+//		ConnectWorkbenchUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Form Of Address");
+//		Composite politeCmp = getFormToolkit().createComposite(fourthCmp, SWT.NO_FOCUS);
+//		politeCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+//		GridLayout layout = new GridLayout(2, false);
+//		layout.marginHeight = layout.marginTop = layout.marginBottom = layout.verticalSpacing = 0;
+//		politeCmp.setLayout(layout);
+//		final Button formalBtn = new Button(politeCmp, SWT.RADIO);
+//		formalBtn.setText("Formal");
+//		final Button informalBtn = new Button(politeCmp, SWT.RADIO);
+//		informalBtn.setText("Informal");
+//
+//		ConnectWorkbenchUtils.createBoldLabel(getFormToolkit(), fourthCmp, "Language");
+//		Composite languageCmp = getFormToolkit().createComposite(fourthCmp, SWT.NO_FOCUS);
+//		languageCmp.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
+//		layout = new GridLayout(2, false);
+//		layout.marginHeight = layout.marginTop = layout.marginBottom = layout.verticalSpacing = 0;
+//		languageCmp.setLayout(layout);
+//		final Button deBtn = new Button(languageCmp, SWT.RADIO);
+//		deBtn.setText("German");
+//		final Button enBtn = new Button(languageCmp, SWT.RADIO);
+//		enBtn.setText("English");
 
 		final AbstractFormPart editPart = new AbstractFormPart() {
 			public void refresh() { // update display value
 				// EDIT PART
-				boolean useDistinct = defineDistinctBtn.getSelection();
-
-				if (useDistinct)
-					ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, person, PeopleNames.PEOPLE_DISPLAY_NAME);
-				else
-					displayNameTxt.setText(getPeopleService().getPersonService().getDefaultDisplayName(person));
-				displayNameTxt.setEnabled(useDistinct);
+//				boolean useDistinct = defineDistinctBtn.getSelection();
+//
+//				if (useDistinct)
+//					ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, person, PeopleNames.PEOPLE_DISPLAY_NAME);
+//				else
+//					displayNameTxt.setText(getPeopleService().getPersonService().getDefaultDisplayName(person));
+//				displayNameTxt.setEnabled(useDistinct);
 
 				ConnectUiUtils.refreshTextWidgetValue(salutationTxt, person, PEOPLE_SALUTATION);
 				ConnectUiUtils.refreshTextWidgetValue(firstNameTxt, person, PEOPLE_FIRST_NAME);
-				ConnectUiUtils.refreshTextWidgetValue(middleNameTxt, person, PEOPLE_MIDDLE_NAME);
+//				ConnectUiUtils.refreshTextWidgetValue(middleNameTxt, person, PEOPLE_MIDDLE_NAME);
 				ConnectUiUtils.refreshTextWidgetValue(lastNameTxt, person, PEOPLE_LAST_NAME);
-				ConnectUiUtils.refreshTextWidgetValue(nickNameTxt, person, PEOPLE_NICKNAME);
-				ConnectUiUtils.refreshTextWidgetValue(maidenNameTxt, person, PEOPLE_MAIDEN_NAME);
-				ConnectUiUtils.refreshTextWidgetValue(titleTxt, person, PEOPLE_HONORIFIC_TITLE);
-				ConnectUiUtils.refreshTextWidgetValue(suffixTxt, person, PEOPLE_NAME_SUFFIX);
-				ConnectUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person, PEOPLE_LATIN_PHONETIC_SPELLING);
+//				ConnectUiUtils.refreshTextWidgetValue(nickNameTxt, person, PEOPLE_NICKNAME);
+//				ConnectUiUtils.refreshTextWidgetValue(maidenNameTxt, person, PEOPLE_MAIDEN_NAME);
+//				ConnectUiUtils.refreshTextWidgetValue(titleTxt, person, PEOPLE_HONORIFIC_TITLE);
+//				ConnectUiUtils.refreshTextWidgetValue(suffixTxt, person, PEOPLE_NAME_SUFFIX);
+//				ConnectUiUtils.refreshTextWidgetValue(latinPhoneticTxt, person, PEOPLE_LATIN_PHONETIC_SPELLING);
 
-				refreshFormalRadio(formalBtn, person);
-				refreshFormalRadio(informalBtn, person);
-				refreshLangRadio(deBtn, person);
-				refreshLangRadio(enBtn, person);
+//				refreshFormalRadio(formalBtn, person);
+//				refreshFormalRadio(informalBtn, person);
+//				refreshLangRadio(deBtn, person);
+//				refreshLangRadio(enBtn, person);
 
 				// READ ONLY PART
 				String roText = personLP.getText(person);
@@ -273,63 +273,63 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		ConnectWorkbenchUtils.addModifyListener(firstNameTxt, person, PeopleNames.PEOPLE_FIRST_NAME, editPart);
 		ConnectWorkbenchUtils.addModifyListener(lastNameTxt, person, PeopleNames.PEOPLE_LAST_NAME, editPart);
-		addDNameModifyListener(displayNameTxt, defineDistinctBtn, person, PeopleNames.PEOPLE_DISPLAY_NAME, editPart);
-
-		defineDistinctBtn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				try {
-					boolean defineDistinct = defineDistinctBtn.getSelection();
-					String displayName = getPeopleService().getPersonService().getDefaultDisplayName(person);
-					if (defineDistinct) {
-						ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
-								displayName);
-					} else if (person.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
-						displayNameTxt.setText(displayName);
-						person.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
-					}
-					displayNameTxt.setEnabled(defineDistinct);
-					editPart.markDirty();
-				} catch (RepositoryException e1) {
-					throw new PeopleException("Unable to reset display name management for " + person, e1);
-				}
-			}
-		});
+//		addDNameModifyListener(displayNameTxt, defineDistinctBtn, person, PeopleNames.PEOPLE_DISPLAY_NAME, editPart);
+//
+//		defineDistinctBtn.addSelectionListener(new SelectionAdapter() {
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				try {
+//					boolean defineDistinct = defineDistinctBtn.getSelection();
+//					String displayName = getPeopleService().getPersonService().getDefaultDisplayName(person);
+//					if (defineDistinct) {
+//						ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
+//								displayName);
+//					} else if (person.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
+//						displayNameTxt.setText(displayName);
+//						person.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
+//					}
+//					displayNameTxt.setEnabled(defineDistinct);
+//					editPart.markDirty();
+//				} catch (RepositoryException e1) {
+//					throw new PeopleException("Unable to reset display name management for " + person, e1);
+//				}
+//			}
+//		});
 
 		ConnectWorkbenchUtils.addTxtModifyListener(editPart, salutationTxt, person, PEOPLE_SALUTATION,
 				PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, middleNameTxt, person, PEOPLE_MIDDLE_NAME,
-				PropertyType.STRING);
+//		ConnectWorkbenchUtils.addTxtModifyListener(editPart, middleNameTxt, person, PEOPLE_MIDDLE_NAME,
+//				PropertyType.STRING);
 		ConnectWorkbenchUtils.addTxtModifyListener(editPart, lastNameTxt, person, PEOPLE_LAST_NAME,
 				PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, nickNameTxt, person, PEOPLE_NICKNAME, PropertyType.STRING);
+//		ConnectWorkbenchUtils.addTxtModifyListener(editPart, nickNameTxt, person, PEOPLE_NICKNAME, PropertyType.STRING);
 		// entityTK.addTxtModifyListener(editPart, genderTxt, person,
 		// PEOPLE_GENDER, PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, maidenNameTxt, person, PEOPLE_MAIDEN_NAME,
-				PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, titleTxt, person, PEOPLE_HONORIFIC_TITLE,
-				PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, suffixTxt, person, PEOPLE_NAME_SUFFIX,
-				PropertyType.STRING);
-		ConnectWorkbenchUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person, PEOPLE_LATIN_PHONETIC_SPELLING,
-				PropertyType.STRING);
+//		ConnectWorkbenchUtils.addTxtModifyListener(editPart, maidenNameTxt, person, PEOPLE_MAIDEN_NAME,
+//				PropertyType.STRING);
+//		ConnectWorkbenchUtils.addTxtModifyListener(editPart, titleTxt, person, PEOPLE_HONORIFIC_TITLE,
+//				PropertyType.STRING);
+//		ConnectWorkbenchUtils.addTxtModifyListener(editPart, suffixTxt, person, PEOPLE_NAME_SUFFIX,
+//				PropertyType.STRING);
+//		ConnectWorkbenchUtils.addTxtModifyListener(editPart, latinPhoneticTxt, person, PEOPLE_LATIN_PHONETIC_SPELLING,
+//				PropertyType.STRING);
 
-		Listener formalRadioListener = new Listener() {
-			private static final long serialVersionUID = 1L;
-
-			public void handleEvent(Event event) {
-				Button btn = (Button) event.widget;
-				if (!btn.getSelection())
-					return;
-				boolean value = "Formal".equals(btn.getText());
-				if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_USE_POLITE_FORM, PropertyType.BOOLEAN, value))
-					editPart.markDirty();
-			}
-		};
-		formalBtn.addListener(SWT.Selection, formalRadioListener);
-		informalBtn.addListener(SWT.Selection, formalRadioListener);
+//		Listener formalRadioListener = new Listener() {
+//			private static final long serialVersionUID = 1L;
+//
+//			public void handleEvent(Event event) {
+//				Button btn = (Button) event.widget;
+//				if (!btn.getSelection())
+//					return;
+//				boolean value = "Formal".equals(btn.getText());
+//				if (ConnectJcrUtils.setJcrProperty(person, PEOPLE_USE_POLITE_FORM, PropertyType.BOOLEAN, value))
+//					editPart.markDirty();
+//			}
+//		};
+//		formalBtn.addListener(SWT.Selection, formalRadioListener);
+//		informalBtn.addListener(SWT.Selection, formalRadioListener);
 
 		Listener langRadioListener = new Listener() {
 			private static final long serialVersionUID = 1L;
@@ -360,8 +360,8 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 			}
 
 		};
-		deBtn.addListener(SWT.Selection, langRadioListener);
-		enBtn.addListener(SWT.Selection, langRadioListener);
+//		deBtn.addListener(SWT.Selection, langRadioListener);
+//		enBtn.addListener(SWT.Selection, langRadioListener);
 
 		editPart.initialize(getManagedForm());
 		getManagedForm().addPart(editPart);

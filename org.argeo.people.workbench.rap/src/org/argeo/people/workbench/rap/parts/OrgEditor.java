@@ -10,11 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.parts.RelatedActivityList;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
-import org.argeo.connect.ui.widgets.TagLikeListPart;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -22,10 +19,8 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
-import org.argeo.people.PeopleTypes;
 import org.argeo.people.workbench.rap.PeopleRapConstants;
 import org.argeo.people.workbench.rap.PeopleRapPlugin;
-import org.argeo.people.workbench.rap.composites.MailingListListPart;
 import org.argeo.people.workbench.rap.providers.OrgOverviewLabelProvider;
 import org.argeo.people.workbench.rap.util.AbstractPeopleWithImgEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -84,16 +79,16 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 		populateTitleComposite(titleCmp);
 
 		// Tags Management
-		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, ResourcesNames.CONNECT_TAGS,
-				"Add a tag");
-		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
-
-		// Mailing lists management
-		Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
-				getSystemWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, org, PeopleNames.PEOPLE_MAILING_LISTS,
-				"Add a mailing");
-		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+//		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
+//				getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, ResourcesNames.CONNECT_TAGS,
+//				"Add a tag");
+//		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+//
+//		// Mailing lists management
+//		Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
+//				getSystemWorkbenchService(), PeopleTypes.PEOPLE_MAILING_LIST, org, PeopleNames.PEOPLE_MAILING_LISTS,
+//				"Add a mailing");
+//		mlCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 	}
 
 	protected void populateTabFolder(CTabFolder folder) {
@@ -145,25 +140,25 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
 			// Create edit text
-			final Text displayNameTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(), editPanelCmp,
-					"Display name", "Display name used for this organisation", 300, 1);
-			final Button useDistinctDisplayBtn = getFormToolkit().createButton(editPanelCmp,
-					"Use a specific display name", SWT.CHECK);
-			useDistinctDisplayBtn.setToolTipText("Use a display name that is not the legal name");
-			// Initialise checkbox
-			if (!EclipseUiUtils.isEmpty(ConnectJcrUtils.get(org, PeopleNames.PEOPLE_DISPLAY_NAME)))
-				useDistinctDisplayBtn.setSelection(true);
+//			final Text displayNameTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(), editPanelCmp,
+//					"Display name", "Display name used for this organisation", 300, 1);
+//			final Button useDistinctDisplayBtn = getFormToolkit().createButton(editPanelCmp,
+//					"Use a specific display name", SWT.CHECK);
+//			useDistinctDisplayBtn.setToolTipText("Use a display name that is not the legal name");
+//			// Initialise checkbox
+//			if (!EclipseUiUtils.isEmpty(ConnectJcrUtils.get(org, PeopleNames.PEOPLE_DISPLAY_NAME)))
+//				useDistinctDisplayBtn.setSelection(true);
 
 			final AbstractFormPart editPart = new AbstractFormPart() {
 				// Update values on refresh
 				public void refresh() {
 					// EDIT PART
-					boolean useDistinct = useDistinctDisplayBtn.getSelection();
-					if (useDistinct)
-						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, PeopleNames.PEOPLE_DISPLAY_NAME);
-					else
-						displayNameTxt.setText(getPeopleService().getPersonService().getDefaultDisplayName(org));
-					displayNameTxt.setEnabled(useDistinct);
+//					boolean useDistinct = useDistinctDisplayBtn.getSelection();
+//					if (useDistinct)
+//						ConnectUiUtils.refreshTextWidgetValue(displayNameTxt, org, PeopleNames.PEOPLE_DISPLAY_NAME);
+//					else
+//						displayNameTxt.setText(getPeopleService().getPersonService().getDefaultDisplayName(org));
+//					displayNameTxt.setEnabled(useDistinct);
 
 					// READ ONLY PART
 					String roText = orgLP.getText(org);
@@ -179,31 +174,31 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 				}
 			};
 
-			useDistinctDisplayBtn.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					try {
-						boolean defineDistinct = useDistinctDisplayBtn.getSelection();
-						String dName = ConnectJcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
-						if (defineDistinct) {
-							ConnectJcrUtils.setJcrProperty(org, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
-									dName);
-						} else if (org.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
-							displayNameTxt.setText(dName);
-							org.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
-						}
-						displayNameTxt.setEnabled(defineDistinct);
-						editPart.markDirty();
-					} catch (RepositoryException e1) {
-						throw new PeopleException("Unable to reset display name management for " + org, e1);
-					}
-				}
-			});
-
-			addDNameModifyListener(displayNameTxt, useDistinctDisplayBtn, org, PeopleNames.PEOPLE_DISPLAY_NAME,
-					editPart);
+//			useDistinctDisplayBtn.addSelectionListener(new SelectionAdapter() {
+//				private static final long serialVersionUID = 1L;
+//
+//				@Override
+//				public void widgetSelected(SelectionEvent e) {
+//					try {
+//						boolean defineDistinct = useDistinctDisplayBtn.getSelection();
+//						String dName = ConnectJcrUtils.get(org, PeopleNames.PEOPLE_LEGAL_NAME);
+//						if (defineDistinct) {
+//							ConnectJcrUtils.setJcrProperty(org, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
+//									dName);
+//						} else if (org.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME)) {
+//							displayNameTxt.setText(dName);
+//							org.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).remove();
+//						}
+//						displayNameTxt.setEnabled(defineDistinct);
+//						editPart.markDirty();
+//					} catch (RepositoryException e1) {
+//						throw new PeopleException("Unable to reset display name management for " + org, e1);
+//					}
+//				}
+//			});
+//
+//			addDNameModifyListener(displayNameTxt, useDistinctDisplayBtn, org, PeopleNames.PEOPLE_DISPLAY_NAME,
+//					editPart);
 
 			editPart.initialize(getManagedForm());
 			getManagedForm().addPart(editPart);
