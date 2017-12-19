@@ -32,11 +32,15 @@ public class ConnectImages {
 		return createImg(CONTACT_TYPES_BASE + name);
 	}
 
-	public static Image createImg(String name) {
-		return createDesc(name).createImage(Display.getDefault());
+	public static Image createImg(BundleContext bc, String name) {
+		return createDesc(bc, name).createImage(Display.getDefault());
 	}
 
-	private static ImageDescriptor createDesc(String name) {
+	private static Image createImg(String name) {
+		return createDesc(bc, name).createImage(Display.getDefault());
+	}
+
+	private static ImageDescriptor createDesc(BundleContext bc, String name) {
 		URL url = bc.getBundle().getResource(name);
 		if (url == null)
 			return ImageDescriptor.getMissingImageDescriptor();
@@ -55,9 +59,9 @@ public class ConnectImages {
 	public final static Image DELETE_LEFT = createAction("delete_left.gif");
 	public final static Image MERGE = createAction("merge.gif");
 	// Image Descriptors still required for some Actions
-	public final static ImageDescriptor IMG_DESC_EDIT = createDesc(ACTIONS_BASE + "edit.gif");
-	public final static ImageDescriptor IMG_DESC_ADD = createDesc(ACTIONS_BASE + "add.png");
-	public final static ImageDescriptor IMG_DESC_CLOSE = createDesc(ACTIONS_BASE + "close.png");
+	public final static ImageDescriptor IMG_DESC_EDIT = createDesc(bc, ACTIONS_BASE + "edit.gif");
+	public final static ImageDescriptor IMG_DESC_ADD = createDesc(bc, ACTIONS_BASE + "add.png");
+	public final static ImageDescriptor IMG_DESC_CLOSE = createDesc(bc, ACTIONS_BASE + "close.png");
 	public final static Image ADD = IMG_DESC_ADD.createImage();
 	public final static Image EDIT = IMG_DESC_EDIT.createImage();
 	public final static Image CLOSE = IMG_DESC_CLOSE.createImage();

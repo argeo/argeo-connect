@@ -150,10 +150,10 @@ public class RelatedActivityList extends LazyCTabControl {
 
 		Button validBtn = toolkit.createButton(addActivityBar, "Add activity", SWT.PUSH);
 
-		toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
-
-		final Link addTaskLk = new Link(addActivityBar, SWT.NONE);
-		addTaskLk.setText("<a>Add a task</a>");
+//		toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
+//
+//		final Link addTaskLk = new Link(addActivityBar, SWT.NONE);
+//		addTaskLk.setText("<a>Add a task</a>");
 
 		// Selection and traverse listeners
 		validBtn.addSelectionListener(new SelectionAdapter() {
@@ -180,15 +180,15 @@ public class RelatedActivityList extends LazyCTabControl {
 		titleTxt.addTraverseListener(travList);
 		descTxt.addTraverseListener(travList);
 
-		addTaskLk.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (createTask(addTaskLk.getShell(), entity))
-					activityTable.refresh();
-			}
-		});
+//		addTaskLk.addSelectionListener(new SelectionAdapter() {
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				if (createTask(addTaskLk.getShell(), entity))
+//					activityTable.refresh();
+//			}
+//		});
 	}
 
 	// LOCAL UI HELPERS

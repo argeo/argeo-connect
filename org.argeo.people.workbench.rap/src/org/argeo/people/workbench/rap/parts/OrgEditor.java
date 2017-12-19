@@ -3,14 +3,12 @@ package org.argeo.people.workbench.rap.parts;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
-import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.parts.RelatedActivityList;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
@@ -28,8 +26,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -41,10 +37,13 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 
 /** Display an organisation with corresponding details */
 public class OrgEditor extends AbstractPeopleWithImgEditor {
 	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".orgEditor";
+	private BundleContext bc = FrameworkUtil.getBundle(OrgEditor.class).getBundleContext();
 
 	final static Log log = LogFactory.getLog(OrgEditor.class);
 
@@ -52,6 +51,11 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 	private ActivitiesService activitiesService;
 	private PeopleService peopleService;
 	private Node org;
+
+	public OrgEditor() {
+		peopleService = bc.getService(bc.getServiceReference(PeopleService.class));
+		activitiesService = bc.getService(bc.getServiceReference(ActivitiesService.class));
+	}
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);

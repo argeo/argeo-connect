@@ -55,30 +55,30 @@ public abstract class AbstractConnectCTabEditor extends AbstractConnectEditor {
 
 	@Override
 	protected void addEditButtons(final Composite parent) {
-		if (ConnectJcrUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
-			final Button showHistoryBtn = getFormToolkit().createButton(parent, "History", SWT.PUSH);
-			showHistoryBtn.setLayoutData(new RowData(60, 20));
-			showHistoryBtn.addSelectionListener(new SelectionAdapter() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void widgetSelected(SelectionEvent e) {
-					// History panel
-					String tooltip = "History of information about " + JcrUtils.get(getNode(), Property.JCR_TITLE);
-					HistoryLog historyLogCmp = new HistoryLog(folder, SWT.NO_FOCUS, AbstractConnectCTabEditor.this,
-							getUserAdminService(), getNode());
-					historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
-					addLazyTabToFolder(folder, historyLogCmp, "History", HistoryLog.CTAB_ID, tooltip);
-					if (!showHistoryBtn.isDisposed()) {
-						Composite par = showHistoryBtn.getParent();
-						showHistoryBtn.dispose();
-						par.layout(true, true);
-					}
-					openTabItem(HistoryLog.CTAB_ID);
-					historyLogCmp.refreshPartControl();
-				}
-			});
-		}
+//		if (ConnectJcrUtils.isNodeType(getNode(), NodeType.MIX_VERSIONABLE)) {
+//			final Button showHistoryBtn = getFormToolkit().createButton(parent, "History", SWT.PUSH);
+//			showHistoryBtn.setLayoutData(new RowData(60, 20));
+//			showHistoryBtn.addSelectionListener(new SelectionAdapter() {
+//				private static final long serialVersionUID = 1L;
+//
+//				@Override
+//				public void widgetSelected(SelectionEvent e) {
+//					// History panel
+//					String tooltip = "History of information about " + JcrUtils.get(getNode(), Property.JCR_TITLE);
+//					HistoryLog historyLogCmp = new HistoryLog(folder, SWT.NO_FOCUS, AbstractConnectCTabEditor.this,
+//							getUserAdminService(), getNode());
+//					historyLogCmp.setLayoutData(EclipseUiUtils.fillAll());
+//					addLazyTabToFolder(folder, historyLogCmp, "History", HistoryLog.CTAB_ID, tooltip);
+//					if (!showHistoryBtn.isDisposed()) {
+//						Composite par = showHistoryBtn.getParent();
+//						showHistoryBtn.dispose();
+//						par.layout(true, true);
+//					}
+//					openTabItem(HistoryLog.CTAB_ID);
+//					historyLogCmp.refreshPartControl();
+//				}
+//			});
+//		}
 	}
 
 	protected Composite addTabToFolder(CTabFolder tabFolder, int style, String label, String id, String tooltip) {
