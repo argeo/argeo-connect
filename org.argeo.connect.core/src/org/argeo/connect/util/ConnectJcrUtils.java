@@ -975,6 +975,8 @@ public class ConnectJcrUtils {
 	public static List<String> getMultiAsList(Node node, String propertyName) {
 		List<String> results = new ArrayList<String>();
 		try {
+			if(propertyName==null)
+				return results;
 			if (!node.hasProperty(propertyName))
 				return results;
 			else {
