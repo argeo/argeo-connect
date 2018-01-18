@@ -57,9 +57,7 @@ public interface UserAdminService {
 	public User getUserFromLocalId(String localId);
 
 	/* EXPOSE */
-	@Deprecated
 	public UserAdmin getUserAdmin();
 
-	@Deprecated
 	public UserTransaction getUserTransaction();
 }
