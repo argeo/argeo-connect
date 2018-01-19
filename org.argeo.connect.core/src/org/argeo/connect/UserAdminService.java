@@ -50,11 +50,17 @@ public interface UserAdminService {
 	public String getDefaultDomainName();
 
 	/**
-	 * Search for a {@link User} (might also be a group) whose uid or cn is
-	 * equals to localId within the various user repositories defined in the
-	 * current context.
+	 * Search for a {@link User} (might also be a group) whose uid or cn is equals
+	 * to localId within the various user repositories defined in the current
+	 * context.
 	 */
 	public User getUserFromLocalId(String localId);
+
+	void changeOwnPassword(char[] oldPassword, char[] newPassword);
+
+	void resetPassword(String username, char[] newPassword);
+	
+	String addSharedSecret(String username, int hours);
 
 	/* EXPOSE */
 	public UserAdmin getUserAdmin();

@@ -1,18 +1,25 @@
 package org.argeo.connect.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
 import javax.transaction.UserTransaction;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.naming.LdapAttrs;
+import org.argeo.naming.SharedSecret;
 import org.argeo.node.NodeConstants;
 import org.argeo.osgi.useradmin.UserAdminConf;
 import org.osgi.framework.InvalidSyntaxException;
@@ -35,6 +42,7 @@ import org.osgi.service.useradmin.UserAdmin;
  * </ul>
  */
 public class UserAdminServiceImpl implements UserAdminService {
+	private final static Log log = LogFactory.getLog(UserAdminServiceImpl.class);
 
 	private UserAdmin userAdmin;
 	private ServiceReference<UserAdmin> userAdminServiceReference;
@@ -181,6 +189,90 @@ public class UserAdminServiceImpl implements UserAdminService {
 		else
 			throw new ConnectException("Unknown role type. " + "Cannot deduce dn for " + localId);
 		return dn;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void changeOwnPassword(char[] oldPassword, char[] newPassword) {
+		String name = CurrentUser.getUsername();
+		LdapName dn;
+		try {
+			dn = new LdapName(name);
+		} catch (InvalidNameException e) {
+			throw new ConnectException("Invalid user dn " + name, e);
+		}
+		User user = (User) userAdmin.getRole(dn.toString());
+		if (!user.hasCredential(null, oldPassword))
+			throw new ConnectException("Invalid password");
+		if (Arrays.equals(newPassword, new char[0]))
+			throw new ConnectException("New password empty");
+		try {
+			userTransaction.begin();
+			user.getCredentials().put(null, newPassword);
+			userTransaction.commit();
+		} catch (Exception e) {
+			try {
+				userTransaction.rollback();
+			} catch (Exception e1) {
+				log.error("Could not roll back", e1);
+			}
+			if (e instanceof RuntimeException)
+				throw (RuntimeException) e;
+			else
+				throw new ConnectException("Cannot change password", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void resetPassword(String username, char[] newPassword) {
+		LdapName dn;
+		try {
+			dn = new LdapName(username);
+		} catch (InvalidNameException e) {
+			throw new ConnectException("Invalid user dn " + username, e);
+		}
+		User user = (User) userAdmin.getRole(dn.toString());
+		if (Arrays.equals(newPassword, new char[0]))
+			throw new ConnectException("New password empty");
+		try {
+			userTransaction.begin();
+			user.getCredentials().put(null, newPassword);
+			userTransaction.commit();
+		} catch (Exception e) {
+			try {
+				userTransaction.rollback();
+			} catch (Exception e1) {
+				log.error("Could not roll back", e1);
+			}
+			if (e instanceof RuntimeException)
+				throw (RuntimeException) e;
+			else
+				throw new ConnectException("Cannot change password", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public String addSharedSecret(String email, int hours) {
+		User user = (User) userAdmin.getUser(LdapAttrs.mail.name(), email);
+		try {
+			userTransaction.begin();
+			String uuid = UUID.randomUUID().toString();
+			SharedSecret sharedSecret = new SharedSecret(hours, uuid);
+			user.getCredentials().put(SharedSecret.X_SHARED_SECRET, sharedSecret.toAuthPassword());
+			String tokenStr = sharedSecret.getAuthInfo() + '$' + sharedSecret.getAuthValue();
+			userTransaction.commit();
+			return tokenStr;
+		} catch (Exception e) {
+			try {
+				userTransaction.rollback();
+			} catch (Exception e1) {
+				log.error("Could not roll back", e1);
+			}
+			if (e instanceof RuntimeException)
+				throw (RuntimeException) e;
+			else
+				throw new ConnectException("Cannot change password", e);
+		}
 	}
 
 	public UserAdmin getUserAdmin() {
