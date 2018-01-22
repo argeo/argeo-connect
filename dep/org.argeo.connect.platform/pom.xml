@@ -56,6 +56,10 @@
 			<groupId>org.argeo.tp.apache</groupId>
 			<artifactId>org.apache.pdfbox.fontbox</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache.commons</groupId>
+			<artifactId>org.apache.commons.lang3</artifactId>
+		</dependency>
 
 		<!-- Base Argeo platform distribution -->
 		<dependency>
@@ -169,6 +173,7 @@
 								</goals>
 								<configuration>
 									<name>argeo-connect-tp</name>
+									<version>${version.argeo-tp}</version>
 									<mappings>
 										<mapping>
 											<directory>/usr/share/osgi</directory>
