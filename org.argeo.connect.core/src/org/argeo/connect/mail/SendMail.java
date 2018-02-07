@@ -34,6 +34,8 @@ public class SendMail implements Runnable {
 	private final static String ARGEO_SMTP_TLS_DEBUG = "org.argeo.connect.smtp.tls.debug";
 	private final static String DEFAULT_ENCODING = "UTF-8";
 
+	private final static boolean sendingActive = Boolean.parseBoolean(System.getProperty(ARGEO_SEND_MAILS, "true"));
+
 	private String host;
 	private String port;
 	private String from;
@@ -45,9 +47,9 @@ public class SendMail implements Runnable {
 	private String password;
 
 	public void run() {
-		String doSend = System.getProperty(ARGEO_SEND_MAILS);
+		// String doSend = System.getProperty(ARGEO_SEND_MAILS);
 
-		if ("false".equals(doSend))
+		if (!sendingActive)
 			traceUnsentMail();
 		else {
 			if ("smtp.gmail.com".equals(host))
@@ -150,8 +152,8 @@ public class SendMail implements Runnable {
 	}
 
 	/**
-	 * Shortcut to pass all data with only one call. We expect valid and non
-	 * null strings for host, from, to, subject, text, username, password (See
+	 * Shortcut to pass all data with only one call. We expect valid and non null
+	 * strings for host, from, to, subject, text, username, password (See
 	 * <code>MailProperty</code>
 	 */
 	public void setMailConfig(Map<String, String> mailConfig) {
@@ -202,10 +204,24 @@ public class SendMail implements Runnable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("*** MAIL NOT SENT *** ");
 		builder.append("This message should have been sent but mail sending is disabled.\n");
-		builder.append("From: ").append(from);
-		builder.append(" - To: ").append(to);
-		builder.append("- Subject: ").append(subject).append("\n");
-		builder.append("Body: \n").append(plainText);
+		builder.append(logMail(false));
 		log.info(builder.toString());
 	}
+
+	public String logMail(boolean html) {
+		StringBuilder builder = new StringBuilder();
+		if (!html) {
+			builder.append("From: ").append(from);
+			builder.append(" - To: ").append(to);
+			builder.append("- Subject: ").append(subject).append("\n");
+			builder.append("Body: \n");
+		}
+		builder.append(html ? htmlText : plainText);
+		return builder.toString();
+	}
+
+	public static boolean isSendingActive() {
+		return sendingActive;
+	}
+
 }
