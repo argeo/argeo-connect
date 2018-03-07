@@ -12,6 +12,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.argeo.connect.platform</module>
+		<module>org.argeo.connect.dep.rap.e4</module>
 <!-- 		<module>org.argeo.connect.sdk</module> -->
 	</modules>
 	<build>

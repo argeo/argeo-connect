@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.argeo.connect</groupId>
+		<version>2.1.79-SNAPSHOT</version>
+		<artifactId>dep</artifactId>
+		<relativePath>..</relativePath>
+	</parent>
+	<artifactId>org.argeo.connect.dep.rap.e4</artifactId>
+	<name>Connect Platform Eclipse 4</name>
+	<dependencies>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.ui</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.theme.argeo2</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
+
+		<!-- People UIs -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.argeo.connect</groupId> -->
+<!-- 			<artifactId>org.argeo.people.workbench.rap</artifactId> -->
+<!-- 			<version>2.1.79-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.people.web</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.argeo.connect</groupId> -->
+<!-- 			<artifactId>org.argeo.documents</artifactId> -->
+<!-- 			<version>2.1.79-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.argeo.connect</groupId> -->
+<!-- 			<artifactId>org.argeo.tracker</artifactId> -->
+<!-- 			<version>2.1.79-SNAPSHOT</version> -->
+<!-- 		</dependency> -->
+
+		<!-- Additional third parties -->
+		<dependency>
+			<groupId>org.argeo.tp.misc</groupId>
+			<artifactId>net.sf.jxl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.pdfbox</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.pdfbox.fontbox</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache.commons</groupId>
+			<artifactId>org.apache.commons.lang3</artifactId>
+		</dependency>
+
+		<!-- Base Argeo platform distribution -->
+		<dependency>
+			<groupId>org.argeo.commons</groupId>
+			<artifactId>org.argeo.dep.cms.rap.e4</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+	</dependencies>
+</project>

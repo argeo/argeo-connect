@@ -31,11 +31,12 @@
 			<version>2.1.79-SNAPSHOT</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.dep.cms.platform</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.argeo.commons</groupId> -->
+<!-- 			<artifactId>org.argeo.dep.cms.platform</artifactId> -->
+<!-- 			<version>${version.argeo-commons}</version> -->
+<!-- 		</dependency> -->
+
 		<!-- We build against RAP platform -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
