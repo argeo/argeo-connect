@@ -200,11 +200,10 @@
 			</toolbar>
 		</menuContribution>		
 
-		<!-- Generic commands provided by the people app --> 
+		<!-- Generic commands provided by the people app 
 		<menuContribution
 			locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.connect.ui.dropDownsToolbar"> 
 			<toolbar id="org.argeo.connect.ui.editToolbar">
-			<!-- Force resfresh if possible --> 
 			<command
 				commandId="org.argeo.connect.ui.forceRefresh"
 				icon="icons/actions/refresh.png"
@@ -217,8 +216,6 @@
 					</with>
 				</visibleWhen>
 			</command>
-
-			<!-- Check in and out management --> 
  			<command
 				commandId="org.argeo.connect.ui.changeEditingState"
 				icon="icons/actions/checkout.gif"
@@ -238,8 +235,6 @@
 				<parameter name="param.newEditingState" value="editing" />
   	 			<parameter name="param.priorAction" value="checkout" />
 			</command>
-			
-			<!-- Add global life cycle on Editors  -->
 			<command
 				commandId="org.argeo.connect.ui.changeEditingState"
 				icon="icons/actions/cancelEdit.gif"
@@ -261,7 +256,7 @@
     		</command>
 			</toolbar>
 		</menuContribution>
-		
+		 -->
 							
 		<!-- Contribute resources menu items -->
 		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
