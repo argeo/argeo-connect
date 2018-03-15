@@ -1,6 +1,6 @@
 package org.argeo.people.workbench.rap.providers;
 
-import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 
 /**
@@ -16,6 +16,6 @@ public class JcrNodeHtmlLabelProvider extends SimpleJcrNodeLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		return ConnectUiUtils.replaceAmpersand(super.getText(element));
+		return ConnectUtils.replaceAmpersand(super.getText(element));
 	}
 }

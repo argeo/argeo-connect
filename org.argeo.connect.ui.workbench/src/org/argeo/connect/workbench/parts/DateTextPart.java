@@ -12,8 +12,8 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -51,7 +51,7 @@ public class DateTextPart extends Composite {
 	private Text dateTxt;
 	private Button openCalBtn;
 
-	private DateFormat dateFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
+	private DateFormat dateFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_SHORT_DATE_FORMAT);
 
 	/**
 	 * 
@@ -108,11 +108,11 @@ public class DateTextPart extends Composite {
 		gl.horizontalSpacing = 5;
 		dateComposite.setLayout(gl);
 		dateTxt = new Text(dateComposite, SWT.BORDER);
-		dateTxt.setMessage(ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT);
+		dateTxt.setMessage(ConnectConstants.DEFAULT_SHORT_DATE_FORMAT);
 		CmsUtils.style(dateTxt, ConnectUiStyles.FORCE_BORDER);
 		dateTxt.setLayoutData(new GridData(150, SWT.DEFAULT));
 		dateTxt.setToolTipText(
-				"Enter a date with form \"" + ConnectUiConstants.DEFAULT_SHORT_DATE_FORMAT + "\" or use the calendar");
+				"Enter a date with form \"" + ConnectConstants.DEFAULT_SHORT_DATE_FORMAT + "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
 		CmsUtils.style(openCalBtn, ConnectUiStyles.OPEN_CALENDAR_BTN);
 		openCalBtn.setLayoutData(new GridData(24, 16));

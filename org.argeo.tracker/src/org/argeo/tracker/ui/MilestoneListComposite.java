@@ -7,6 +7,7 @@ import javax.jcr.Property;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
@@ -14,7 +15,6 @@ import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.tracker.internal.ui.controls.CategoryOverviewChart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -101,7 +101,7 @@ public class MilestoneListComposite extends Composite {
 		Label datesLbl = new Label(boxCmp, SWT.WRAP);
 
 		String ddVal = ConnectJcrUtils.getDateFormattedAsString(milestone, TrackerNames.TRACKER_TARGET_DATE,
-				TrackerUiConstants.defaultDateFormat);
+				ConnectConstants.DEFAULT_DATE_FORMAT);
 		if (EclipseUiUtils.isEmpty(ddVal)) {
 			datesLbl.setText("No due date defined");
 			datesLbl.setFont(EclipseUiUtils.getItalicFont(boxCmp));

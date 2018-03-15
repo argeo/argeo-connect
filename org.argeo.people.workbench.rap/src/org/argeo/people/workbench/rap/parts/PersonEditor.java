@@ -139,7 +139,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		// READ ONLY
 		final Composite readOnlyPanel = getFormToolkit().createComposite(parent, SWT.NO_FOCUS);
-		ConnectWorkbenchUtils.setSwitchingFormData(readOnlyPanel);
+		ConnectUiUtils.setSwitchingFormData(readOnlyPanel);
 		readOnlyPanel.setLayout(new GridLayout());
 
 		// Add a label with info provided by the PersonOverviewLabelProvider
@@ -151,7 +151,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		// EDIT
 		final Composite editPanelCmp = getFormToolkit().createComposite(parent, SWT.NO_FOCUS);
-		ConnectWorkbenchUtils.setSwitchingFormData(editPanelCmp);
+		ConnectUiUtils.setSwitchingFormData(editPanelCmp);
 		editPanelCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		// First Line - display Name management
@@ -194,15 +194,15 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		// PeopleNames.PEOPLE_DISPLAY_NAME)))
 		// defineDistinctBtn.setSelection(true);
 
-		final Text salutationTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Salutation",
+		final Text salutationTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "Salutation",
 				"Mr, Mrs...", 60);
-		final Text firstNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "First Name",
+		final Text firstNameTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "First Name",
 				"Usual first name for this person", 100);
 		// final Text middleNameTxt =
 		// ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Middle
 		// Name",
 		// "The second name if it exists", 100);
-		final Text lastNameTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Last Name",
+		final Text lastNameTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "Last Name",
 				"Usual last name for this person", 100);
 		// final Text suffixTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(),
 		// secondCmp, "Suffix",

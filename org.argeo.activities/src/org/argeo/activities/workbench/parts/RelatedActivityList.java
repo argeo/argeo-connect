@@ -14,15 +14,14 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
-import org.argeo.activities.ui.ActivityTable;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
@@ -141,11 +140,11 @@ public class RelatedActivityList extends LazyCTabControl {
 		toolkit.adapt(typeCmb, true, true);
 
 		// Title
-		final Text titleTxt = ConnectWorkbenchUtils.createGDText(toolkit, addActivityBar, "Title",
+		final Text titleTxt = ConnectUiUtils.createGDText(toolkit, addActivityBar, "Title",
 				"Enter a short title for the activity to create", 150, 1);
 
 		// Description
-		final Text descTxt = ConnectWorkbenchUtils.createGDText(toolkit, addActivityBar, "Description",
+		final Text descTxt = ConnectUiUtils.createGDText(toolkit, addActivityBar, "Description",
 				"Enter a description for the activity to create", 300, 1);
 
 		Button validBtn = toolkit.createButton(addActivityBar, "Add activity", SWT.PUSH);

@@ -13,10 +13,10 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesTypes;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectUiPlugin;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
@@ -101,7 +101,7 @@ public class TemplateList extends EditorPart implements Refreshable {
 	protected void createListPart(Composite parent) {
 		tableViewer = new TableViewer(parent, SWT.V_SCROLL);
 
-		ConnectWorkbenchUtils.setTableDefaultStyle(tableViewer, 25);
+		ConnectUiUtils.setTableDefaultStyle(tableViewer, 25);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn col;
 		int[] bounds = { 120, 110, 100, 50 };

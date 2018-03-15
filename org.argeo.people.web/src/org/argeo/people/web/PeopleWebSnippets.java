@@ -6,7 +6,7 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.people.PeopleException;
 
 /** Methods to ease implementation of People Web UI */
@@ -31,6 +31,6 @@ public class PeopleWebSnippets {
 			throw new PeopleException(
 					"Error while tag like property " + taggablePropName + " values for node " + taggableNode, e);
 		}
-		return ConnectUiUtils.replaceAmpersand(builder.toString().trim());
+		return ConnectUtils.replaceAmpersand(builder.toString().trim());
 	}
 }

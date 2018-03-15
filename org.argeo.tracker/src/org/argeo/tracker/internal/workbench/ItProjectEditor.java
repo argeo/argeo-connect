@@ -25,7 +25,6 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
@@ -41,10 +40,10 @@ import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.core.VersionComparator;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
+import org.argeo.tracker.internal.ui.VersionComparator;
 import org.argeo.tracker.internal.ui.controls.RepartitionChart;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureProjectWizard;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureVersionWizard;
@@ -322,7 +321,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 			AppService appService = getAppService();
 			String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 			String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
-			String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, referenceSession, appService,
+			String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, referenceSession, appService,
 					getAppWorkbenchService(), mainMixin, propName1, value1);
 			if (EclipseUiUtils.notEmpty(pathCreated)) {
 				Node created = ConnectJcrUtils.getNode(referenceSession, pathCreated);
@@ -491,7 +490,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					AppService appService = getAppService();
 					String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 					String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
-					String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, referenceSession, appService,
+					String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, referenceSession, appService,
 							getAppWorkbenchService(), mainMixin, propName1, value1);
 					if (EclipseUiUtils.notEmpty(pathCreated))
 						refreshViewer(filterTxt.getText());
@@ -639,7 +638,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					TrackerService trackerService = getTrackerService();
 					String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 					String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
-					String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, referenceSession,
+					String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, referenceSession,
 							trackerService, getAppWorkbenchService(), mainMixin, propName1, value1);
 					if (EclipseUiUtils.notEmpty(pathCreated))
 						refreshViewer(filterTxt.getText());
@@ -771,7 +770,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					TrackerService trackerService = getTrackerService();
 					String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 					String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
-					String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, referenceSession,
+					String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, referenceSession,
 							trackerService, getAppWorkbenchService(), mainMixin, propName1, value1);
 					if (EclipseUiUtils.notEmpty(pathCreated))
 						refreshViewer(filterTxt.getText());

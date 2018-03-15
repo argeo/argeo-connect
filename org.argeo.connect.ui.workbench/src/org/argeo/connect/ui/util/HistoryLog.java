@@ -16,10 +16,10 @@ import javax.jcr.Value;
 
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.versioning.ItemDiff;
 import org.argeo.connect.versioning.VersionDiff;
@@ -51,7 +51,7 @@ public class HistoryLog extends LazyCTabControl {
 	private final FormToolkit toolkit;
 	private final UserAdminService userAdminService;
 	private final Node entity;
-	private DateFormat dateTimeFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private DateFormat dateTimeFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// this page UI Objects
 	private MyFormPart myFormPart;

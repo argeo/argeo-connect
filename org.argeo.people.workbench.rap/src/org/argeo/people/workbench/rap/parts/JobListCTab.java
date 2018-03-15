@@ -15,10 +15,10 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
@@ -162,7 +162,7 @@ public class JobListCTab extends LazyCTabControl {
 
 	private TableViewer createItemViewer(Composite parent) {
 		TableViewer viewer = new TableViewer(parent, SWT.V_SCROLL);
-		ConnectWorkbenchUtils.setTableDefaultStyle(viewer, 60);
+		ConnectUiUtils.setTableDefaultStyle(viewer, 60);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn col;
 

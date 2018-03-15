@@ -9,8 +9,8 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -83,7 +83,7 @@ public class PeopleRapSnippets {
 			String pam = PeopleUiSnippets.getEntityPhoneAndMailFormatted(entity);
 			if (notEmpty(pam))
 				builder.append(pam);
-			return ConnectUiUtils.replaceAmpersand(builder.toString());
+			return ConnectUtils.replaceAmpersand(builder.toString());
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to create contact snippet for node " + entity, re);
 		}
@@ -109,7 +109,7 @@ public class PeopleRapSnippets {
 				builder.append(PeopleUiSnippets.getAddressDisplayValue(resourceService, primaryAddress));
 			}
 		}
-		return ConnectUiUtils.replaceAmpersand(builder.toString());
+		return ConnectUtils.replaceAmpersand(builder.toString());
 	}
 
 	private PeopleRapSnippets() {

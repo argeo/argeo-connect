@@ -9,7 +9,7 @@
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>org.argeo.connect.core</artifactId>
-	<name>Connect Utilities</name>
+	<name>Connect Core</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>

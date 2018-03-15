@@ -5,6 +5,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
@@ -75,17 +76,17 @@ public class OrgAdminInfoCTab extends LazyCTabControl {
 		parent.setLayout(new GridLayout(4, false));
 
 		// Legal Name
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Legal Name");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Legal Name");
 		final Text legalNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
 		// Legal form
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Legal Form");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Legal Form");
 		final Text legalFormTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// VAT ID Number
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "VAT ID");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "VAT ID");
 		final Text vatIDTxt = toolkit.createText(parent, "", SWT.BORDER);
 		vatIDTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 

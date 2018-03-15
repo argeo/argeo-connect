@@ -2,6 +2,7 @@ package org.argeo.people.workbench.rap.composites;
 
 import javax.jcr.Node;
 
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.people.PeopleNames;
@@ -41,35 +42,35 @@ public class BankAccountComposite extends Composite {
 		this.setLayout(new GridLayout(6, false));
 
 		// Main Info
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Account Holder");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Account Holder");
 		final Text holderTxt = toolkit.createText(parent, "", SWT.BORDER);
 		holderTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Bank Name");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Bank Name");
 		final Text bankNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bankNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Currency");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Currency");
 		final Text currencyTxt = toolkit.createText(parent, "", SWT.BORDER);
 		GridData gd = new GridData(SWT.LEFT, SWT.TOP, false, false);
 		gd.widthHint = 50;
 		currencyTxt.setLayoutData(gd);
 
 		// Bank number
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Account Number");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Account Number");
 		final Text accNbTxt = toolkit.createText(parent, "", SWT.BORDER);
 		accNbTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Bank Number");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Bank Number");
 		final Text bankNbTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bankNbTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
 		// BIC / IBAN
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "BIC");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "BIC");
 		final Text bicTxt = toolkit.createText(parent, "", SWT.BORDER);
 		bicTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "IBAN");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "IBAN");
 		final Text ibanTxt = toolkit.createText(parent, "", SWT.BORDER);
 		ibanTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 

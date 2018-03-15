@@ -6,8 +6,8 @@ import javax.jcr.Property;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
@@ -42,7 +42,7 @@ public class TagLabelProvider extends ColumnLabelProvider {
 		default:
 			throw new ConnectException("Undefined list type - Unable to provide text for group");
 		}
-		return ConnectUiUtils.replaceAmpersand(result);
+		return ConnectUtils.replaceAmpersand(result);
 	}
 
 	private String getOverviewTitle(Node entity) {

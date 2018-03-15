@@ -20,11 +20,12 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.core.ActivityUtils;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ui.ConnectImages;
-import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.widgets.LinkListPart;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.LinkListPart;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -99,7 +100,7 @@ public class RateEditor extends AbstractConnectEditor {
 		FormToolkit toolkit = getFormToolkit();
 
 		// Rate
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Rate");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Rate");
 		final Combo rateCmb = new Combo(parent, SWT.READ_ONLY);
 		GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
 		gd.widthHint = 100;
@@ -107,7 +108,7 @@ public class RateEditor extends AbstractConnectEditor {
 		rateCmb.setItems(getPossibleRates().toArray(new String[0]));
 
 		// Bottom part: optional comment
-		Label label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Comment");
+		Label label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Comment");
 		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.widthHint = firstColWHint;
 		gd.verticalIndent = 2;
@@ -164,7 +165,7 @@ public class RateEditor extends AbstractConnectEditor {
 
 		private class MyFormPart extends AbstractFormPart {
 
-			DateFormat dateFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+			DateFormat dateFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
 			@Override
 			public void refresh() {
@@ -204,7 +205,7 @@ public class RateEditor extends AbstractConnectEditor {
 				// 1st line (NOTE: it defines the grid data layout of this part)
 				// Work around to be able to kind of also align bold labels of
 				// the body
-				Label label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Category");
+				Label label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Category");
 				GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.widthHint = firstColWHint;
 				label.setLayoutData(gd);
@@ -214,7 +215,7 @@ public class RateEditor extends AbstractConnectEditor {
 				gd.verticalIndent = 2;
 				pollNameLbl.setLayoutData(gd);
 
-				ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Rated by");
+				ConnectUiUtils.createBoldLabel(toolkit, parent, "Rated by");
 				managerLbl = toolkit.createLabel(parent, "");
 
 				gd = EclipseUiUtils.fillWidth();
@@ -222,7 +223,7 @@ public class RateEditor extends AbstractConnectEditor {
 				managerLbl.setLayoutData(gd);
 
 				// ACTIVITY DATE
-				ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "On");
+				ConnectUiUtils.createBoldLabel(toolkit, parent, "On");
 				dateLbl = toolkit.createLabel(parent, "");
 
 				// dateComposite = new DateTextPart(RateEditor.this, parent,
@@ -231,7 +232,7 @@ public class RateEditor extends AbstractConnectEditor {
 				// dateComposite.setLayoutData(EclipseUiUtils.fillWidth());
 
 				// 2nd line - RELATED ENTITIES
-				label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
+				label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Related to");
 				gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.verticalIndent = 2;
 				label.setLayoutData(gd);

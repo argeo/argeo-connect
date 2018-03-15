@@ -51,7 +51,7 @@ public abstract class GroupEditor extends AbstractConnectCTabEditor {
 			// READ ONLY PANEL
 			final Composite roPanelCmp = getFormToolkit().createComposite(
 					parent, SWT.NO_FOCUS);
-			ConnectWorkbenchUtils.setSwitchingFormData(roPanelCmp);
+			ConnectUiUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the FilmOverviewLabelProvider
@@ -64,13 +64,13 @@ public abstract class GroupEditor extends AbstractConnectCTabEditor {
 			// EDIT PANEL
 			final Composite editPanel = getFormToolkit().createComposite(
 					parent, SWT.NO_FOCUS);
-			ConnectWorkbenchUtils.setSwitchingFormData(editPanel);
+			ConnectUiUtils.setSwitchingFormData(editPanel);
 
 			// intern layout
 			editPanel.setLayout(new GridLayout(1, false));
-			final Text titleTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(),
+			final Text titleTxt = ConnectUiUtils.createGDText(getFormToolkit(),
 					editPanel, "A title", "The title of this group", 200, 1);
-			final Text descTxt = ConnectWorkbenchUtils.createGDText(getFormToolkit(),
+			final Text descTxt = ConnectUiUtils.createGDText(getFormToolkit(),
 					editPanel, "A Description", "", 400, 1);
 
 			AbstractFormPart editPart = new AbstractFormPart() {

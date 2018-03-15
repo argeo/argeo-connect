@@ -18,14 +18,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.ChangeEditingState;
@@ -95,7 +94,7 @@ public abstract class AbstractConnectEditor extends EditorPart
 	// length for short strings (typically tab names)
 	protected final static int SHORT_NAME_LENGHT = 10;
 
-	private final static DateFormat df = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private final static DateFormat df = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	// Context
 	private Node node;
@@ -215,7 +214,7 @@ public abstract class AbstractConnectEditor extends EditorPart
 
 		// READ ONLY PANEL
 		final Composite roPanelCmp = toolkit.createComposite(buttons, SWT.NO_FOCUS);
-		ConnectWorkbenchUtils.setSwitchingFormData(roPanelCmp);
+		ConnectUiUtils.setSwitchingFormData(roPanelCmp);
 		roPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
 		// Do not show the edit button if the user does not have sufficient
@@ -253,7 +252,7 @@ public abstract class AbstractConnectEditor extends EditorPart
 
 		// EDIT PANEL
 		final Composite editPanelCmp = toolkit.createComposite(buttons, SWT.NONE);
-		ConnectWorkbenchUtils.setSwitchingFormData(editPanelCmp);
+		ConnectUiUtils.setSwitchingFormData(editPanelCmp);
 		editPanelCmp.setLayout(new RowLayout(SWT.VERTICAL));
 
 		Button saveBtn = toolkit.createButton(editPanelCmp, "Save", SWT.PUSH);

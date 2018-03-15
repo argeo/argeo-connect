@@ -14,9 +14,9 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
@@ -137,7 +137,7 @@ public class ConfigureVersionWizard extends Wizard implements ModifyListener {
 			parent.setLayout(new GridLayout(2, false));
 
 			// Project
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Project");
+			ConnectUiUtils.createBoldLabel(parent, "Project");
 			projectTxt = new Text(parent, SWT.BORDER);
 			projectTxt.setMessage("Choose relevant project");
 			projectTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

@@ -25,7 +25,6 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectImages;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
@@ -332,7 +331,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				AppService appService = getAppService();
 				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
-				String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, referenceSession, appService,
+				String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, referenceSession, appService,
 						getAppWorkbenchService(), mainMixin, propName1, value1);
 				if (EclipseUiUtils.notEmpty(pathCreated)) {
 					Node created = ConnectJcrUtils.getNode(referenceSession, pathCreated);
@@ -469,7 +468,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					AppService appService = getAppService();
 					String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 					String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
-					String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, referenceSession, appService,
+					String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, referenceSession, appService,
 							getAppWorkbenchService(), mainMixin, propName1, value1);
 					if (EclipseUiUtils.notEmpty(pathCreated))
 						refreshViewer(filterTxt.getText());

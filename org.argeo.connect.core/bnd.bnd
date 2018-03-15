@@ -8,6 +8,7 @@ org.argeo.cms.auth,\
 org.argeo.cms.util,\
 org.argeo.jcr,\
 org.argeo.node,\
+org.argeo.cms,\
 jxl.*;resolution:=optional,\
 *
 

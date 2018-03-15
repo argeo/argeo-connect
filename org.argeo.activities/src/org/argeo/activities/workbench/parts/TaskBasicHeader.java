@@ -16,12 +16,13 @@ import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.widgets.LinkListPart;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.LinkListPart;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
@@ -82,8 +83,8 @@ public class TaskBasicHeader extends Composite {
 	private Text titleTxt;
 	private Text descTxt;
 
-	private DateFormat dtFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
-	private DateFormat dateFormat = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_FORMAT);
+	private DateFormat dtFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
+	private DateFormat dateFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_FORMAT);
 
 	public TaskBasicHeader(AbstractConnectEditor editor, Composite parent, int style, UserAdminService uas,
 			ResourcesService resourceService, ActivitiesService activityService,
@@ -179,28 +180,28 @@ public class TaskBasicHeader extends Composite {
 	private void createROComposite(Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
 
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Status");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Status");
 		statusROLbl = new Label(parent, SWT.NO_FOCUS | SWT.WRAP);
 		statusROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Assigned to");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		assignedToROLbl = new Label(parent, SWT.NO_FOCUS | SWT.WRAP);
 		assignedToROLbl.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// RELATED ENTITIES
 		// Label label =
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Related to");
 		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, systemWorkbenchService, task,
 				ActivitiesNames.ACTIVITIES_RELATED_TO, hiddenItemIds);
 		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Title
-		ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
+		ConnectUiUtils.createBoldLabel(parent, "Title");
 		titleTxt = toolkit.createText(parent, "", SWT.BORDER);
 		titleTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Description
-		ConnectWorkbenchUtils.createBoldLabel(parent, "Description");
+		ConnectUiUtils.createBoldLabel(parent, "Description");
 		descTxt = toolkit.createText(parent, "", SWT.BORDER);
 		descTxt.setLayoutData(EclipseUiUtils.fillWidth());
 	}
@@ -210,41 +211,41 @@ public class TaskBasicHeader extends Composite {
 		parent.setLayout(new GridLayout(4, false));
 
 		// 1st line (NOTE: it defines the grid data layout of this part)
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Status");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Status");
 		statusCmb = new Combo(parent, SWT.READ_ONLY);
 		statusCmb.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
 
 		// DUE DATE
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Due date");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Due date");
 		dueDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS, myFormPart, task,
 				ActivitiesNames.ACTIVITIES_DUE_DATE);
 		dueDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// ASSIGNED TO
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Assigned to");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Assigned to");
 		changeAssignationLk = new Link(parent, SWT.NONE);
 		changeAssignationLk.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// WAKE UP DATE
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Wake up date");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Wake up date");
 		wakeUpDateCmp = new DateTextPart(editor, parent, SWT.NO_FOCUS, myFormPart, task,
 				ActivitiesNames.ACTIVITIES_WAKE_UP_DATE);
 		wakeUpDateCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// RELATED ENTITIES
-		ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, "Related to");
 		relatedCmp = new LinkListPart(editor, myFormPart, parent, SWT.NO_FOCUS, systemWorkbenchService, task,
 				ActivitiesNames.ACTIVITIES_RELATED_TO, hiddenItemIds);
 		relatedCmp.setLayoutData(EclipseUiUtils.fillWidth(3));
 		relatedCmp.layout();
 
 		// Title
-		ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
+		ConnectUiUtils.createBoldLabel(parent, "Title");
 		titleTxt = toolkit.createText(parent, "", SWT.BORDER);
 		titleTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
 
 		// Description
-		ConnectWorkbenchUtils.createBoldLabel(parent, "Description");
+		ConnectUiUtils.createBoldLabel(parent, "Description");
 		descTxt = toolkit.createText(parent, "", SWT.BORDER);
 		descTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
 

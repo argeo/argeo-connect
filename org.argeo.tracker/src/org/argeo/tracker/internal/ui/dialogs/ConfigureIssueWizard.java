@@ -13,10 +13,10 @@ import javax.jcr.Value;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.AssignedToDropDown;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
@@ -161,7 +161,7 @@ public class ConfigureIssueWizard extends Wizard {
 			parent.setLayout(new GridLayout(4, false));
 
 			// Project
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Project");
+			ConnectUiUtils.createBoldLabel(parent, "Project");
 			projectTxt = new Text(parent, SWT.BORDER);
 			projectTxt.setMessage("Choose relevant project");
 			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -190,7 +190,7 @@ public class ConfigureIssueWizard extends Wizard {
 				projectTxt.setEditable(false);
 
 			// Target milestone
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Milestone");
+			ConnectUiUtils.createBoldLabel(parent, "Milestone");
 			Text milestoneTxt = new Text(parent, SWT.BORDER);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 			milestoneTxt.setLayoutData(gd);
@@ -199,7 +199,7 @@ public class ConfigureIssueWizard extends Wizard {
 				milestoneDD.setProject(project);
 
 			// Title
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
+			ConnectUiUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
 			titleTxt.setMessage("To be shown in the various lists");
 			titleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
@@ -210,11 +210,11 @@ public class ConfigureIssueWizard extends Wizard {
 			assignedToDD = new AssignedToDropDown(assignedToTxt, userAdminService, true, false);
 
 			// DUE DATE
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Due date");
+			ConnectUiUtils.createBoldLabel(parent, "Due date");
 			dueDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// Importance
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Importance");
+			ConnectUiUtils.createBoldLabel(parent, "Importance");
 			importanceCmb = new Combo(parent, SWT.READ_ONLY);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			importanceCmb.setLayoutData(gd);
@@ -222,7 +222,7 @@ public class ConfigureIssueWizard extends Wizard {
 			importanceCmb.select(0);
 
 			// Priority
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Priority");
+			ConnectUiUtils.createBoldLabel(parent, "Priority");
 			priorityCmb = new Combo(parent, SWT.READ_ONLY);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			priorityCmb.setLayoutData(gd);
@@ -230,7 +230,7 @@ public class ConfigureIssueWizard extends Wizard {
 			priorityCmb.select(0);
 
 			// Versions
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Impacted Version");
+			ConnectUiUtils.createBoldLabel(parent, "Impacted Version");
 			versionsCmp = new TagListWithDropDownComposite(parent, SWT.NO_FOCUS, versionIds) {
 				private static final long serialVersionUID = -3852824835081771001L;
 
@@ -245,7 +245,7 @@ public class ConfigureIssueWizard extends Wizard {
 			versionsCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 
 			// Components
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Components");
+			ConnectUiUtils.createBoldLabel(parent, "Components");
 			componentsCmp = new TagListWithDropDownComposite(parent, SWT.NO_FOCUS, componentIds) {
 				private static final long serialVersionUID = 2356778978317806935L;
 
@@ -353,7 +353,7 @@ public class ConfigureIssueWizard extends Wizard {
 	}
 
 	private Text createBoldLT(Composite parent, String title, String message, String tooltip, int colspan) {
-		ConnectWorkbenchUtils.createBoldLabel(parent, title);
+		ConnectUiUtils.createBoldLabel(parent, title);
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
 		text.setLayoutData(EclipseUiUtils.fillAll(colspan, 1));
 		text.setMessage(message);

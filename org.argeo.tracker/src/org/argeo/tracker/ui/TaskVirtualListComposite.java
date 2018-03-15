@@ -2,7 +2,6 @@ package org.argeo.tracker.ui;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
-import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;
@@ -10,7 +9,6 @@ import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;

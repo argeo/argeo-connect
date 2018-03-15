@@ -1,10 +1,7 @@
 package org.argeo.tracker.internal.workbench;
 
 import org.argeo.connect.ui.ConnectImages;
-import org.argeo.tracker.workbench.TrackerUiPlugin;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 
 /** Shared icons in a Workbench context */
 public class TrackerImages {

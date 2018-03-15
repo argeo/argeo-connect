@@ -4,7 +4,7 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -87,7 +87,7 @@ public class NewMailingListWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// LastName
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Mailing list name");
+			ConnectUiUtils.createBoldLabel(parent, "Mailing list name");
 			nameTxt = new Text(parent, SWT.BORDER);
 			nameTxt.setMessage("a label");
 			nameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

@@ -29,10 +29,10 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectUiPlugin;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
@@ -182,14 +182,14 @@ public class EditTagWizard extends Wizard {
 			body.setLayout(new GridLayout(2, false));
 
 			// New Title Value
-			ConnectWorkbenchUtils.createBoldLabel(body, "Title");
+			ConnectUiUtils.createBoldLabel(body, "Title");
 			newTitleTxt = new Text(body, SWT.BORDER);
 			newTitleTxt.setMessage("was: " + ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
 			newTitleTxt.setText(ConnectJcrUtils.get(tagInstance, Property.JCR_TITLE));
 			newTitleTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// New Description Value
-			ConnectWorkbenchUtils.createBoldLabel(body, "Description", SWT.TOP);
+			ConnectUiUtils.createBoldLabel(body, "Description", SWT.TOP);
 			newDescTxt = new Text(body, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			newDescTxt.setMessage("was: " + ConnectJcrUtils.get(tagInstance, Property.JCR_DESCRIPTION));
 			newDescTxt.setText(ConnectJcrUtils.get(tagInstance, Property.JCR_DESCRIPTION));

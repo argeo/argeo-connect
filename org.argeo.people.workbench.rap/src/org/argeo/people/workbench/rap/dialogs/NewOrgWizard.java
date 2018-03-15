@@ -3,8 +3,8 @@ package org.argeo.people.workbench.rap.dialogs;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -99,13 +99,13 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// Legal Name
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Legal Name");
+			ConnectUiUtils.createBoldLabel(parent, "Legal Name");
 			legalNameTxt = new Text(parent, SWT.BORDER);
 			legalNameTxt.setMessage("the legal name");
 			legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// Legal Form
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Legal Form");
+			ConnectUiUtils.createBoldLabel(parent, "Legal Form");
 			legalFormTxt = new Text(parent, SWT.BORDER);
 			legalFormTxt.setMessage("the legal name (Ltd, Org, GmbH...) ");
 			legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

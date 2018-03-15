@@ -22,6 +22,10 @@ public interface TrackerConstants {
 	int TRACKER_IMPORTANCE_CRITICAL = 125;
 	int TRACKER_IMPORTANCE_BLOCKER = 150;
 
-	// UI CONSTANTS
-	int SEARCH_TEXT_DELAY = 800;
+	// int SEARCH_TEXT_DELAY = 800;
+
+	// DATE CONSTANTS
+	String ISO_BASIC_DATE_FORMAT = "yyyyMMdd";
+//	String SIMPLE_DATE_TIME_FORMAT = "yyyy-MM-dd 'at' HH:mm";
+//	String DEFAULT_DATE_FORMAT = "MMM dd',' yyyy";
 }

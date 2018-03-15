@@ -9,7 +9,7 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
@@ -61,7 +61,7 @@ public class OrgOverviewLP implements ILabelProvider, PeopleNames {
 			default:
 				throw new PeopleException("Unable to provide text for person");
 			}
-			return ConnectUiUtils.replaceAmpersand(result);
+			return ConnectUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}

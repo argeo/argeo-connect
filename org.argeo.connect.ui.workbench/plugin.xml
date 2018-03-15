@@ -12,19 +12,19 @@
 		<editor
 			id="org.argeo.connect.ui.workbench.tagEditor"
 			name="Tag"
-			icon="icons/types/tag.png"
+			icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/tag.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.connect.ui.workbench.searchTagsEditor"
 			name="Search tags"
-			icon="icons/actions/search.png"
+			icon="platform:/plugin/org.argeo.cms.ui.theme/icons/actions/search.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
 			id="org.argeo.connect.ui.workbench.defaultSearchEntityEditor"
 			name="Search"
-			icon="icons/actions/search.png"
+			icon="platform:/plugin/org.argeo.cms.ui.theme/icons/actions/search.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 	</extension>
@@ -162,7 +162,7 @@
 					style="pulldown"
 					label="Create"
 					tooltip="Create a new object"
-					icon="icons/actions/add.png"
+					icon="platform:/plugin/org.argeo.cms.ui.theme/icons/actions/add.png"
 					commandId="org.argeo.cms.ui.workbench.doNothing">
 				</command>
 				<!-- Search entity dropdown menu --> 
@@ -171,7 +171,7 @@
 					style="pulldown"
 					label="Search"
 					tooltip="Open a detailed search page"
-					icon="icons/actions/search.png"
+					icon="platform:/plugin/org.argeo.cms.ui.theme/icons/actions/search.png"
 					commandId="org.argeo.cms.ui.workbench.doNothing">
 <!--					<visibleWhen checkEnabled="false">
 						<with variable="roles">
@@ -185,7 +185,7 @@
 				<!-- Spreadsheet extracts --> 
 				<command
 					commandId="org.argeo.connect.ui.workbench.getJxlExport"
-					icon="icons/actions/jxlExport.gif"
+					icon="platform:/plugin/org.argeo.cms.ui.theme/icons/actions/jxlExport.gif"
 					label="Extract"
 					style="push"
 					tooltip="Generate a spreadsheet export of the current active filtered list">
@@ -206,7 +206,7 @@
 			<toolbar id="org.argeo.connect.ui.workbench.editToolbar">
 			<command
 				commandId="org.argeo.connect.ui.workbench.forceRefresh"
-				icon="icons/actions/refresh.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/actions/refresh.png"
 				label="Refresh"
 				style="push"
 				tooltip="Force refresh of the current active part">
@@ -218,7 +218,7 @@
 			</command>
  			<command
 				commandId="org.argeo.connect.ui.workbench.changeEditingState"
-				icon="icons/actions/checkout.gif"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/actions/checkout.gif"
 				label="Check Out"
 				style="push"
 				tooltip="Check Out item for edit">
@@ -237,7 +237,7 @@
 			</command>
 			<command
 				commandId="org.argeo.connect.ui.workbench.changeEditingState"
-				icon="icons/actions/cancelEdit.gif"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/actions/cancelEdit.gif"
 				label="Cancel edit"
 				style="push"
 				tooltip="Abandon changes and check back in">
@@ -263,7 +263,7 @@
 		<!--
 			<command
 				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
-				icon="icons/types/tag.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/tag.png"
 				label="Tags">
 				<parameter name="param.nodeType" value="connect:tag" />
 				<parameter name="param.editorName" value="Tags" />
@@ -275,7 +275,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.addEntityToolbar">
 			<command
 				commandId="org.argeo.connect.ui.workbench.createEntity"
-				icon="icons/types/person.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/person.png"
 				label="Person">
 				<parameter
          		name="param.targetNodeType"
@@ -283,7 +283,7 @@
 			</command>	
 			<command
 				commandId="org.argeo.connect.ui.workbench.createEntity"
-				icon="icons/types/organisation.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/organisation.png"
 				label="Organisation">
 				<parameter
          		name="param.targetNodeType"
@@ -291,7 +291,7 @@
 			</command>	
 			<!--<command
 				commandId="org.argeo.people.workbench.rap.createEntity"
-				icon="icons/mailingList.gif"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/mailingList.gif"
 				label="Mailing List">
 				<parameter
          		name="param.targetNodeType"
@@ -303,14 +303,14 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
-				icon="icons/types/organisation.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/organisation.png"
 				label="Organisations">
 				<parameter name="param.nodeType" value="people:org" />
 				<parameter name="param.editorName" value="Organisations" />
 			</command>	
 			<command
 				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
-				icon="icons/types/person.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/person.png"
 				label="Persons">
 				<parameter name="param.nodeType" value="people:person" />
 				<parameter name="param.editorName" value="Persons" />
@@ -318,7 +318,7 @@
 			<!--
 			<command
 				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
-				icon="icons/types/mailingList.gif"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/mailingList.gif"
 				label="Mailing Lists">
 				<parameter name="param.nodeType" value="people:mailingList" />
 				<parameter name="param.editorName" value="Mailing Lists" />
@@ -332,7 +332,7 @@
 			<!-- 
 			<command
 				commandId="org.argeo.connect.ui.workbench.createEntity"
-				icon="theme/icons/types/todo.gif"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/theme/icons/types/todo.gif"
 				label="Task">
 				<parameter
          		name="param.targetNodeType"
@@ -345,7 +345,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
-				icon="icons/types/todo.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/todo.png"
 				label="Tasks">
 				<parameter name="param.nodeType" value="activities:task" />
 				<parameter name="param.editorName" value="Tasks" />
@@ -356,7 +356,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.addEntityToolbar">
 			<command
 				commandId="org.argeo.connect.ui.workbench.createEntity"
-				icon="icons/types/todo.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/todo.png"
 				label="Task">
 				<parameter
          			name="param.targetNodeType"
@@ -364,7 +364,7 @@
 			</command>	
 			<command
 				commandId="org.argeo.connect.ui.workbench.createEntity"
-				icon="icons/types/milestone.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/milestone.png"
 				label="Milestone">
 				<parameter
          			name="param.targetNodeType"
@@ -372,7 +372,7 @@
 			</command>	
 			<command
 				commandId="org.argeo.connect.ui.workbench.createEntity"
-				icon="icons/types/project.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/project.png"
 				label="Project">
 				<parameter
          			name="param.targetNodeType"
@@ -384,7 +384,7 @@
 		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
 			<command
 				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
-				icon="icons/types/project.png"
+				icon="platform:/plugin/org.argeo.cms.ui.theme/icons/types/project.png"
 				label="Projects">
 				<parameter name="param.nodeType" value="tracker:project" />
 				<parameter name="param.editorName" value="Projects" />
@@ -421,12 +421,7 @@
 	</extension>
 	
 	<!-- Theme -->
-	<extension point="org.eclipse.rap.ui.themes">
-		
+	<extension point="org.eclipse.rap.ui.themes">		
 		<themeContribution themeId="org.eclipse.rap.rwt.theme.Default" file="theme.css" />
-		
-		<!--
-		<theme id="org.argeo.suite.theme.argeo2.Default" name="Argeo 2" file="theme.css"/>
-		-->
 	</extension>
 </plugin>

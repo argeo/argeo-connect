@@ -204,7 +204,7 @@ public class ContactListCTab extends LazyCTabControl {
 
 	private void populateNotePanel(Composite parent) {
 		parent.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
-		Label label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Notes: ");
+		Label label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Notes: ");
 
 		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.verticalIndent = 3;

@@ -8,8 +8,8 @@ import javax.jcr.Node;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.web.PeopleWebConstants;
@@ -83,7 +83,7 @@ public class SearchEntitiesLP implements ILabelProvider {
 			builder.append("<b>");
 			builder.append(peopleService.getDisplayName(entity));
 			builder.append("</b>");
-			return ConnectUiUtils.replaceAmpersand(builder.toString());
+			return ConnectUtils.replaceAmpersand(builder.toString());
 		}
 	}
 

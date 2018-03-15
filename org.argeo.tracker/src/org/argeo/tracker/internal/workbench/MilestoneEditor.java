@@ -28,16 +28,16 @@ import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectImages;
-import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.UserNameLP;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.ColumnDefinition;
@@ -241,7 +241,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 						managerLk.setText("");
 
 					String dueDateStr = ConnectJcrUtils.getDateFormattedAsString(milestone,
-							TrackerNames.TRACKER_TARGET_DATE, ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+							TrackerNames.TRACKER_TARGET_DATE, ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 					if (EclipseUiUtils.notEmpty(dueDateStr))
 						dueDateLk.setText(dueDateStr);
 
@@ -271,7 +271,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 					overdueTasksLk.setText(nb < 0 ? "-" : nb.toString());
 
 					String closedOn = ConnectJcrUtils.getDateFormattedAsString(milestone,
-							ConnectNames.CONNECT_CLOSE_DATE, ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+							ConnectNames.CONNECT_CLOSE_DATE, ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
 					if (EclipseUiUtils.notEmpty(closedOn)) {
 						dueDateLbl.setText("Close date");
@@ -513,7 +513,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 				String propName2 = TrackerNames.TRACKER_MILESTONE_UID;
 				String value2 = ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_UID);
 
-				String pathCreated = ConnectUiUtils.createAndConfigureEntity(shell, session, getTrackerService(),
+				String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, session, getTrackerService(),
 						getAppWorkbenchService(), mainMixin, propName1, value1, propName2, value2);
 				if (EclipseUiUtils.notEmpty(pathCreated))
 					refreshViewer(filterTxt.getText());
@@ -626,7 +626,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 
 		String closedBy = ConnectJcrUtils.get(milestone, ConnectNames.CONNECT_CLOSED_BY);
 		String closedOn = ConnectJcrUtils.getDateFormattedAsString(milestone, ConnectNames.CONNECT_CLOSE_DATE,
-				ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+				ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
 		if (EclipseUiUtils.notEmpty(closedOn))
 			title += " closed on " + closedOn + " by " + getUserAdminService().getUserDisplayName(closedBy);

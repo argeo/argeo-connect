@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeType;
 
-import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.documents.DocumentsException;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -36,7 +36,7 @@ public class DocumentsSingleColumnLP extends LabelProvider {
 			// result = ConnectJcrUtils.get(entity, Property.JCR_TITLE);
 			else
 				result = "";
-			return ConnectUiUtils.replaceAmpersand(result);
+			return ConnectUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
 			throw new DocumentsException("Unable to get formatted value for node", re);
 		}

@@ -9,9 +9,10 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.widgets.LinkListPart;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.workbench.LinkListPart;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.parts.DateTextPart;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -66,7 +67,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 
 		FormToolkit toolkit = getFormToolkit();
 		// 3rd line: title
-		Label label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Title");
+		Label label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Title");
 		GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 		gd.widthHint = firstColWHint;
 		label.setLayoutData(gd);
@@ -74,7 +75,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 		titleTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		// Bottom part: description
-		label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Description");
+		label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Description");
 		gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.widthHint = firstColWHint;
 		gd.verticalIndent = 2;
@@ -163,7 +164,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 				// 1st line (NOTE: it defines the grid data layout of this part)
 				// Work around to be able to kind of also align bold labels of
 				// the body
-				Label label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Type");
+				Label label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Type");
 				GridData gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.widthHint = firstColWHint;
 				label.setLayoutData(gd);
@@ -173,7 +174,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 				gd.verticalIndent = 3;
 				typeLbl.setLayoutData(gd);
 
-				ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Reported by");
+				ConnectUiUtils.createBoldLabel(toolkit, parent, "Reported by");
 				managerLbl = toolkit.createLabel(parent, "");
 
 				gd = EclipseUiUtils.fillWidth();
@@ -181,13 +182,13 @@ public class ActivityEditor extends AbstractConnectEditor {
 				managerLbl.setLayoutData(gd);
 
 				// ACTIVITY DATE
-				ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Date");
+				ConnectUiUtils.createBoldLabel(toolkit, parent, "Date");
 				dateComposite = new DateTextPart(ActivityEditor.this, parent, SWT.NO_FOCUS, myFormPart, activity,
 						ActivitiesNames.ACTIVITIES_ACTIVITY_DATE);
 				dateComposite.setLayoutData(EclipseUiUtils.fillWidth());
 
 				// 2nd line - RELATED ENTITIES
-				label = ConnectWorkbenchUtils.createBoldLabel(toolkit, parent, "Related to");
+				label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Related to");
 				gd = new GridData(SWT.RIGHT, SWT.CENTER, false, false);
 				gd.verticalIndent = 2;
 				label.setLayoutData(gd);

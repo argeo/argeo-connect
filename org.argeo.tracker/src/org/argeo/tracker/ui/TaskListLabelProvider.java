@@ -8,9 +8,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
-import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
@@ -82,7 +82,7 @@ public class TaskListLabelProvider extends LabelProvider {
 			builder.append(" [").append(tmpStr).append("]  ");
 
 		String ddStr = ConnectJcrUtils.getDateFormattedAsString(task, ActivitiesNames.ACTIVITIES_DUE_DATE,
-				ConnectUiConstants.DEFAULT_DATE_FORMAT);
+				ConnectConstants.DEFAULT_DATE_FORMAT);
 		if (notEmpty(ddStr))
 			builder.append(" due to ").append(ddStr);
 
@@ -100,7 +100,7 @@ public class TaskListLabelProvider extends LabelProvider {
 	private final String LIST_WRAP_STYLE = "style='float:left;padding:0px;white-space:pre-wrap;'";
 
 	private String wrapThis(String value) {
-		String wrapped = "<span " + LIST_WRAP_STYLE + " >" + ConnectUiUtils.replaceAmpersand(value) + "</span>";
+		String wrapped = "<span " + LIST_WRAP_STYLE + " >" + ConnectUtils.replaceAmpersand(value) + "</span>";
 		return wrapped;
 	}
 

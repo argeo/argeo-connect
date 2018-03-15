@@ -19,21 +19,24 @@
 	<modules>
 		<module>org.argeo.connect.api</module>
 		<module>org.argeo.connect.core</module>
+<!-- 		<module>org.argeo.people.core</module> -->
+
+		<!-- UI -->
+		<module>org.argeo.connect.ui</module>
+<!-- 		<module>org.argeo.people.ui</module> -->
+		<module>org.argeo.people.web</module>
+
+		<!-- Workbench -->
 		<module>org.argeo.connect.ui.workbench</module>
 		<module>org.argeo.theme.argeo2</module>
-
+		<!-- Workbench Apps -->
 		<module>org.argeo.activities</module>
-
 		<module>org.argeo.documents</module>
-
-		<module>org.argeo.people.core</module>
-		<module>org.argeo.people.ui</module>
-		<module>org.argeo.people.web</module>
 		<module>org.argeo.people.workbench.rap</module>
-
-		<module>org.argeo.media</module>
-
 		<module>org.argeo.tracker</module>
+
+		<!-- Legacy -->
+		<module>org.argeo.media</module>
 
 		<!-- Depends on org.eclipse.ui.form that must be added to eclipse RCP repo -->
 		<!-- <module>org.argeo.photo.manager.ui</module> -->

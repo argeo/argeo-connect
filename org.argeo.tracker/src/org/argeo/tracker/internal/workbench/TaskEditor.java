@@ -23,8 +23,8 @@ import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ui.ConnectImages;
-import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.TechnicalInfoPage;
@@ -230,7 +230,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 					assignedToLk.setText(manager);
 
 					String dueDateStr = ConnectJcrUtils.getDateFormattedAsString(task,
-							ActivitiesNames.ACTIVITIES_DUE_DATE, ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+							ActivitiesNames.ACTIVITIES_DUE_DATE, ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 					if (EclipseUiUtils.notEmpty(dueDateStr))
 						dueDateLk.setText(dueDateStr);
 

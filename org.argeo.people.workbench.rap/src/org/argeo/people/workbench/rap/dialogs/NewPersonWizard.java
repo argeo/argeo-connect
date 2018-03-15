@@ -5,8 +5,8 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -101,13 +101,13 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// FirstName
-			ConnectWorkbenchUtils.createBoldLabel(parent, "First Name");
+			ConnectUiUtils.createBoldLabel(parent, "First Name");
 			firstNameTxt = new Text(parent, SWT.BORDER);
 			firstNameTxt.setMessage("a first name");
 			firstNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// LastName
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Last Name");
+			ConnectUiUtils.createBoldLabel(parent, "Last Name");
 			lastNameTxt = new Text(parent, SWT.BORDER);
 			lastNameTxt.setMessage("a last name");
 			lastNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));

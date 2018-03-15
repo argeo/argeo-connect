@@ -9,9 +9,9 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.parts.RelatedActivityList;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
@@ -129,7 +129,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 			parent.setLayout(new FormLayout());
 			// READ ONLY
 			final Composite roPanelCmp = getFormToolkit().createComposite(parent, SWT.NO_FOCUS);
-			ConnectWorkbenchUtils.setSwitchingFormData(roPanelCmp);
+			ConnectUiUtils.setSwitchingFormData(roPanelCmp);
 			roPanelCmp.setLayout(new GridLayout());
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
@@ -140,7 +140,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 
 			// EDIT
 			final Composite editPanelCmp = getFormToolkit().createComposite(parent, SWT.NONE);
-			ConnectWorkbenchUtils.setSwitchingFormData(editPanelCmp);
+			ConnectUiUtils.setSwitchingFormData(editPanelCmp);
 			editPanelCmp.setLayout(new GridLayout(2, false));
 
 			// Create edit text

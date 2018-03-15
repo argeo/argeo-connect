@@ -180,7 +180,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			Link chooseOrgLk = new Link(parent, SWT.LEFT | SWT.BOTTOM);
 			chooseOrgLk.setText("<a>Change</a>");
 
-			Text labelTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "A custom label", "A custom label",
+			Text labelTxt = ConnectUiUtils.createRDText(toolkit, parent, "A custom label", "A custom label",
 					120);
 
 			Combo catCmb = new Combo(parent, SWT.BOTTOM | SWT.READ_ONLY);
@@ -256,20 +256,20 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		EclipseUiUtils.clear(parent);
 		if (editor.isEditing()) {
 			// specific for addresses
-			final Text streetTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "Street", "Street", 0);
-			final Text street2Txt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "Street Complement", "", 0);
-			final Text zipTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "Zip code", "", 0);
-			final Text cityTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "City", "", 0);
-			final Text stateTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "State", "", 0);
-			Text countryTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "Country", "", 110);
+			final Text streetTxt = ConnectUiUtils.createRDText(toolkit, parent, "Street", "Street", 0);
+			final Text street2Txt = ConnectUiUtils.createRDText(toolkit, parent, "Street Complement", "", 0);
+			final Text zipTxt = ConnectUiUtils.createRDText(toolkit, parent, "Zip code", "", 0);
+			final Text cityTxt = ConnectUiUtils.createRDText(toolkit, parent, "City", "", 0);
+			final Text stateTxt = ConnectUiUtils.createRDText(toolkit, parent, "State", "", 0);
+			Text countryTxt = ConnectUiUtils.createRDText(toolkit, parent, "Country", "", 110);
 
 			// The country drop down
 			Session session = ConnectJcrUtils.getSession(contactNode);
 			final TagLikeDropDown countryDD = new TagLikeDropDown(session, resourcesService,
 					ConnectConstants.RESOURCE_COUNTRY, countryTxt);
 
-			final Text geoPointTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "Geopoint", "", 0);
-			final Text labelTxt = ConnectWorkbenchUtils.createRDText(toolkit, parent, "Label", "", 0);
+			final Text geoPointTxt = ConnectUiUtils.createRDText(toolkit, parent, "Geopoint", "", 0);
+			final Text labelTxt = ConnectUiUtils.createRDText(toolkit, parent, "Label", "", 0);
 
 			Combo catCmb = new Combo(parent, SWT.READ_ONLY);
 			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));

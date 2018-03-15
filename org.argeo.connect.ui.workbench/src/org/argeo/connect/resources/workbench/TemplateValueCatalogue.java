@@ -31,7 +31,7 @@ import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
@@ -233,7 +233,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 			@Override
 			public String getText(Object element) {
-				return ConnectUiUtils.replaceAmpersand((String) element);
+				return ConnectUtils.replaceAmpersand((String) element);
 			}
 		});
 
@@ -244,7 +244,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 
 				@Override
 				public String getText(Object element) {
-					String value = ConnectUiUtils.replaceAmpersand((String) element);
+					String value = ConnectUtils.replaceAmpersand((String) element);
 					String editLink = ConnectUiSnippets.getRWTLink(
 							ConnectUiConstants.CRUD_EDIT + ConnectUiConstants.HREF_SEPARATOR + value,
 							ConnectUiConstants.CRUD_EDIT);
@@ -494,7 +494,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 				body.setLayout(new GridLayout(2, false));
 
 				// New Title Value
-				ConnectWorkbenchUtils.createBoldLabel(body, "New Value");
+				ConnectUiUtils.createBoldLabel(body, "New Value");
 				newValueTxt = new Text(body, SWT.BORDER);
 				newValueTxt.setMessage("was: " + oldValue);
 				newValueTxt.setText(oldValue);

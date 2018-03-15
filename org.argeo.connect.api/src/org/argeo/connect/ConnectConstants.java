@@ -18,4 +18,9 @@ public interface ConnectConstants {
 	// Various
 	String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
 	String USERNAME_PATTERN = "^[a-zA-Z]+[.a-zA-Z0-9_-]{2,31}$";
+	// Default English date and numbers formats
+	String DEFAULT_SHORT_DATE_FORMAT = "dd/MM/yyyy";
+	String DEFAULT_DATE_FORMAT = "MMM dd, yyyy";
+	String DEFAULT_DATE_TIME_FORMAT = "MMM dd, yyyy 'at' HH:mm";
+	String DEFAULT_NUMBER_FORMAT = "#,##0.0";
 }

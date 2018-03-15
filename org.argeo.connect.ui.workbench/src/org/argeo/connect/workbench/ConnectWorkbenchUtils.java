@@ -13,40 +13,40 @@ import javax.jcr.Value;
 
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
-import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.commands.OpenSearchEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
+import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
@@ -56,7 +56,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** Helper methods to ease UI implementation in a Connect Workbench */
 public class ConnectWorkbenchUtils {
@@ -69,8 +68,8 @@ public class ConnectWorkbenchUtils {
 
 	/**
 	 * Shortcut to retrieve the current active page. It assumes the bundle
-	 * WorkbenchUiPlugin is started (it is by the way the basis of all apps
-	 * based upon argeo framework that use the workbench)
+	 * WorkbenchUiPlugin is started (it is by the way the basis of all apps based
+	 * upon argeo framework that use the workbench)
 	 */
 	@Deprecated
 	public static IWorkbenchPage getActivePage() {
@@ -81,8 +80,8 @@ public class ConnectWorkbenchUtils {
 
 	/**
 	 * Helper to call a command with a few parameter easily. The additional
-	 * parameters must be Pairs with each time a parameterID and a
-	 * parameterValue couple in this order
+	 * parameters must be Pairs with each time a parameterID and a parameterValue
+	 * couple in this order
 	 */
 	public static void callCommand(String commandID, String... parameters) {
 		Map<String, String> params = new HashMap<String, String>();
@@ -92,9 +91,9 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to refresh a <code>DateTime</code> widget given a Node in a form
-	 * and a property Name. Also manages its enable state. Note that, by
-	 * default, we force setting of the time to noon. Might be later enhanced.
+	 * Shortcut to refresh a <code>DateTime</code> widget given a Node in a form and
+	 * a property Name. Also manages its enable state. Note that, by default, we
+	 * force setting of the time to noon. Might be later enhanced.
 	 * 
 	 * If the property does not yet exits, it is not created and the
 	 */
@@ -117,8 +116,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
-	 * a property Name. Also manages its enable state
+	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and a
+	 * property Name. Also manages its enable state
 	 */
 	public static String refreshFormTextWidget(CmsEditable editable, Text text, Node node, String propName) {
 		String newStr = ConnectJcrUtils.get(node, propName);
@@ -130,9 +129,9 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and
-	 * a property Name. Also manages its enable state and set a default message
-	 * if corresponding Text value is empty
+	 * Shortcut to refresh a <code>Text</code> widget given a Node in a form and a
+	 * property Name. Also manages its enable state and set a default message if
+	 * corresponding Text value is empty
 	 */
 	public static String refreshFormText(CmsEditable editable, Text text, Node entity, String propName,
 			String defaultMsg) {
@@ -143,8 +142,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to select an item of a <code>Combo</code> widget given a Node in
-	 * a form, a property Name. Also manages its enable state.
+	 * Shortcut to select an item of a <code>Combo</code> widget given a Node in a
+	 * form, a property Name. Also manages its enable state.
 	 */
 	public static void refreshFormCombo(CmsEditable editable, Combo combo, Node node, String propName) {
 		String currValue = ConnectJcrUtils.get(node, propName);
@@ -154,8 +153,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to refresh a Check box <code>Button</code> with an encoded
-	 * boolean flag widget given a node in a form and a property name.
+	 * Shortcut to refresh a Check box <code>Button</code> with an encoded boolean
+	 * flag widget given a node in a form and a property name.
 	 */
 	public static boolean refreshFlagFormCheckBox(CmsEditable editable, Button button, Node entity, String propName,
 			int cache) {
@@ -176,8 +175,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to refresh a Check box <code>Button</code> widget given a Node
-	 * in a form and a property Name.
+	 * Shortcut to refresh a Check box <code>Button</code> widget given a Node in a
+	 * form and a property Name.
 	 */
 	public static boolean refreshFormCheckBox(CmsEditable editable, Button button, Node entity, String propName) {
 		Boolean tmp = null;
@@ -195,8 +194,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to refresh the text underlying a DropDown widget given a Node
-	 * and a property Name.
+	 * Shortcut to refresh the text underlying a DropDown widget given a Node and a
+	 * property Name.
 	 */
 	public static String refreshDropDown(ConnectAbstractDropDown dropDown, Node entity, String propName) {
 		String tmp = null;
@@ -213,8 +212,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to refresh a radio <code>Button</code> widget given a Node in a
-	 * form and a property Name. Also manage its enabled state
+	 * Shortcut to refresh a radio <code>Button</code> widget given a Node in a form
+	 * and a property Name. Also manage its enabled state
 	 */
 	public static void refreshFormRadio(CmsEditable editor, Button button, Node entity, String propName) {
 		Boolean tmp = null;
@@ -231,8 +230,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Creates a new selection adapter in order to provide sort abilities to a
-	 * table that displays JCR Rows
+	 * Creates a new selection adapter in order to provide sort abilities to a table
+	 * that displays JCR Rows
 	 * 
 	 * @param index
 	 * @param propertyType
@@ -267,8 +266,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Creates a new selection adapter in order to provide sort abilities to a
-	 * table that displays JCR nodes
+	 * Creates a new selection adapter in order to provide sort abilities to a table
+	 * that displays JCR nodes
 	 * 
 	 * @param index
 	 * @param propertyType
@@ -302,9 +301,9 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to add a default modify listeners to a <code>DateTime</code>
-	 * widget that is bound a JCR String Property. Any change in the text is
-	 * immediately stored in the active session, but no save is done.
+	 * Shortcut to add a default modify listeners to a <code>DateTime</code> widget
+	 * that is bound a JCR String Property. Any change in the text is immediately
+	 * stored in the active session, but no save is done.
 	 */
 	public static void addSelectionListener(final DateTime dateTime, final Node node, final String propName,
 			final AbstractFormPart part) {
@@ -324,9 +323,8 @@ public class ConnectWorkbenchUtils {
 
 	/**
 	 * Shortcut to add a default selection listener to a Check Box
-	 * <code>Button</code> widget that is bound a JCR boolean property. Any
-	 * change in the selection is immediately stored in the active session, but
-	 * not saved
+	 * <code>Button</code> widget that is bound a JCR boolean property. Any change
+	 * in the selection is immediately stored in the active session, but not saved
 	 */
 	public static void addCheckBoxListener(final Button button, final Node node, final String propName,
 			final AbstractFormPart part) {
@@ -344,9 +342,8 @@ public class ConnectWorkbenchUtils {
 
 	/**
 	 * Shortcut to add a default selection listener to a Check Box
-	 * <code>Button</code> widget that is bound a JCR boolean property. Any
-	 * change in the selection is immediately stored in the active session, but
-	 * not saved
+	 * <code>Button</code> widget that is bound a JCR boolean property. Any change
+	 * in the selection is immediately stored in the active session, but not saved
 	 */
 	public static void addFlagCheckBoxListener(final Button button, final Node node, final String propName,
 			final int cache, final AbstractFormPart part) {
@@ -371,9 +368,9 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to add a default modify listeners to a <code>Text</code> widget
-	 * that is bound a JCR String Property. Any change in the text is
-	 * immediately stored in the active session, but no save is done.
+	 * Shortcut to add a default modify listeners to a <code>Text</code> widget that
+	 * is bound a JCR String Property. Any change in the text is immediately stored
+	 * in the active session, but no save is done.
 	 */
 	public static void addModifyListener(final Text text, final Node node, final String propName,
 			final AbstractFormPart part) {
@@ -406,8 +403,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to add a {@code ModifyListener} on a {@code Combo} that updates
-	 * a property on a Node
+	 * Shortcut to add a {@code ModifyListener} on a {@code Combo} that updates a
+	 * property on a Node
 	 */
 	public static void addTxtModifyListener(final AbstractFormPart part, final Combo combo, final Node entity,
 			final String propName, final int propType) {
@@ -423,8 +420,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to add a SelectionListener on a combo that updates a property on
-	 * a Node
+	 * Shortcut to add a SelectionListener on a combo that updates a property on a
+	 * Node
 	 */
 	public static void addComboSelectionListener(final AbstractFormPart part, final Combo combo, final Node entity,
 			final String propName, final int propType) {
@@ -445,8 +442,8 @@ public class ConnectWorkbenchUtils {
 	}
 
 	/**
-	 * Shortcut to add a Text Modifylistener that updates a LONG property on a
-	 * Node. Checks the input validity while the user is typing
+	 * Shortcut to add a Text Modifylistener that updates a LONG property on a Node.
+	 * Checks the input validity while the user is typing
 	 */
 	public static void addNbOnlyTxtModifyListener(IWorkbench workbench, final AbstractFormPart part, final Text text,
 			final Node entity, final String propName, final int propType) {
@@ -566,130 +563,7 @@ public class ConnectWorkbenchUtils {
 		return link;
 	}
 
-	/**
-	 * Shortcut to create a delete button that will be used in composites that
-	 * display a multi value property in tag-like manner
-	 */
-	public static Button createDeleteButton(Composite parent) {
-		Button button = new Button(parent, SWT.FLAT | SWT.PUSH);
-		CmsUtils.style(button, ConnectUiStyles.SMALL_DELETE_BTN);
-		RowData rd = new RowData();
-		rd.height = 8;
-		rd.width = 8;
-		button.setLayoutData(rd);
-		return button;
-	}
-
-	/** Creates a text widget with RowData already set */
-	public static Text createRDText(FormToolkit toolkit, Composite parent, String msg, String toolTip, int width) {
-		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		text.setMessage(msg);
-		text.setToolTipText(toolTip);
-		text.setLayoutData(width == 0 ? new RowData() : new RowData(width, SWT.DEFAULT));
-		return text;
-	}
-
-	/**
-	 * Creates the basic right aligned bold label that is used in various forms
-	 * using a pre-defined toolkit.
-	 */
-	public static Label createBoldLabel(FormToolkit toolkit, Composite parent, String value) {
-
-		// We add a blank space before to workaround the cropping of the word
-		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
-		Label label = toolkit.createLabel(parent, " " + value, SWT.RIGHT);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		return label;
-	}
-
-	/**
-	 * Creates a basic right-aligned vertical-centered bold label with no
-	 * specific toolkit.
-	 */
-	public static Label createBoldLabel(Composite parent, String value) {
-		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(" " + value);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
-		return label;
-	}
-
-	/**
-	 * Creates a basic right aligned bold label with no specific toolkit.
-	 * precise vertical alignment
-	 */
-	public static Label createBoldLabel(Composite parent, String value, int verticalAlign) {
-		Label label = new Label(parent, SWT.RIGHT);
-		label.setText(" " + value);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, verticalAlign, false, false));
-		return label;
-	}
-
-	/**
-	 * Creates a text widget with GridData already set
-	 * 
-	 * @param toolkit
-	 * @param parent
-	 * @param msg
-	 * @param toolTip
-	 * @param width
-	 * @param colSpan
-	 * @return
-	 */
-	public static Text createGDText(FormToolkit toolkit, Composite parent, String msg, String toolTip, int width,
-			int colSpan) {
-		Text text = toolkit.createText(parent, "", SWT.BORDER | SWT.SINGLE | SWT.LEFT);
-		text.setMessage(msg);
-		text.setToolTipText(toolTip);
-		GridData gd = new GridData(SWT.FILL, SWT.FILL, true, false);
-		gd.widthHint = width;
-		gd.horizontalSpan = colSpan;
-		text.setLayoutData(gd);
-		return text;
-	}
-
-	public static void setTableDefaultStyle(TableViewer viewer, int customItemHeight) {
-		setTableDefaultStyle(viewer.getTable(), customItemHeight);
-	}
-
-	public static void setTableDefaultStyle(Table table, int customItemHeight) {
-		table.setLinesVisible(true);
-		table.setHeaderVisible(false);
-		CmsUtils.setItemHeight(table, customItemHeight);
-		CmsUtils.markup(table);
-	}
-
 	// Layouts and LayoutData
-
-	/** shortcut to set form data while dealing with switching panel */
-	public static void setSwitchingFormData(Composite composite) {
-		FormData fdLabel = new FormData();
-		fdLabel.top = new FormAttachment(0, 0);
-		fdLabel.left = new FormAttachment(0, 0);
-		fdLabel.right = new FormAttachment(100, 0);
-		fdLabel.bottom = new FormAttachment(100, 0);
-		composite.setLayoutData(fdLabel);
-	}
-
-	/**
-	 * Shortcut to quickly get a FormData object with configured FormAttachment
-	 * 
-	 * @param left
-	 * @param top
-	 * @param right
-	 * @param bottom
-	 * @return
-	 */
-	public static FormData createformData(int left, int top, int right, int bottom) {
-		FormData formData = new FormData();
-		formData.left = new FormAttachment(left, 0);
-		formData.top = new FormAttachment(top, 0);
-		formData.right = new FormAttachment(right, 0);
-		formData.bottom = new FormAttachment(bottom, 0);
-		return formData;
-	}
 
 	/**
 	 * Create the text value of a link that enable calling the
@@ -712,16 +586,16 @@ public class ConnectWorkbenchUtils {
 							resourceService, appWorkbenchService, ConnectConstants.RESOURCE_TAG, value.getString()))
 							.append("  ");
 			}
-			return ConnectUiUtils.replaceAmpersand(tags.toString());
+			return ConnectUtils.replaceAmpersand(tags.toString());
 		} catch (RepositoryException e) {
 			throw new ConnectException("Error while getting tags for entity", e);
 		}
 	}
 
 	/**
-	 * Generate a href link that will call the openEntityEditor Command for this
-	 * tag if it is already registered. The corresponding Label / List must have
-	 * a HtmlRWTAdapter to catch when the user click on the link
+	 * Generate a href link that will call the openEntityEditor Command for this tag
+	 * if it is already registered. The corresponding Label / List must have a
+	 * HtmlRWTAdapter to catch when the user click on the link
 	 */
 	public static String getTagLink(Session session, ResourcesService resourceService,
 			AppWorkbenchService appWorkbenchService, String tagId, String value) {
@@ -734,4 +608,37 @@ public class ConnectWorkbenchUtils {
 		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
 		return ConnectUiSnippets.getRWTLink(href, value);
 	}
+
+	public static String createAndConfigureEntity(Shell shell, Session referenceSession, AppService appService,
+			AppWorkbenchService appWorkbenchService, String mainMixin, String... additionnalProps) {
+
+		Session tmpSession = null;
+		Session mainSession = null;
+		try {
+			tmpSession = referenceSession.getRepository().login();
+			Node draftNode = appService.createDraftEntity(tmpSession, mainMixin);
+			for (int i = 0; i < additionnalProps.length - 1; i += 2) {
+				draftNode.setProperty(additionnalProps[i], additionnalProps[i + 1]);
+			}
+			Wizard wizard = appWorkbenchService.getCreationWizard(draftNode);
+			WizardDialog dialog = new WizardDialog(shell, wizard);
+			if (dialog.open() == Window.OK) {
+				String parentPath = "/" + appService.getBaseRelPath(mainMixin);
+				mainSession = referenceSession.getRepository().login();
+				Node parent = mainSession.getNode(parentPath);
+				Node task = appService.publishEntity(parent, mainMixin, draftNode);
+				task = appService.saveEntity(task, false);
+				referenceSession.refresh(true);
+				return task.getPath();
+			}
+			return null;
+		} catch (RepositoryException e1) {
+			throw new ConnectException(
+					"Unable to create " + mainMixin + " entity with session " + referenceSession.toString(), e1);
+		} finally {
+			JcrUtils.logoutQuietly(tmpSession);
+			JcrUtils.logoutQuietly(mainSession);
+		}
+	}
+
 }

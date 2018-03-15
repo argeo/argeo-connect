@@ -14,11 +14,11 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.AssignedToDropDown;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
@@ -183,7 +183,7 @@ public class ConfigureTaskWizard extends Wizard {
 			parent.setLayout(new GridLayout(4, false));
 
 			// Project
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Project");
+			ConnectUiUtils.createBoldLabel(parent, "Project");
 			projectTxt = new Text(parent, SWT.BORDER);
 			projectTxt.setMessage("Choose a relevant project");
 			GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -212,7 +212,7 @@ public class ConfigureTaskWizard extends Wizard {
 				projectTxt.setEditable(false);
 
 			// Target milestone
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Milestone");
+			ConnectUiUtils.createBoldLabel(parent, "Milestone");
 			Text milestoneTxt = new Text(parent, SWT.BORDER);
 			milestoneTxt.setMessage("Choose a milestone");
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
@@ -222,7 +222,7 @@ public class ConfigureTaskWizard extends Wizard {
 				milestoneDD.setProject(project);
 
 			// Title
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Title");
+			ConnectUiUtils.createBoldLabel(parent, "Title");
 			titleTxt = new Text(parent, SWT.BORDER);
 			titleTxt.setMessage("A precise and concise description of the task");
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -235,7 +235,7 @@ public class ConfigureTaskWizard extends Wizard {
 			assignedToDD = new AssignedToDropDown(assignedToTxt, userAdminService, true, false);
 
 			// DUE DATE
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Due date");
+			ConnectUiUtils.createBoldLabel(parent, "Due date");
 			dueDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// // WAKE UP DATE
@@ -247,7 +247,7 @@ public class ConfigureTaskWizard extends Wizard {
 			// wakeUpDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// Importance
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Importance");
+			ConnectUiUtils.createBoldLabel(parent, "Importance");
 			importanceCmb = new Combo(parent, SWT.READ_ONLY);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			importanceCmb.setLayoutData(gd);
@@ -255,7 +255,7 @@ public class ConfigureTaskWizard extends Wizard {
 			importanceCmb.select(0);
 
 			// Priority
-			ConnectWorkbenchUtils.createBoldLabel(parent, "Priority");
+			ConnectUiUtils.createBoldLabel(parent, "Priority");
 			priorityCmb = new Combo(parent, SWT.READ_ONLY);
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
 			priorityCmb.setLayoutData(gd);
@@ -266,7 +266,7 @@ public class ConfigureTaskWizard extends Wizard {
 			// TODO we do not yet have access to the AppWorkbenchService when
 			// creating a task from the coolbar via Eclipse command mechanism
 			if (appWorkbenchService != null) {
-				ConnectWorkbenchUtils.createBoldLabel(parent, "Related to");
+				ConnectUiUtils.createBoldLabel(parent, "Related to");
 				relatedToCmp = new RelatedToList(parent, SWT.NO_FOCUS, task, ActivitiesNames.ACTIVITIES_RELATED_TO,
 						appWorkbenchService);
 				relatedToCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
@@ -365,7 +365,7 @@ public class ConfigureTaskWizard extends Wizard {
 	}
 
 	private Text createBoldLT(Composite parent, String title, String message, String tooltip, int colspan) {
-		ConnectWorkbenchUtils.createBoldLabel(parent, title);
+		ConnectUiUtils.createBoldLabel(parent, title);
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
 		text.setLayoutData(EclipseUiUtils.fillAll(colspan, 1));
 		text.setMessage(message);

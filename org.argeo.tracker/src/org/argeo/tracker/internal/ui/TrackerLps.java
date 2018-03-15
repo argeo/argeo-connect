@@ -11,6 +11,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.AppService;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -180,7 +181,7 @@ public class TrackerLps {
 	public class IssueCommentOverviewLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = 3580821684409015205L;
 
-		private DateFormat df = new SimpleDateFormat(TrackerUiConstants.simpleDateTimeFormat);
+		private DateFormat df = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
 		@Override
 		public String getText(Object element) {
@@ -203,7 +204,7 @@ public class TrackerLps {
 
 			String createdOnStr = df.format(createdOn.getTime());
 			ConnectJcrUtils.getDateFormattedAsString(comment, Property.JCR_CREATED,
-					TrackerUiConstants.simpleDateTimeFormat);
+					ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 			StringBuilder builder = new StringBuilder();
 			builder.append(UserAdminUtils.getUserLocalId(createdBy)).append(" on ").append(createdOnStr);
 			if (lastUpdatedOn != null) {

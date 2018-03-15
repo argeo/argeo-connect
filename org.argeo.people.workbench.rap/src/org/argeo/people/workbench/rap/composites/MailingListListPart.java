@@ -3,8 +3,8 @@ package org.argeo.people.workbench.rap.composites;
 import javax.jcr.Node;
 
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.widgets.TagLikeListPart;
 import org.argeo.connect.workbench.SystemWorkbenchService;
+import org.argeo.connect.workbench.TagLikeListPart;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.people.PeopleNames;
 import org.eclipse.swt.widgets.Composite;

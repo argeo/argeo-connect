@@ -19,9 +19,9 @@ import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AskTitleDescriptionDialog;
 import org.argeo.eclipse.ui.ColumnDefinition;
@@ -34,10 +34,10 @@ import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.core.VersionComparator;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiConstants;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
+import org.argeo.tracker.internal.ui.VersionComparator;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureVersionWizard;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -201,7 +201,7 @@ public class MilestoneListPage extends FormPage implements ArgeoNames {
 				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
 
-				String pathCreated = ConnectUiUtils.createAndConfigureEntity(addBtn.getShell(), session, trackerService,
+				String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(addBtn.getShell(), session, trackerService,
 						appWorkbenchService, mainMixin, propName1, value1);
 				if (EclipseUiUtils.notEmpty(pathCreated))
 					refreshViewer(filterTxt.getText());

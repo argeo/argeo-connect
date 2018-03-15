@@ -10,9 +10,9 @@ import javax.jcr.PropertyType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.ConnectColumnDefinition;
-import org.argeo.connect.ui.ConnectUiConstants;
 
 import jxl.Cell;
 import jxl.SheetSettings;
@@ -71,7 +71,7 @@ public class NodesToCalcWriter {
 			tableBodyStringFormat.setFont(new WritableFont(WritableFont.ARIAL, 9));
 			tableBodyStringFormat.setWrap(true);
 
-			DateFormat currDF = new DateFormat(ConnectUiConstants.DEFAULT_DATE_FORMAT);
+			DateFormat currDF = new DateFormat(ConnectConstants.DEFAULT_DATE_FORMAT);
 			tableBodyDateFormat = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 9), currDF);
 			tableBodyDateFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 
@@ -79,7 +79,7 @@ public class NodesToCalcWriter {
 			tableBodyIntFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 
 			tableBodyFloatFormat = new WritableCellFormat(new WritableFont(WritableFont.ARIAL, 9),
-					new NumberFormat(ConnectUiConstants.DEFAULT_NUMBER_FORMAT));
+					new NumberFormat(ConnectConstants.DEFAULT_NUMBER_FORMAT));
 			tableBodyFloatFormat.setBorder(Border.ALL, BorderLineStyle.THIN);
 
 		} catch (Exception e) {

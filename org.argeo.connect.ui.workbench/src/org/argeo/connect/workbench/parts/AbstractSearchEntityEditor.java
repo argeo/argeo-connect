@@ -14,11 +14,11 @@ import org.argeo.connect.resources.workbench.TagOrUntagInstancesWizard;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiStyles;
+import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.Refreshable;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.JcrViewerDClickListener;
@@ -590,7 +590,7 @@ public abstract class AbstractSearchEntityEditor extends EditorPart implements R
 	}
 
 	protected Text createBoldLT(Composite parent, String title, String message, String tooltip, int colspan) {
-		ConnectWorkbenchUtils.createBoldLabel(parent, title);
+		ConnectUiUtils.createBoldLabel(parent, title);
 		Text text = new Text(parent, SWT.BOTTOM | SWT.BORDER);
 		text.setLayoutData(EclipseUiUtils.fillAll(colspan, 1));
 		text.setMessage(message);

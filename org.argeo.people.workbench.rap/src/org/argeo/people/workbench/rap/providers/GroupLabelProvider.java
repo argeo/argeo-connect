@@ -7,8 +7,8 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -47,7 +47,7 @@ public class GroupLabelProvider extends ColumnLabelProvider implements PeopleNam
 		default:
 			throw new PeopleException("Undefined list type - Unable to provide text for group");
 		}
-		return ConnectUiUtils.replaceAmpersand(result);
+		return ConnectUtils.replaceAmpersand(result);
 	}
 
 	private String getOverviewTitle(Node entity) {

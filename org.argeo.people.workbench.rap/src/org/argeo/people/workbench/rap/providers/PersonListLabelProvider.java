@@ -5,8 +5,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
@@ -48,7 +48,7 @@ public class PersonListLabelProvider extends LabelProvider implements PeopleName
 		} catch (RepositoryException re) {
 			// Cannot get corresponding jobs, fail silently
 		}
-		String result = ConnectUiUtils.replaceAmpersand(builder.toString());
+		String result = ConnectUtils.replaceAmpersand(builder.toString());
 		return result;
 	}
 }

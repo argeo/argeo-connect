@@ -5,8 +5,8 @@ import javax.jcr.Property;
 import javax.jcr.Session;
 
 import org.argeo.connect.AppService;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
@@ -52,7 +52,7 @@ public class TrackerSingleColLP extends LabelProvider {
 		}
 
 		// TODO add manager and due date
-		String result = ConnectUiUtils.replaceAmpersand(builder.toString());
+		String result = ConnectUtils.replaceAmpersand(builder.toString());
 		return result;
 	}
 

@@ -8,8 +8,8 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -66,7 +66,7 @@ public class PersonOverviewLabelProvider extends ColumnLabelProvider implements 
 			default:
 				throw new PeopleException("Unable to provide text for person");
 			}
-			return ConnectUiUtils.replaceAmpersand(result);
+			return ConnectUtils.replaceAmpersand(result);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Cannot create organizations content", re);
 		}

@@ -1,2 +1,1 @@
-Bundle-SymbolicName: org.argeo.theme.argeo2;singleton:=true
-Fragment-Host: org.argeo.connect.ui.workbench
+Fragment-Host: org.argeo.cms.ui.theme

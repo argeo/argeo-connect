@@ -3,9 +3,9 @@ package org.argeo.people.workbench.rap.providers;
 import javax.jcr.Node;
 
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 
@@ -45,7 +45,7 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 				displayName = userAdminService.getUserDisplayName(userId);
 			if (EclipseUiUtils.isEmpty(displayName))
 				displayName = userId;
-			return ConnectUiUtils.replaceAmpersand(displayName);
+			return ConnectUtils.replaceAmpersand(displayName);
 		} catch (Exception e) {
 			throw new PeopleException("Unable to get display name for prop: " + propertyName + " of " + currNode, e);
 		}

@@ -18,10 +18,10 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.AppService;
+import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.connect.workbench.Refreshable;
@@ -63,7 +63,7 @@ public abstract class AbstractTrackerEditor extends FormEditor
 	private Session session;
 	private Node node;
 
-	private final static DateFormat df = new SimpleDateFormat(ConnectUiConstants.DEFAULT_DATE_TIME_FORMAT);
+	private final static DateFormat df = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);

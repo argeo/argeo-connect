@@ -1,0 +1,8 @@
+Import-Package: javax.jcr.nodetype,\
+org.argeo.connect,\
+org.argeo.connect.ui,\
+org.argeo.cms.ui.fs,\
+org.eclipse.swt,\
+org.eclipse.jface.window,\
+org.eclipse.core.commands,\
+*

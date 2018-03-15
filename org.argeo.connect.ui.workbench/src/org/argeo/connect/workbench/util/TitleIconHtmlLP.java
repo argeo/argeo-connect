@@ -3,7 +3,7 @@ package org.argeo.connect.workbench.util;
 import javax.jcr.Node;
 import javax.jcr.Property;
 
-import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
@@ -29,7 +29,7 @@ public class TitleIconHtmlLP extends SimpleJcrNodeLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-		return ConnectUiUtils.replaceAmpersand(super.getText(element));
+		return ConnectUtils.replaceAmpersand(super.getText(element));
 	}
 
 	@Override
