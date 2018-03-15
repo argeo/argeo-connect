@@ -1,5 +1,5 @@
-Require-Capability: cms.datamodel;filter:="(name=node)
-Provide-Capability: cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd; abstract=true
+#Require-Capability: cms.datamodel;filter:="(name=node)
+#Provide-Capability: cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd; abstract=true
 
 Import-Package: javax.jcr.nodetype,\
 javax.jcr.security,\

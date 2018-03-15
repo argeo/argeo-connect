@@ -16,7 +16,7 @@ import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.documents.DocumentsException;
 import org.argeo.documents.DocumentsService;
-import org.argeo.documents.DocumentsUiService;
+import org.argeo.documents.ui.DocumentsUiService;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FileIconNameLabelProvider;

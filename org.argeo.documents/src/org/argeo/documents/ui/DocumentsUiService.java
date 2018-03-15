@@ -1,4 +1,4 @@
-package org.argeo.documents;
+package org.argeo.documents.ui;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +30,8 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ui.widgets.SingleQuestion;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.documents.DocumentsException;
+import org.argeo.documents.DocumentsService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.OpenFile;
 import org.argeo.jcr.JcrUtils;

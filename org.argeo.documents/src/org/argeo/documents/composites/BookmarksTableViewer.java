@@ -13,7 +13,7 @@ import org.argeo.connect.ui.AppUiService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.documents.DocumentsException;
 import org.argeo.documents.DocumentsService;
-import org.argeo.documents.DocumentsUiService;
+import org.argeo.documents.ui.DocumentsUiService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ILazyContentProvider;

@@ -1,12 +1,12 @@
 package org.argeo.documents.composites;
 
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_DELETE_BOOKMARK;
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_RENAME_BOOKMARK;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_DELETE_BOOKMARK;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_RENAME_BOOKMARK;
 
 import javax.jcr.Node;
 
 import org.argeo.connect.ui.widgets.AbstractConnectContextMenu;
-import org.argeo.documents.DocumentsUiService;
+import org.argeo.documents.ui.DocumentsUiService;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.graphics.Point;
@@ -14,8 +14,6 @@ import org.eclipse.swt.widgets.Control;
 
 /** Generic popup context menu to manage NIO Path in a Viewer. */
 public class BookmarksContextMenu extends AbstractConnectContextMenu {
-	private static final long serialVersionUID = -7340369674820928400L;
-
 	// Local context
 	private final DocumentsUiService documentsUiService;
 	private final Node bookmarkParent;

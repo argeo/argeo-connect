@@ -13,6 +13,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
+			<artifactId>org.argeo.enterprise</artifactId>
+			<version>${version.argeo-commons}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.node.api</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>

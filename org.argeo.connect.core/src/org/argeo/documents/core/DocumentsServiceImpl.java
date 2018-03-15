@@ -1,4 +1,4 @@
-package org.argeo.documents;
+package org.argeo.documents.core;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,16 +21,20 @@ import javax.jcr.query.QueryManager;
 import javax.naming.ldap.LdapName;
 
 import org.argeo.cms.auth.CurrentUser;
-import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.documents.DocumentsConstants;
+import org.argeo.documents.DocumentsException;
+import org.argeo.documents.DocumentsNames;
+import org.argeo.documents.DocumentsService;
+import org.argeo.documents.DocumentsTypes;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
 import org.argeo.node.NodeUtils;
 
 /** Default backend for the Documents App */
-public class DocumentsService extends AbstractAppService implements AppService {
+public class DocumentsServiceImpl extends AbstractAppService implements DocumentsService {
 	// private final static String NODE_PREFIX = "node://";
 
 	@Override

@@ -1,13 +1,13 @@
 package org.argeo.documents.composites;
 
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_BOOKMARK_FOLDER;
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_CREATE_FOLDER;
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_DELETE;
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_DOWNLOAD_FOLDER;
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_OPEN;
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_RENAME;
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_SHARE_FOLDER;
-import static org.argeo.documents.DocumentsUiService.ACTION_ID_UPLOAD_FILE;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_BOOKMARK_FOLDER;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_CREATE_FOLDER;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_DELETE;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_DOWNLOAD_FOLDER;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_OPEN;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_RENAME;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_SHARE_FOLDER;
+import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_UPLOAD_FILE;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,15 +16,13 @@ import javax.jcr.Repository;
 
 import org.argeo.connect.ui.widgets.AbstractConnectContextMenu;
 import org.argeo.documents.DocumentsService;
-import org.argeo.documents.DocumentsUiService;
+import org.argeo.documents.ui.DocumentsUiService;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 
 /** Generic popup context menu to manage NIO Path in a Viewer. */
 public class DocumentsContextMenu extends AbstractConnectContextMenu {
-	private static final long serialVersionUID = 421848400654480643L;
-
 	// Local context
 	private final DocumentsFolderComposite browser;
 	private final DocumentsService docService;
