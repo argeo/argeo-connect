@@ -1,6 +1,6 @@
 package org.argeo.people.core.imports;
 
-import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+import static org.argeo.connect.util.ConnectUtils.notEmpty;
 
 import java.io.IOException;
 import java.io.InputStream;

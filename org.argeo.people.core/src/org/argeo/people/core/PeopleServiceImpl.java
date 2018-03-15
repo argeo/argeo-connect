@@ -1,7 +1,7 @@
 package org.argeo.people.core;
 
-import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
-import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+import static org.argeo.connect.util.ConnectUtils.isEmpty;
+import static org.argeo.connect.util.ConnectUtils.notEmpty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.RemoteJcrUtils;
@@ -35,7 +36,7 @@ import org.argeo.people.util.PeopleJcrUtils;
 import org.argeo.people.util.PersonJcrUtils;
 
 /** Concrete access to {@link PeopleService} */
-public class PeopleServiceImpl implements PeopleService, PeopleNames {
+public class PeopleServiceImpl extends AbstractAppService implements PeopleService, PeopleNames {
 	private final static Log log = LogFactory.getLog(PeopleServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
@@ -192,8 +193,7 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/**
-	 * Simply looks for primary information and updates the primary cache if
-	 * needed
+	 * Simply looks for primary information and updates the primary cache if needed
 	 */
 	@Override
 	public void updatePrimaryCache(Node entity) throws PeopleException, RepositoryException {
@@ -230,9 +230,8 @@ public class PeopleServiceImpl implements PeopleService, PeopleNames {
 	}
 
 	/**
-	 * Creates and returns a model specific Node to store a reference, depending
-	 * on the two object we want to link together. Overwrite to add some new
-	 * link type
+	 * Creates and returns a model specific Node to store a reference, depending on
+	 * the two object we want to link together. Overwrite to add some new link type
 	 */
 	@Override
 	public Node createEntityReference(Node referencingNode, Node referencedNode, String role) {

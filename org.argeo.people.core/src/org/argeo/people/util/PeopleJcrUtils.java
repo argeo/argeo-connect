@@ -1,5 +1,8 @@
 package org.argeo.people.util;
 
+import static org.argeo.connect.util.ConnectUtils.isEmpty;
+import static org.argeo.connect.util.ConnectUtils.notEmpty;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,7 +23,6 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.naming.NamingUtils;
@@ -62,8 +64,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * @param role
 	 *            the role of the given entity in this group. Cannot be null
 	 * @param title
-	 *            OPTIONAL: the nature of the subject in this relation, for
-	 *            instance "Actor" or "Engineer"
+	 *            OPTIONAL: the nature of the subject in this relation, for instance
+	 *            "Actor" or "Engineer"
 	 */
 	public static Node addEntityToGroup(Node group, Node entity, String role, String title, Calendar dateBegin,
 			Calendar dateEnd, Boolean isCurrent) throws RepositoryException {
@@ -74,7 +76,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		member.setProperty(PEOPLE_REF_UID, ConnectJcrUtils.get(entity, ConnectNames.CONNECT_UID));
 		member.setProperty(PEOPLE_REF_TITLE, ConnectJcrUtils.get(entity, Property.JCR_TITLE));
 		member.setProperty(PEOPLE_ROLE, role);
-		if (EclipseUiUtils.notEmpty(title))
+		if (notEmpty(title))
 			throw new PeopleException("Position Nature: Unimplemented property ");
 		// member.setProperty(Property.JCR_TITLE, title);
 		if (dateBegin != null)
@@ -88,15 +90,15 @@ public class PeopleJcrUtils implements PeopleNames {
 
 	public static void setContactCategory(Node contactNode, String contactType, String category)
 			throws RepositoryException {
-		if (EclipseUiUtils.isEmpty(category))
+		if (isEmpty(category))
 			category = ContactValueCatalogs.MAPS_CONTACT_TYPES.get(contactType);
 		contactNode.setProperty(Property.JCR_TITLE, category);
 	}
 
 	/**
 	 * Marks a contact as pro if orga in not null by adding a mixin and setting
-	 * corresponding values. if orga is null and the contact is marked as pro,
-	 * it will remove the mixin and the corresponding properties
+	 * corresponding values. if orga is null and the contact is marked as pro, it
+	 * will remove the mixin and the corresponding properties
 	 * 
 	 * @param contactNode
 	 * @param orga
@@ -117,8 +119,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	}
 
 	/**
-	 * Returns the country of an entity relying on its primary address, if
-	 * defined
+	 * Returns the country of an entity relying on its primary address, if defined
 	 */
 	public static String getCountryFromItem(PeopleService peopleService, Node contactable) {
 		Node primContact = getPrimaryContact(contactable, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
@@ -134,8 +135,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	}
 
 	/**
-	 * Returns the country of an entity relying on its primary address, if
-	 * defined
+	 * Returns the country of an entity relying on its primary address, if defined
 	 */
 	public static String getTownFromItem(PeopleService peopleService, Node contactable) {
 		Node node = getPrimaryContact(contactable, PeopleTypes.PEOPLE_POSTAL_ADDRESS);
@@ -151,8 +151,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	}
 
 	/**
-	 * Returns the primary contact for the type or null if no node with this
-	 * type is defined as primary
+	 * Returns the primary contact for the type or null if no node with this type is
+	 * defined as primary
 	 */
 	public static Node getPrimaryContact(Node contactable, String contactType) {
 		try {
@@ -195,8 +195,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	}
 
 	/**
-	 * Returns the primary contact value given a type or an empty String if no
-	 * node with this type is defined as primary
+	 * Returns the primary contact value given a type or an empty String if no node
+	 * with this type is defined as primary
 	 * 
 	 * @param contactable
 	 * @param contactType
@@ -216,9 +216,9 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * <ul>
 	 * <li>it moves the corresponding node as first childnode of this node's
 	 * parent</li>
-	 * <li>if this node has people:orderable mixin, it sets the isPrimary flag
-	 * to true for this node and to false for all siblings that have the same
-	 * node type</li>
+	 * <li>if this node has people:orderable mixin, it sets the isPrimary flag to
+	 * true for this node and to false for all siblings that have the same node
+	 * type</li>
 	 * <li>it returns true only if some changes have been performed.</li>
 	 * </ul>
 	 */
@@ -295,8 +295,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * corresponding cache properties. This properties are mainly used to enable
 	 * full text search with no join.
 	 * 
-	 * If isPrimary = false e.g. corresponding child will be deleted,
-	 * corresponding properties are removed.
+	 * If isPrimary = false e.g. corresponding child will be deleted, corresponding
+	 * properties are removed.
 	 * 
 	 * Updated cache properties depend on the primary node type
 	 */
@@ -317,7 +317,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			// if (isPrimary) {
 			// String cityStr = "", countryStr = "";
 			// if (primaryChild.isNodeType(PeopleTypes.PEOPLE_CONTACT_REF)
-			// && EclipseUiUtils.notEmpty(ConnectJcrUtils.get(primaryChild,
+			// && notEmpty(ConnectJcrUtils.get(primaryChild,
 			// PEOPLE_REF_UID))) {
 			// Node linkedOrg =
 			// peopleService.getEntityFromNodeReference(primaryChild,
@@ -329,7 +329,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			// } else {
 			// cityStr = ConnectJcrUtils.get(primaryChild, PEOPLE_CITY);
 			// countryStr = ConnectJcrUtils.get(primaryChild, PEOPLE_COUNTRY);
-			// if (EclipseUiUtils.notEmpty(countryStr))
+			// if (notEmpty(countryStr))
 			// countryStr =
 			// resourcesService.getEncodedTagValue(ConnectJcrUtils.getSession(primaryChild),
 			// ConnectConstants.RESOURCE_COUNTRY, countryStr);
@@ -337,9 +337,9 @@ public class PeopleJcrUtils implements PeopleNames {
 			// }
 			//
 			// List<String> localisation = new ArrayList<>();
-			// if (EclipseUiUtils.notEmpty(cityStr))
+			// if (notEmpty(cityStr))
 			// localisation.add(cityStr);
-			// if (EclipseUiUtils.notEmpty(cityStr))
+			// if (notEmpty(cityStr))
 			// localisation.add(cityStr);
 			// if (!localisation.isEmpty())
 			// parentNode.setProperty(PEOPLE_PPOSTAL_ADDRESS,
@@ -410,8 +410,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * @param value
 	 * @param isPrimary
 	 * @param linkedOrg
-	 *            if nature = pro, then we can pass an optional organisation
-	 *            linked to this contact
+	 *            if nature = pro, then we can pass an optional organisation linked
+	 *            to this contact
 	 * @param title
 	 *            business type of the current contact, for instance for social
 	 *            media, tweeter, linkedin, ... or other
@@ -443,7 +443,7 @@ public class PeopleJcrUtils implements PeopleNames {
 			if (isPrimary)
 				markAsPrimary(resourcesService, peopleService, contactable, contact);
 			setContactCategory(contact, contactType, title);
-			if (EclipseUiUtils.notEmpty(description))
+			if (notEmpty(description))
 				contact.setProperty(Property.JCR_DESCRIPTION, description);
 			return contact;
 		} catch (RepositoryException re) {
@@ -458,7 +458,7 @@ public class PeopleJcrUtils implements PeopleNames {
 		if (targetContact.isNodeType(PeopleTypes.PEOPLE_POSTAL_ADDRESS)) {
 			for (String prop : PEOPLE_POSTAL_ADDRESS_PROPS) {
 				String value = ConnectJcrUtils.get(srcContact, prop);
-				if (EclipseUiUtils.notEmpty(value))
+				if (notEmpty(value))
 					targetContact.setProperty(prop, targetContact);
 			}
 		}
@@ -579,8 +579,8 @@ public class PeopleJcrUtils implements PeopleNames {
 	 * @param state
 	 * @param country
 	 * @param nature
-	 *            optional: if parent node type is a person, then precise
-	 *            private or pro
+	 *            optional: if parent node type is a person, then precise private or
+	 *            pro
 	 * 
 	 * @return
 	 */
@@ -630,25 +630,25 @@ public class PeopleJcrUtils implements PeopleNames {
 			Node address = createContact(resourcesService, peopleService, contactable,
 					PeopleTypes.PEOPLE_POSTAL_ADDRESS, "", false, title, description);
 			// set address fields
-			if (EclipseUiUtils.notEmpty(street1))
+			if (notEmpty(street1))
 				address.setProperty(PEOPLE_STREET, street1);
 
-			if (EclipseUiUtils.notEmpty(street2))
+			if (notEmpty(street2))
 				address.setProperty(PEOPLE_STREET_COMPLEMENT, street2);
 
-			if (EclipseUiUtils.notEmpty(zipCode))
+			if (notEmpty(zipCode))
 				address.setProperty(PEOPLE_ZIP_CODE, zipCode);
 
-			if (EclipseUiUtils.notEmpty(city))
+			if (notEmpty(city))
 				address.setProperty(PEOPLE_CITY, city);
 
-			if (EclipseUiUtils.notEmpty(state))
+			if (notEmpty(state))
 				address.setProperty(PEOPLE_STATE, state);
 
-			if (EclipseUiUtils.notEmpty(country))
+			if (notEmpty(country))
 				address.setProperty(PEOPLE_COUNTRY, country);
 
-			if (EclipseUiUtils.notEmpty(geopoint))
+			if (notEmpty(geopoint))
 				address.setProperty(PEOPLE_GEOPOINT, geopoint);
 
 			updateDisplayAddress(resourcesService, address);
@@ -665,7 +665,7 @@ public class PeopleJcrUtils implements PeopleNames {
 	public static void updateDisplayAddress(ResourcesService resourcesService, Node contactNode) {
 		try {
 			String res = getPostalAddress(resourcesService, contactNode);
-			if (EclipseUiUtils.notEmpty(res))
+			if (notEmpty(res))
 				contactNode.setProperty(PeopleNames.PEOPLE_CONTACT_VALUE, res);
 		} catch (RepositoryException e) {
 			throw new PeopleException("Cannot update human readable postal address for " + contactNode, e);
@@ -686,25 +686,25 @@ public class PeopleJcrUtils implements PeopleNames {
 		String zc = ConnectJcrUtils.concatIfNotEmpty(zip, city, " ");
 		pieces.add(zc);
 		String countryStr = ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_STATE);
-		if (EclipseUiUtils.notEmpty(countryStr) && resourcesService != null)
+		if (notEmpty(countryStr) && resourcesService != null)
 			countryStr = resourcesService.getEncodedTagValue(ConnectJcrUtils.getSession(contactNode),
 					ConnectConstants.RESOURCE_COUNTRY, countryStr);
 		pieces.add(countryStr);
 		pieces.add(ConnectJcrUtils.get(contactNode, PeopleNames.PEOPLE_COUNTRY));
 
 		for (String piece : pieces) {
-			if (EclipseUiUtils.notEmpty(piece))
+			if (notEmpty(piece))
 				displayAddress.append(piece).append(", ");
 		}
 		String res = displayAddress.toString();
-		if (EclipseUiUtils.notEmpty(res))
+		if (notEmpty(res))
 			res = res.substring(0, res.lastIndexOf(", "));
 		return res;
 	}
 
 	/**
-	 * Set the default picture for the current entity, overwrite without asking
-	 * but do not save and check in corresponding node
+	 * Set the default picture for the current entity, overwrite without asking but
+	 * do not save and check in corresponding node
 	 */
 	public static void setEntityPicture(Node entity, InputStream picture, String fileName) throws RepositoryException {
 		Node picNode = JcrUtils.mkdirs(entity, ConnectNames.CONNECT_PHOTO, NodeType.NT_FILE);

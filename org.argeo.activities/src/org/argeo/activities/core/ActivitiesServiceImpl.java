@@ -1,7 +1,5 @@
 package org.argeo.activities.core;
 
-import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -25,14 +23,16 @@ import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to Connect's {@link ActivitiesService} */
-public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames {
+public class ActivitiesServiceImpl extends AbstractAppService implements ActivitiesService, ActivitiesNames {
 	private final static Log log = LogFactory.getLog(ActivitiesServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
@@ -268,7 +268,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			StringBuilder tmpBuilder = new StringBuilder();
 			for (String role : roles) {
 				String attrQuery = XPathUtils.getPropertyEquals(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, role);
-				if (notEmpty(attrQuery))
+				if (ConnectUtils.notEmpty(attrQuery))
 					tmpBuilder.append(attrQuery).append(" or ");
 			}
 			String groupCond = null;
@@ -337,7 +337,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 			throws RepositoryException {
 		try {
 			String oldStatus = ConnectJcrUtils.get(taskNode, ActivitiesNames.ACTIVITIES_TASK_STATUS);
-			if (notEmpty(oldStatus) && oldStatus.equals(newStatus))
+			if (ConnectUtils.notEmpty(oldStatus) && oldStatus.equals(newStatus))
 				return false;
 			else {
 				taskNode.setProperty(ActivitiesNames.ACTIVITIES_TASK_STATUS, newStatus);
@@ -430,15 +430,15 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 
 		// Node draftTask = createDraftEntity(session, taskNodeType);
 
-		if (notEmpty(title))
+		if (ConnectUtils.notEmpty(title))
 			draftTask.setProperty(Property.JCR_TITLE, title);
-		if (notEmpty(description))
+		if (ConnectUtils.notEmpty(description))
 			draftTask.setProperty(Property.JCR_DESCRIPTION, description);
 		if (EclipseUiUtils.isEmpty(reporterId))
 			reporterId = draftTask.getSession().getUserID();
 		draftTask.setProperty(ActivitiesNames.ACTIVITIES_REPORTED_BY, reporterId);
 
-		if (notEmpty(assignedTo))
+		if (ConnectUtils.notEmpty(assignedTo))
 			draftTask.setProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO, assignedTo);
 
 		if (relatedTo != null && !relatedTo.isEmpty())
@@ -465,7 +465,7 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 		String defaultStatus = null;
 		if (template != null)
 			defaultStatus = ConnectJcrUtils.get(template, ActivitiesNames.ACTIVITIES_TASK_DEFAULT_STATUS);
-		if (notEmpty(defaultStatus))
+		if (ConnectUtils.notEmpty(defaultStatus))
 			taskNode.setProperty(ActivitiesNames.ACTIVITIES_TASK_STATUS, defaultStatus);
 	}
 
@@ -503,5 +503,4 @@ public class ActivitiesServiceImpl implements ActivitiesService, ActivitiesNames
 	public void setResourcesService(ResourcesService resourcesService) {
 		this.resourcesService = resourcesService;
 	}
-
 }

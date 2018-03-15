@@ -23,13 +23,14 @@ import javax.naming.ldap.LdapName;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
 import org.argeo.node.NodeUtils;
 
 /** Default backend for the Documents App */
-public class DocumentsService implements AppService {
+public class DocumentsService extends AbstractAppService implements AppService {
 	// private final static String NODE_PREFIX = "node://";
 
 	@Override
@@ -93,13 +94,13 @@ public class DocumentsService implements AppService {
 				String cn = (String) ln.getRdn(ln.size() - 1).getValue();
 				Node workgroupHome = NodeUtils.getGroupHome(session, cn);
 				if (workgroupHome != null) {
-//					URI uri = nodePathToURI(workgroupHome.getPath());
-//					Path path = getPath(nodeFileSystemProvider, uri);
-//					Path docPath = path.resolve(getAppBaseName());
-//					if(!Files.exists(docPath)){
-//						Files.createDirectory(docPath);
-//					}
-//					paths.add(docPath);
+					// URI uri = nodePathToURI(workgroupHome.getPath());
+					// Path path = getPath(nodeFileSystemProvider, uri);
+					// Path docPath = path.resolve(getAppBaseName());
+					// if(!Files.exists(docPath)){
+					// Files.createDirectory(docPath);
+					// }
+					// paths.add(docPath);
 
 					Node documents = JcrUtils.mkdirs(workgroupHome, getAppBaseName(), NodeType.NT_FOLDER);
 					documents.addMixin(NodeType.MIX_TITLE);
@@ -195,24 +196,25 @@ public class DocumentsService implements AppService {
 	// }
 
 	public Path getPath(FileSystemProvider nodeFileSystemProvider, String nodePath) {
-//		try {
-			// URI uri = new URI(NODE_PREFIX + nodePath);
-			URI uri = nodePathToURI(nodePath);
-			return getPath(nodeFileSystemProvider, uri);
+		// try {
+		// URI uri = new URI(NODE_PREFIX + nodePath);
+		URI uri = nodePathToURI(nodePath);
+		return getPath(nodeFileSystemProvider, uri);
 
-//			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
-//			if (fileSystem == null)
-//				fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
-//			FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
-//			if (fileSystem == null)
-//			FileSystem	fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
-			// Note that tryAs() is compulsory in the CMS.
-			// fileSystem = CurrentUser.tryAs(() ->
-			// nodeFileSystemProvider.newFileSystem(uri, null));
-//			return fileSystem.getPath(nodePath);
-//		} catch (IOException e) {
-//			throw new RuntimeException("Unable to initialise file system for " + nodePath, e);
-//		}
+		// FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
+		// if (fileSystem == null)
+		// fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+		// FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
+		// if (fileSystem == null)
+		// FileSystem fileSystem = nodeFileSystemProvider.newFileSystem(uri, null);
+		// Note that tryAs() is compulsory in the CMS.
+		// fileSystem = CurrentUser.tryAs(() ->
+		// nodeFileSystemProvider.newFileSystem(uri, null));
+		// return fileSystem.getPath(nodePath);
+		// } catch (IOException e) {
+		// throw new RuntimeException("Unable to initialise file system for " +
+		// nodePath, e);
+		// }
 	}
 
 	public NodeIterator getLastUpdatedDocuments(Session session) {

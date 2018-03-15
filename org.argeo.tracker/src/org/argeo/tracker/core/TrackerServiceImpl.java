@@ -6,7 +6,6 @@ import static javax.jcr.PropertyType.DATE;
 import static javax.jcr.PropertyType.STRING;
 import static org.argeo.connect.ConnectNames.CONNECT_UID;
 import static org.argeo.connect.util.ConnectJcrUtils.get;
-import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 import static org.argeo.tracker.TrackerNames.TRACKER_PARENT_UID;
 import static org.argeo.tracker.TrackerNames.TRACKER_PROJECT_UID;
 
@@ -27,6 +26,8 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.security.Privilege;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
@@ -34,8 +35,10 @@ import org.argeo.cms.CmsTypes;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.RemoteJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -46,7 +49,8 @@ import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.internal.ui.TrackerUiConstants;
 
-public class TrackerServiceImpl implements TrackerService {
+public class TrackerServiceImpl extends AbstractAppService implements TrackerService {
+	private final static Log log = LogFactory.getLog(TrackerServiceImpl.class);
 
 	private ActivitiesService activitiesService;
 
@@ -301,7 +305,7 @@ public class TrackerServiceImpl implements TrackerService {
 			StringBuilder tmpBuilder = new StringBuilder();
 			for (String role : roles) {
 				String attrQuery = XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MANAGER, role);
-				if (notEmpty(attrQuery))
+				if (ConnectUtils.notEmpty(attrQuery))
 					tmpBuilder.append(attrQuery).append(" or ");
 			}
 			String groupCond = null;
@@ -346,7 +350,7 @@ public class TrackerServiceImpl implements TrackerService {
 			StringBuilder tmpBuilder = new StringBuilder();
 			for (String role : roles) {
 				String attrQuery = XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MANAGER, role);
-				if (notEmpty(attrQuery))
+//				if (StringUtils.notEmpty(attrQuery))
 					tmpBuilder.append(attrQuery).append(" or ");
 			}
 			String groupCond = null;
@@ -481,4 +485,5 @@ public class TrackerServiceImpl implements TrackerService {
 	public void setActivitiesService(ActivitiesService activitiesService) {
 		this.activitiesService = activitiesService;
 	}
+	
 }

@@ -1,5 +1,7 @@
 package org.argeo.people.util;
 
+import static org.argeo.connect.util.ConnectUtils.notEmpty;
+
 import java.util.Calendar;
 
 import javax.jcr.Node;
@@ -17,7 +19,6 @@ import javax.jcr.query.qom.StaticOperand;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -69,12 +70,12 @@ public class PersonJcrUtils implements PeopleNames {
 		String secondaryName = null;
 		String nickName = ConnectJcrUtils.get(person, PEOPLE_NICKNAME);
 
-		if (EclipseUiUtils.notEmpty(nickName)) {
+		if (notEmpty(nickName)) {
 			secondaryName = "Nickname: " + nickName;
 		}
 
 		String maidenName = ConnectJcrUtils.get(person, PEOPLE_MAIDEN_NAME);
-		if (EclipseUiUtils.notEmpty(maidenName)) {
+		if (notEmpty(maidenName)) {
 			if (secondaryName != null)
 				secondaryName += "   ";
 			secondaryName += "Maiden name: " + maidenName;
@@ -83,8 +84,7 @@ public class PersonJcrUtils implements PeopleNames {
 	}
 
 	/**
-	 * Helper to retrieve a person given her first and last Name. Must be
-	 * refined.
+	 * Helper to retrieve a person given her first and last Name. Must be refined.
 	 */
 	public static Node getPersonWithLastAndFirstName(Session session, String lastName, String firstName)
 			throws RepositoryException {
@@ -114,8 +114,8 @@ public class PersonJcrUtils implements PeopleNames {
 	 * @param role
 	 *            the role of the given entity in this group. Cannot be null
 	 * @param title
-	 *            OPTIONAL: the nature of the subject in this relation, for
-	 *            instance "Actor" or "Engineer" - Not yet implemented
+	 *            OPTIONAL: the nature of the subject in this relation, for instance
+	 *            "Actor" or "Engineer" - Not yet implemented
 	 */
 	public static Node addJob(ResourcesService resourcesService, PeopleService peopleService, Node person, Node org,
 			String department, String role, String title, boolean isPrimary, Calendar dateBegin, Calendar dateEnd,
@@ -126,11 +126,11 @@ public class PersonJcrUtils implements PeopleNames {
 		job.addMixin(PeopleTypes.PEOPLE_JOB);
 		job.setProperty(PEOPLE_REF_UID, org.getProperty(ConnectNames.CONNECT_UID).getString());
 
-		if (EclipseUiUtils.notEmpty(role))
+		if (notEmpty(role))
 			job.setProperty(PEOPLE_ROLE, role);
-		if (EclipseUiUtils.notEmpty(department))
+		if (notEmpty(department))
 			job.setProperty(PEOPLE_DEPARTMENT, department);
-		if (EclipseUiUtils.notEmpty(title))
+		if (notEmpty(title))
 			throw new PeopleException("Position Nature: Unimplemented property ");
 		if (dateBegin != null)
 			job.setProperty(PEOPLE_DATE_BEGIN, dateBegin);

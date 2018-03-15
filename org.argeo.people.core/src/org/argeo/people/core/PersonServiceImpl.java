@@ -1,7 +1,7 @@
 package org.argeo.people.core;
 
-import static org.argeo.eclipse.ui.EclipseUiUtils.isEmpty;
-import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
+import static org.argeo.connect.util.ConnectUtils.isEmpty;
+import static org.argeo.connect.util.ConnectUtils.notEmpty;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -12,7 +12,6 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -39,7 +38,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 			if (entity.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				String lastName = ConnectJcrUtils.get(entity, PEOPLE_LAST_NAME);
 				String firstName = ConnectJcrUtils.get(entity, PEOPLE_FIRST_NAME);
-				if (EclipseUiUtils.notEmpty(firstName) || notEmpty(lastName)) {
+				if (notEmpty(firstName) || notEmpty(lastName)) {
 					displayName = lastName;
 					if (notEmpty(firstName) && notEmpty(lastName))
 						displayName += ", ";
@@ -68,9 +67,9 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 	}
 
 	/**
-	 * Business specific save of a business object of type person. Among other,
-	 * it updates cache information. Extend to provide business specific rules
-	 * before save and commit
+	 * Business specific save of a business object of type person. Among other, it
+	 * updates cache information. Extend to provide business specific rules before
+	 * save and commit
 	 */
 	protected Node savePerson(Node person, boolean publish) throws PeopleException, RepositoryException {
 		String lastName = ConnectJcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
@@ -85,7 +84,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		}
 
 		// Update display name cache if needed
-		if (EclipseUiUtils.isEmpty(displayName))
+		if (isEmpty(displayName))
 			displayName = getDefaultDisplayName(person);
 
 		person.setProperty(Property.JCR_TITLE, displayName);
@@ -114,7 +113,7 @@ public class PersonServiceImpl implements PersonService, PeopleNames {
 		}
 
 		// Update display name cache if needed
-		if (EclipseUiUtils.isEmpty(displayName))
+		if (isEmpty(displayName))
 			displayName = getDefaultDisplayName(org);
 
 		org.setProperty(Property.JCR_TITLE, displayName);

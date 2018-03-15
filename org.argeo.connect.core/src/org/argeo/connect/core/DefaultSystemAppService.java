@@ -11,7 +11,7 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.SystemAppService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 
-public class DefaultSystemAppService implements SystemAppService {
+public class DefaultSystemAppService extends AbstractAppService implements SystemAppService {
 
 	// Injected known AppWorkbenchServices: order is important, first found
 	// result will be returned by the various methods.

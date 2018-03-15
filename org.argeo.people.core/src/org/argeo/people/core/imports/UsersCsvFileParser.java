@@ -1,5 +1,7 @@
 package org.argeo.people.core.imports;
 
+import static org.argeo.connect.util.ConnectUtils.notEmpty;
+
 import java.util.Dictionary;
 import java.util.Map;
 
@@ -7,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.core.UserAdminServiceImpl;
-import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.osgi.service.useradmin.Role;
@@ -45,23 +47,23 @@ public class UsersCsvFileParser extends CsvParserWithLinesAsMap {
 
 		Dictionary props = user.getProperties();
 
-		if (EclipseUiUtils.notEmpty(lastName))
+		if (notEmpty(lastName))
 			props.put(LdapAttrs.sn.name(), lastName);
 
-		if (EclipseUiUtils.notEmpty(firstName))
+		if (notEmpty(firstName))
 			props.put(LdapAttrs.givenName.name(), firstName);
 
 		String cn = (firstName.trim() + " " + lastName.trim() + " ").trim();
-		if (EclipseUiUtils.notEmpty(cn))
+		if (notEmpty(cn))
 			props.put(LdapAttrs.cn.name(), cn);
 
-		if (EclipseUiUtils.notEmpty(email))
+		if (notEmpty(email))
 			props.put(LdapAttrs.mail.name(), email);
 
-		if (EclipseUiUtils.notEmpty(desc))
+		if (notEmpty(desc))
 			props.put(LdapAttrs.description.name(), desc);
 		char[] password = null;
-		if (EclipseUiUtils.notEmpty(pwd))
+		if (notEmpty(pwd))
 			password = pwd.toCharArray();
 		else
 			password = "demo".toCharArray();

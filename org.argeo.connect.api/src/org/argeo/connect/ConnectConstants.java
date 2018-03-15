@@ -1,12 +1,9 @@
 package org.argeo.connect;
 
-import javax.jcr.query.Query;
-
 /** Centralize cross-apps constants */
 public interface ConnectConstants {
-	// Workaround the JCR deprecation of XPath
-	@SuppressWarnings("deprecation")
-	String QUERY_XPATH = Query.XPATH;
+	// Workaround the JCR deprecation of javax.jcr.query.Query.XPATH
+	String QUERY_XPATH = "xpath";
 	String HOME_APP_SYS_RELPARPATH = ".local/argeo:sys";
 
 	// We use a key that look like a node type without declaring it for some

@@ -1,5 +1,7 @@
 package org.argeo.people.core.imports;
 
+import static org.argeo.connect.util.ConnectUtils.notEmpty;
+
 import java.util.Dictionary;
 import java.util.Map;
 
@@ -8,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.core.UserAdminServiceImpl;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.osgi.service.useradmin.Group;
@@ -45,7 +46,7 @@ public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 			String dn = userAdminWrapper.buildDefaultDN(cn, Role.GROUP);
 			group = (Group) userAdminWrapper.getUserAdmin().createRole(dn, Role.GROUP);
 			Dictionary props = group.getProperties();
-			if (EclipseUiUtils.notEmpty(desc))
+			if (notEmpty(desc))
 				props.put(LdapAttrs.description.name(), desc);
 		}
 

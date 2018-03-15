@@ -21,7 +21,6 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.util.CsvParserWithLinesAsMap;
-import org.eclipse.gemini.blueprint.io.OsgiBundleResource;
 import org.springframework.core.io.Resource;
 
 /** Base utility to load CSV data in a People repository **/
@@ -82,14 +81,13 @@ public abstract class AbstractPeopleCsvFileParser extends CsvParserWithLinesAsMa
 	}
 
 	protected Resource getPicture(String fileName) throws IOException {
-		OsgiBundleResource imgBundle = (OsgiBundleResource) images;
-		String tmpPath = imgBundle.getURI().getPath();
+		String tmpPath = images.getURI().getPath();
 		tmpPath = tmpPath.substring(0, tmpPath.length() - 1);
 		tmpPath = JcrUtils.lastPathElement(tmpPath);
 		tmpPath = tmpPath + "/" + fileName;
 		if (log.isTraceEnabled())
 			log.trace("Getting dummy image at path: " + tmpPath);
-		return imgBundle.createRelative(tmpPath);
+		return images.createRelative(tmpPath);
 	}
 
 	/* Exposes context */

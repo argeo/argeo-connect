@@ -1,5 +1,7 @@
 package org.argeo.connect.resources.core;
 
+import static org.argeo.connect.util.ConnectUtils.notEmpty;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,17 +25,19 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.resources.ResourcesConstants;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesRole;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to people {@link ResourcesService} */
-public class ResourcesServiceImpl implements ResourcesService {
+public class ResourcesServiceImpl extends AbstractAppService implements ResourcesService {
 	private final static Log log = LogFactory.getLog(ResourcesServiceImpl.class);
 
 	/* API METHODS */
@@ -135,7 +139,8 @@ public class ResourcesServiceImpl implements ResourcesService {
 				Value[] values = node.getProperty(propertyName).getValues();
 				for (Value value : values) {
 					String curr = value.getString();
-					if (isEmpty(filter) || notEmpty(curr) && curr.toLowerCase().contains(filter.toLowerCase()))
+					if (ConnectUtils.isEmpty(filter)
+							|| notEmpty(curr) && curr.toLowerCase().contains(filter.toLowerCase()))
 						result.add(curr);
 				}
 			}
@@ -204,7 +209,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 			String newValue) {
 		try {
 
-			if (isEmpty(oldValue))
+			if (ConnectUtils.isEmpty(oldValue))
 				throw new ConnectException("Old value cannot be empty");
 
 			Value[] values = templateNode.getProperty(propertyName).getValues();
@@ -534,7 +539,7 @@ public class ResourcesServiceImpl implements ResourcesService {
 				log.trace("Start processing the " + newExistingValues.size() + " new used tags found.");
 
 			// Add the newly found tags.
-			if (isEmpty(codeProp))
+			if (ConnectUtils.isEmpty(codeProp))
 				for (String tag : newExistingValues) {
 					createTagInstanceInternal(tagParent, tag);
 					session.save();
@@ -716,13 +721,5 @@ public class ResourcesServiceImpl implements ResourcesService {
 		// TODO Rather store this info in the instance configuration
 		String prop = System.getProperty(ConnectConstants.SYS_PROP_ID_PREVENT_TAG_ADDITION);
 		return !"true".equals(prop) || CurrentUser.isInRole(ResourcesRole.editor.dn());
-	}
-
-	private static boolean notEmpty(String stringToTest) {
-		return !(stringToTest == null || "".equals(stringToTest.trim()));
-	}
-
-	private static boolean isEmpty(String stringToTest) {
-		return stringToTest == null || "".equals(stringToTest.trim());
 	}
 }
