@@ -8,7 +8,7 @@
 		<view
 			id="org.argeo.documents.myFilesView"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-     		icon="platform:/plugin/org.argeo.connect.ui/icons/types/documents.png"
+     		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/documents.png"
 			name="Files"
 			restorable="false">
 		</view>
@@ -19,14 +19,14 @@
 		<editor
 			id="org.argeo.documents.folderEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-     		icon="platform:/plugin/org.argeo.connect.ui/icons/types/folder.png"
+     		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/folder.png"
 			name="Folder Editor"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.documents.fileEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-     		icon="platform:/plugin/org.argeo.connect.ui/icons/types/file.png"
+     		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/file.png"
 			name="File Editor"
 			default="false">
 		</editor>

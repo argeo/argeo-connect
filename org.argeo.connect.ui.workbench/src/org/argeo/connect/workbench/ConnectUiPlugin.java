@@ -11,7 +11,7 @@ import org.osgi.framework.BundleContext;
 /** The activator class controls the plug-in life cycle */
 public class ConnectUiPlugin extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "org.argeo.connect.ui";
+	public static final String PLUGIN_ID = "org.argeo.connect.ui.workbench";
 
 	// The shared instance
 	private static ConnectUiPlugin plugin;

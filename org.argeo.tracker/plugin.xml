@@ -12,41 +12,41 @@
 		<editor
 			id="org.argeo.tracker.projectEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-       		icon="platform:/plugin/org.argeo.connect.ui/icons/types/project.png"
+       		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/project.png"
 			name="IT Project Editor"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.tracker.milestoneEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		icon="platform:/plugin/org.argeo.connect.ui/icons/types/milestone.png"
+      		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/milestone.png"
 			name="Milestone Editor"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.tracker.itProjectEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		icon="platform:/plugin/org.argeo.connect.ui/icons/types/project.png"
+      		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/project.png"
 			name="IT Project Editor"
 			default="false">
 		</editor>
 		<editor
         	id="org.argeo.tracker.categoryEditor"
         	class="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		icon="platform:/plugin/org.argeo.connect.ui/icons/types/category.gif"
+      		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/category.gif"
         	default="false"
         	name="Category Editor">
   		</editor>
 		<editor
 			id="org.argeo.tracker.taskEditor"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
-      		icon="platform:/plugin/org.argeo.connect.ui/icons/types/task.png"
+      		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/task.png"
 			name="Task Editor"
 			default="false">
 		</editor>
 		<editor
 			id="org.argeo.tracker.issueEditor"
-      		icon="platform:/plugin/org.argeo.connect.ui/icons/types/bug.gif"
+      		icon="platform:/plugin/org.argeo.connect.ui.workbench/icons/types/bug.gif"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory"
 			name="Issue Editor"
 			default="false">

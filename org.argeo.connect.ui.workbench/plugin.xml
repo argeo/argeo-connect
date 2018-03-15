@@ -10,19 +10,19 @@
 	<extension point="org.eclipse.ui.editors">
 		<!-- Tags -->
 		<editor
-			id="org.argeo.connect.ui.tagEditor"
+			id="org.argeo.connect.ui.workbench.tagEditor"
 			name="Tag"
 			icon="icons/types/tag.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
-			id="org.argeo.connect.ui.searchTagsEditor"
+			id="org.argeo.connect.ui.workbench.searchTagsEditor"
 			name="Search tags"
 			icon="icons/actions/search.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
 		</editor>
 		<editor
-			id="org.argeo.connect.ui.defaultSearchEntityEditor"
+			id="org.argeo.connect.ui.workbench.defaultSearchEntityEditor"
 			name="Search"
 			icon="icons/actions/search.png"
 			class="org.argeo.eclipse.spring.SpringExtensionFactory">
@@ -32,7 +32,7 @@
 	<!-- COMMANDS --> 
 	<extension point="org.eclipse.ui.commands">
 		<command
-			id="org.argeo.connect.ui.openEntityEditor"
+			id="org.argeo.connect.ui.workbench.openEntityEditor"
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			name="Open Editor">
 			<commandParameter
@@ -60,7 +60,7 @@
 		
 		<!-- Search entities by type -->
 		<command
-			id="org.argeo.connect.ui.openSearchEntityEditor"
+			id="org.argeo.connect.ui.workbench.openSearchEntityEditor"
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			name="Open Search Entity Editor">
 			<commandParameter
@@ -79,14 +79,14 @@
 
 		<!-- Open default editor -->
          <command
-      		id="org.argeo.connect.ui.openDefaultEditor"
+      		id="org.argeo.connect.ui.workbench.openDefaultEditor"
 			defaultHandler="org.argeo.eclipse.spring.SpringCommandHandler"
 			name="Open Default Editor">
     	</command>         
 
 		<!-- Exports -->
 		<command
-      		id="org.argeo.connect.ui.getJxlExport"
+      		id="org.argeo.connect.ui.workbench.getJxlExport"
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
             name="Generate a spreadsheet export">
             <commandParameter
@@ -100,7 +100,7 @@
 		<!-- Note: corresponding handler could also be defined below in the startup part -->
 		<command
       		defaultHandler="org.argeo.connect.workbench.commands.ChangeEditingState"
-			id="org.argeo.connect.ui.changeEditingState"
+			id="org.argeo.connect.ui.workbench.changeEditingState"
             name="changeEditingState">
 			<commandParameter
          		id="param.newEditingState"
@@ -114,7 +114,7 @@
     	
     	<!-- Entity CRUD --> 
 		<command
-      		id="org.argeo.connect.ui.createEntity"
+      		id="org.argeo.connect.ui.workbench.createEntity"
 			defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
             name="createEntity">
             <commandParameter
@@ -124,7 +124,7 @@
     	</command>
     	
 		<command
-			id="org.argeo.connect.ui.deleteEntity"
+			id="org.argeo.connect.ui.workbench.deleteEntity"
             defaultHandler="org.argeo.eclipse.spring.SpringExtensionFactory"
       		name="deleteEntity">
             <commandParameter
@@ -139,7 +139,7 @@
 
   		<!-- Miscelleanous -->
   		<command
-			id="org.argeo.connect.ui.forceRefresh"
+			id="org.argeo.connect.ui.workbench.forceRefresh"
 			defaultHandler="org.argeo.connect.workbench.commands.ForceRefresh"
 			name="Force refresh of the current active part if such an action is possible">
 			<commandParameter
@@ -155,10 +155,10 @@
 		point="org.eclipse.ui.menus">
 		
 		<menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.cms.ui.workbench.userToolbar">
-			<toolbar id="org.argeo.connect.ui.dropDownsToolbar">
+			<toolbar id="org.argeo.connect.ui.workbench.dropDownsToolbar">
 				<!-- Create entity dropdown menu --> 
 				<command
-					id="org.argeo.connect.ui.addEntityToolbar"
+					id="org.argeo.connect.ui.workbench.addEntityToolbar"
 					style="pulldown"
 					label="Create"
 					tooltip="Create a new object"
@@ -167,7 +167,7 @@
 				</command>
 				<!-- Search entity dropdown menu --> 
 				<command
-					id="org.argeo.connect.ui.openSearchToolbar"
+					id="org.argeo.connect.ui.workbench.openSearchToolbar"
 					style="pulldown"
 					label="Search"
 					tooltip="Open a detailed search page"
@@ -184,7 +184,7 @@
 
 				<!-- Spreadsheet extracts --> 
 				<command
-					commandId="org.argeo.connect.ui.getJxlExport"
+					commandId="org.argeo.connect.ui.workbench.getJxlExport"
 					icon="icons/actions/jxlExport.gif"
 					label="Extract"
 					style="push"
@@ -192,7 +192,7 @@
 					<visibleWhen>
 						<and>
 							<with variable="activePart">
-								<instanceof value="org.argeo.connect.ui.IJcrTableViewer" />
+								<instanceof value="org.argeo.connect.ui.workbench.IJcrTableViewer" />
 							</with>
 						</and>
 					</visibleWhen>
@@ -202,10 +202,10 @@
 
 		<!-- Generic commands provided by the people app 
 		<menuContribution
-			locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.connect.ui.dropDownsToolbar"> 
-			<toolbar id="org.argeo.connect.ui.editToolbar">
+			locationURI="toolbar:org.eclipse.ui.main.toolbar?after=org.argeo.connect.ui.workbench.dropDownsToolbar"> 
+			<toolbar id="org.argeo.connect.ui.workbench.editToolbar">
 			<command
-				commandId="org.argeo.connect.ui.forceRefresh"
+				commandId="org.argeo.connect.ui.workbench.forceRefresh"
 				icon="icons/actions/refresh.png"
 				label="Refresh"
 				style="push"
@@ -217,7 +217,7 @@
 				</visibleWhen>
 			</command>
  			<command
-				commandId="org.argeo.connect.ui.changeEditingState"
+				commandId="org.argeo.connect.ui.workbench.changeEditingState"
 				icon="icons/actions/checkout.gif"
 				label="Check Out"
 				style="push"
@@ -227,7 +227,7 @@
 						<with variable="activePart">
 							<instanceof value="org.argeo.cms.ui.CmsEditable" />
 						</with>
-						<with variable="org.argeo.connect.ui.editingState">
+						<with variable="org.argeo.connect.ui.workbench.editingState">
 							<equals value="notEditing" />
 						</with>
 			    	</and>
@@ -236,7 +236,7 @@
   	 			<parameter name="param.priorAction" value="checkout" />
 			</command>
 			<command
-				commandId="org.argeo.connect.ui.changeEditingState"
+				commandId="org.argeo.connect.ui.workbench.changeEditingState"
 				icon="icons/actions/cancelEdit.gif"
 				label="Cancel edit"
 				style="push"
@@ -246,7 +246,7 @@
 						<with variable="activePart">
 							<instanceof value="org.argeo.cms.ui.CmsEditable" />
 						</with>
-						<with variable="org.argeo.connect.ui.editingState">
+						<with variable="org.argeo.connect.ui.workbench.editingState">
 							<equals value="editing" />
 						</with>
 			    	</and>
@@ -259,10 +259,10 @@
 		 -->
 							
 		<!-- Contribute resources menu items -->
-		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
 		<!--
 			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
 				icon="icons/types/tag.png"
 				label="Tags">
 				<parameter name="param.nodeType" value="connect:tag" />
@@ -272,9 +272,9 @@
 		</menuContribution>
 		
 		<!-- People specific entity creation --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.addEntityToolbar">
 			<command
-				commandId="org.argeo.connect.ui.createEntity"
+				commandId="org.argeo.connect.ui.workbench.createEntity"
 				icon="icons/types/person.png"
 				label="Person">
 				<parameter
@@ -282,7 +282,7 @@
          		value="people:person" />
 			</command>	
 			<command
-				commandId="org.argeo.connect.ui.createEntity"
+				commandId="org.argeo.connect.ui.workbench.createEntity"
 				icon="icons/types/organisation.png"
 				label="Organisation">
 				<parameter
@@ -300,16 +300,16 @@
 		</menuContribution>
 		
 		<!-- People specific search editors --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
 			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
 				icon="icons/types/organisation.png"
 				label="Organisations">
 				<parameter name="param.nodeType" value="people:org" />
 				<parameter name="param.editorName" value="Organisations" />
 			</command>	
 			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
 				icon="icons/types/person.png"
 				label="Persons">
 				<parameter name="param.nodeType" value="people:person" />
@@ -317,7 +317,7 @@
 			</command>	
 			<!--
 			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
 				icon="icons/types/mailingList.gif"
 				label="Mailing Lists">
 				<parameter name="param.nodeType" value="people:mailingList" />
@@ -327,11 +327,11 @@
 		</menuContribution>		
 
 		<!-- Activites --> 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.addEntityToolbar">
 			<!-- We remove simple task addition from the cool bar for the time being --> 
 			<!-- 
 			<command
-				commandId="org.argeo.connect.ui.createEntity"
+				commandId="org.argeo.connect.ui.workbench.createEntity"
 				icon="theme/icons/types/todo.gif"
 				label="Task">
 				<parameter
@@ -342,9 +342,9 @@
 		</menuContribution>
 		
 		<!-- Activities search editors 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
 			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
 				icon="icons/types/todo.png"
 				label="Tasks">
 				<parameter name="param.nodeType" value="activities:task" />
@@ -353,9 +353,9 @@
 		</menuContribution>		
 		 -->
 		<!-- Tracker specific entity creation 
-		<menuContribution locationURI="menu:org.argeo.connect.ui.addEntityToolbar">
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.addEntityToolbar">
 			<command
-				commandId="org.argeo.connect.ui.createEntity"
+				commandId="org.argeo.connect.ui.workbench.createEntity"
 				icon="icons/types/todo.png"
 				label="Task">
 				<parameter
@@ -363,7 +363,7 @@
          			value="tracker:task" />
 			</command>	
 			<command
-				commandId="org.argeo.connect.ui.createEntity"
+				commandId="org.argeo.connect.ui.workbench.createEntity"
 				icon="icons/types/milestone.png"
 				label="Milestone">
 				<parameter
@@ -371,7 +371,7 @@
          			value="tracker:milestone" />
 			</command>	
 			<command
-				commandId="org.argeo.connect.ui.createEntity"
+				commandId="org.argeo.connect.ui.workbench.createEntity"
 				icon="icons/types/project.png"
 				label="Project">
 				<parameter
@@ -381,9 +381,9 @@
 		</menuContribution>
 		 -->
 		<!-- tracker specific search editors
-		<menuContribution locationURI="menu:org.argeo.connect.ui.openSearchToolbar">
+		<menuContribution locationURI="menu:org.argeo.connect.ui.workbench.openSearchToolbar">
 			<command
-				commandId="org.argeo.connect.ui.openSearchEntityEditor"
+				commandId="org.argeo.connect.ui.workbench.openSearchEntityEditor"
 				icon="icons/types/project.png"
 				label="Projects">
 				<parameter name="param.nodeType" value="tracker:project" />
@@ -404,7 +404,7 @@
 	<!-- Workbench listeners --> 
 	<extension point="org.eclipse.ui.startup">
    		<startup class="org.argeo.eclipse.spring.SpringExtensionFactory"
-   			        id="org.argeo.connect.ui.partStateChanged">
+   			        id="org.argeo.connect.ui.workbench.partStateChanged">
    		</startup>
 	</extension>
 
@@ -414,7 +414,7 @@
 	   	<sourceProvider
 	        provider="org.argeo.connect.workbench.util.EditionSourceProvider">
 	     	<variable
-	            name="org.argeo.connect.ui.editingState"
+	            name="org.argeo.connect.ui.workbench.editingState"
 	            priorityLevel="workbench">
 	      	</variable>
 	   	</sourceProvider>
