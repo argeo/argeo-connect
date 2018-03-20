@@ -4,6 +4,8 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -25,8 +27,8 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Simple widget composite to display and edit contact information. Must be

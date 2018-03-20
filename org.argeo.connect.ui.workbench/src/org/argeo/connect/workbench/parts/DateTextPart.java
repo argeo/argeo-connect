@@ -11,6 +11,7 @@ import javax.jcr.Node;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
@@ -35,7 +36,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
 
 /** A composite to put in a form to manage a date with a pop-up calendar */
 public class DateTextPart extends Composite {

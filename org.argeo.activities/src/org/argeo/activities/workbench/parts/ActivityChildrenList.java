@@ -15,6 +15,8 @@ import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
 import org.argeo.activities.ui.NewSimpleTaskWizard;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.SystemAppService;
@@ -47,8 +49,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 
 public class ActivityChildrenList extends LazyCTabControl {
 	private static final long serialVersionUID = 5906357274592489553L;

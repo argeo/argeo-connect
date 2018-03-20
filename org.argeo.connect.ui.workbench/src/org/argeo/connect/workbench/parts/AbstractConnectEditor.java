@@ -17,6 +17,9 @@ import javax.jcr.security.Privilege;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
+import org.argeo.cms.ui.eclipse.forms.IFormPart;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
@@ -48,17 +51,16 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IFormPart;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.IFormPart;
+//import org.eclipse.ui.forms.widgets.Form;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.services.ISourceProviderService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Filter;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -144,10 +146,11 @@ public abstract class AbstractConnectEditor extends EditorPart
 	public void createPartControl(Composite parent) {
 		// Initialize main UI objects
 		toolkit = new FormToolkit(parent.getDisplay());
-		Form form = toolkit.createForm(parent);
+//		Form form = toolkit.createForm(parent);
 		mForm = new ConnectManagedForm(parent, toolkit);
 		mForm.setContainer(AbstractConnectEditor.this);
-		main = form.getBody();
+//		main = form.getBody();
+		main = toolkit.createComposite(parent);
 		createMainLayout(main);
 		forceRefresh();
 	}

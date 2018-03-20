@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.workbench.parts.RelatedActivityList;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesService;
@@ -46,7 +47,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.AbstractFormPart;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 

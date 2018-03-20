@@ -11,6 +11,7 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectImages;
@@ -51,7 +52,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * A composite to include in a form and that displays an editable list of jobs

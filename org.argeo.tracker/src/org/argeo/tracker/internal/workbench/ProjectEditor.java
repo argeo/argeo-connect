@@ -27,7 +27,6 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.documents.composites.DocumentsFolderComposite;
 import org.argeo.eclipse.ui.ColumnDefinition;
@@ -44,6 +43,7 @@ import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.controls.RepartitionChart;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureProjectWizard;
 import org.argeo.tracker.ui.MilestoneListComposite;
+import org.argeo.tracker.workbench.TechnicalInfoPage;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
@@ -134,8 +134,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			addPage(new MilestoneListPage(this, ID + ".milestoneList", project, getUserAdminService(),
 					getTrackerService(), getAppWorkbenchService()));
 
-			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
-				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
+//			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
+//				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}

@@ -1,20 +1,10 @@
 package org.argeo.connect.workbench.parts;
 
-import javax.jcr.Property;
-import javax.jcr.nodetype.NodeType;
-
-import org.argeo.connect.ui.util.HistoryLog;
 import org.argeo.connect.ui.util.LazyCTabControl;
-import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 

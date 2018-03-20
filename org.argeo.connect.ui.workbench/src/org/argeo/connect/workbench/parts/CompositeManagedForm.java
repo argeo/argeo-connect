@@ -3,15 +3,19 @@ package org.argeo.connect.workbench.parts;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
+import org.argeo.cms.ui.eclipse.forms.IFormPart;
+import org.argeo.cms.ui.eclipse.forms.IManagedForm;
+import org.argeo.cms.ui.eclipse.forms.IPartSelectionListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.forms.IFormPart;
-import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.IMessageManager;
-import org.eclipse.ui.forms.IPartSelectionListener;
-import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
+//import org.eclipse.ui.forms.IFormPart;
+//import org.eclipse.ui.forms.IManagedForm;
+//import org.eclipse.ui.forms.IMessageManager;
+//import org.eclipse.ui.forms.IPartSelectionListener;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 /**
  * Implementation of the IManagedForm that relies on a Form rather than on a
@@ -62,16 +66,16 @@ public class CompositeManagedForm implements IManagedForm {
 		return toolkit;
 	}
 
-	public ScrolledForm getForm() {
-		throw new UnsupportedOperationException(
-				"Unsupported method: we use a Form rather than a ScrolledForm");
-	}
-
-	@Override
-	public IMessageManager getMessageManager() {
-		throw new UnsupportedOperationException(
-				"Unsupported method: we use a Form rather than a ScrolledForm");
-	}
+//	public ScrolledForm getForm() {
+//		throw new UnsupportedOperationException(
+//				"Unsupported method: we use a Form rather than a ScrolledForm");
+//	}
+//
+//	@Override
+//	public IMessageManager getMessageManager() {
+//		throw new UnsupportedOperationException(
+//				"Unsupported method: we use a Form rather than a ScrolledForm");
+//	}
 
 	/** Here is the magic */
 	@Override

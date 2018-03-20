@@ -20,6 +20,9 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.core.ActivityUtils;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
+import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -39,9 +42,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Default Activities rate editor: display a rate and an optional comment. Only

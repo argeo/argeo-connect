@@ -6,6 +6,7 @@ import javax.jcr.PropertyType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
@@ -24,7 +25,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * Editor page that display a group with corresponding details

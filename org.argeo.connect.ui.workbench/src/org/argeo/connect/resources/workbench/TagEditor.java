@@ -15,6 +15,7 @@ import javax.jcr.query.RowIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
@@ -64,8 +65,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 
 /** display a filtered list of entities for a given Tag */
@@ -130,8 +129,9 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 	public void createPartControl(Composite parent) {
 		// Initialize main UI objects
 		toolkit = new FormToolkit(parent.getDisplay());
-		Form form = toolkit.createForm(parent);
-		Composite main = form.getBody();
+		// Form form = toolkit.createForm(parent);
+		// Composite main = form.getBody();
+		Composite main = toolkit.createComposite(parent);
 		createMainLayout(main);
 		afterNameUpdate(null);
 	}

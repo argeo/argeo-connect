@@ -11,6 +11,8 @@ import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionManager;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
@@ -38,8 +40,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Wraps an Abstract form part that enable management of a tag like list in a

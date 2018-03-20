@@ -6,6 +6,8 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.ConnectUiStyles;
@@ -28,8 +30,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Provides a composite that display values of a multivalue property with

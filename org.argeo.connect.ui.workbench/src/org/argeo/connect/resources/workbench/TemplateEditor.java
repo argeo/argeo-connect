@@ -9,6 +9,7 @@ import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.util.LazyCTabControl;
@@ -26,7 +27,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * Enable management of a given node template, among other static list

@@ -2,6 +2,9 @@ package org.argeo.people.workbench.rap.composites;
 
 import javax.jcr.Node;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
+import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
@@ -11,9 +14,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.IManagedForm;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.IManagedForm;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** Simple composite to display and edit information about a bank account */
 public class BankAccountComposite extends Composite {

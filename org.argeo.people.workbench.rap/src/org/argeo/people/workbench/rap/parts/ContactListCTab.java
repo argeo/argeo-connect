@@ -6,6 +6,8 @@ import javax.jcr.Property;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.cms.widgets.ScrolledPage;
 import org.argeo.connect.ConnectConstants;
@@ -46,8 +48,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /** A panel to display contacts */
 public class ContactListCTab extends LazyCTabControl {

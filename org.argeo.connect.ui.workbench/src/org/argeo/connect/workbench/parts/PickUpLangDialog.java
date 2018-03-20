@@ -24,8 +24,8 @@ import javax.jcr.PropertyType;
 import javax.jcr.Session;
 
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesNames;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.ui.widgets.SimpleJcrTableComposite;
 import org.argeo.connect.util.ConnectJcrUtils;

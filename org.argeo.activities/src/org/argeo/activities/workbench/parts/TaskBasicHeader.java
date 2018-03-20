@@ -15,6 +15,8 @@ import javax.jcr.Session;
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.UserAdminService;
@@ -39,8 +41,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.osgi.service.useradmin.User;
 
 /** Provides basic information about a task in a form context */

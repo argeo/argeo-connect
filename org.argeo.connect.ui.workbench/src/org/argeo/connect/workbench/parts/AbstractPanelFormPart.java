@@ -2,10 +2,11 @@ package org.argeo.connect.workbench.parts;
 
 import javax.jcr.Node;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor.ConnectManagedForm;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * Extends the usual Abstract form part to ease the management of panel that

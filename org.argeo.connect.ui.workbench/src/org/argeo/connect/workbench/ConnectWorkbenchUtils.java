@@ -12,6 +12,7 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.argeo.cms.ui.CmsEditable;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
@@ -55,7 +56,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Helper methods to ease UI implementation in a Connect Workbench */
 public class ConnectWorkbenchUtils {

@@ -21,6 +21,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesService;
@@ -66,7 +67,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
 
 /**
  * A composite to include in a form and that enables edition of the values of a

@@ -3,6 +3,7 @@ package org.argeo.people.workbench.rap.composites;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectImages;
@@ -21,7 +22,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.forms.AbstractFormPart;
+//import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Centralise management of contacts buttons */
 public class ContactButtonsComposite extends Composite {

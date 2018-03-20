@@ -16,6 +16,7 @@ import javax.jcr.query.RowIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesNames;
@@ -74,8 +75,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.widgets.Form;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.widgets.Form;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.EditorPart;
 
 /** Editor page that displays a mailing list and its members */
@@ -106,7 +107,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	private ColumnLabelProvider mlTitleLP;
 
 	private Row[] rows;
-	private Form form;
+//	private Form form;
 
 	/* LIFE CYCLE */
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -148,8 +149,9 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 	public void createPartControl(Composite parent) {
 		// Initialize main UI objects
 		toolkit = new FormToolkit(parent.getDisplay());
-		form = toolkit.createForm(parent);
-		Composite main = form.getBody();
+//		form = toolkit.createForm(parent);
+//		Composite main = form.getBody();
+		Composite main = toolkit.createComposite(parent);
 		createMainLayout(main);
 		afterNameUpdate(null);
 	}

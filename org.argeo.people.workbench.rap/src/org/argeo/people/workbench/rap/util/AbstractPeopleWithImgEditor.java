@@ -6,6 +6,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 
 import org.apache.commons.io.IOUtils;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -20,7 +21,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.forms.widgets.FormToolkit;
+//import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * Slightly modifies AbstractPeopleEditor main layout adding a place for an

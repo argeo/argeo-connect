@@ -15,6 +15,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.argeo.cms.auth.CurrentUser;
+import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
+import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
@@ -34,8 +36,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.forms.AbstractFormPart;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
 /**
  * A composite to include in a form and that displays the evolutions of a given

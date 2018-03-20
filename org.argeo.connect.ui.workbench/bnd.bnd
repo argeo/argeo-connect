@@ -21,7 +21,6 @@ org.eclipse.jface.window,\
 org.eclipse.swt,\
 org.eclipse.rap.rwt;resolution:=optional,\
 org.eclipse.ui.browser;ui.workbench=split,\
-org.eclipse.ui.forms,\
 org.eclipse.ui.part;ui.workbench=split,\
 org.eclipse.ui.services,\
 org.eclipse.ui;ui.workbench=split,\

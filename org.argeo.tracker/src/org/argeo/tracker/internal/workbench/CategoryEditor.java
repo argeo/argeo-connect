@@ -24,7 +24,6 @@ import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.UserNameLP;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.TechnicalInfoPage;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -38,6 +37,7 @@ import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
+import org.argeo.tracker.workbench.TechnicalInfoPage;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -100,8 +100,8 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 		try {
 			addPage(new MainPage(this));
 
-			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
-				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
+//			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
+//				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
