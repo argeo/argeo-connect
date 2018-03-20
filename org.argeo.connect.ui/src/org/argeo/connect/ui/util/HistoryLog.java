@@ -17,6 +17,7 @@ import javax.jcr.Value;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
+import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
@@ -26,7 +27,6 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.versioning.ItemDiff;
 import org.argeo.connect.versioning.VersionDiff;
 import org.argeo.connect.versioning.VersionUtils;
-import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.PropertyDiff;
 import org.argeo.node.NodeConstants;
@@ -47,7 +47,7 @@ public class HistoryLog extends LazyCTabControl {
 
 	public final static String CTAB_ID = "org.argeo.connect.ui.ctab.history";
 
-	private final AbstractConnectEditor editor;
+	private final IManagedForm editor;
 	private final FormToolkit toolkit;
 	private final UserAdminService userAdminService;
 	private final Node entity;
@@ -56,11 +56,11 @@ public class HistoryLog extends LazyCTabControl {
 	// this page UI Objects
 	private MyFormPart myFormPart;
 
-	public HistoryLog(Composite parent, int style, AbstractConnectEditor editor, UserAdminService userAdminService,
-			Node entity) {
+	public HistoryLog(Composite parent, int style, FormToolkit toolkit, IManagedForm editor,
+			UserAdminService userAdminService, Node entity) {
 		super(parent, style);
 		this.editor = editor;
-		this.toolkit = editor.getFormToolkit();
+		this.toolkit = toolkit;
 		this.userAdminService = userAdminService;
 		this.entity = entity;
 	}
@@ -100,8 +100,8 @@ public class HistoryLog extends LazyCTabControl {
 		historyCmp.setLayout(new FillLayout());
 		final Text styledText = toolkit.createText(historyCmp, "", SWT.BORDER | SWT.MULTI | SWT.WRAP | SWT.V_SCROLL);
 		myFormPart = new MyFormPart(styledText);
-		myFormPart.initialize(editor.getManagedForm());
-		editor.getManagedForm().addPart(myFormPart);
+		myFormPart.initialize(editor);
+		editor.addPart(myFormPart);
 	}
 
 	private class MyFormPart extends AbstractFormPart {

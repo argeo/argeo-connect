@@ -9,7 +9,7 @@ import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;

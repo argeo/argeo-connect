@@ -1,4 +1,4 @@
-package org.argeo.connect.workbench.parts;
+package org.argeo.connect.ui.parts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,12 @@ import javax.jcr.query.QueryResult;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.util.TitleIconHtmlLP;
 import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
-import org.argeo.connect.workbench.util.TitleIconHtmlLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;

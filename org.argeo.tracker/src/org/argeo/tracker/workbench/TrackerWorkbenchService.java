@@ -3,8 +3,8 @@ package org.argeo.tracker.workbench;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectImages;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.internal.workbench.AllProjectsEditor;

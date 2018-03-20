@@ -1,10 +1,7 @@
-package org.argeo.connect.workbench;
+package org.argeo.connect.ui;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.ui.AppUiService;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
-import org.argeo.connect.workbench.commands.OpenSearchEntityEditor;
 import org.argeo.eclipse.ui.specific.OpenFile;
 
 /** Provide interface to manage a Connect App in a RCP/RAP Workbench */
@@ -14,15 +11,16 @@ public interface AppWorkbenchService extends AppUiService {
 	 * @return the relevant OpenEntityEditor command ID in the current context
 	 */
 	default public String getOpenEntityEditorCmdId() {
-		return OpenEntityEditor.ID;
+		// return OpenEntityEditor.ID;
+		return "org.argeo.connect.ui.workbench.openEntityEditor";
 	}
 
 	/**
-	 * @return the relevant OpenSearchEntityEditor command ID in the current
-	 *         context
+	 * @return the relevant OpenSearchEntityEditor command ID in the current context
 	 */
 	default public String getOpenSearchEntityEditorCmdId() {
-		return OpenSearchEntityEditor.ID;
+		// return OpenSearchEntityEditor.ID;
+		return "org.argeo.connect.ui.workbench.openSearchEntityEditor";
 	}
 
 	/**

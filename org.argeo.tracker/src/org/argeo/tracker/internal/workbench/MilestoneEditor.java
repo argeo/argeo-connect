@@ -31,6 +31,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -38,7 +39,6 @@ import org.argeo.connect.ui.util.UserNameLP;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -348,7 +348,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 					Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 					String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
 					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_JCR_ID, jcrId);
+							ConnectEditor.PARAM_JCR_ID, jcrId);
 				}
 			});
 
@@ -655,7 +655,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+						ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
 			}
 		});
 	}

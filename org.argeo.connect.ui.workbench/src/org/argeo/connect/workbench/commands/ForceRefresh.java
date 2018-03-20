@@ -1,7 +1,7 @@
 package org.argeo.connect.workbench.commands;
 
+import org.argeo.connect.ui.Refreshable;
 import org.argeo.connect.workbench.ConnectUiPlugin;
-import org.argeo.connect.workbench.Refreshable;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;

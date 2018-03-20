@@ -9,8 +9,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ui.ConnectEditor;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
-import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -43,15 +44,11 @@ public class OpenEntityEditor extends AbstractHandler {
 	private Repository repository;
 	private SystemWorkbenchService systemWorkbenchService;
 
-	public final static String PARAM_JCR_ID = "param.jcrId";
-	public final static String PARAM_OPEN_FOR_EDIT = "param.openForEdit";
-	// public final static String PARAM_CTAB_ID = "param.cTabId";
-
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		EntityEditorInput eei = null;
 		Node entity = null;
 		Session session = null;
-		String jcrId = event.getParameter(PARAM_JCR_ID);
+		String jcrId = event.getParameter(ConnectEditor.PARAM_JCR_ID);
 		try {
 			session = repository.login();
 			if (jcrId != null) {
@@ -74,7 +71,7 @@ public class OpenEntityEditor extends AbstractHandler {
 
 				IEditorPart editor = iwp.openEditor(eei, editorId);
 
-				String openForEdit = event.getParameter(PARAM_OPEN_FOR_EDIT);
+				String openForEdit = event.getParameter(ConnectEditor.PARAM_OPEN_FOR_EDIT);
 				if ("true".equals(openForEdit) && editor instanceof CmsEditable)
 					((CmsEditable) editor).startEditing();
 

@@ -6,8 +6,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
-import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeUtils;

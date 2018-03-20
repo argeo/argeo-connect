@@ -6,8 +6,8 @@ import javax.jcr.Node;
 import javax.jcr.Session;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.documents.composites.DocumentsFolderComposite;
 import org.argeo.documents.workbench.DocumentsUiPlugin;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -39,7 +39,7 @@ public class FolderEditor extends AbstractDocumentsEditor {
 				Node currNode = ConnectJcrUtils.getNode(session, path.toString());
 				String nodeId = ConnectJcrUtils.getIdentifier(currNode);
 				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, nodeId);
+						ConnectEditor.PARAM_JCR_ID, nodeId);
 			}
 		};
 		dfc.setLayoutData(EclipseUiUtils.fillAll());

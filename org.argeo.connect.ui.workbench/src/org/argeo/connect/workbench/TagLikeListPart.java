@@ -18,12 +18,12 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
-import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -52,7 +52,7 @@ public class TagLikeListPart extends Composite {
 	// private final static Log log = LogFactory.getLog(TagLikeListPart.class);
 
 	// UI Context
-	private final AbstractConnectEditor editor;
+	private final ConnectEditor editor;
 	private final FormToolkit toolkit;
 	private final String newTagMsg;
 
@@ -82,7 +82,7 @@ public class TagLikeListPart extends Composite {
 	 * @param tagId
 	 * @param newTagMsg
 	 */
-	public TagLikeListPart(AbstractConnectEditor editor, Composite parent, int style, ResourcesService resourcesService,
+	public TagLikeListPart(ConnectEditor editor, Composite parent, int style, ResourcesService resourcesService,
 			SystemWorkbenchService systemWorkbenchService, String tagId, Node taggable, String taggablePropName,
 			String newTagMsg) {
 		super(parent, style);
@@ -181,7 +181,7 @@ public class TagLikeListPart extends Composite {
 								// "Forbidden action", msg);
 								// } else
 								CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-										OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
+										ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
 								// } catch (RepositoryException e) {
 								// throw new ConnectException("unable to get
 								// path for resource tag node " + tag

@@ -22,12 +22,12 @@ import org.argeo.connect.ConnectNames;
 import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -214,7 +214,7 @@ public class ActivityChildrenList extends LazyCTabControl {
 				else
 					return;
 				String jcrId = currNode.getIdentifier();
-				CommandUtils.callCommand(openEditorCmdId, OpenEntityEditor.PARAM_JCR_ID, jcrId);
+				CommandUtils.callCommand(openEditorCmdId, ConnectEditor.PARAM_JCR_ID, jcrId);
 			} catch (RepositoryException re) {
 				throw new ActivitiesException("Unable to open editor for node", re);
 			}

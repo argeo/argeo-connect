@@ -22,13 +22,13 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
+import org.argeo.connect.ui.parts.AskTitleDescriptionDialog;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
-import org.argeo.connect.workbench.parts.AskTitleDescriptionDialog;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
@@ -326,7 +326,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 			if (EclipseUiUtils.notEmpty(pathCreated)) {
 				Node created = ConnectJcrUtils.getNode(referenceSession, pathCreated);
 				ConnectWorkbenchUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(created));
+						ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(created));
 			}
 		}
 	}
@@ -918,7 +918,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
 				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, jcrId);
+						ConnectEditor.PARAM_JCR_ID, jcrId);
 			}
 		});
 	}

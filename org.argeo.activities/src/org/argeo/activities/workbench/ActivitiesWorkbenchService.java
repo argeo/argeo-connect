@@ -8,9 +8,9 @@ import org.argeo.activities.workbench.parts.ActivityEditor;
 import org.argeo.activities.workbench.parts.RateEditor;
 import org.argeo.activities.workbench.parts.SearchActivityEditor;
 import org.argeo.activities.workbench.parts.TaskEditor;
+import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.eclipse.swt.graphics.Image;
 
 public class ActivitiesWorkbenchService extends ActivitiesUiService implements AppWorkbenchService {

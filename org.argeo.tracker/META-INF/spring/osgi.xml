@@ -18,5 +18,5 @@
 	<reference id="trackerService" interface="org.argeo.tracker.TrackerService" />
 	<reference id="systemAppService" interface="org.argeo.connect.SystemAppService" />
 	<reference id="systemWorkbenchService"
-		interface="org.argeo.connect.workbench.SystemWorkbenchService" />
+		interface="org.argeo.connect.ui.SystemWorkbenchService" />
 </beans:beans>

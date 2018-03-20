@@ -36,8 +36,8 @@ import org.eclipse.swt.widgets.Text;
  * edition abilities. Implement the <code>getFilteredValues</code> method to
  * provide the possible legal values that might be added
  */
-
-public abstract class MultiValueListWithDDPart extends Composite {
+@Deprecated
+abstract class MultiValueListWithDDPart extends Composite {
 	private static final long serialVersionUID = 7439016082872333306L;
 	private AbstractFormPart part;
 	private FormToolkit toolkit;

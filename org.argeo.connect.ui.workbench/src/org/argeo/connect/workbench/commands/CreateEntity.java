@@ -8,10 +8,11 @@ import javax.jcr.Session;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.SystemAppService;
-import org.argeo.connect.workbench.AppWorkbenchService;
+import org.argeo.connect.ui.AppWorkbenchService;
+import org.argeo.connect.ui.ConnectEditor;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -85,7 +86,7 @@ public class CreateEntity extends AbstractHandler {
 		if (jcrId != null)
 			// Open the corresponding editor
 			ConnectWorkbenchUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-					OpenEntityEditor.PARAM_JCR_ID, jcrId, OpenEntityEditor.PARAM_OPEN_FOR_EDIT, "true");
+					ConnectEditor.PARAM_JCR_ID, jcrId, ConnectEditor.PARAM_OPEN_FOR_EDIT, "true");
 
 		return null;
 	}

@@ -1,9 +1,9 @@
-package org.argeo.connect.workbench.util;
+package org.argeo.connect.ui.util;
 
 import javax.jcr.Node;
 
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.eclipse.swt.graphics.Image;
 
 /**

@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.jcr.Node;
 
 import org.argeo.activities.ActivitiesService;
-import org.argeo.connect.workbench.util.NodeViewerComparator;
+import org.argeo.connect.ui.util.NodeViewerComparator;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 

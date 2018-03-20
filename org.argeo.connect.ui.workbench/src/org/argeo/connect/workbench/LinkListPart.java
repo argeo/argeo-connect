@@ -12,11 +12,11 @@ import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiStyles;
+import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.parts.PickUpRelatedDialog;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
-import org.argeo.connect.workbench.parts.AbstractConnectEditor;
-import org.argeo.connect.workbench.parts.PickUpRelatedDialog;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -44,7 +44,7 @@ public class LinkListPart extends Composite {
 	private final List<String> hiddenItemIds = new ArrayList<String>();
 
 	// UI Context
-	private final AbstractConnectEditor editor;
+	private final ConnectEditor editor;
 	private final AbstractFormPart formPart;
 
 	// COMPOSITES
@@ -58,7 +58,7 @@ public class LinkListPart extends Composite {
 		}
 	}
 
-	public LinkListPart(AbstractConnectEditor editor, AbstractFormPart formPart, Composite parent, int style,
+	public LinkListPart(ConnectEditor editor, AbstractFormPart formPart, Composite parent, int style,
 			SystemWorkbenchService systemWorkbenchService, Node entity, String propName) {
 		this(editor, formPart, parent, style, systemWorkbenchService, entity, propName, null);
 	}
@@ -75,7 +75,7 @@ public class LinkListPart extends Composite {
 	 * @param propName
 	 * @param hiddenItemIds
 	 */
-	public LinkListPart(AbstractConnectEditor editor, AbstractFormPart formPart, Composite parent, int style,
+	public LinkListPart(ConnectEditor editor, AbstractFormPart formPart, Composite parent, int style,
 			SystemWorkbenchService systemWorkbenchService, Node entity, String propName, List<String> hiddenItemIds) {
 		super(parent, style);
 		this.formPart = formPart;
@@ -208,7 +208,7 @@ public class LinkListPart extends Composite {
 
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
-			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
 					jcrId);
 		}
 	}

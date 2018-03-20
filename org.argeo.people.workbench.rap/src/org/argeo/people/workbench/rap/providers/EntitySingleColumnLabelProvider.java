@@ -5,9 +5,9 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.util.TagLabelProvider;
 import org.argeo.connect.util.ConnectUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;

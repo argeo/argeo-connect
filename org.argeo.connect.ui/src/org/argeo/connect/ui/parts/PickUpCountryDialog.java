@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.argeo.connect.workbench.parts;
+package org.argeo.connect.ui.parts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +43,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-/** Dialog with a filtered list to choose a language */
-public class PickUpLangDialog extends TrayDialog {
+/**
+ * Dialog with a filtered list to choose a country
+ */
+public class PickUpCountryDialog extends TrayDialog {
 	private static final long serialVersionUID = 3766899676609659573L;
 
 	// Context
@@ -59,27 +61,27 @@ public class PickUpLangDialog extends TrayDialog {
 	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 	{ // By default, it displays only title
 		colDefs.add(new JcrColumnDefinition(null, ResourcesNames.RESOURCES_TAG_CODE, PropertyType.STRING, "Iso Code", 100));
-		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Label", 300));
+		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Label", 240));
 	};
 
-	public PickUpLangDialog(Shell parentShell, ResourcesService resourceService, Session session, String title) {
+	public PickUpCountryDialog(Shell parentShell, ResourcesService resourceService, Session session, String title) {
 		super(parentShell);
-		this.title = title;
-		this.session = session;
 		this.resourceService = resourceService;
+		this.session = session;
+		this.title = title;
 	}
 
 	protected Point getInitialSize() {
-		return new Point(600, 400);
+		return new Point(400, 400);
 	}
 
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-		Node langTagParent = resourceService.getTagLikeResourceParent(session, ConnectConstants.RESOURCE_LANG);
+		Node tagParent = resourceService.getTagLikeResourceParent(session, ConnectConstants.RESOURCE_COUNTRY);
 
 		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session, ConnectJcrUtils.getPath(langTagParent),
+		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session, ConnectJcrUtils.getPath(tagParent),
 				ResourcesTypes.RESOURCES_ENCODED_TAG, colDefs, true, false);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 
@@ -106,13 +108,14 @@ public class PickUpLangDialog extends TrayDialog {
 	class MySelectionChangedListener implements ISelectionChangedListener {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (event.getSelection().isEmpty())
+			if (event.getSelection().isEmpty()) {
 				selectedNode = null;
-			else {
-				Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
-				if (obj instanceof Node) {
-					selectedNode = (Node) obj;
-				}
+				return;
+			}
+
+			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
+			if (obj instanceof Node) {
+				selectedNode = (Node) obj;
 			}
 		}
 	}
@@ -122,12 +125,12 @@ public class PickUpLangDialog extends TrayDialog {
 			if (evt.getSelection().isEmpty()) {
 				selectedNode = null;
 				return;
-			} else {
-				Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
-				if (obj instanceof Node) {
-					selectedNode = (Node) obj;
-					okPressed();
-				}
+			}
+
+			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
+			if (obj instanceof Node) {
+				selectedNode = (Node) obj;
+				okPressed();
 			}
 		}
 	}

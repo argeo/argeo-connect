@@ -14,7 +14,7 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 
-import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.ui.Refreshable;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;

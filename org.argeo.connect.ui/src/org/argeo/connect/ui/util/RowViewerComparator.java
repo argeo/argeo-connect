@@ -1,4 +1,4 @@
-package org.argeo.connect.workbench.util;
+package org.argeo.connect.ui.util;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;

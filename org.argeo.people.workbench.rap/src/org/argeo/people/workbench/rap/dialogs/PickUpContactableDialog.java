@@ -29,11 +29,11 @@ import javax.jcr.query.Row;
 
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.util.TitleIconRowLP;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
-import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.eclipse.jface.dialogs.TrayDialog;

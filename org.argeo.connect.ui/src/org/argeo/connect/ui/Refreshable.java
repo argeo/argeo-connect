@@ -1,4 +1,4 @@
-package org.argeo.connect.workbench;
+package org.argeo.connect.ui;
 
 /**
  * Implement this interface to enable being called by the generic Connect

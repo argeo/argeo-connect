@@ -1,4 +1,4 @@
-package org.argeo.connect.workbench.parts;
+package org.argeo.connect.ui.parts;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -15,6 +15,7 @@ import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -46,7 +47,7 @@ public class DateTextPart extends Composite {
 	private String propName;
 
 	// UI Objects
-	private final AbstractConnectEditor editor;
+	private final ConnectEditor editor;
 	private AbstractFormPart formPart;
 	private Text dateTxt;
 	private Button openCalBtn;
@@ -64,7 +65,7 @@ public class DateTextPart extends Composite {
 	 * @param node
 	 * @param propName
 	 */
-	public DateTextPart(AbstractConnectEditor editor, Composite parent, int style, AbstractFormPart formPart, Node node,
+	public DateTextPart(ConnectEditor editor, Composite parent, int style, AbstractFormPart formPart, Node node,
 			String propName) {
 		super(parent, style);
 		this.editor = editor;
@@ -75,8 +76,8 @@ public class DateTextPart extends Composite {
 	}
 
 	/**
-	 * Generally, the form part is null when the control is created, use this to
-	 * set initialised formPart afterwards.
+	 * Generally, the form part is null when the control is created, use this to set
+	 * initialised formPart afterwards.
 	 */
 	public void setFormPart(AbstractFormPart formPart) {
 		this.formPart = formPart;

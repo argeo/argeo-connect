@@ -1,10 +1,10 @@
-package org.argeo.connect.workbench.util;
+package org.argeo.connect.ui.util;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
 
+import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.util.ConnectUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.eclipse.swt.graphics.Image;
 

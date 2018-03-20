@@ -12,10 +12,10 @@ import javax.jcr.query.QueryResult;
 
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.ConnectImages;
+import org.argeo.connect.ui.util.JcrHtmlLabelProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.parts.AbstractSearchEntityEditor;
-import org.argeo.connect.workbench.util.JcrHtmlLabelProvider;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;

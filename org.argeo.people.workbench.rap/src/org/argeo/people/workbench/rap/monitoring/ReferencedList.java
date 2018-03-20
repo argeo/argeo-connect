@@ -14,7 +14,7 @@ import javax.jcr.query.Query;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.cms.ui.workbench.util.PrivilegedJob;
-import org.argeo.connect.workbench.Refreshable;
+import org.argeo.connect.ui.Refreshable;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.people.PeopleException;

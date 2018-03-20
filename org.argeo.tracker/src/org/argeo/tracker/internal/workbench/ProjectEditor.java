@@ -24,10 +24,10 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.documents.composites.DocumentsFolderComposite;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -336,7 +336,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				if (EclipseUiUtils.notEmpty(pathCreated)) {
 					Node created = ConnectJcrUtils.getNode(referenceSession, pathCreated);
 					ConnectWorkbenchUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(created));
+							ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(created));
 				}
 			}
 		}
@@ -365,7 +365,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					Node currNode = ConnectJcrUtils.getNode(session, path.toString());
 					String nodeId = ConnectJcrUtils.getIdentifier(currNode);
 					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_JCR_ID, nodeId);
+							ConnectEditor.PARAM_JCR_ID, nodeId);
 				}
 			};
 			dfc.setLayoutData(EclipseUiUtils.fillAll());
@@ -491,7 +491,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
 				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, jcrId);
+						ConnectEditor.PARAM_JCR_ID, jcrId);
 			}
 		});
 	}

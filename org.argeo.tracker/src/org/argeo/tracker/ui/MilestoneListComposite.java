@@ -9,9 +9,9 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
+import org.argeo.connect.ui.AppWorkbenchService;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.core.TrackerUtils;
@@ -80,7 +80,7 @@ public class MilestoneListComposite extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				String jcrId = ConnectJcrUtils.getIdentifier(milestone);
-				CommandUtils.callCommand(workbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+				CommandUtils.callCommand(workbenchService.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
 						jcrId);
 			}
 		});

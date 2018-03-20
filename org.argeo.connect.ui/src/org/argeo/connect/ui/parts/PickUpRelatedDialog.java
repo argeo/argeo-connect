@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.argeo.connect.workbench.parts;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.argeo.connect.ui.parts;
 
 import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.PropertyType;
 import javax.jcr.Session;
 
-import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.resources.ResourcesNames;
-import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.resources.ResourcesTypes;
-import org.argeo.connect.ui.widgets.SimpleJcrTableComposite;
-import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -39,65 +29,71 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Dialog with a filtered list to choose a country
+ * Dialog with a filtered list to add reference to some related business
+ * entity(ies)
  */
-public class PickUpCountryDialog extends TrayDialog {
-	private static final long serialVersionUID = 3766899676609659573L;
+public class PickUpRelatedDialog extends TrayDialog {
+	private static final long serialVersionUID = -2526572299370624808L;
 
 	// Context
-	private ResourcesService resourceService;
 	private final Session session;
+	private final AppWorkbenchService appWorkbenchService;
 	private Node selectedNode;
 
 	// this page widgets and UI objects
-	private SimpleJcrTableComposite tableCmp;
+	private FilterEntitiesVirtualTable tableCmp;
 	private final String title;
 
-	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
-	{ // By default, it displays only title
-		colDefs.add(new JcrColumnDefinition(null, ResourcesNames.RESOURCES_TAG_CODE, PropertyType.STRING, "Iso Code", 100));
-		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Label", 240));
-	};
+	// draft workaround to prevent window close when the user presses return
+	private Button dummyButton;
 
-	public PickUpCountryDialog(Shell parentShell, ResourcesService resourceService, Session session, String title) {
+	public PickUpRelatedDialog(Shell parentShell, String title, Session session,
+			AppWorkbenchService appWorkbenchService, Node referencingNode) {
 		super(parentShell);
-		this.resourceService = resourceService;
-		this.session = session;
 		this.title = title;
+		// this.referencingNode = referencingNode;
+		this.session = session;
+		this.appWorkbenchService = appWorkbenchService;
 	}
 
 	protected Point getInitialSize() {
-		return new Point(400, 400);
+		return new Point(400, 600);
 	}
 
 	protected Control createDialogArea(Composite parent) {
 		Composite dialogArea = (Composite) super.createDialogArea(parent);
 
-		Node tagParent = resourceService.getTagLikeResourceParent(session, ConnectConstants.RESOURCE_COUNTRY);
+		// final Button seeAllChk = new Button(dialogArea, SWT.CHECK);
+		// seeAllChk.setText("See all organisation");
 
-		int style = SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
-		tableCmp = new SimpleJcrTableComposite(dialogArea, style, session, ConnectJcrUtils.getPath(tagParent),
-				ResourcesTypes.RESOURCES_ENCODED_TAG, colDefs, true, false);
+		Composite bodyCmp = new Composite(dialogArea, SWT.NO_FOCUS);
+		bodyCmp.setLayoutData(EclipseUiUtils.fillAll());
+		bodyCmp.setLayout(new GridLayout());
+
+		int style = SWT.BORDER | SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
+		tableCmp = new FilterEntitiesVirtualTable(bodyCmp, style, session, appWorkbenchService,
+				ConnectTypes.CONNECT_ENTITY);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
-
-		// Add listeners
 		tableCmp.getTableViewer().addDoubleClickListener(new MyDoubleClickListener());
 		tableCmp.getTableViewer().addSelectionChangedListener(new MySelectionChangedListener());
+
+		// draft workaround to prevent window close when the user presses return
+		dummyButton = new Button(dialogArea, SWT.PUSH);
+		dummyButton.setVisible(false);
 
 		parent.pack();
 		return dialogArea;
 	}
 
-	public String getSelected() {
-		if (selectedNode != null)
-			return ConnectJcrUtils.get(selectedNode, ResourcesNames.RESOURCES_TAG_CODE);
-		else
-			return null;
+	public Node getSelected() {
+		return selectedNode;
 	}
 
 	protected void configureShell(Shell shell) {
@@ -105,13 +101,17 @@ public class PickUpCountryDialog extends TrayDialog {
 		shell.setText(title);
 	}
 
+	@Override
+	public void create() {
+		super.create();
+		getShell().setDefaultButton(dummyButton);
+	}
+
 	class MySelectionChangedListener implements ISelectionChangedListener {
 		@Override
 		public void selectionChanged(SelectionChangedEvent event) {
-			if (event.getSelection().isEmpty()) {
-				selectedNode = null;
+			if (event.getSelection().isEmpty())
 				return;
-			}
 
 			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			if (obj instanceof Node) {
@@ -122,10 +122,8 @@ public class PickUpCountryDialog extends TrayDialog {
 
 	class MyDoubleClickListener implements IDoubleClickListener {
 		public void doubleClick(DoubleClickEvent evt) {
-			if (evt.getSelection().isEmpty()) {
-				selectedNode = null;
+			if (evt.getSelection().isEmpty())
 				return;
-			}
 
 			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 			if (obj instanceof Node) {

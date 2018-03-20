@@ -21,10 +21,10 @@ import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
@@ -401,7 +401,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
 					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
+							ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
 				}
 			});
 		}
@@ -421,7 +421,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+						ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
 			}
 		});
 	}

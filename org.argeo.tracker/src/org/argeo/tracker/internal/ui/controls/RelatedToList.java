@@ -10,11 +10,11 @@ import javax.jcr.Value;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.parts.PickUpRelatedDialog;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
-import org.argeo.connect.workbench.parts.PickUpRelatedDialog;
 import org.argeo.tracker.TrackerException;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;

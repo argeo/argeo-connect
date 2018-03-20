@@ -19,13 +19,14 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.AppWorkbenchService;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.commands.OpenSearchEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
@@ -557,7 +558,7 @@ public class ConnectWorkbenchUtils {
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
 				Map<String, String> params = new HashMap<String, String>();
-				params.put(OpenEntityEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(entity));
+				params.put(ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(entity));
 				CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), params);
 			}
 		});
@@ -572,7 +573,7 @@ public class ConnectWorkbenchUtils {
 	 */
 	public static String getOpenEditorSnippet(String commandId, Node relevantNode, String value) {
 		String toEditJcrId = ConnectJcrUtils.getIdentifier(relevantNode);
-		String href = commandId + "/" + OpenEntityEditor.PARAM_JCR_ID + "=" + toEditJcrId;
+		String href = commandId + "/" + ConnectEditor.PARAM_JCR_ID + "=" + toEditJcrId;
 		return ConnectUiSnippets.getRWTLink(href, value);
 	}
 
@@ -606,7 +607,7 @@ public class ConnectWorkbenchUtils {
 			return value;
 		String tagJcrId = ConnectJcrUtils.getIdentifier(tag);
 		String href = commandId + ConnectUiConstants.HREF_SEPARATOR;
-		href += OpenEntityEditor.PARAM_JCR_ID + "=" + tagJcrId;
+		href += ConnectEditor.PARAM_JCR_ID + "=" + tagJcrId;
 		return ConnectUiSnippets.getRWTLink(href, value);
 	}
 

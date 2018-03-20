@@ -1,4 +1,5 @@
 Import-Package: javax.jcr.nodetype,\
+org.argeo.node,\
 org.argeo.connect,\
 org.argeo.connect.ui,\
 org.argeo.cms.ui.fs,\

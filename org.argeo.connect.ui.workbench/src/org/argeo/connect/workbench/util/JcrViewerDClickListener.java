@@ -6,8 +6,9 @@ import javax.jcr.query.Row;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ui.ConnectEditor;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -56,7 +57,7 @@ public class JcrViewerDClickListener implements IDoubleClickListener {
 				String cmdId = OpenEntityEditor.ID;
 				if (systemWorkbenchService != null)
 					cmdId = systemWorkbenchService.getOpenEntityEditorCmdId();
-				CommandUtils.callCommand(cmdId, OpenEntityEditor.PARAM_JCR_ID, currNode.getIdentifier());
+				CommandUtils.callCommand(cmdId, ConnectEditor.PARAM_JCR_ID, currNode.getIdentifier());
 			}
 		} catch (RepositoryException re) {
 			throw new ConnectException("Unable to open editor for node " + currNode, re);

@@ -212,7 +212,7 @@
 				tooltip="Force refresh of the current active part">
 				<visibleWhen>
 					<with variable="activePart">
-						<instanceof value="org.argeo.connect.workbench.Refreshable" />
+						<instanceof value="org.argeo.connect.ui.Refreshable" />
 					</with>
 				</visibleWhen>
 			</command>

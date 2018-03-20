@@ -3,9 +3,9 @@ package org.argeo.documents.workbench;
 import javax.jcr.Node;
 import javax.jcr.nodetype.NodeType;
 
+import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.AppWorkbenchService;
 import org.argeo.documents.DocumentsTypes;
 import org.argeo.documents.workbench.parts.FileEditor;
 import org.argeo.documents.workbench.parts.FolderEditor;

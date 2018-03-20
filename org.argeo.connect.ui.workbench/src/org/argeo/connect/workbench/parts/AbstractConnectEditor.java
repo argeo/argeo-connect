@@ -16,7 +16,6 @@ import javax.jcr.security.Privilege;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IFormPart;
@@ -26,10 +25,11 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.parts.CompositeManagedForm;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.Refreshable;
-import org.argeo.connect.workbench.SystemWorkbenchService;
 import org.argeo.connect.workbench.commands.ChangeEditingState;
 import org.argeo.connect.workbench.commands.DeleteEntity;
 import org.argeo.connect.workbench.util.EditionSourceProvider;
@@ -69,8 +69,7 @@ import org.osgi.util.tracker.ServiceTracker;
  * cycle of the JCR session that is bound to it. It provides no UI layout except
  * from the header with some buttons.
  */
-public abstract class AbstractConnectEditor extends EditorPart
-		implements CmsEditable, Refreshable, IStatusLineProvider {
+public abstract class AbstractConnectEditor extends EditorPart implements ConnectEditor {
 	private final static Log log = LogFactory.getLog(AbstractConnectEditor.class);
 
 	private BundleContext bc = FrameworkUtil.getBundle(AbstractConnectEditor.class).getBundleContext();
@@ -146,10 +145,10 @@ public abstract class AbstractConnectEditor extends EditorPart
 	public void createPartControl(Composite parent) {
 		// Initialize main UI objects
 		toolkit = new FormToolkit(parent.getDisplay());
-//		Form form = toolkit.createForm(parent);
+		// Form form = toolkit.createForm(parent);
 		mForm = new ConnectManagedForm(parent, toolkit);
 		mForm.setContainer(AbstractConnectEditor.this);
-//		main = form.getBody();
+		// main = form.getBody();
 		main = toolkit.createComposite(parent);
 		createMainLayout(main);
 		forceRefresh();
@@ -593,26 +592,26 @@ public abstract class AbstractConnectEditor extends EditorPart
 	/* DEPENDENCY INJECTION */
 	public void setRepository(Repository repository) {
 		log.trace("setRepository is deprecated and ignored");
-//		this.repository = repository;
+		// this.repository = repository;
 	}
 
 	public void setUserAdminService(UserAdminService userAdminService) {
 		log.trace("setUserAdminService is deprecated and ignored");
-//		this.userAdminService = userAdminService;
+		// this.userAdminService = userAdminService;
 	}
 
 	public void setResourcesService(ResourcesService resourcesService) {
 		log.trace("setResourcesService is deprecated and ignored");
-//		this.resourcesService = resourcesService;
+		// this.resourcesService = resourcesService;
 	}
 
 	public void setSystemAppService(SystemAppService systemAppService) {
 		log.trace("setSystemAppService is deprecated and ignored");
-//		this.systemAppService = systemAppService;
+		// this.systemAppService = systemAppService;
 	}
 
 	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
 		log.trace("setSystemWorkbenchService is deprecated and ignored");
-//		this.systemWorkbenchService = systemWorkbenchService;
+		// this.systemWorkbenchService = systemWorkbenchService;
 	}
 }

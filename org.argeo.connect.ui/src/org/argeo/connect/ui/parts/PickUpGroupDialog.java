@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.argeo.connect.workbench.parts;
+package org.argeo.connect.ui.parts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,8 +72,7 @@ public class PickUpGroupDialog extends TrayDialog {
 	private List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 
 	/**
-	 * A dialog to pick up a group or a user, showing a table with default
-	 * columns
+	 * A dialog to pick up a group or a user, showing a table with default columns
 	 */
 	public PickUpGroupDialog(Shell parentShell, String title, UserAdminService userAdminService) {
 		super(parentShell);

@@ -26,18 +26,18 @@ import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.util.LazyCTabControl;
+import org.argeo.connect.ui.util.TitleIconRowLP;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
-import org.argeo.connect.workbench.util.TitleIconRowLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -343,7 +343,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		public void doubleClick(DoubleClickEvent event) {
 			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			Node occurrence = ConnectJcrUtils.getNodeFromElement(obj, taggableType);
-			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
 					ConnectJcrUtils.getIdentifier(occurrence));
 		}
 	}

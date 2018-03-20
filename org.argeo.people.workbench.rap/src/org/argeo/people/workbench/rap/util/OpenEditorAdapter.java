@@ -1,8 +1,8 @@
 package org.argeo.people.workbench.rap.util;
 
 import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.workbench.SystemWorkbenchService;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
+import org.argeo.connect.ui.ConnectEditor;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
@@ -22,7 +22,7 @@ public class OpenEditorAdapter extends SelectionAdapter {
 
 	@Override
 	public void widgetSelected(final SelectionEvent event) {
-		CommandUtils.callCommand(systemWorkbenchServcice.getOpenEntityEditorCmdId(), OpenEntityEditor.PARAM_JCR_ID,
+		CommandUtils.callCommand(systemWorkbenchServcice.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
 				jcrId);
 	}
 }

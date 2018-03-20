@@ -18,8 +18,8 @@ package org.argeo.people.workbench.rap.dialogs;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.argeo.connect.workbench.SystemWorkbenchService;
-import org.argeo.connect.workbench.parts.FilterEntitiesVirtualTable;
+import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.parts.FilterEntitiesVirtualTable;
 import org.argeo.people.PeopleTypes;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
