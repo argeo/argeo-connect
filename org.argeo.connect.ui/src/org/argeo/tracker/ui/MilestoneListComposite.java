@@ -1,7 +1,5 @@
 package org.argeo.tracker.ui;
 
-import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
-
 import javax.jcr.Node;
 import javax.jcr.Property;
 
@@ -21,8 +19,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
-import org.eclipse.ui.forms.widgets.TableWrapData;
-import org.eclipse.ui.forms.widgets.TableWrapLayout;
 
 /** Canonical task list composite */
 public class MilestoneListComposite extends Composite {
@@ -63,12 +59,12 @@ public class MilestoneListComposite extends Composite {
 		Composite boxCmp = new Composite(parent, SWT.NO_FOCUS | SWT.BORDER); //
 		boxCmp.setLayoutData(EclipseUiUtils.fillWidth());
 
-		TableWrapLayout layout = new TableWrapLayout();
+		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		boxCmp.setLayout(layout);
 
 		Link titleLk = new Link(boxCmp, SWT.WRAP);
-		titleLk.setLayoutData(new TableWrapData(FILL_GRAB));
+		titleLk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		titleLk.setFont(EclipseUiUtils.getBoldFont(boxCmp));
 		titleLk.setText("<a>" + currTitle + "</a>");
 		titleLk.addSelectionListener(new SelectionAdapter() {
@@ -85,10 +81,10 @@ public class MilestoneListComposite extends Composite {
 		});
 
 		Composite chartCmp = new Composite(boxCmp, SWT.NO_FOCUS);
-		TableWrapData twd = new TableWrapData();
-		twd.rowspan = 3;
+		GridData twd = new GridData();
+		// twd.rowspan = 3;
 		twd.heightHint = 40;
-		twd.valign = TableWrapData.CENTER;
+		// twd.valign = TableWrapData.CENTER;
 		chartCmp.setLayoutData(twd);
 		chartCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
