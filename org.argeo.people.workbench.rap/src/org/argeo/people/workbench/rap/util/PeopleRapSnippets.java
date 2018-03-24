@@ -9,16 +9,16 @@ import javax.jcr.RepositoryException;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
+import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.ui.PeopleUiSnippets;
+import org.argeo.people.ui.PeopleWorkbenchService;
 import org.argeo.people.util.PeopleJcrUtils;
-import org.argeo.people.workbench.PeopleWorkbenchService;
 import org.argeo.people.workbench.rap.commands.EditJob;
 import org.argeo.people.workbench.rap.commands.RemoveEntityReference;
 

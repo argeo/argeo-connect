@@ -19,14 +19,12 @@ import org.eclipse.swt.widgets.Text;
  *
  */
 public class DelayedText {
-	private static final long serialVersionUID = 5415229346092946190L;
-
 	final int delay;
 	private Object lock = new Object();
 	private MyTimer timer = new MyTimer(DelayedText.this.toString());
 	private ModifyListener delayedModifyListener;
 	private ServerPushSession pushSession;
-	
+
 	private Text text;
 
 	private ModifyListener modifyListener = new ModifyListener() {
@@ -56,8 +54,7 @@ public class DelayedText {
 					timer.timerTask = new TimerTask() {
 						public void run() {
 							synchronized (lock) {
-								delayedModifyListener
-										.modifyText(timerModifyEvent);
+								delayedModifyListener.modifyText(timerModifyEvent);
 								// Bad approach: it is not a good idea to put a
 								// display.asyncExec in a lock...
 								// DelayedText.this.getDisplay().asyncExec(new
@@ -82,20 +79,18 @@ public class DelayedText {
 	};
 
 	public DelayedText(Composite parent, int style, int delayInMs) {
-//		super(parent, style);
-		text = new Text(parent,style);
+		// super(parent, style);
+		text = new Text(parent, style);
 		this.delay = delayInMs;
 		text.addModifyListener(modifyListener);
 	}
 
-	
 	/**
 	 * Adds a modify text listener that will be delayed. If another Modify event
-	 * happens during the waiting delay, the older event will be canceled an a
-	 * new one will be scheduled after another new delay.
+	 * happens during the waiting delay, the older event will be canceled an a new
+	 * one will be scheduled after another new delay.
 	 */
-	public void addDelayedModifyListener(ServerPushSession pushSession,
-			ModifyListener listener) {
+	public void addDelayedModifyListener(ServerPushSession pushSession, ModifyListener listener) {
 		synchronized (lock) {
 			delayedModifyListener = listener;
 			this.pushSession = pushSession;
@@ -120,6 +115,5 @@ public class DelayedText {
 	public Text getText() {
 		return text;
 	};
-	
-	
+
 }

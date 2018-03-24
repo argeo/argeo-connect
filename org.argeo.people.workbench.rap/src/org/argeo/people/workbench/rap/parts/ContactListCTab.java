@@ -12,14 +12,14 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.cms.widgets.ScrolledPage;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.ContactService;
@@ -28,10 +28,10 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.ui.composites.ContactAddressComposite;
+import org.argeo.people.ui.composites.ContactComposite;
+import org.argeo.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.people.util.PeopleJcrUtils;
-import org.argeo.people.workbench.rap.composites.ContactAddressComposite;
-import org.argeo.people.workbench.rap.composites.ContactComposite;
-import org.argeo.people.workbench.rap.dialogs.PickUpOrgDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -62,14 +62,14 @@ public class ContactListCTab extends LazyCTabControl {
 	private final Node entity;
 
 	// UI Objects
-	private final AbstractConnectEditor editor;
+	private final ConnectEditor editor;
 	private final FormToolkit toolkit;
 	private ContactFormPart myFormPart;
 	private Composite innerCmp;
 	// Caches the add new contact combo
 	private Combo addContactCmb;
 
-	public ContactListCTab(Composite parent, int style, AbstractConnectEditor editor, Node entityNode,
+	public ContactListCTab(Composite parent, int style, ConnectEditor editor, Node entityNode,
 			ResourcesService resourcesService, PeopleService peopleService,
 			SystemWorkbenchService systemWorkbenchService) {
 		super(parent, style);

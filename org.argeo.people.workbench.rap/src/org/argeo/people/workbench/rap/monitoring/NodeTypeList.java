@@ -27,7 +27,7 @@ import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleService;
-import org.argeo.people.workbench.rap.providers.SimpleLazyContentProvider;
+import org.argeo.people.ui.providers.SimpleLazyContentProvider;
 import org.argeo.people.workbench.rap.util.AbstractPeopleBasicEditor;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;

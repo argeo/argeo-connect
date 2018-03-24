@@ -18,7 +18,7 @@ import org.argeo.connect.ui.Refreshable;
 import org.argeo.eclipse.ui.EclipseJcrMonitor;
 import org.argeo.jcr.JcrMonitor;
 import org.argeo.people.PeopleException;
-import org.argeo.people.workbench.rap.providers.SimpleLazyContentProvider;
+import org.argeo.people.ui.providers.SimpleLazyContentProvider;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;

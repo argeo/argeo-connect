@@ -42,7 +42,7 @@ import org.argeo.documents.DocumentsNames;
 import org.argeo.documents.DocumentsService;
 import org.argeo.documents.DocumentsTypes;
 import org.argeo.documents.composites.BookmarksTableViewer;
-import org.argeo.documents.workbench.DocumentsSingleColumnLP;
+import org.argeo.documents.ui.DocumentsSingleColumnLP;
 import org.argeo.documents.workbench.DocumentsUiPlugin;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FsTableViewer;

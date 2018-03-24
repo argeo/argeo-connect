@@ -11,8 +11,8 @@ import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.resources.core.TagUtils;
 import org.argeo.connect.ui.AppWorkbenchService;
+import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 

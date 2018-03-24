@@ -1,7 +1,7 @@
 package org.argeo.tracker.ui;
 
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.workbench.util.JcrViewerDClickListener;
+import org.argeo.connect.ui.util.JcrViewerDClickListener;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProvider;

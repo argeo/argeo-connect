@@ -138,7 +138,6 @@ public class ConnectUiUtils {
 	}
 
 	/** Creates a text widget with RowData already set */
-	@Deprecated
 	public static Text createRDText(Object toolkit, Composite parent, String msg, String toolTip, int width) {
 		Text text = new Text(parent, SWT.BORDER | SWT.SINGLE | SWT.LEFT);
 		text.setText("");
@@ -152,7 +151,6 @@ public class ConnectUiUtils {
 	 * Creates the basic right aligned bold label that is used in various forms
 	 * using a pre-defined toolkit.
 	 */
-	@Deprecated
 	public static Label createBoldLabel(Object toolkit, Composite parent, String value) {
 
 		// We add a blank space before to workaround the cropping of the word

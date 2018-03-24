@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Shell;
  * CMS and Workbench
  */
 public abstract class AbstractConnectContextMenu {
-	private static final long serialVersionUID = 5355397086046402434L;
 
 	private Shell shell;
 	// Local context
