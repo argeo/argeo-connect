@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui;
+package org.argeo.tracker.ui;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;

@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui;
+package org.argeo.tracker.internal.workbench;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.forms.widgets.TableWrapData;
 
 /** Centralise useful methods to ease implementation of the UI */
-public class TrackerUiUtils {
+class TrackerUiUtils {
 
 	public static TableViewer createTableViewer(final Composite parent, int tableStyle,
 			List<ColumnDefinition> columnDefs) {

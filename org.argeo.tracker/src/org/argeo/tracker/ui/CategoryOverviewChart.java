@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui.controls;
+package org.argeo.tracker.ui;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +46,7 @@ public class CategoryOverviewChart extends Composite {
 		String html;
 		InputStream in = null;
 		try {
-			in = getClass().getResourceAsStream("/org/argeo/tracker/internal/charts/ChartJs.html");
+			in = getClass().getResourceAsStream("/org/argeo/tracker/ui/charts/ChartJs.html");
 			html = IOUtils.toString(in);
 		} catch (IOException e) {
 			throw new TrackerException("Cannot read HTML", e);

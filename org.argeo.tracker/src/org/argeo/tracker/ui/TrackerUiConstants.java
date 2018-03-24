@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui;
+package org.argeo.tracker.ui;
 
 /**
  * Centralise non clean internal constants before providing a better

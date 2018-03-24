@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui.controls;
+package org.argeo.tracker.internal.workbench;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,6 @@ import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
-import org.argeo.tracker.internal.workbench.AbstractTrackerEditor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -40,7 +39,8 @@ import org.eclipse.ui.forms.IManagedForm;
  * Wraps an Abstract form part that enable management of a tag like list in a
  * form editor.
  */
-public abstract class TagListFormPart extends Composite {
+@Deprecated
+abstract class TagListFormPart extends Composite {
 
 	private static final long serialVersionUID = 5439358000985800234L;
 

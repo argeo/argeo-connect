@@ -9,12 +9,12 @@ import org.argeo.connect.ui.AppUiService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.TrackerTypes;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureComponentWizard;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureMilestoneWizard;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureProjectWizard;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureTaskWizard;
-import org.argeo.tracker.internal.ui.dialogs.ConfigureVersionWizard;
+import org.argeo.tracker.ui.dialogs.ConfigureComponentWizard;
+import org.argeo.tracker.ui.dialogs.ConfigureIssueWizard;
+import org.argeo.tracker.ui.dialogs.ConfigureMilestoneWizard;
+import org.argeo.tracker.ui.dialogs.ConfigureProjectWizard;
+import org.argeo.tracker.ui.dialogs.ConfigureTaskWizard;
+import org.argeo.tracker.ui.dialogs.ConfigureVersionWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 

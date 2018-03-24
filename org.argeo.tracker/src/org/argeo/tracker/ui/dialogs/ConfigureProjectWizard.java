@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui.dialogs;
+package org.argeo.tracker.ui.dialogs;
 
 import static javax.jcr.Property.JCR_DESCRIPTION;
 import static javax.jcr.Property.JCR_TITLE;

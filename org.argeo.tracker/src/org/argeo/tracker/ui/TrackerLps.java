@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui;
+package org.argeo.tracker.ui;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

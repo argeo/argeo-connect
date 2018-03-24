@@ -20,7 +20,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.internal.ui.TrackerLps;
+import org.argeo.tracker.ui.TrackerLps;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.ui.IEditorInput;

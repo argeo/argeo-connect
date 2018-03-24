@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui.controls;
+package org.argeo.tracker.ui.controls;
 
 import java.util.List;
 
@@ -8,12 +8,12 @@ import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.tracker.core.TrackerUtils;
 import org.eclipse.swt.widgets.Text;
 
-/** Simple DropDown that displays the list of existing versions */
-public class VersionDropDown extends ConnectAbstractDropDown {
+/** Simple DropDown that displays the list of related component */
+public class ComponentDropDown extends ConnectAbstractDropDown {
 
 	private final Node project;
 
-	public VersionDropDown(Node project, Text text) {
+	public ComponentDropDown(Node project, Text text) {
 		super(text);
 		this.project = project;
 		init();
@@ -21,6 +21,6 @@ public class VersionDropDown extends ConnectAbstractDropDown {
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		return TrackerUtils.getVersionIds(project, filter);
+		return TrackerUtils.getMilestoneIds(project, filter);
 	}
 }

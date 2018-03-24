@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui.dialogs;
+package org.argeo.tracker.ui.dialogs;
 
 import static javax.jcr.PropertyType.STRING;
 import static org.argeo.connect.ConnectNames.CONNECT_UID;
@@ -23,7 +23,7 @@ import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
 import org.argeo.tracker.core.TrackerUtils;
-import org.argeo.tracker.internal.ui.controls.ProjectDropDown;
+import org.argeo.tracker.ui.controls.ProjectDropDown;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;

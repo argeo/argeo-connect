@@ -1,8 +1,9 @@
-package org.argeo.tracker.internal.charts;
+package org.argeo.tracker.ui.charts;
 
 /** Configure chartjs objects via JSon */
 @SuppressWarnings("unused")
-public class JsChartData {
+@Deprecated
+class JsChartData {
 	private String[] labels;
 	private Object[] datasets;
 

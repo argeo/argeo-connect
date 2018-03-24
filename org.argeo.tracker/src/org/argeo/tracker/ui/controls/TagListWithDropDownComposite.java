@@ -1,4 +1,4 @@
-package org.argeo.tracker.internal.ui.controls;
+package org.argeo.tracker.ui.controls;
 
 import java.util.ArrayList;
 import java.util.List;
