@@ -13,6 +13,7 @@ org.argeo.node,\
 org.argeo.cms.ui.workbench.commands,\
 org.argeo.connect,\
 org.argeo.connect.ui,\
+org.argeo.connect.ui.parts,\
 org.argeo.eclipse.spring,\
 org.argeo.eclipse.ui.dialogs,\
 org.eclipse.core.runtime.jobs,\
