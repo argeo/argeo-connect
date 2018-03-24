@@ -28,7 +28,6 @@ import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.LinkListPart;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.util.EntityEditorInput;
 import org.argeo.eclipse.ui.EclipseUiUtils;

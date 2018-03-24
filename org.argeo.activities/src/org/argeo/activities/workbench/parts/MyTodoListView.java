@@ -24,9 +24,7 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.activities.workbench.util.ActivityViewerComparator;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.Refreshable;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -169,8 +167,8 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 	}
 
 	/**
-	 * Refresh the list: caller might overwrite in order to display a subset of
-	 * all nodes
+	 * Refresh the list: caller might overwrite in order to display a subset of all
+	 * nodes
 	 */
 	protected void refreshFilteredList() {
 		NodeIterator tasks = activitiesService.getMyTasks(session, true);
@@ -317,13 +315,15 @@ public class MyTodoListView extends ViewPart implements Refreshable {
 
 			Object obj = ((IStructuredSelection) evt.getSelection()).getFirstElement();
 			if (obj instanceof Node) {
-				try {
-					String jcrId = ((Node) obj).getIdentifier();
-					String paramName = ConnectEditor.PARAM_JCR_ID;
-					CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), paramName, jcrId);
-				} catch (RepositoryException e) {
-					throw new ActivitiesException("Cannot open user editor", e);
-				}
+				// try {
+				// String jcrId = ((Node) obj).getIdentifier();
+				// String paramName = ConnectEditor.PARAM_JCR_ID;
+				// CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+				// paramName, jcrId);
+				systemWorkbenchService.openEntityEditor((Node) obj);
+				// } catch (RepositoryException e) {
+				// throw new ActivitiesException("Cannot open user editor", e);
+				// }
 			}
 		}
 	}

@@ -39,6 +39,28 @@ public class DefaultSystemWorkbenchService implements SystemWorkbenchService {
 	}
 
 	@Override
+	public void openEntityEditor(Node entity) {
+		String result = null;
+		for (AppWorkbenchService appWbService : knownAppWbServices) {
+			// TODO make it more robust
+			result = appWbService.getEntityEditorId(entity);
+			if (EclipseUiUtils.notEmpty(result))
+				appWbService.openEntityEditor(entity);
+		}
+	}
+
+	@Override
+	public void openSearchEntityView(String nodeType, String label) {
+		String result = null;
+		for (AppWorkbenchService appWbService : knownAppWbServices) {
+			// TODO make it more robust
+			result = appWbService.getSearchEntityEditorId(nodeType);
+			if (EclipseUiUtils.notEmpty(result))
+				appWbService.openSearchEntityView(nodeType, label);
+		}
+	}
+
+	@Override
 	public String getSearchEntityEditorId(String nodeType) {
 		String result = null;
 		for (AppWorkbenchService appWbService : knownAppWbServices) {

@@ -1,5 +1,8 @@
 package org.argeo.connect.workbench.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -12,7 +15,6 @@ import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.workbench.ConnectUiPlugin;
-import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -83,11 +85,15 @@ public class CreateEntity extends AbstractHandler {
 			JcrUtils.logoutQuietly(mainSession);
 		}
 
-		if (jcrId != null)
+		if (jcrId != null) {
 			// Open the corresponding editor
-			ConnectWorkbenchUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-					ConnectEditor.PARAM_JCR_ID, jcrId, ConnectEditor.PARAM_OPEN_FOR_EDIT, "true");
-
+			Map<String, String> params = new HashMap<>();
+			params.put(ConnectEditor.PARAM_JCR_ID, jcrId);
+			params.put(ConnectEditor.PARAM_OPEN_FOR_EDIT, "true");
+			// ConnectWorkbenchUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+			// ConnectEditor.PARAM_JCR_ID, jcrId, ConnectEditor.PARAM_OPEN_FOR_EDIT,
+			// "true");
+		}
 		return null;
 	}
 

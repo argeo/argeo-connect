@@ -8,11 +8,9 @@ import javax.jcr.Session;
 
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
@@ -182,8 +180,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			Link chooseOrgLk = new Link(parent, SWT.LEFT | SWT.BOTTOM);
 			chooseOrgLk.setText("<a>Change</a>");
 
-			Text labelTxt = ConnectUiUtils.createRDText(toolkit, parent, "A custom label", "A custom label",
-					120);
+			Text labelTxt = ConnectUiUtils.createRDText(toolkit, parent, "A custom label", "A custom label", 120);
 
 			Combo catCmb = new Combo(parent, SWT.BOTTOM | SWT.READ_ONLY);
 			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));
@@ -246,8 +243,9 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
 			if (org != null) {
-				CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-						ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(org));
+				// CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+				// ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(org));
+				systemWorkbenchService.openEntityEditor(org);
 			}
 
 		}

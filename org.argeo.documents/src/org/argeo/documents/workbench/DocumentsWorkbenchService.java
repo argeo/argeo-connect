@@ -3,15 +3,15 @@ package org.argeo.documents.workbench;
 import javax.jcr.Node;
 import javax.jcr.nodetype.NodeType;
 
-import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.LegacyWorkbenchService;
 import org.argeo.documents.DocumentsTypes;
 import org.argeo.documents.workbench.parts.FileEditor;
 import org.argeo.documents.workbench.parts.FolderEditor;
 import org.eclipse.swt.graphics.Image;
 
-public class DocumentsWorkbenchService implements AppWorkbenchService {
+public class DocumentsWorkbenchService implements LegacyWorkbenchService {
 
 	@Override
 	public String getEntityEditorId(Node entity) {

@@ -3,8 +3,8 @@ package org.argeo.tracker.workbench;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectImages;
+import org.argeo.connect.workbench.LegacyWorkbenchService;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.internal.workbench.AllProjectsEditor;
@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Image;
  * the name of the command to open editors so that it is easily extended by
  * specific extensions
  */
-public class TrackerWorkbenchService extends TrackerUiService implements AppWorkbenchService {
+public class TrackerWorkbenchService extends TrackerUiService implements LegacyWorkbenchService {
 
 	@Override
 	public String getEntityEditorId(Node entity) {

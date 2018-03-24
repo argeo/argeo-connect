@@ -2,8 +2,6 @@ package org.argeo.connect.workbench;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
@@ -13,7 +11,6 @@ import javax.jcr.Value;
 
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
@@ -23,16 +20,13 @@ import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
-import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
-import org.argeo.connect.workbench.commands.OpenSearchEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.jcr.JcrUtils;
-import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
@@ -42,7 +36,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -51,46 +44,27 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
+//import org.eclipse.ui.IEditorInput;
+//import org.eclipse.ui.IEditorPart;
+//import org.eclipse.ui.ISharedImages;
+//import org.eclipse.ui.IWorkbench;
+//import org.eclipse.ui.IWorkbenchPage;
+//import org.eclipse.ui.PartInitException;
 //import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Helper methods to ease UI implementation in a Connect Workbench */
 public class ConnectWorkbenchUtils {
-
-	// Experimental
-	// public static PeopleService getPeopleService() {
-	// return (PeopleService)
-	// Display.getDefault().getData(PeopleRapConstants.KEY_PEOPLE_SERVICE);
-	// }
-
-	/**
-	 * Shortcut to retrieve the current active page. It assumes the bundle
-	 * WorkbenchUiPlugin is started (it is by the way the basis of all apps based
-	 * upon argeo framework that use the workbench)
-	 */
-	@Deprecated
-	public static IWorkbenchPage getActivePage() {
-		return null;
-		// return
-		// WorkbenchUiPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
-	}
-
 	/**
 	 * Helper to call a command with a few parameter easily. The additional
 	 * parameters must be Pairs with each time a parameterID and a parameterValue
 	 * couple in this order
 	 */
-	public static void callCommand(String commandID, String... parameters) {
-		Map<String, String> params = new HashMap<String, String>();
-		for (int i = 0; i < (parameters.length / 2); i++)
-			params.put(parameters[i * 2], parameters[i * 2 + 1]);
-		CommandUtils.callCommand(commandID, params);
-	}
+	// public static void callCommand(String commandID, String... parameters) {
+	// Map<String, String> params = new HashMap<String, String>();
+	// for (int i = 0; i < (parameters.length / 2); i++)
+	// params.put(parameters[i * 2], parameters[i * 2 + 1]);
+	// CommandUtils.callCommand(commandID, params);
+	// }
 
 	/**
 	 * Shortcut to refresh a <code>DateTime</code> widget given a Node in a form and
@@ -447,33 +421,35 @@ public class ConnectWorkbenchUtils {
 	 * Shortcut to add a Text Modifylistener that updates a LONG property on a Node.
 	 * Checks the input validity while the user is typing
 	 */
-	public static void addNbOnlyTxtModifyListener(IWorkbench workbench, final AbstractFormPart part, final Text text,
-			final Node entity, final String propName, final int propType) {
-		final ControlDecoration decoration = new ControlDecoration(text, SWT.TOP | SWT.LEFT);
-		decoration.setImage(workbench.getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
-		decoration.hide();
-
-		text.addModifyListener(new ModifyListener() {
-			private static final long serialVersionUID = 1L;
-
-			public void modifyText(ModifyEvent event) {
-				String lengthStr = text.getText();
-				if (!ConnectUiUtils.isNumbers(lengthStr)) {
-					text.setBackground(new Color(text.getDisplay(), 250, 200, 150));
-					decoration.show();
-					decoration.setDescriptionText("Length can only be a number: " + lengthStr);
-				} else {
-					text.setBackground(null);
-					decoration.hide();
-					Long length = null;
-					if (EclipseUiUtils.notEmpty(lengthStr))
-						length = new Long(lengthStr);
-					if (ConnectJcrUtils.setJcrProperty(entity, propName, propType, length))
-						part.markDirty();
-				}
-			}
-		});
-	}
+	// public static void addNbOnlyTxtModifyListener(IWorkbench workbench, final
+	// AbstractFormPart part, final Text text,
+	// final Node entity, final String propName, final int propType) {
+	// final ControlDecoration decoration = new ControlDecoration(text, SWT.TOP |
+	// SWT.LEFT);
+	// decoration.setImage(workbench.getSharedImages().getImage(ISharedImages.IMG_DEC_FIELD_ERROR));
+	// decoration.hide();
+	//
+	// text.addModifyListener(new ModifyListener() {
+	// private static final long serialVersionUID = 1L;
+	//
+	// public void modifyText(ModifyEvent event) {
+	// String lengthStr = text.getText();
+	// if (!ConnectUiUtils.isNumbers(lengthStr)) {
+	// text.setBackground(new Color(text.getDisplay(), 250, 200, 150));
+	// decoration.show();
+	// decoration.setDescriptionText("Length can only be a number: " + lengthStr);
+	// } else {
+	// text.setBackground(null);
+	// decoration.hide();
+	// Long length = null;
+	// if (EclipseUiUtils.notEmpty(lengthStr))
+	// length = new Long(lengthStr);
+	// if (ConnectJcrUtils.setJcrProperty(entity, propName, propType, length))
+	// part.markDirty();
+	// }
+	// }
+	// });
+	// }
 
 	/**
 	 * Simply create a link to open a search editor with the given parameters
@@ -494,11 +470,7 @@ public class ConnectWorkbenchUtils {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				Map<String, String> params = new HashMap<String, String>();
-				params.put(OpenSearchEntityEditor.PARAM_NODE_TYPE, nodeType);
-				params.put(OpenSearchEntityEditor.PARAM_EDITOR_NAME, label);
-				String cmdId = appWorkbenchService.getOpenSearchEntityEditorCmdId();
-				CommandUtils.callCommand(cmdId, params);
+				appWorkbenchService.openSearchEntityView(nodeType, label);
 			}
 		});
 		return link;
@@ -514,30 +486,31 @@ public class ConnectWorkbenchUtils {
 	 * @param label
 	 * @return
 	 */
-	public static Link createOpenEditorLink(final IWorkbenchPage iwPage, Composite parent,
-			final IEditorInput editorInput, final String editorId, final String label) {
-		Link link = new Link(parent, SWT.NONE);
-		link.setText("<a>" + label + "</a>");
-		link.setLayoutData(EclipseUiUtils.fillWidth());
-		link.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void widgetSelected(final SelectionEvent event) {
-				try {
-					IEditorPart iep = iwPage.findEditor(editorInput);
-					if (iep == null) {
-						iwPage.openEditor(editorInput, editorId);
-					} else
-						iwPage.activate(iep);
-
-				} catch (PartInitException e) {
-					throw new ConnectException("Unable to open editor with ID " + editorId, e);
-				}
-			}
-		});
-		return link;
-	}
+	// public static Link createOpenEditorLink(final IWorkbenchPage iwPage,
+	// Composite parent,
+	// final IEditorInput editorInput, final String editorId, final String label) {
+	// Link link = new Link(parent, SWT.NONE);
+	// link.setText("<a>" + label + "</a>");
+	// link.setLayoutData(EclipseUiUtils.fillWidth());
+	// link.addSelectionListener(new SelectionAdapter() {
+	// private static final long serialVersionUID = 1L;
+	//
+	// @Override
+	// public void widgetSelected(final SelectionEvent event) {
+	// try {
+	// IEditorPart iep = iwPage.findEditor(editorInput);
+	// if (iep == null) {
+	// iwPage.openEditor(editorInput, editorId);
+	// } else
+	// iwPage.activate(iep);
+	//
+	// } catch (PartInitException e) {
+	// throw new ConnectException("Unable to open editor with ID " + editorId, e);
+	// }
+	// }
+	// });
+	// return link;
+	// }
 
 	/**
 	 * Simply create a link to open an entity editor for the given entity node
@@ -557,9 +530,12 @@ public class ConnectWorkbenchUtils {
 
 			@Override
 			public void widgetSelected(final SelectionEvent event) {
-				Map<String, String> params = new HashMap<String, String>();
-				params.put(ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(entity));
-				CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), params);
+				// Map<String, String> params = new HashMap<String, String>();
+				// params.put(ConnectEditor.PARAM_JCR_ID,
+				// ConnectJcrUtils.getIdentifier(entity));
+				// CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
+				// params);
+				appWorkbenchService.openEntityEditor(entity);
 			}
 		});
 		return link;

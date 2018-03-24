@@ -26,7 +26,6 @@ import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.parts.DateTextPart;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
-import org.argeo.connect.workbench.LinkListPart;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
 import org.argeo.eclipse.ui.EclipseUiUtils;

@@ -23,6 +23,10 @@ public interface AppWorkbenchService extends AppUiService {
 		return "org.argeo.connect.ui.workbench.openSearchEntityEditor";
 	}
 
+	public void openEntityEditor(Node entity);
+
+	public void openSearchEntityView(String nodeType, String label);
+
 	/**
 	 * @return the ID of the relevant editor for this node within the current
 	 *         context

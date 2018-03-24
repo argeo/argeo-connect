@@ -22,11 +22,9 @@ import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectColumnDefinition;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -187,8 +185,8 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 	}
 
 	/**
-	 * Retrieves all instances of the repository that have this value, overwrite
-	 * to provide a more relevant request
+	 * Retrieves all instances of the repository that have this value, overwrite to
+	 * provide a more relevant request
 	 */
 	protected RowIterator query(String currVal) {
 		try {
@@ -343,8 +341,10 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		public void doubleClick(DoubleClickEvent event) {
 			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 			Node occurrence = ConnectJcrUtils.getNodeFromElement(obj, taggableType);
-			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
-					ConnectJcrUtils.getIdentifier(occurrence));
+			// CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+			// ConnectEditor.PARAM_JCR_ID,
+			// ConnectJcrUtils.getIdentifier(occurrence));
+			systemWorkbenchService.openEntityEditor(occurrence);
 		}
 	}
 
@@ -440,8 +440,8 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		}
 
 		/**
-		 * Called when the user click on 'Finish' in the wizard. The task is
-		 * then created and the corresponding session saved.
+		 * Called when the user click on 'Finish' in the wizard. The task is then
+		 * created and the corresponding session saved.
 		 */
 		@Override
 		public boolean performFinish() {

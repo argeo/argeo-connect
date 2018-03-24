@@ -5,12 +5,10 @@ import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
 import javax.jcr.Node;
 import javax.jcr.Property;
 
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.AppWorkbenchService;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerNames;
@@ -79,9 +77,11 @@ public class MilestoneListComposite extends Composite {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				String jcrId = ConnectJcrUtils.getIdentifier(milestone);
-				CommandUtils.callCommand(workbenchService.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
-						jcrId);
+				// String jcrId = ConnectJcrUtils.getIdentifier(milestone);
+				// CommandUtils.callCommand(workbenchService.getOpenEntityEditorCmdId(),
+				// ConnectEditor.PARAM_JCR_ID,
+				// jcrId);
+				workbenchService.openEntityEditor(milestone);
 			}
 		});
 

@@ -15,7 +15,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
@@ -209,9 +208,11 @@ public class TagLikeListSmallPart extends Composite {
 										String msg = "This category is still in a draft state.\n"
 												+ "Please save first.";
 										MessageDialog.openInformation(parentCmp.getShell(), "Forbidden action", msg);
-									} else
-										CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-												ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
+									} else {
+										// CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+										// ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(tag));
+										systemWorkbenchService.openEntityEditor(tag);
+									}
 								} catch (RepositoryException e) {
 									throw new ConnectException("unable to get path for resource tag node " + tag
 											+ " while editing " + taggable, e);

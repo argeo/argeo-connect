@@ -1,9 +1,7 @@
 package org.argeo.tracker.internal.workbench;
 
 import static org.argeo.activities.ActivitiesNames.ACTIVITIES_DUE_DATE;
-import static org.argeo.cms.auth.CurrentUser.isInRole;
 import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
-import static org.argeo.node.NodeConstants.ROLE_ADMIN;
 import static org.eclipse.ui.forms.widgets.TableWrapData.BOTTOM;
 import static org.eclipse.ui.forms.widgets.TableWrapData.FILL_GRAB;
 
@@ -26,12 +24,10 @@ import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -51,7 +47,6 @@ import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.controls.RepartitionChart;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureMilestoneWizard;
-import org.argeo.tracker.workbench.TechnicalInfoPage;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
@@ -130,8 +125,8 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 		try {
 			addPage(new MainPage(this));
 
-//			if (isInRole(ROLE_ADMIN))
-//				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
+			// if (isInRole(ROLE_ADMIN))
+			// addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
@@ -346,9 +341,10 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 				@Override
 				public void doubleClick(DoubleClickEvent event) {
 					Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
-					String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							ConnectEditor.PARAM_JCR_ID, jcrId);
+					// String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
+					// CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+					// ConnectEditor.PARAM_JCR_ID, jcrId);
+					getAppWorkbenchService().openEntityEditor((Node) element);
 				}
 			});
 
@@ -654,8 +650,9 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+				// CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+				// ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+				getAppWorkbenchService().openEntityEditor(targetNode);
 			}
 		});
 	}

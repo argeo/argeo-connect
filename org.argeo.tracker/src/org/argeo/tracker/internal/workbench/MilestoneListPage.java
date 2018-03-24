@@ -12,12 +12,10 @@ import javax.jcr.Session;
 
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.AppWorkbenchService;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
@@ -201,8 +199,8 @@ public class MilestoneListPage extends FormPage implements ArgeoNames {
 				String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 				String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
 
-				String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(addBtn.getShell(), session, trackerService,
-						appWorkbenchService, mainMixin, propName1, value1);
+				String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(addBtn.getShell(), session,
+						trackerService, appWorkbenchService, mainMixin, propName1, value1);
 				if (EclipseUiUtils.notEmpty(pathCreated))
 					refreshViewer(filterTxt.getText());
 			}
@@ -264,9 +262,11 @@ public class MilestoneListPage extends FormPage implements ArgeoNames {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
-				String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-				CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
-						jcrId);
+				// String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
+				// CommandUtils.callCommand(appWorkbenchService.getOpenEntityEditorCmdId(),
+				// ConnectEditor.PARAM_JCR_ID,
+				// jcrId);
+				appWorkbenchService.openEntityEditor((Node) element);
 			}
 		});
 	}

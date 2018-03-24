@@ -14,7 +14,6 @@ import javax.jcr.RepositoryException;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -172,8 +171,8 @@ public class JobListCTab extends LazyCTabControl {
 			col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.CENTER, 25);
 			PrimaryEditingSupport editingSupport = new PrimaryEditingSupport(viewer, PeopleNames.PEOPLE_IS_PRIMARY);
 			col.setEditingSupport(editingSupport);
-			col.setLabelProvider(new BooleanFlagLabelProvider(PeopleNames.PEOPLE_IS_PRIMARY,
-					ConnectImages.PRIMARY, ConnectImages.PRIMARY_NOT));
+			col.setLabelProvider(new BooleanFlagLabelProvider(PeopleNames.PEOPLE_IS_PRIMARY, ConnectImages.PRIMARY,
+					ConnectImages.PRIMARY_NOT));
 			tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(0, 26, true));
 		}
 
@@ -256,8 +255,9 @@ public class JobListCTab extends LazyCTabControl {
 					toOpen = peopleService.getEntityByUid(ConnectJcrUtils.getSession(entity), null,
 							ConnectJcrUtils.get(link, PeopleNames.PEOPLE_REF_UID));
 				}
-				CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-						ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(toOpen));
+				// CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+				// ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(toOpen));
+				systemWorkbenchService.openEntityEditor(toOpen);
 			}
 		}
 	}

@@ -17,11 +17,10 @@ import org.argeo.activities.ActivityValueCatalogs;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectEditor;
+import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.util.LazyCTabControl;
@@ -105,8 +104,7 @@ public class RelatedActivityList extends LazyCTabControl {
 
 		activityTable = new MyActivityTableCmp(parent, SWT.MULTI, entity);
 		activityTable.setLayoutData(EclipseUiUtils.fillAll());
-		activityTable.getTableViewer()
-				.addDoubleClickListener(new ActivityTableDCL(systemWorkbenchService.getOpenEntityEditorCmdId()));
+		activityTable.getTableViewer().addDoubleClickListener(new ActivityTableDCL(systemWorkbenchService));
 
 		if (addCmp != null)
 			addNewActivityPanel(addCmp, activityTable);
@@ -150,10 +148,10 @@ public class RelatedActivityList extends LazyCTabControl {
 
 		Button validBtn = toolkit.createButton(addActivityBar, "Add activity", SWT.PUSH);
 
-//		toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
-//
-//		final Link addTaskLk = new Link(addActivityBar, SWT.NONE);
-//		addTaskLk.setText("<a>Add a task</a>");
+		// toolkit.createLabel(addActivityBar, " OR ", SWT.NONE);
+		//
+		// final Link addTaskLk = new Link(addActivityBar, SWT.NONE);
+		// addTaskLk.setText("<a>Add a task</a>");
 
 		// Selection and traverse listeners
 		validBtn.addSelectionListener(new SelectionAdapter() {
@@ -180,42 +178,46 @@ public class RelatedActivityList extends LazyCTabControl {
 		titleTxt.addTraverseListener(travList);
 		descTxt.addTraverseListener(travList);
 
-//		addTaskLk.addSelectionListener(new SelectionAdapter() {
-//			private static final long serialVersionUID = 1L;
-//
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				if (createTask(addTaskLk.getShell(), entity))
-//					activityTable.refresh();
-//			}
-//		});
+		// addTaskLk.addSelectionListener(new SelectionAdapter() {
+		// private static final long serialVersionUID = 1L;
+		//
+		// @Override
+		// public void widgetSelected(SelectionEvent e) {
+		// if (createTask(addTaskLk.getShell(), entity))
+		// activityTable.refresh();
+		// }
+		// });
 	}
 
 	// LOCAL UI HELPERS
 
 	private class ActivityTableDCL implements IDoubleClickListener {
 
-		private String openEditorCmdId;
+		// private String openEditorCmdId;
 
-		public ActivityTableDCL(String openEditorCmdId) {
-			this.openEditorCmdId = openEditorCmdId;
+		private AppWorkbenchService appWorkbenchService;
+
+		public ActivityTableDCL(AppWorkbenchService appWorkbenchService) {
+			// this.openEditorCmdId = openEditorCmdId;
+			this.appWorkbenchService = appWorkbenchService;
 		}
 
 		public void doubleClick(DoubleClickEvent event) {
 			if (event.getSelection() == null || event.getSelection().isEmpty())
 				return;
 			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
-			try {
-				Node currNode;
-				if (obj instanceof Node)
-					currNode = (Node) obj;
-				else
-					return;
-				String jcrId = currNode.getIdentifier();
-				CommandUtils.callCommand(openEditorCmdId, ConnectEditor.PARAM_JCR_ID, jcrId);
-			} catch (RepositoryException re) {
-				throw new ActivitiesException("Unable to open editor for node", re);
-			}
+			// try {
+			Node currNode;
+			if (obj instanceof Node)
+				currNode = (Node) obj;
+			else
+				return;
+			// String jcrId = currNode.getIdentifier();
+			// CommandUtils.callCommand(openEditorCmdId, ConnectEditor.PARAM_JCR_ID, jcrId);
+			appWorkbenchService.openEntityEditor(currNode);
+			// } catch (RepositoryException re) {
+			// throw new ActivitiesException("Unable to open editor for node", re);
+			// }
 		}
 	}
 

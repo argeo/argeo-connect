@@ -6,6 +6,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
+import org.argeo.connect.workbench.LegacyWorkbenchService;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleTypes;
@@ -24,7 +25,7 @@ import org.eclipse.swt.graphics.Image;
  * the name of the command to open editors so that it is easily extended by
  * specific extensions
  */
-public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
+public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService, LegacyWorkbenchService {
 
 	@Override
 	public String getEntityEditorId(Node curNode) {
@@ -89,8 +90,8 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService {
 	}
 
 	/**
-	 * Provide the plugin specific ID of the {@code OpenEntityEditor} command
-	 * and thus enable the opening plugin specific editors
+	 * Provide the plugin specific ID of the {@code OpenEntityEditor} command and
+	 * thus enable the opening plugin specific editors
 	 */
 	// public String getOpenEntityEditorCmdId() {
 	// return OpenEntityEditor.ID;

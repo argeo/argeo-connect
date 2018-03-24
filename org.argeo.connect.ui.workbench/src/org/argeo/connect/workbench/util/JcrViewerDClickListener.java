@@ -1,15 +1,10 @@
 package org.argeo.connect.workbench.util;
 
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.jcr.query.Row;
 
-import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.ConnectException;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.commands.OpenEntityEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -50,17 +45,21 @@ public class JcrViewerDClickListener implements IDoubleClickListener {
 			return;
 		Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 		Node currNode = null;
-		try {
-			if (obj instanceof Row || obj instanceof Node)
-				currNode = ConnectJcrUtils.getNodeFromElement(obj, selectorName);
-			if (currNode != null) {
-				String cmdId = OpenEntityEditor.ID;
-				if (systemWorkbenchService != null)
-					cmdId = systemWorkbenchService.getOpenEntityEditorCmdId();
-				CommandUtils.callCommand(cmdId, ConnectEditor.PARAM_JCR_ID, currNode.getIdentifier());
+		// try {
+		if (obj instanceof Row || obj instanceof Node)
+			currNode = ConnectJcrUtils.getNodeFromElement(obj, selectorName);
+		if (currNode != null) {
+			// String cmdId = OpenEntityEditor.ID;
+			// if (systemWorkbenchService != null)
+			// cmdId = systemWorkbenchService.getOpenEntityEditorCmdId();
+			// CommandUtils.callCommand(cmdId, ConnectEditor.PARAM_JCR_ID,
+			// currNode.getIdentifier());
+			if (systemWorkbenchService != null) {
+				systemWorkbenchService.openEntityEditor(currNode);
 			}
-		} catch (RepositoryException re) {
-			throw new ConnectException("Unable to open editor for node " + currNode, re);
 		}
+		// } catch (RepositoryException re) {
+		// throw new ConnectException("Unable to open editor for node " + currNode, re);
+		// }
 	}
 }

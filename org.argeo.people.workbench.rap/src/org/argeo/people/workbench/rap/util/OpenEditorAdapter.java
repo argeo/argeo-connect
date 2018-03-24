@@ -10,19 +10,19 @@ public class OpenEditorAdapter extends SelectionAdapter {
 	private static final long serialVersionUID = 1638606646060389067L;
 
 	private final String jcrId;
-	private final SystemWorkbenchService systemWorkbenchServcice;
+	private final SystemWorkbenchService systemWorkbenchService;
 
 	/**
 	 * @param jcrId
 	 */
 	public OpenEditorAdapter(SystemWorkbenchService systemWorkbenchServcice, String jcrId) {
 		this.jcrId = jcrId;
-		this.systemWorkbenchServcice = systemWorkbenchServcice;
+		this.systemWorkbenchService = systemWorkbenchServcice;
 	}
 
 	@Override
 	public void widgetSelected(final SelectionEvent event) {
-		CommandUtils.callCommand(systemWorkbenchServcice.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
+		CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
 				jcrId);
 	}
 }

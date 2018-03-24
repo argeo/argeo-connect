@@ -19,24 +19,19 @@ import javax.jcr.Value;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.cms.ArgeoNames;
-import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.ConnectWorkbenchUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
 import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureTaskWizard;
-import org.argeo.tracker.workbench.TechnicalInfoPage;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
@@ -92,8 +87,8 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		try {
 			addPage(new TaskMainPage(this));
 
-//			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
-//				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
+			// if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
+			// addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
@@ -288,8 +283,9 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+					// CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+					// ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(targetNode));
+					getAppWorkbenchService().openEntityEditor(targetNode);
 				}
 			});
 		}
@@ -321,8 +317,9 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 				@Override
 				public void widgetSelected(final SelectionEvent event) {
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
+					// CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+					// ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(node));
+					getAppWorkbenchService().openEntityEditor(node);
 				}
 			});
 		}
@@ -351,7 +348,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		public void run() {
 			Shell currShell = sectionPart.getSection().getShell();
 			ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getActivitiesService(),
-					getTrackerService(), getAppWorkbenchService(),task);
+					getTrackerService(), getAppWorkbenchService(), task);
 			WizardDialog dialog = new WizardDialog(currShell, wizard);
 			try {
 				if (dialog.open() == Window.OK && task.getSession().hasPendingChanges()) {

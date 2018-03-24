@@ -5,8 +5,6 @@ import java.nio.file.Path;
 import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.argeo.cms.ui.workbench.util.CommandUtils;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.documents.composites.DocumentsFolderComposite;
 import org.argeo.documents.workbench.DocumentsUiPlugin;
@@ -37,9 +35,10 @@ public class FolderEditor extends AbstractDocumentsEditor {
 				// TODO rather directly use the jcrPath / an URI?
 				Session session = ConnectJcrUtils.getSession(getNode());
 				Node currNode = ConnectJcrUtils.getNode(session, path.toString());
-				String nodeId = ConnectJcrUtils.getIdentifier(currNode);
-				CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
-						ConnectEditor.PARAM_JCR_ID, nodeId);
+				// String nodeId = ConnectJcrUtils.getIdentifier(currNode);
+				// CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
+				// ConnectEditor.PARAM_JCR_ID, nodeId);
+				getSystemWorkbenchService().openEntityEditor(currNode);
 			}
 		};
 		dfc.setLayoutData(EclipseUiUtils.fillAll());

@@ -30,7 +30,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.Refreshable;
@@ -95,7 +94,7 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 	private Composite bookmarkCmp;
 
 	@Override
-	public void createPartControl(Composite parent) {	
+	public void createPartControl(Composite parent) {
 		session = ConnectJcrUtils.login(repository);
 		// MainLayout
 		parent.setLayout(new GridLayout());
@@ -370,9 +369,11 @@ public class MyFilesView extends ViewPart implements IDoubleClickListener, Refre
 				currNode = ConnectJcrUtils.getNode(session, jcrPath);
 			} else
 				throw new IllegalArgumentException("Cannot manage " + element + ", only Node and Path are supported.");
-			String nodeId = ConnectJcrUtils.getIdentifier(currNode);
+			// String nodeId = ConnectJcrUtils.getIdentifier(currNode);
 			// FIXME hard coded parameter name
-			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), "param.jcrId", nodeId);
+			// CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+			// "param.jcrId", nodeId);
+			systemWorkbenchService.openEntityEditor(currNode);
 		}
 	}
 

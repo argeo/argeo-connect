@@ -17,12 +17,10 @@ import org.argeo.activities.ui.NewSimpleTaskWizard;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.util.LazyCTabControl;
@@ -207,17 +205,18 @@ public class ActivityChildrenList extends LazyCTabControl {
 			if (event.getSelection() == null || event.getSelection().isEmpty())
 				return;
 			Object obj = ((IStructuredSelection) event.getSelection()).getFirstElement();
-			try {
-				Node currNode;
-				if (obj instanceof Node)
-					currNode = (Node) obj;
-				else
-					return;
-				String jcrId = currNode.getIdentifier();
-				CommandUtils.callCommand(openEditorCmdId, ConnectEditor.PARAM_JCR_ID, jcrId);
-			} catch (RepositoryException re) {
-				throw new ActivitiesException("Unable to open editor for node", re);
-			}
+			// try {
+			Node currNode;
+			if (obj instanceof Node)
+				currNode = (Node) obj;
+			else
+				return;
+			// String jcrId = currNode.getIdentifier();
+			// CommandUtils.callCommand(openEditorCmdId, ConnectEditor.PARAM_JCR_ID, jcrId);
+			systemWorkbenchService.openEntityEditor(currNode);
+			// } catch (RepositoryException re) {
+			// throw new ActivitiesException("Unable to open editor for node", re);
+			// }
 		}
 	}
 

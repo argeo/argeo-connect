@@ -16,13 +16,10 @@ import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.ArgeoNames;
-import org.argeo.cms.auth.CurrentUser;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
@@ -33,7 +30,6 @@ import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
@@ -47,7 +43,6 @@ import org.argeo.tracker.internal.ui.controls.RepartitionChart;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureProjectWizard;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureVersionWizard;
 import org.argeo.tracker.ui.MilestoneListComposite;
-import org.argeo.tracker.workbench.TechnicalInfoPage;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ToolBarManager;
@@ -105,7 +100,6 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 	private final static int CHART_WIDTH = 300;
 	private final static int CHART_HEIGHT = 200;
 
-	
 	@Override
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
@@ -123,8 +117,8 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 			addPage(new VersionsPage(this));
 			addPage(new ComponentsPage(this));
 
-//			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
-//				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
+			// if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
+			// addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
@@ -325,8 +319,9 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					getAppWorkbenchService(), mainMixin, propName1, value1);
 			if (EclipseUiUtils.notEmpty(pathCreated)) {
 				Node created = ConnectJcrUtils.getNode(referenceSession, pathCreated);
-				ConnectWorkbenchUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(created));
+				// ConnectWorkbenchUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+				// ConnectEditor.PARAM_JCR_ID, ConnectJcrUtils.getIdentifier(created));
+				getAppWorkbenchService().openEntityEditor(created);
 			}
 		}
 	}
@@ -490,8 +485,8 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					AppService appService = getAppService();
 					String propName1 = TrackerNames.TRACKER_PROJECT_UID;
 					String value1 = ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID);
-					String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, referenceSession, appService,
-							getAppWorkbenchService(), mainMixin, propName1, value1);
+					String pathCreated = ConnectWorkbenchUtils.createAndConfigureEntity(shell, referenceSession,
+							appService, getAppWorkbenchService(), mainMixin, propName1, value1);
 					if (EclipseUiUtils.notEmpty(pathCreated))
 						refreshViewer(filterTxt.getText());
 
@@ -916,9 +911,10 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
-				String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-				CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-						ConnectEditor.PARAM_JCR_ID, jcrId);
+				// String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
+				// CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+				// ConnectEditor.PARAM_JCR_ID, jcrId);
+				getAppWorkbenchService().openEntityEditor((Node) element);
 			}
 		});
 	}

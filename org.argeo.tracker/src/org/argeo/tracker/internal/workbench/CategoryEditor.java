@@ -14,12 +14,9 @@ import javax.jcr.Session;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.cms.ArgeoNames;
-import org.argeo.cms.auth.CurrentUser;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
-import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
@@ -29,7 +26,6 @@ import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerTypes;
@@ -37,7 +33,6 @@ import org.argeo.tracker.core.TrackerUtils;
 import org.argeo.tracker.internal.ui.TrackerLps;
 import org.argeo.tracker.internal.ui.TrackerUiUtils;
 import org.argeo.tracker.internal.ui.dialogs.ConfigureIssueWizard;
-import org.argeo.tracker.workbench.TechnicalInfoPage;
 import org.argeo.tracker.workbench.TrackerUiPlugin;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -100,8 +95,8 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 		try {
 			addPage(new MainPage(this));
 
-//			if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
-//				addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
+			// if (CurrentUser.isInRole(NodeConstants.ROLE_ADMIN))
+			// addPage(new TechnicalInfoPage(this, ID + ".techInfoPage", getNode()));
 		} catch (PartInitException e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
@@ -155,9 +150,10 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 				@Override
 				public void doubleClick(DoubleClickEvent event) {
 					Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
-					String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
-					CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
-							ConnectEditor.PARAM_JCR_ID, jcrId);
+					// String jcrId = ConnectJcrUtils.getIdentifier((Node) element);
+					// CommandUtils.callCommand(getAppWorkbenchService().getOpenEntityEditorCmdId(),
+					// ConnectEditor.PARAM_JCR_ID, jcrId);
+					getAppWorkbenchService().openEntityEditor((Node) element);
 				}
 			});
 
