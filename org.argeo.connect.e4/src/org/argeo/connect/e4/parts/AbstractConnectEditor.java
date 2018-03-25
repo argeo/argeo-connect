@@ -32,6 +32,7 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -52,7 +53,8 @@ import org.eclipse.swt.widgets.Composite;
 public abstract class AbstractConnectEditor implements ConnectEditor {
 	private final static Log log = LogFactory.getLog(AbstractConnectEditor.class);
 
-//	private BundleContext bc = FrameworkUtil.getBundle(AbstractConnectEditor.class).getBundleContext();
+	// private BundleContext bc =
+	// FrameworkUtil.getBundle(AbstractConnectEditor.class).getBundleContext();
 
 	/* DEPENDENCY INJECTION */
 	@Inject
@@ -91,33 +93,39 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 	private FormToolkit toolkit;
 	private Composite main;
 
-//	public AbstractConnectEditor() {
-//		try {
-//			// TODO centralise in Activator?
-//			Filter homeRepositoryFilter = bc
-//					.createFilter("(&(" + Constants.OBJECTCLASS + "=javax.jcr.Repository)(cn=home))");
-//			ServiceTracker<Repository, Repository> repositoryST = new ServiceTracker<>(bc, homeRepositoryFilter, null);
-//			repositoryST.open();
-//			repository = repositoryST.waitForService(60 * 1000);
-//			repositoryST.close();
-//
-//			userAdminService = bc.getService(bc.getServiceReference(UserAdminService.class));
-//			resourcesService = bc.getService(bc.getServiceReference(ResourcesService.class));
-//			systemAppService = bc.getService(bc.getServiceReference(SystemAppService.class));
-//			systemWorkbenchService = bc.getService(bc.getServiceReference(SystemWorkbenchService.class));
-//		} catch (Exception e) {
-//			throw new ConnectException("Cannot retrieve services", e);
-//		}
-//	}
+	// public AbstractConnectEditor() {
+	// try {
+	// // TODO centralise in Activator?
+	// Filter homeRepositoryFilter = bc
+	// .createFilter("(&(" + Constants.OBJECTCLASS +
+	// "=javax.jcr.Repository)(cn=home))");
+	// ServiceTracker<Repository, Repository> repositoryST = new
+	// ServiceTracker<>(bc, homeRepositoryFilter, null);
+	// repositoryST.open();
+	// repository = repositoryST.waitForService(60 * 1000);
+	// repositoryST.close();
+	//
+	// userAdminService =
+	// bc.getService(bc.getServiceReference(UserAdminService.class));
+	// resourcesService =
+	// bc.getService(bc.getServiceReference(ResourcesService.class));
+	// systemAppService =
+	// bc.getService(bc.getServiceReference(SystemAppService.class));
+	// systemWorkbenchService =
+	// bc.getService(bc.getServiceReference(SystemWorkbenchService.class));
+	// } catch (Exception e) {
+	// throw new ConnectException("Cannot retrieve services", e);
+	// }
+	// }
 
 	// LIFE CYCLE
-	public void init() {
-//		setSite(site);
-//		setInput(input);
+	public void init(String entityId) {
+		// setSite(site);
+		// setInput(input);
 		try {
 			session = repository.login();
-			String entityId=null;
-//			EntityEditorInput sei = (EntityEditorInput) getEditorInput();
+			// String entityId=null;
+			// EntityEditorInput sei = (EntityEditorInput) getEditorInput();
 			node = getSession().getNodeByIdentifier(entityId);
 			// Set a default part name and tooltip
 			updatePartName();
@@ -127,8 +135,18 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		}
 	}
 
+	protected void init() {
+
+	}
+
 	@PostConstruct
-	public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent, MPart mpart) {
+		String entityId = mpart.getPersistedState().get("entityId");
+		init(entityId);
+		init();
+
+		mpart.setLabel(getPartName());
+
 		// Initialize main UI objects
 		toolkit = new FormToolkit(parent.getDisplay());
 		// Form form = toolkit.createForm(parent);
@@ -138,6 +156,19 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		main = toolkit.createComposite(parent);
 		createMainLayout(main);
 		forceRefresh();
+	}
+
+	protected String getPartName() {
+		Node node = getNode();
+		try {
+			if (node.isNodeType(NodeType.MIX_TITLE)) {
+				return node.getProperty(Property.JCR_TITLE).getString();
+			} else {
+				return node.getName();
+			}
+		} catch (RepositoryException e) {
+			throw new ConnectException("Cannot retrieve part name based on " + node, e);
+		}
 	}
 
 	protected void createMainLayout(Composite parent) {
@@ -178,9 +209,9 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 			setPartName(name);
 		}
 	}
-	
+
 	protected void setPartName(String name) {
-		
+
 	}
 
 	/** Overwrite to provide a specific part tooltip */
@@ -188,8 +219,8 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		String displayName = ConnectJcrUtils.get(node, Property.JCR_TITLE);
 		if (EclipseUiUtils.isEmpty(displayName))
 			displayName = "current item";
-//		EntityEditorInput sei = (EntityEditorInput) getEditorInput();
-//		sei.setTooltipText("Display and edit information for " + displayName);
+		// EntityEditorInput sei = (EntityEditorInput) getEditorInput();
+		// sei.setTooltipText("Display and edit information for " + displayName);
 	}
 
 	/** Overwrite following methods to create a nice editor... */
@@ -218,10 +249,11 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 				public void widgetSelected(SelectionEvent e) {
 					// Superstition? we can only be here when we can edit.
 					if (canEdit()) {
-//						Map<String, String> params = new HashMap<String, String>();
-//						params.put(ChangeEditingState.PARAM_NEW_STATE, ChangeEditingState.EDITING);
-//						params.put(ChangeEditingState.PARAM_PRIOR_ACTION, ChangeEditingState.PRIOR_ACTION_CHECKOUT);
-//						CommandUtils.callCommand(ChangeEditingState.ID, params);
+						// Map<String, String> params = new HashMap<String, String>();
+						// params.put(ChangeEditingState.PARAM_NEW_STATE, ChangeEditingState.EDITING);
+						// params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+						// ChangeEditingState.PRIOR_ACTION_CHECKOUT);
+						// CommandUtils.callCommand(ChangeEditingState.ID, params);
 					}
 				}
 			});
@@ -251,20 +283,22 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-//				try {
-//					if (isEditing())
-//						if (node.getSession().hasPendingChanges())
-//							CommandUtils.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
-//						else {
-//							// Nothing has changed we in fact call cancel
-//							Map<String, String> params = new HashMap<String, String>();
-//							params.put(ChangeEditingState.PARAM_NEW_STATE, ChangeEditingState.NOT_EDITING);
-//							params.put(ChangeEditingState.PARAM_PRIOR_ACTION, ChangeEditingState.PRIOR_ACTION_CANCEL);
-//							CommandUtils.callCommand(ChangeEditingState.ID, params);
-//						}
-//				} catch (RepositoryException re) {
-//					throw new ConnectException("Unable to save pending changes on " + node, re);
-//				}
+				// try {
+				// if (isEditing())
+				// if (node.getSession().hasPendingChanges())
+				// CommandUtils.callCommand(IWorkbenchCommandConstants.FILE_SAVE);
+				// else {
+				// // Nothing has changed we in fact call cancel
+				// Map<String, String> params = new HashMap<String, String>();
+				// params.put(ChangeEditingState.PARAM_NEW_STATE,
+				// ChangeEditingState.NOT_EDITING);
+				// params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+				// ChangeEditingState.PRIOR_ACTION_CANCEL);
+				// CommandUtils.callCommand(ChangeEditingState.ID, params);
+				// }
+				// } catch (RepositoryException re) {
+				// throw new ConnectException("Unable to save pending changes on " + node, re);
+				// }
 			}
 		});
 
@@ -276,10 +310,12 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (isEditing()) {
-//					Map<String, String> params = new HashMap<String, String>();
-//					params.put(ChangeEditingState.PARAM_NEW_STATE, ChangeEditingState.NOT_EDITING);
-//					params.put(ChangeEditingState.PARAM_PRIOR_ACTION, ChangeEditingState.PRIOR_ACTION_CANCEL);
-//					CommandUtils.callCommand(ChangeEditingState.ID, params);
+					// Map<String, String> params = new HashMap<String, String>();
+					// params.put(ChangeEditingState.PARAM_NEW_STATE,
+					// ChangeEditingState.NOT_EDITING);
+					// params.put(ChangeEditingState.PARAM_PRIOR_ACTION,
+					// ChangeEditingState.PRIOR_ACTION_CANCEL);
+					// CommandUtils.callCommand(ChangeEditingState.ID, params);
 				}
 			}
 		});
@@ -292,9 +328,10 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-//					Map<String, String> params = new HashMap<String, String>();
-//					params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID, ConnectJcrUtils.getIdentifier(node));
-//					CommandUtils.callCommand(DeleteEntity.ID, params);
+					// Map<String, String> params = new HashMap<String, String>();
+					// params.put(DeleteEntity.PARAM_TOREMOVE_JCR_ID,
+					// ConnectJcrUtils.getIdentifier(node));
+					// CommandUtils.callCommand(DeleteEntity.ID, params);
 				}
 			});
 		}
@@ -348,7 +385,6 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		stopEditing();
 	}
 
-
 	/**
 	 * Overwrite to provide specific behaviour on save.
 	 * 
@@ -401,12 +437,13 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 	 * external extension (typically the toolbar buttons)
 	 */
 	protected void notifyEditionStateChange() {
-//		ISourceProviderService sourceProviderService = (ISourceProviderService) this.getSite().getWorkbenchWindow()
-//				.getService(ISourceProviderService.class);
-//		EditionSourceProvider csp = (EditionSourceProvider) sourceProviderService
-//				.getSourceProvider(EditionSourceProvider.EDITING_STATE);
-//		csp.setCurrentItemEditingState(canEdit(), isEditing());
-//		firePropertyChange(PROP_DIRTY);
+		// ISourceProviderService sourceProviderService = (ISourceProviderService)
+		// this.getSite().getWorkbenchWindow()
+		// .getService(ISourceProviderService.class);
+		// EditionSourceProvider csp = (EditionSourceProvider) sourceProviderService
+		// .getSourceProvider(EditionSourceProvider.EDITING_STATE);
+		// csp.setCurrentItemEditingState(canEdit(), isEditing());
+		// firePropertyChange(PROP_DIRTY);
 	}
 
 	public Boolean isEditing() {
@@ -497,7 +534,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
-//		super.dispose();
+		// super.dispose();
 	}
 
 	public void setFocus() {
@@ -517,7 +554,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 		/** <code>super.dirtyStateChanged()</code> does nothing */
 		public void dirtyStateChanged() {
-//			AbstractConnectEditor.this.firePropertyChange(PROP_DIRTY);
+			// AbstractConnectEditor.this.firePropertyChange(PROP_DIRTY);
 		}
 
 		/**

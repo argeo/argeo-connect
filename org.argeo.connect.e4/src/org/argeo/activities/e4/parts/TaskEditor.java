@@ -22,13 +22,19 @@ import org.eclipse.swt.widgets.Composite;
 public class TaskEditor extends AbstractConnectCTabEditor {
 	final static Log log = LogFactory.getLog(TaskEditor.class);
 
-//	public final static String ID = ActivitiesUiPlugin.PLUGIN_ID + ".taskEditor";
+	// public final static String ID = ActivitiesUiPlugin.PLUGIN_ID + ".taskEditor";
 
 	@Inject
 	private ActivitiesService activitiesService;
 	private Node task;
+	
+	
 
-	public void init()  {
+	public TaskEditor() {
+		super();
+	}
+
+	public void init() {
 		super.init();
 		task = getNode();
 	}
