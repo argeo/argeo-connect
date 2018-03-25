@@ -28,6 +28,7 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.Refreshable;
 import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.util.HtmlListRwtAdapter;
 import org.argeo.connect.ui.util.JcrHtmlLabelProvider;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.JcrViewerDClickListener;
@@ -39,7 +40,6 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.commands.EditTagWizard;
 import org.argeo.connect.workbench.util.EntityEditorInput;
-import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
@@ -284,7 +284,7 @@ public class MailingListEditor extends EditorPart implements PeopleNames, Refres
 		membersViewer = createTableViewer(tableComp);
 		membersViewer.setContentProvider(new MyLazyContentProvider(membersViewer));
 		membersViewer.addDoubleClickListener(new JcrViewerDClickListener());
-		membersViewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		membersViewer.getTable().addSelectionListener(new HtmlListRwtAdapter(systemWorkbenchService));
 		addFilterListener(filterTxt, membersViewer);
 		refreshFilteredList();
 	}

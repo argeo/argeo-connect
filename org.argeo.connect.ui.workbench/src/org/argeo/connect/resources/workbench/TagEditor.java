@@ -31,6 +31,7 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.IJcrTableViewer;
 import org.argeo.connect.ui.Refreshable;
 import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.util.HtmlListRwtAdapter;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.JcrViewerDClickListener;
 import org.argeo.connect.ui.util.MainNodeTypeLabelProvider;
@@ -42,7 +43,6 @@ import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.ConnectUiPlugin;
 import org.argeo.connect.workbench.commands.EditTagWizard;
 import org.argeo.connect.workbench.util.EntityEditorInput;
-import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -265,7 +265,7 @@ public class TagEditor extends EditorPart implements Refreshable, IJcrTableViewe
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs, enableBatchUpdate());
 		TableViewer tableViewer = tableCmp.getTableViewer();
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
-		tableViewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		tableViewer.getTable().addSelectionListener(new HtmlListRwtAdapter(systemWorkbenchService));
 		return tableViewer;
 	}
 

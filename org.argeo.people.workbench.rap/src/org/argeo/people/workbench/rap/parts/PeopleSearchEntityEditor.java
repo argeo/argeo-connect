@@ -19,6 +19,7 @@ import org.argeo.connect.resources.ResourcesTypes;
 import org.argeo.connect.resources.workbench.OtherTagsLabelProvider;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.connect.ui.IJcrTableViewer;
+import org.argeo.connect.ui.util.HtmlListRwtAdapter;
 import org.argeo.connect.ui.util.JcrHtmlLabelProvider;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.ui.util.UserNameLP;
@@ -26,7 +27,6 @@ import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.connect.workbench.parts.DefaultSearchEntityEditor;
-import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -75,7 +75,8 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		if (PeopleTypes.PEOPLE_PERSON.equals(getEntityType()) || PeopleTypes.PEOPLE_ORG.equals(getEntityType()))
-			getTableViewer().getTableViewer().getTable().addSelectionListener(new HtmlListRwtAdapter());
+			getTableViewer().getTableViewer().getTable()
+					.addSelectionListener(new HtmlListRwtAdapter(getSystemWorkbenchService()));
 	}
 
 	/** Override this to provide type specific static filters */
@@ -276,4 +277,5 @@ public class PeopleSearchEntityEditor extends DefaultSearchEntityEditor implemen
 	public void setPeopleService(PeopleService peopleService) {
 		this.peopleService = peopleService;
 	}
+
 }

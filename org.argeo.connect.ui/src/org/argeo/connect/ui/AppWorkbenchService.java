@@ -25,6 +25,8 @@ public interface AppWorkbenchService extends AppUiService {
 
 	public void openEntityEditor(Node entity);
 
+//	public void openEntityEditor(String entityId);
+
 	public void openSearchEntityView(String nodeType, String label);
 
 	/**

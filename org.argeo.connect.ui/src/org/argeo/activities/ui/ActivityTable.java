@@ -1,4 +1,4 @@
-package org.argeo.activities.workbench.parts;
+package org.argeo.activities.ui;
 
 import static org.argeo.eclipse.ui.jcr.JcrUiUtils.getNodeSelectionAdapter;
 
@@ -25,17 +25,16 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.core.ActivityUtils;
-import org.argeo.activities.ui.ActivityViewerComparator;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.util.HtmlListRwtAdapter;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.util.XPathUtils;
-import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -157,7 +156,7 @@ public class ActivityTable extends Composite {
 		comparator.setColumn(PropertyType.DATE, ActivityViewerComparator.RELEVANT_DATE);
 		viewer.setComparator(comparator);
 
-		table.addSelectionListener(new HtmlListRwtAdapter());
+		table.addSelectionListener(new HtmlListRwtAdapter(systemWorkbenchService));
 		// EclipseUiSpecificUtils.enableToolTipSupport(viewer);
 		viewer.setContentProvider(new MyTableContentProvider());
 

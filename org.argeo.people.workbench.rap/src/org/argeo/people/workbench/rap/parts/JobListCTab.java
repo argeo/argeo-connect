@@ -18,13 +18,13 @@ import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.parts.AbstractPanelFormPart;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
 import org.argeo.connect.ui.util.BooleanEditingSupport;
+import org.argeo.connect.ui.util.HtmlListRwtAdapter;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
-import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
-import org.argeo.connect.workbench.util.HtmlListRwtAdapter;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.people.PeopleException;
@@ -111,7 +111,7 @@ public class JobListCTab extends LazyCTabControl {
 		private TableViewer itemViewer;
 
 		public MyFormPart(Composite parent) {
-			super(parent, entity);
+			super(parent, editor, entity);
 		}
 
 		protected void reCreateChildComposite(Composite panel, Node entity) {
@@ -209,7 +209,7 @@ public class JobListCTab extends LazyCTabControl {
 		// Providers and listeners
 		viewer.setContentProvider(new BasicNodeListContentProvider());
 		viewer.addDoubleClickListener(new ListDoubleClickListener());
-		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter());
+		viewer.getTable().addSelectionListener(new HtmlListRwtAdapter(systemWorkbenchService));
 
 		// Important don't forget this.
 		parent.setLayout(tableColumnLayout);

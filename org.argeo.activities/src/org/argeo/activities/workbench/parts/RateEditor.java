@@ -19,6 +19,7 @@ import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.core.ActivityUtils;
+import org.argeo.activities.ui.LinkListPart;
 import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;

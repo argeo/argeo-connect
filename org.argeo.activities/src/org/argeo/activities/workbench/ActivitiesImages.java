@@ -1,10 +1,8 @@
 package org.argeo.activities.workbench;
 
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.swt.graphics.Image;
-
 /** Shared icons for the file system RAP workbench */
-public class ActivitiesImages {
+@Deprecated
+class ActivitiesImages {
 	public final static String BASE_PATH = "/theme/icons/types/";
 
 //	public static Image img(String prefix, String fileName) {

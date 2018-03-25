@@ -1,5 +1,7 @@
-package org.argeo.activities.workbench.parts;
+package org.argeo.activities.e4.parts;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.Property;
 
@@ -8,16 +10,15 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ui.LinkListPart;
-import org.argeo.activities.workbench.ActivitiesUiPlugin;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.e4.parts.AbstractConnectEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.parts.DateTextPart;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.parts.AbstractConnectEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -25,25 +26,26 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
 
 /** Default People activity editor */
 public class ActivityEditor extends AbstractConnectEditor {
 	final static Log log = LogFactory.getLog(ActivityEditor.class);
 
-	public final static String ID = ActivitiesUiPlugin.PLUGIN_ID + ".activityEditor";
+//	 public final static String ID = ActivitiesUiPlugin.PLUGIN_ID +
+//	 ".activityEditor";
 
 	// Context
 	private Node activity;
+	
+	@Inject
 	private ActivitiesService activitiesService;
 
 	// Workaround to align first column of header and body.
 	private int firstColWHint = 85;
 
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		super.init(site, input);
+	@PostConstruct
+	public void init() {
+		super.init();
 		activity = getNode();
 	}
 

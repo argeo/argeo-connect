@@ -29,13 +29,13 @@ import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiSnippets;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.parts.AbstractPanelFormPart;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.ui.util.TitleIconRowLP;
 import org.argeo.connect.ui.util.VirtualJcrTableViewer;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.workbench.parts.AbstractConnectEditor;
-import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.dialogs.SingleValue;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
@@ -121,7 +121,7 @@ public class TemplateValueCatalogue extends LazyCTabControl {
 		private TableViewer instancesViewer;
 
 		public MyFormPart(Composite parent) {
-			super(parent, templateNode);
+			super(parent, editor, templateNode);
 		}
 
 		protected void reCreateChildComposite(Composite panel, Node editionInfo) {

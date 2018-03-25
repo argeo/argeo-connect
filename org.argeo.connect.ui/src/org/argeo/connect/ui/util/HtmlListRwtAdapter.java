@@ -1,12 +1,12 @@
-package org.argeo.connect.workbench.util;
+package org.argeo.connect.ui.util;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.connect.ui.ConnectUiConstants;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 
@@ -20,6 +20,12 @@ public class HtmlListRwtAdapter extends SelectionAdapter {
 	private static final long serialVersionUID = -3867410418907732579L;
 	private final static Log log = LogFactory.getLog(HtmlListRwtAdapter.class);
 
+	private final SystemWorkbenchService systemWorkbenchService;
+
+	public HtmlListRwtAdapter(SystemWorkbenchService systemWorkbenchService) {
+		this.systemWorkbenchService = systemWorkbenchService;
+	}
+
 	public void widgetSelected(SelectionEvent event) {
 		if (event.detail == ConnectUiConstants.MARKUP_VIEWER_HYPERLINK) {
 			String string = event.text;
@@ -31,7 +37,8 @@ public class HtmlListRwtAdapter extends SelectionAdapter {
 					params.put(currParam[0], currParam[1]);
 				}
 				try {
-					CommandUtils.callCommand(token[0], params);
+					// CommandUtils.callCommand(token[0], params);
+					systemWorkbenchService.callCommand(token[0], params);
 				} catch (Exception nde) {
 					log.warn("Error while trying to call " + "a command using a RWT.HYPERLINK.\n Retrieved href:"
 							+ string + "\n" + nde.getCause().getMessage());

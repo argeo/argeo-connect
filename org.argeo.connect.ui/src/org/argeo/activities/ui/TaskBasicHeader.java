@@ -1,4 +1,4 @@
-package org.argeo.activities.workbench.parts;
+package org.argeo.activities.ui;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -17,17 +17,17 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.ui.workbench.useradmin.PickUpUserDialog;
+import org.argeo.cms.ui.useradmin.PickUpUserDialog;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
+import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.connect.ui.parts.AbstractPanelFormPart;
 import org.argeo.connect.ui.parts.DateTextPart;
 import org.argeo.connect.util.ConnectJcrUtils;
-import org.argeo.connect.workbench.parts.AbstractConnectEditor;
-import org.argeo.connect.workbench.parts.AbstractPanelFormPart;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
@@ -40,8 +40,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
-//import org.eclipse.ui.forms.AbstractFormPart;
-//import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.osgi.service.useradmin.User;
 
 /** Provides basic information about a task in a form context */
@@ -65,7 +63,7 @@ public class TaskBasicHeader extends Composite {
 	private List<String> modifiedPaths = new ArrayList<String>();
 
 	// UI Context
-	private final AbstractConnectEditor editor;
+	private final ConnectEditor editor;
 	private final MyFormPart myFormPart;
 	private final FormToolkit toolkit;
 
@@ -87,14 +85,14 @@ public class TaskBasicHeader extends Composite {
 	private DateFormat dtFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 	private DateFormat dateFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_FORMAT);
 
-	public TaskBasicHeader(AbstractConnectEditor editor, Composite parent, int style, UserAdminService uas,
+	public TaskBasicHeader(ConnectEditor editor, Composite parent, int style, UserAdminService uas,
 			ResourcesService resourceService, ActivitiesService activityService,
 			SystemWorkbenchService systemWorkbenchService, String taskTypeId, Node task) {
 		this(editor, parent, style, uas, resourceService, activityService, systemWorkbenchService, taskTypeId, task,
 				null);
 	}
 
-	public TaskBasicHeader(AbstractConnectEditor editor, Composite parent, int style, UserAdminService uas,
+	public TaskBasicHeader(ConnectEditor editor, Composite parent, int style, UserAdminService uas,
 			ResourcesService resourceService, ActivitiesService activityService,
 			SystemWorkbenchService systemWorkbenchService, String taskTypeId, Node task, List<String> hiddenItemIds) {
 		super(parent, style);
@@ -125,7 +123,7 @@ public class TaskBasicHeader extends Composite {
 	private class MyFormPart extends AbstractPanelFormPart {
 
 		public MyFormPart(Composite parent) {
-			super(parent, task);
+			super(parent, editor, task);
 		}
 
 		@Override

@@ -72,7 +72,8 @@ public class DelayedText {
 						}
 					};
 					timer.schedule(timer.timerTask, delay);
-					pushSession.start();
+					if (pushSession != null)
+						pushSession.start();
 				}
 			}
 		};

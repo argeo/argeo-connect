@@ -1,9 +1,13 @@
-package org.argeo.connect.ui;
+package org.argeo.connect.workbench;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 
+import org.argeo.cms.ui.workbench.util.CommandUtils;
+import org.argeo.connect.ui.AppWorkbenchService;
+import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
@@ -15,6 +19,16 @@ public class DefaultSystemWorkbenchService implements SystemWorkbenchService {
 	// result will be returned by the various methods.
 	private List<AppWorkbenchService> knownAppWbServices;
 	private String defaultEditorId = null;// DefaultDashboardEditor.ID;
+
+	@Override
+	public void callCommand(String commandId, Map<String, String> parameters) {
+		CommandUtils.callCommand(commandId, parameters);
+
+	}
+
+	//
+	// APP SERVICE
+	//
 
 	@Override
 	public String getDefaultEditorId() {

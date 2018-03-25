@@ -10,7 +10,7 @@ import javax.jcr.Value;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
-import org.argeo.activities.workbench.parts.RelatedActivityList;
+import org.argeo.activities.ui.RelatedActivityList;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;

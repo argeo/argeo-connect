@@ -1,5 +1,6 @@
-package org.argeo.activities.workbench.parts;
+package org.argeo.activities.e4.parts;
 
+import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.Property;
 
@@ -9,30 +10,26 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ui.ActivityChildrenList;
 import org.argeo.activities.ui.RelatedActivityList;
 import org.argeo.activities.ui.TaskBasicHeader;
-import org.argeo.activities.workbench.ActivitiesUiPlugin;
+import org.argeo.connect.e4.parts.AbstractConnectCTabEditor;
 import org.argeo.connect.ui.util.LazyCTabControl;
-import org.argeo.connect.workbench.parts.AbstractConnectCTabEditor;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
 
 /** Default connect task editor */
 public class TaskEditor extends AbstractConnectCTabEditor {
 	final static Log log = LogFactory.getLog(TaskEditor.class);
 
-	public final static String ID = ActivitiesUiPlugin.PLUGIN_ID + ".taskEditor";
+//	public final static String ID = ActivitiesUiPlugin.PLUGIN_ID + ".taskEditor";
 
-	// Context
+	@Inject
 	private ActivitiesService activitiesService;
 	private Node task;
 
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		super.init(site, input);
+	public void init()  {
+		super.init();
 		task = getNode();
 	}
 

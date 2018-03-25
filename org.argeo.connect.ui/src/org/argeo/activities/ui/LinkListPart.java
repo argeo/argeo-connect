@@ -1,4 +1,4 @@
-package org.argeo.activities.workbench.parts;
+package org.argeo.activities.ui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.ui.workbench.util.CommandUtils;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.ConnectEditor;
@@ -208,8 +207,15 @@ public class LinkListPart extends Composite {
 
 		@Override
 		public void widgetSelected(final SelectionEvent event) {
-			CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(), ConnectEditor.PARAM_JCR_ID,
-					jcrId);
+			try {
+				Node node = entity.getSession().getNodeByIdentifier(jcrId);
+				systemWorkbenchService.openEntityEditor(node);
+			} catch (RepositoryException e) {
+				throw new ConnectException("Cannot open editor for JCR id " + jcrId, e);
+			}
+			// CommandUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
+			// ConnectEditor.PARAM_JCR_ID,
+			// jcrId);
 		}
 	}
 

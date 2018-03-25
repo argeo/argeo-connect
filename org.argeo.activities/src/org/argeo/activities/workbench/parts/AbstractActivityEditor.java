@@ -25,7 +25,8 @@ import org.eclipse.ui.part.EditorPart;
  * Base Editor for a tracker entity. Centralise some methods to ease business
  * specific development
  */
-public abstract class AbstractActivityEditor extends EditorPart implements CmsEditable {
+@Deprecated
+abstract class AbstractActivityEditor extends EditorPart implements CmsEditable {
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
