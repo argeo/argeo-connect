@@ -133,7 +133,8 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 			if (appService.prepareJcrTree(adminSession)) {
 				appService.configurePrivileges(adminSession);
 			}
-			log.debug("Added service " + appService);
+			if (log.isDebugEnabled())
+				log.debug("Added maintenance service " + appService);
 		} finally {
 			JcrUtils.logoutQuietly(adminSession);
 		}

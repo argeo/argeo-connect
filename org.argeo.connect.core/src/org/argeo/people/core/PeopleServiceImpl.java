@@ -320,6 +320,7 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 	 * Call by each startup in order to make sure the backend is ready to
 	 * receive/provide data.
 	 */
+	@Deprecated
 	public void init() {
 		personService = new PersonServiceImpl(this, resourcesService);
 		if (log.isDebugEnabled())
@@ -333,5 +334,6 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 	/* DEPENDENCY INJECTION */
 	public void setResourcesService(ResourcesService resourcesService) {
 		this.resourcesService = resourcesService;
+		personService = new PersonServiceImpl(this, resourcesService);
 	}
 }

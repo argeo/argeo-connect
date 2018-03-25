@@ -109,7 +109,8 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 
 	public void addAppService(AppService appService, Map<String, String> properties) {
 		knownAppServices.add(appService);
-		log.debug("Added service " + appService);
+		if (log.isDebugEnabled())
+			log.debug("Added app service " + appService);
 	}
 
 	public void removeAppService(AppService appService, Map<String, String> properties) {
