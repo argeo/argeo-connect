@@ -7,41 +7,26 @@
 		<artifactId>dep</artifactId>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>org.argeo.connect.dep.rap.e4</artifactId>
+	<artifactId>org.argeo.connect.dep.e4.rap</artifactId>
 	<name>Connect Platform Eclipse 4</name>
 	<dependencies>
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.ui.workbench</artifactId>
-			<version>2.1.79-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.theme.argeo2</artifactId>
 			<version>2.1.79-SNAPSHOT</version>
 		</dependency>
 
-		<!-- People UIs -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.argeo.connect</groupId> -->
-<!-- 			<artifactId>org.argeo.people.workbench.rap</artifactId> -->
-<!-- 			<version>2.1.79-SNAPSHOT</version> -->
-<!-- 		</dependency> -->
+		<!-- UIs -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.people.web</artifactId>
+			<artifactId>org.argeo.connect.e4</artifactId>
 			<version>2.1.79-SNAPSHOT</version>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.argeo.connect</groupId> -->
-<!-- 			<artifactId>org.argeo.documents</artifactId> -->
-<!-- 			<version>2.1.79-SNAPSHOT</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.argeo.connect</groupId> -->
-<!-- 			<artifactId>org.argeo.tracker</artifactId> -->
-<!-- 			<version>2.1.79-SNAPSHOT</version> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.connect</groupId> -->
+		<!-- <artifactId>org.argeo.people.web</artifactId> -->
+		<!-- <version>2.1.79-SNAPSHOT</version> -->
+		<!-- </dependency> -->
 
 		<!-- Additional third parties -->
 		<dependency>
@@ -64,7 +49,7 @@
 		<!-- Base Argeo platform distribution -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.dep.cms.rap.e4</artifactId>
+			<artifactId>org.argeo.dep.cms.e4.rap</artifactId>
 			<version>${version.argeo-commons}</version>
 		</dependency>
 	</dependencies>

@@ -8,6 +8,7 @@ import org.argeo.cms.ui.eclipse.forms.IFormPart;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.cms.ui.eclipse.forms.IPartSelectionListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 //import org.eclipse.ui.forms.IFormPart;
@@ -66,6 +67,8 @@ public class CompositeManagedForm implements IManagedForm {
 		return toolkit;
 	}
 
+	
+	
 //	public ScrolledForm getForm() {
 //		throw new UnsupportedOperationException(
 //				"Unsupported method: we use a Form rather than a ScrolledForm");
@@ -76,6 +79,11 @@ public class CompositeManagedForm implements IManagedForm {
 //		throw new UnsupportedOperationException(
 //				"Unsupported method: we use a Form rather than a ScrolledForm");
 //	}
+
+	@Override
+	public ScrolledComposite getForm() {
+		throw new UnsupportedOperationException();
+	}
 
 	/** Here is the magic */
 	@Override

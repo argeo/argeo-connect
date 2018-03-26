@@ -19,12 +19,13 @@
 	<modules>
 		<module>org.argeo.connect.api</module>
 		<module>org.argeo.connect.core</module>
-<!-- 		<module>org.argeo.people.core</module> -->
 
 		<!-- UI -->
 		<module>org.argeo.connect.ui</module>
-<!-- 		<module>org.argeo.people.ui</module> -->
 		<module>org.argeo.people.web</module>
+
+		<!-- Eclipse 4 -->
+		<module>org.argeo.connect.e4</module>
 
 		<!-- Workbench -->
 		<module>org.argeo.connect.ui.workbench</module>
