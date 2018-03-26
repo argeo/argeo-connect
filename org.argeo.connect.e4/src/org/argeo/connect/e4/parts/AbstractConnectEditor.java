@@ -23,6 +23,7 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.SystemAppService;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.e4.ConnectE4Constants;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -129,7 +130,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 	// }
 
 	// LIFE CYCLE
-	public void init(String entityId) {
+	private void init(String entityId) {
 		// setSite(site);
 		// setInput(input);
 		try {
@@ -151,7 +152,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 	@PostConstruct
 	public void createPartControl(Composite parent) {
-		String entityId = mPart.getPersistedState().get("entityId");
+		String entityId = mPart.getPersistedState().get(ConnectE4Constants.ENTITY_ID);
 		init(entityId);
 		init();
 

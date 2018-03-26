@@ -27,14 +27,12 @@ public class JcrViewerDClickListener implements IDoubleClickListener {
 			this.selectorName = selectorName;
 	}
 
-	@Deprecated
 	public JcrViewerDClickListener(String selectorName, SystemWorkbenchService systemWorkbenchService) {
 		if (EclipseUiUtils.notEmpty(selectorName))
 			this.selectorName = selectorName;
 		this.systemWorkbenchService = systemWorkbenchService;
 	}
 
-	@Deprecated
 	public JcrViewerDClickListener(SystemWorkbenchService systemWorkbenchService) {
 		selectorName = null;
 		this.systemWorkbenchService = systemWorkbenchService;

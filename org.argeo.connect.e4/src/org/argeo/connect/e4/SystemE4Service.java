@@ -26,7 +26,6 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Inject
 	EPartService partService;
 
-
 	// Injected known AppWorkbenchServices: order is important, first found
 	// result will be returned by the various methods.
 	private List<AppWorkbenchService> knownAppWbServices = Collections.synchronizedList(new ArrayList<>());
@@ -39,12 +38,14 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 
 	@Override
 	public void openEntityEditor(Node entity) {
-		MPart part = partService.createPart(getEntityEditorId(entity));
+		String entityEditorId = getEntityEditorId(entity);
+		MPart part = partService.createPart(entityEditorId);
 		try {
 			part.setLabel(entity.getName());
-			part.getPersistedState().put("nodeWorkspace", entity.getSession().getWorkspace().getName());
-			part.getPersistedState().put("nodePath", entity.getPath());
-			part.getPersistedState().put("entityId", entity.getIdentifier());
+			// part.getPersistedState().put("nodeWorkspace",
+			// entity.getSession().getWorkspace().getName());
+			// part.getPersistedState().put("nodePath", entity.getPath());
+			part.getPersistedState().put(ConnectE4Constants.ENTITY_ID, entity.getIdentifier());
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot open " + entity, e);
 		}
@@ -52,8 +53,6 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 		// the provided part is be shown
 		partService.showPart(part, PartState.ACTIVATE);
 	}
-	
-	
 
 	//
 	// APP SERVICE
@@ -62,10 +61,10 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Override
 	public Object compute(IEclipseContext context, String contextKey) {
 		partService = context.get(EPartService.class);
-        MApplication app = context.get(MApplication.class);
-        IEclipseContext appCtx = app.getContext();
-        appCtx.set(SystemWorkbenchService.class, this);
-        return this;
+		MApplication app = context.get(MApplication.class);
+		IEclipseContext appCtx = app.getContext();
+		appCtx.set(SystemWorkbenchService.class, this);
+		return this;
 	}
 
 	@Override
@@ -90,16 +89,16 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 		return null;
 	}
 
-//	@Override
-//	public void openEntityEditor(Node entity) {
-//		String result = null;
-//		for (AppWorkbenchService appWbService : knownAppWbServices) {
-//			// TODO make it more robust
-//			result = appWbService.getEntityEditorId(entity);
-//			if (EclipseUiUtils.notEmpty(result))
-//				appWbService.openEntityEditor(entity);
-//		}
-//	}
+	// @Override
+	// public void openEntityEditor(Node entity) {
+	// String result = null;
+	// for (AppWorkbenchService appWbService : knownAppWbServices) {
+	// // TODO make it more robust
+	// result = appWbService.getEntityEditorId(entity);
+	// if (EclipseUiUtils.notEmpty(result))
+	// appWbService.openEntityEditor(entity);
+	// }
+	// }
 
 	@Override
 	public void openSearchEntityView(String nodeType, String label) {
