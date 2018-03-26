@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -570,6 +571,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		}
 	}
 
+	@PreDestroy
 	public void dispose() {
 		try {
 			if (node != null)
