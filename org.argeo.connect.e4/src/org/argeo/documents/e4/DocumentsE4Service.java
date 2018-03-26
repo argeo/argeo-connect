@@ -39,18 +39,4 @@ public class DocumentsE4Service implements AppE4Service {
 		else
 			return null;
 	}
-
-	@Override
-	public void openEntityEditor(Node entity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void openSearchEntityView(String nodeType, String label) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
 }
