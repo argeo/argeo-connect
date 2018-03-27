@@ -2,6 +2,7 @@ package org.argeo.people.e4.parts;
 
 import java.io.InputStream;
 
+import javax.annotation.PreDestroy;
 import javax.jcr.Node;
 import javax.jcr.Property;
 
@@ -119,7 +120,7 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractConnectCTabEdi
 		return itemPicture;
 	}
 
-	@Override
+	@PreDestroy
 	public void dispose() {
 		// Free the resources.
 		if (itemPicture != null && !itemPicture.equals(ConnectImages.NO_PICTURE))

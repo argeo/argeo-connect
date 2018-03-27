@@ -1,15 +1,16 @@
 package org.argeo.connect.e4;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -28,7 +29,8 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 
 	// Injected known AppWorkbenchServices: order is important, first found
 	// result will be returned by the various methods.
-	private List<AppWorkbenchService> knownAppWbServices = Collections.synchronizedList(new ArrayList<>());
+	private SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices = Collections
+			.synchronizedSortedMap(new TreeMap<>());
 	private String defaultEditorId = null;// DefaultDashboardEditor.ID;
 
 	@Override
@@ -70,7 +72,7 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Override
 	public String getDefaultEditorId() {
 		String result = null;
-		for (AppWorkbenchService appWbService : knownAppWbServices) {
+		for (AppWorkbenchService appWbService : knownAppWbServices.values()) {
 			result = appWbService.getDefaultEditorId();
 			if (EclipseUiUtils.notEmpty(result))
 				return result;
@@ -81,7 +83,7 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Override
 	public String getEntityEditorId(Node entity) {
 		String result = null;
-		for (AppWorkbenchService appWbService : knownAppWbServices) {
+		for (AppWorkbenchService appWbService : knownAppWbServices.values()) {
 			result = appWbService.getEntityEditorId(entity);
 			if (EclipseUiUtils.notEmpty(result))
 				return result;
@@ -103,7 +105,7 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Override
 	public void openSearchEntityView(String nodeType, String label) {
 		String result = null;
-		for (AppWorkbenchService appWbService : knownAppWbServices) {
+		for (AppWorkbenchService appWbService : knownAppWbServices.values()) {
 			// TODO make it more robust
 			result = appWbService.getSearchEntityEditorId(nodeType);
 			if (EclipseUiUtils.notEmpty(result))
@@ -114,7 +116,7 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Override
 	public String getSearchEntityEditorId(String nodeType) {
 		String result = null;
-		for (AppWorkbenchService appWbService : knownAppWbServices) {
+		for (AppWorkbenchService appWbService : knownAppWbServices.values()) {
 			result = appWbService.getSearchEntityEditorId(nodeType);
 			if (EclipseUiUtils.notEmpty(result))
 				return result;
@@ -125,7 +127,7 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Override
 	public Image getIconForType(Node entity) {
 		Image result = null;
-		for (AppWorkbenchService appWbService : knownAppWbServices) {
+		for (AppWorkbenchService appWbService : knownAppWbServices.values()) {
 			result = appWbService.getIconForType(entity);
 			if (result != null)
 				return result;
@@ -136,7 +138,7 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Override
 	public Wizard getCreationWizard(Node node) {
 		Wizard result = null;
-		for (AppWorkbenchService appWbService : knownAppWbServices) {
+		for (AppWorkbenchService appWbService : knownAppWbServices.values()) {
 			result = appWbService.getCreationWizard(node);
 			if (result != null)
 				return result;
@@ -144,12 +146,17 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 		return null;
 	}
 
-	public void addAppService(AppWorkbenchService appService, Map<String, String> properties) {
-		knownAppWbServices.add(appService);
+	public void addAppService(AppWorkbenchService appService, Map<String, Object> properties) {
+		// String serviceRankingStr = properties.get(Constants.SERVICE_RANKING);
+		// int serviceRanking = serviceRankingStr == null ? 0 :
+		// Integer.parseInt(serviceRankingStr);
+		// Integer serviceRanking = (Integer) properties.get(Constants.SERVICE_RANKING);
+		// System.out.println(serviceRanking + " | " + properties);
+		knownAppWbServices.put(new ServiceRanking(properties), appService);
 	}
 
-	public void removeAppService(AppWorkbenchService appService, Map<String, String> properties) {
-		knownAppWbServices.remove(appService);
+	public void removeAppService(AppWorkbenchService appService, Map<String, Object> properties) {
+		knownAppWbServices.remove(new ServiceRanking(properties));
 	}
 
 }

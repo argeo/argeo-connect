@@ -1,9 +1,9 @@
 package org.argeo.connect.core;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -13,13 +13,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.SystemAppService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 
 public class DynamicSystemAppService extends AbstractAppService implements SystemAppService {
 	private final static Log log = LogFactory.getLog(DynamicSystemAppService.class);
 
-	private List<AppService> knownAppServices = Collections.synchronizedList(new ArrayList<>());
+	private SortedMap<ServiceRanking, AppService> knownAppServices = Collections.synchronizedSortedMap(new TreeMap<>());
+	// private List<AppService> knownAppServices = Collections.synchronizedList(new
+	// ArrayList<>());
 
 	public DynamicSystemAppService() {
 		super();
@@ -28,7 +31,7 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 	@Override
 	public Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
 			throws RepositoryException {
-		for (AppService appService : knownAppServices) {
+		for (AppService appService : knownAppServices.values()) {
 			if (appService.isKnownType(nodeType))
 				return appService.publishEntity(parent, nodeType, srcNode, removeSrcNode);
 		}
@@ -37,12 +40,12 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 
 	@Override
 	public String getAppBaseName() {
-		return SuiteConstants.SUITE_APP_BASE_NAME;
+		return OfficeConstants.SUITE_APP_BASE_NAME;
 	}
 
 	@Override
 	public String getBaseRelPath(String nodeType) {
-		for (AppService appService : knownAppServices) {
+		for (AppService appService : knownAppServices.values()) {
 			if (appService.isKnownType(nodeType))
 				return appService.getBaseRelPath(nodeType);
 		}
@@ -52,7 +55,7 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		for (AppService appService : knownAppServices) {
+		for (AppService appService : knownAppServices.values()) {
 			if (appService.isKnownType(entity))
 				return appService.getDefaultRelPath(entity);
 		}
@@ -61,7 +64,7 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 
 	@Override
 	public String getMainNodeType(Node node) {
-		for (AppService appService : knownAppServices) {
+		for (AppService appService : knownAppServices.values()) {
 			String foundType = appService.getMainNodeType(node);
 			if (EclipseUiUtils.notEmpty(foundType))
 				return foundType;
@@ -71,7 +74,7 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 
 	@Override
 	public String getDefaultRelPath(Session session, String nodetype, String id) {
-		for (AppService appService : knownAppServices) {
+		for (AppService appService : knownAppServices.values()) {
 			if (appService.isKnownType(nodetype))
 				return appService.getDefaultRelPath(session, nodetype, id);
 		}
@@ -81,7 +84,7 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 	/** Insures the correct service is called on save */
 	@Override
 	public Node saveEntity(Node entity, boolean publish) {
-		for (AppService appService : knownAppServices) {
+		for (AppService appService : knownAppServices.values()) {
 			if (appService.isKnownType(entity))
 				return appService.saveEntity(entity, publish);
 		}
@@ -91,7 +94,7 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 
 	@Override
 	public boolean isKnownType(Node entity) {
-		for (AppService appService : knownAppServices) {
+		for (AppService appService : knownAppServices.values()) {
 			if (appService.isKnownType(entity))
 				return true;
 		}
@@ -100,20 +103,20 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 
 	@Override
 	public boolean isKnownType(String nodeType) {
-		for (AppService appService : knownAppServices) {
+		for (AppService appService : knownAppServices.values()) {
 			if (appService.isKnownType(nodeType))
 				return true;
 		}
 		return false;
 	}
 
-	public void addAppService(AppService appService, Map<String, String> properties) {
-		knownAppServices.add(appService);
+	public void addAppService(AppService appService, Map<String, Object> properties) {
+		knownAppServices.put(new ServiceRanking(properties), appService);
 		if (log.isDebugEnabled())
 			log.debug("Added app service " + appService);
 	}
 
-	public void removeAppService(AppService appService, Map<String, String> properties) {
-		knownAppServices.remove(appService);
+	public void removeAppService(AppService appService, Map<String, Object> properties) {
+		knownAppServices.remove(new ServiceRanking(properties));
 	}
 }

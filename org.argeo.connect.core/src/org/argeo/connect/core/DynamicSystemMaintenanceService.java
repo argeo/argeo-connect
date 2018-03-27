@@ -1,11 +1,10 @@
 package org.argeo.connect.core;
 
-import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -13,12 +12,12 @@ import javax.jcr.Session;
 import javax.jcr.security.Privilege;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.SystemMaintenanceService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
@@ -30,7 +29,10 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	private String workspaceName = "main";
-	private List<AppMaintenanceService> maintenanceServices = Collections.synchronizedList(new ArrayList<>());
+	private SortedMap<ServiceRanking, AppMaintenanceService> maintenanceServices = Collections
+			.synchronizedSortedMap(new TreeMap<>());
+	// private List<AppMaintenanceService> maintenanceServices =
+	// Collections.synchronizedList(new ArrayList<>());
 
 	public void init() {
 		Session adminSession = openAdminSession();
@@ -82,7 +84,7 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot build model", e);
 		}
-		for (AppMaintenanceService service : maintenanceServices)
+		for (AppMaintenanceService service : maintenanceServices.values())
 			hasCHanged |= service.prepareJcrTree(session);
 		if (hasCHanged)
 			log.info("Repository has been initialised with Argeo Suite model");
@@ -109,7 +111,7 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot build model", e);
 		}
-		for (AppMaintenanceService service : maintenanceServices)
+		for (AppMaintenanceService service : maintenanceServices.values())
 			service.configurePrivileges(session);
 		log.info("Access control configured");
 	}
@@ -126,8 +128,8 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		this.workspaceName = workspaceName;
 	}
 
-	public void addAppService(AppMaintenanceService appService, Map<String, String> properties) {
-		maintenanceServices.add(appService);
+	public void addAppService(AppMaintenanceService appService, Map<String, Object> properties) {
+		maintenanceServices.put(new ServiceRanking(properties), appService);
 		Session adminSession = openAdminSession();
 		try {
 			if (appService.prepareJcrTree(adminSession)) {
@@ -140,8 +142,8 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		}
 	}
 
-	public void removeAppService(AppMaintenanceService appService, Map<String, String> properties) {
-		maintenanceServices.remove(appService);
+	public void removeAppService(AppMaintenanceService appService, Map<String, Object> properties) {
+		maintenanceServices.remove(new ServiceRanking(properties));
 	}
 
 }

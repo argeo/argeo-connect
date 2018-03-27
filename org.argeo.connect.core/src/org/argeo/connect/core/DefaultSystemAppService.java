@@ -29,7 +29,7 @@ public class DefaultSystemAppService extends AbstractAppService implements Syste
 
 	@Override
 	public String getAppBaseName() {
-		return SuiteConstants.SUITE_APP_BASE_NAME;
+		return OfficeConstants.SUITE_APP_BASE_NAME;
 	}
 
 	@Override
