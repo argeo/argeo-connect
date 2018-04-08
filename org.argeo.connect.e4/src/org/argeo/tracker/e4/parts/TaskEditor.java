@@ -127,14 +127,14 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			body.setLayout(layout);
 			appendOverviewPart(body);
 
-			Composite commentFormPart = new CommentListFormPart(getManagedForm(), body, SWT.NO_FOCUS,
+			Composite commentFormPart = new CommentListFormPart(getPageManagedForm(), body, SWT.NO_FOCUS,
 					getTrackerService(), getNode());
 			commentFormPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		}
 
 		/** Creates the general section */
 		private void appendOverviewPart(final Composite parent) {
-			FormToolkit tk = getManagedForm().getToolkit();
+			FormToolkit tk = getPageManagedForm().getToolkit();
 
 			final Section section = TrackerUiUtils.addFormSection(tk, parent, getIssueTitle());
 			section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -257,7 +257,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			// addFocusOutListener(part, descTxt, task,
 			// Property.JCR_DESCRIPTION);
 			// addChangeAssignListener(part, assignedToLk);
-			getManagedForm().addPart(part);
+			getPageManagedForm().addPart(part);
 			addMainSectionMenu(part);
 		}
 
@@ -399,14 +399,14 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		return "#" + id + " " + name;
 	}
 
-	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
-		// We add a blank space before to workaround the cropping of the
-		// word
-		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
-		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		GridData twd = new GridData(SWT.END, SWT.BOTTOM);
-		label.setLayoutData(twd);
-		return label;
-	}
+//	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
+//		// We add a blank space before to workaround the cropping of the
+//		// word
+//		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
+//		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
+//		label.setFont(EclipseUiUtils.getBoldFont(parent));
+//		GridData twd = new GridData(SWT.END, SWT.BOTTOM);
+//		label.setLayoutData(twd);
+//		return label;
+//	}
 }

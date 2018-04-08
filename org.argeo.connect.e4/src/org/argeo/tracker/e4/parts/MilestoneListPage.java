@@ -100,6 +100,7 @@ public class MilestoneListPage extends AbstractEditorPage implements ArgeoNames 
 //		Composite body = form.getBody();
 		ScrolledComposite form = mf.getForm();
 		Composite body = new Composite(form, SWT.NONE);
+		form.setContent(body);
 		GridLayout mainLayout = new GridLayout();
 
 		body.setLayout(mainLayout);

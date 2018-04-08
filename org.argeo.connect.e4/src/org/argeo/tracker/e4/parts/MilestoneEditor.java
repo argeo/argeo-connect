@@ -24,7 +24,6 @@ import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
@@ -58,7 +57,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -138,68 +136,73 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			super(editor, PAGE_ID, "Overview");
 		}
 
-		protected void createFormContent(final IManagedForm mf) {
+		protected void createFormContent(Composite body) {
 			// ScrolledForm form = mf.getForm();
 			// Composite body = form.getBody();
-			ScrolledComposite form = mf.getForm();
-			Composite body = new Composite(form, SWT.NONE);
+			// ScrolledComposite form = mf.getForm();
+			// Composite body = new Composite(form, SWT.NONE);
 			body.setLayout(new GridLayout());
 
-			Composite overview = appendOverviewPart(body, mf);
-			overview.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+//			new Label(body, SWT.BORDER).setText("TEST BODY");
+
+			Composite overview = appendOverviewPart(body);
+			// overview.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			Composite filterCmp = new Composite(body, SWT.NO_FOCUS);
 			createFilterPart(filterCmp);
-			filterCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+			filterCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			Composite tableCmp = new Composite(body, SWT.NO_FOCUS);
-			appendIssuesPart(tableCmp, mf);
-			GridData twd = new GridData(SWT.FILL, SWT.FILL, true, true);
+			appendIssuesPart(tableCmp);
+			GridData twd = new GridData(SWT.FILL, SWT.FILL, false, false);
 			twd.heightHint = 300;
-
 			tableCmp.setLayoutData(twd);
 
 			// form.reflow(true);
 		}
 
-		private Composite appendOverviewPart(Composite parent, IManagedForm mf) {
-			FormToolkit tk = mf.getToolkit();
+		private Composite appendOverviewPart(Composite parent) {
+			FormToolkit tk = getFormToolkit();
 
-			final Section section = TrackerUiUtils.addFormSection(tk, parent, getMilestoneTitle());
+			// final Section section = TrackerUiUtils.addFormSection(tk, parent,
+			// getMilestoneTitle());
 
-			Composite body = (Composite) section.getClient();
-			GridLayout layout = new GridLayout();
-			layout.numColumns = 5;
+			Composite body = new Composite(parent, SWT.BORDER);
+			body.setLayoutData(CmsUtils.fillAll());
+			GridLayout layout = new GridLayout(2, false);
+			// layout.numColumns = 2;
 			body.setLayout(layout);
 
 			// Project
 			createFormBoldLabel(tk, body, "Project");
 			projectLk = new Link(body, SWT.NONE);
-			projectLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+			projectLk.setText("TEST LINK");
+			projectLk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 			configureOpenLink(projectLk, project);
 
 			// Manager
 			createFormBoldLabel(tk, body, "Manager");
 			managerLk = new Link(body, SWT.NONE);
-			managerLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+			managerLk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			// Chart
 			chartCmp = new Composite(body, SWT.NO_FOCUS);
 			chartCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-			GridData twd = new GridData(SWT.CENTER, SWT.CENTER);
-			// twd.maxWidth = CHART_WIDTH;
-			// twd.rowspan = 3;
+			GridData twd = new GridData(SWT.FILL, SWT.FILL, false, false);
+			twd.widthHint = CHART_WIDTH;
+			twd.horizontalSpan = 2;
+			twd.verticalSpan = 3;
 			chartCmp.setLayoutData(twd);
 
 			// Overdue tasks
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Overdue Tasks");
+			createFormBoldLabel(tk, body, "Overdue Tasks");
 			overdueTasksLk = new Link(body, SWT.NONE);
-			overdueTasksLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+			overdueTasksLk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			// Due Date
-			dueDateLbl = TrackerUiUtils.createFormBoldLabel(tk, body, "Due Date");
+			dueDateLbl = createFormBoldLabel(tk, body, "Due Date");
 			dueDateLk = new Link(body, SWT.NONE);
-			dueDateLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+			dueDateLk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			// // Reported by
 			// TrackerUiUtils.createFormBoldLabel(tk, body, "Reported by");
@@ -209,14 +212,14 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			// TODO add linked documents
 
 			// Description
-			twd = (GridData) TrackerUiUtils.createFormBoldLabel(tk, body, "Details").getLayoutData();
+			twd = (GridData) createFormBoldLabel(tk, body, "Details").getLayoutData();
 			// twd.valign = GridData.TOP;
 			descLbl = new Label(body, SWT.WRAP);
-			twd = new GridData(SWT.FILL, SWT.TOP, true, false);
+			twd = new GridData(SWT.FILL, SWT.FILL, false, false);
 			// twd.colspan = 3;
 			descLbl.setLayoutData(twd);
 
-			SectionPart part = new SectionPart((Section) body.getParent()) {
+			SectionPart part = new SectionPart(body.getParent()) {
 
 				@Override
 				public void refresh() {
@@ -265,14 +268,14 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 					}
 
 					parent.layout(true, true);
-					section.setFocus();
+					body.setFocus();
 					super.refresh();
 				}
 			};
 			getManagedForm().addPart(part);
-			addMainSectionMenu(part);
+			// addMainSectionMenu(part);
 
-			return section;
+			return body;
 		}
 
 		private long getOpenTaskNumber() {
@@ -313,7 +316,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 		}
 
 		/** Creates the list of issues relevant for this category */
-		private void appendIssuesPart(Composite parent, IManagedForm mf) {
+		private void appendIssuesPart(Composite parent) {
 			List<ColumnDefinition> columnDefs = new ArrayList<ColumnDefinition>();
 			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(TrackerNames.TRACKER_ID), "ID", 40));
 			columnDefs.add(new ColumnDefinition(new SimpleJcrNodeLabelProvider(Property.JCR_TITLE), "Title", 300));
@@ -347,7 +350,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 					super.refresh();
 				}
 			};
-			mf.addPart(issueListPart);
+			getManagedForm().addPart(issueListPart);
 		}
 
 		public void setActive(boolean active) {
@@ -366,7 +369,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			GridLayout layout = EclipseUiUtils.noSpaceGridLayout(new GridLayout(4, false));
 			layout.horizontalSpacing = 5;
 			parent.setLayout(layout);
-			parent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			filterTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 			filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
@@ -620,13 +623,14 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 		return title;
 	}
 
-	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
-		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		GridData twd = new GridData(SWT.END, SWT.BOTTOM);
-		label.setLayoutData(twd);
-		return label;
-	}
+	// private Label createFormBoldLabel(FormToolkit toolkit, Composite parent,
+	// String value) {
+	// Label label = toolkit.createLabel(parent, " " + value, SWT.END);
+	// label.setFont(EclipseUiUtils.getBoldFont(parent));
+	// GridData twd = new GridData(SWT.FILL, SWT.FILL, false, false);
+	// label.setLayoutData(twd);
+	// return label;
+	// }
 
 	private void configureOpenLink(Link link, Node targetNode) {
 		link.setText("<a>" + ConnectJcrUtils.get(targetNode, Property.JCR_TITLE) + "</a>");

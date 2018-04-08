@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -58,6 +59,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
@@ -68,6 +70,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	// private static final long serialVersionUID = -2589214457345896922L;
 	// public static final String ID = TrackerUiPlugin.PLUGIN_ID + ".projectEditor";
 
+	@Inject
 	private FileSystemProvider fileSystemProvider;
 
 	// Ease implementation
@@ -136,58 +139,77 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			super(editor, PAGE_ID, "Overview");
 		}
 
-		protected void createFormContent(final IManagedForm mf) {
-			// ScrolledForm form = mf.getForm();
-			// Composite body = form.getBody();
-			ScrolledComposite form = mf.getForm();
-			Composite body = new Composite(form, SWT.NONE);
-			GridLayout layout = new GridLayout();
-			body.setLayout(layout);
+//		protected void createFormContent(final IManagedForm mf) {
+//			// ScrolledForm form = mf.getForm();
+//			// Composite body = form.getBody();
+//			ScrolledComposite form = mf.getForm();
+//			Composite body = new Composite(form, SWT.NONE);
+//			form.setContent(body);
+//			GridLayout layout = new GridLayout();
+//			body.setLayout(layout);
+////			new Label(body, SWT.BORDER).setText("TEST PARENT");
+//			appendOverviewPart(body);
+//			appendOpenMilestonePart(body);
+//		}
+
+		@Override
+		protected void createFormContent(Composite body) {
 			appendOverviewPart(body);
 			appendOpenMilestonePart(body);
 		}
 
 		/** Creates the general section */
 		private void appendOverviewPart(Composite parent) {
-			FormToolkit tk = getManagedForm().getToolkit();
+			FormToolkit tk = getFormToolkit();
 			GridData twd;
 
-			Section section = TrackerUiUtils.addFormSection(tk, parent,
-					ConnectJcrUtils.get(project, Property.JCR_TITLE));
-			section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			// Section section = TrackerUiUtils.addFormSection(tk, parent,
+			// ConnectJcrUtils.get(project, Property.JCR_TITLE));
+			// section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			//
+			// Composite body = (Composite) section.getClient();
+			Composite body = new Composite(parent, SWT.BORDER);
+			GridLayout layout = new GridLayout(2, false);
 
-			Composite body = (Composite) section.getClient();
-			GridLayout layout = new GridLayout();
-			layout.numColumns = 5;
+			// layout.numColumns = 5;
 			body.setLayout(layout);
+			body.setLayoutData(CmsUtils.fillWidth());
+			// new Label(body, SWT.BORDER).setText("TEST PARENT");
+			//// if(true)
+			// return;
 
 			// Manager
 			createFormBoldLabel(tk, body, "Manager");
 			managerLk = new Link(body, SWT.NONE);
-			managerLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+//			managerLk.setText("TEST LINK");
+			managerLk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+			// if (true)
+			// return;
 
 			// Overdue tasks
 			createFormBoldLabel(tk, body, "Overdue Tasks");
 			overdueTasksLk = new Link(body, SWT.NONE);
-			overdueTasksLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
+			overdueTasksLk.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			// Chart
 			chartCmp = new Composite(body, SWT.NO_FOCUS);
 			chartCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-			twd = new GridData(SWT.CENTER, SWT.CENTER);
+			twd = new GridData(SWT.FILL, SWT.FILL, false, false);
 			// twd.maxWidth = CHART_WIDTH;
 			// twd.rowspan = 2;
 			chartCmp.setLayoutData(twd);
 
 			// Description
-			twd = (GridData) TrackerUiUtils.createFormBoldLabel(tk, body, "Details").getLayoutData();
+			// twd = (GridData) TrackerUiUtils.createFormBoldLabel(tk, body,
+			// "Details").getLayoutData();
+			TrackerUiUtils.createFormBoldLabel(tk, body, "Details");
 			// twd.valign = GridData.TOP;
 			descLbl = new Label(body, SWT.WRAP);
-			twd = new GridData(SWT.FILL, SWT.TOP, true, false);
+			twd = new GridData(SWT.FILL, SWT.FILL, false, false);
 			// twd.colspan = 3;
 			descLbl.setLayoutData(twd);
 
-			SectionPart part = new SectionPart((Section) body.getParent()) {
+			SectionPart part = new SectionPart(body.getParent()) {
 
 				@Override
 				public void refresh() {
@@ -222,24 +244,24 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					overdueTasksLk.setText(nb < 0 ? "-" : nb.toString());
 
 					parent.layout(true, true);
-					section.setFocus();
+					body.setFocus();
 					super.refresh();
 				}
 			};
 			getManagedForm().addPart(part);
-			addMainSectionMenu(part);
+			// addMainSectionMenu(part);
 		}
 
 		private Section appendOpenMilestonePart(Composite parent) {
-			FormToolkit tk = getManagedForm().getToolkit();
+			FormToolkit tk = getFormToolkit();
 			Section section = TrackerUiUtils.addFormSection(tk, parent, "Open Milestones");
-			section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			Composite body = (Composite) section.getClient();
 			body.setLayout(new GridLayout());
 			final MilestoneListComposite msBoxCmp = new MilestoneListComposite(body, SWT.NO_FOCUS,
 					getAppWorkbenchService(), project);
-			msBoxCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			msBoxCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
 
 			SectionPart part = new SectionPart(section) {
 
@@ -281,7 +303,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 			@Override
 			public void run() {
-				Shell currShell = sectionPart.getSection().getShell();
+				Shell currShell = Display.getCurrent().getActiveShell();
 				ConfigureProjectWizard wizard = new ConfigureProjectWizard(getUserAdminService(), getTrackerService(),
 						project);
 				WizardDialog dialog = new WizardDialog(currShell, wizard);
@@ -340,6 +362,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			// Composite parent = managedForm.getForm().getBody();
 			ScrolledComposite form = managedForm.getForm();
 			Composite parent = new Composite(form, SWT.NONE);
+			form.setContent(parent);
 			parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 			DocumentsFolderComposite dfc = new DocumentsFolderComposite(parent, SWT.NO_FOCUS, getNode(),
 					getDocumentsService()) {
@@ -380,6 +403,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			// Composite body = form.getBody();
 			ScrolledComposite form = mf.getForm();
 			Composite body = new Composite(form, SWT.NONE);
+			form.setContent(body);
 
 			GridLayout mainLayout = new GridLayout();
 			body.setLayout(mainLayout);
@@ -488,13 +512,6 @@ public class ProjectEditor extends AbstractTrackerEditor {
 		});
 	}
 
-	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
-		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		GridData twd = new GridData(SWT.END, SWT.BOTTOM);
-		label.setLayoutData(twd);
-		return label;
-	}
 
 	/* DEPENDENCY INJECTION */
 	public void setFileSystemProvider(FileSystemProvider fileSystemProvider) {

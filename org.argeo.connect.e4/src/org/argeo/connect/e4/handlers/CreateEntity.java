@@ -80,7 +80,7 @@ public class CreateEntity {
 			jcrId = newNode.getIdentifier();
 
 		} catch (RepositoryException e) {
-			throw new ConnectException("Cannot create " + nodeType + "entity", e);
+			throw new ConnectException("Cannot create " + nodeType + " entity", e);
 		} finally {
 			JcrUtils.logoutQuietly(draftSession);
 			JcrUtils.logoutQuietly(mainSession);

@@ -24,6 +24,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Repository;
@@ -80,9 +81,10 @@ import org.eclipse.swt.widgets.Text;
 
 /** Browse the node file system. */
 public class MyFilesView implements IDoubleClickListener, Refreshable {
-//	public final static String ID = DocumentsUiPlugin.PLUGIN_ID + ".myFilesView";
+	// public final static String ID = DocumentsUiPlugin.PLUGIN_ID + ".myFilesView";
 
 	@Inject
+	@Named("(cn=home)")
 	private Repository repository;
 	@Inject
 	private SystemWorkbenchService systemWorkbenchService;
@@ -129,7 +131,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 		filterTxt = delayedText.getText();
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
-//		final ServerPushSession pushSession = new ServerPushSession();
+		// final ServerPushSession pushSession = new ServerPushSession();
 		delayedText.addDelayedModifyListener(null, new ModifyListener() {
 			private static final long serialVersionUID = 5003010530960334977L;
 
@@ -145,7 +147,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 						parent.layout(true, true);
 					}
 				});
-//				pushSession.stop();
+				// pushSession.stop();
 			}
 		});
 
@@ -381,21 +383,23 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 	}
 
 	/* DEPENDENCY INJECTION */
-//	public void setRepository(Repository repository) {
-//		this.repository = repository;
-//	}
-//
-//	public void setSystemWorkbenchService(SystemWorkbenchService systemWorkbenchService) {
-//		this.systemWorkbenchService = systemWorkbenchService;
-//	}
-//
-//	public void setNodeFileSystemProvider(FileSystemProvider nodeFileSystemProvider) {
-//		this.nodeFileSystemProvider = nodeFileSystemProvider;
-//	}
-//
-//	public void setDocumentsService(DocumentsService documentsService) {
-//		this.documentsService = documentsService;
-//	}
+	// public void setRepository(Repository repository) {
+	// this.repository = repository;
+	// }
+	//
+	// public void setSystemWorkbenchService(SystemWorkbenchService
+	// systemWorkbenchService) {
+	// this.systemWorkbenchService = systemWorkbenchService;
+	// }
+	//
+	// public void setNodeFileSystemProvider(FileSystemProvider
+	// nodeFileSystemProvider) {
+	// this.nodeFileSystemProvider = nodeFileSystemProvider;
+	// }
+	//
+	// public void setDocumentsService(DocumentsService documentsService) {
+	// this.documentsService = documentsService;
+	// }
 
 	private class BasicNodeListContentProvider implements IStructuredContentProvider {
 		private static final long serialVersionUID = 1L;

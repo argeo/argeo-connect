@@ -21,18 +21,18 @@ public class TrackerE4Service extends TrackerUiService implements AppE4Service {
 	public String getEntityEditorId(Node entity) {
 		try {
 			if (entity.isNodeType(TrackerTypes.TRACKER_IT_PROJECT))
-				return null;// ItProjectEditor.ID;
+				return "org.argeo.suite.e4.partdescriptor.itProjectEditor";// ItProjectEditor.ID;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_PROJECT))
-				return null;// ProjectEditor.ID;
+				return "org.argeo.suite.e4.partdescriptor.projectEditor";// ProjectEditor.ID;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_MILESTONE))
-				return null;// MilestoneEditor.ID;
+				return "org.argeo.suite.e4.partdescriptor.milestoneEditor";// MilestoneEditor.ID;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_COMPONENT)
 					|| entity.isNodeType(TrackerTypes.TRACKER_VERSION))
 				return null;// CategoryEditor.ID;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_ISSUE))
 				return null;// IssueEditor.ID;
 			else if (entity.isNodeType(TrackerTypes.TRACKER_TASK))
-				return null;// TaskEditor.ID;
+				return "org.argeo.suite.e4.partdescriptor.projectTaskEditor";// TaskEditor.ID;
 		} catch (RepositoryException re) {
 			throw new TrackerException("Unable to open editor for node " + entity, re);
 		}

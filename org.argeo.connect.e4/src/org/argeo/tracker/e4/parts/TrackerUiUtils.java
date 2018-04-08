@@ -19,6 +19,7 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
@@ -87,10 +88,12 @@ class TrackerUiUtils {
 		return tvc;
 	}
 
+	@Deprecated
 	public static Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
 		// We add a blank space before to workaround the cropping of the word
 		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
-		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
+		Label label = new Label(parent, SWT.END);
+		label.setText(" " + value);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
 		label.setLayoutData(new GridData(SWT.END, SWT.CENTER));
 		return label;
@@ -105,6 +108,7 @@ class TrackerUiUtils {
 		section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		section.setText(title);
 		Composite body = tk.createComposite(section, SWT.NO_FOCUS);
+		body.setLayout(new GridLayout());
 		section.setClient(body);
 		return section;
 	}
@@ -125,6 +129,7 @@ class TrackerUiUtils {
 		section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		section.setText(title);
 		Composite body = tk.createComposite(section, SWT.NO_FOCUS);
+		body.setLayout(new GridLayout());
 		section.setClient(body);
 		return section;
 	}

@@ -1,5 +1,6 @@
 package org.argeo.tracker.e4.parts;
 
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 class Section extends Composite {
@@ -8,6 +9,7 @@ class Section extends Composite {
 
 	public Section(Composite parent, int style) {
 		super(parent, style);
+		setLayout(new GridLayout());
 	}
 
 	public void setClient(Composite client) {

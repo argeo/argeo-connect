@@ -139,7 +139,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 
 		/** Creates the general section */
 		private void appendOverviewPart(Composite parent) {
-			FormToolkit tk = getManagedForm().getToolkit();
+			FormToolkit tk = getPageManagedForm().getToolkit();
 			GridData twd;
 
 			Section section = TrackerUiUtils.addFormSection(tk, parent,
@@ -216,12 +216,12 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					super.refresh();
 				}
 			};
-			getManagedForm().addPart(part);
+			getPageManagedForm().addPart(part);
 			addMainSectionMenu(part);
 		}
 
 		private Section appendOpenMilestonePart(Composite parent) {
-			FormToolkit tk = getManagedForm().getToolkit();
+			FormToolkit tk = getPageManagedForm().getToolkit();
 			Section section = TrackerUiUtils.addFormSection(tk, parent, "Open Milestones");
 			section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -240,7 +240,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					super.refresh();
 				}
 			};
-			getManagedForm().addPart(part);
+			getPageManagedForm().addPart(part);
 			return section;
 		}
 	}
@@ -920,12 +920,12 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 		});
 	}
 
-	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
-		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
-		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		GridData twd = new GridData(SWT.END, SWT.BOTTOM);
-		label.setLayoutData(twd);
-		return label;
-	}
+//	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
+//		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
+//		label.setFont(EclipseUiUtils.getBoldFont(parent));
+//		GridData twd = new GridData(SWT.END, SWT.BOTTOM);
+//		label.setLayoutData(twd);
+//		return label;
+//	}
 
 }
