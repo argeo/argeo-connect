@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.argeo.cms.CmsException;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.ui.AppWorkbenchService;
@@ -42,6 +43,8 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	public void openEntityEditor(Node entity) {
 		String entityEditorId = getEntityEditorId(entity);
 		MPart part = partService.createPart(entityEditorId);
+		if(part==null)
+			throw new CmsException("No entity editor found for id "+entityEditorId);
 		try {
 			part.setLabel(entity.getName());
 			// part.getPersistedState().put("nodeWorkspace",
