@@ -10,6 +10,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.cms.ui.dialogs.CmsWizardDialog;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.SystemAppService;
@@ -41,7 +42,7 @@ public class CreateEntity {
 	private SystemWorkbenchService systemWorkbenchService;
 
 	@Execute
-	public Object execute(@Named(PARAM_TARGET_NODE_TYPE) String nodeType) {
+	public void execute(@Named(PARAM_TARGET_NODE_TYPE) String nodeType) {
 
 		// FIXME : Known bug (or limitation?) in Jackrabbit: When a user does
 		// not have JCR_READ privileges on the root of the workspace, trying to
@@ -58,15 +59,19 @@ public class CreateEntity {
 			Node tmpNode = systemAppService.createDraftEntity(draftSession, nodeType);
 			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);
 			if (wizard != null) {
-				WizardDialog dialog = new WizardDialog(Display.getCurrent().getActiveShell(), wizard);
+				// WizardDialog dialog = new WizardDialog(Display.getCurrent().getActiveShell(),
+				// wizard);
+				CmsWizardDialog dialog = new CmsWizardDialog(Display.getCurrent().getActiveShell(), wizard);
 				dialog.setTitle("New...");
 				if (dialog.open() != WizardDialog.OK) {
 					// This will try to remove the newly created temporary Node if
 					// the process fails before first save
 					JcrUtils.discardQuietly(draftSession);
-					return null;
+					return;
 				}
 			}
+			// if(true)
+			// return null;
 			mainSession = repository.login();
 
 			// By default, all entities are stored at the same place,
@@ -95,7 +100,6 @@ public class CreateEntity {
 			// ConnectEditor.PARAM_JCR_ID, jcrId, ConnectEditor.PARAM_OPEN_FOR_EDIT,
 			// "true");
 		}
-		return null;
 	}
 
 	// Expose to children classes
