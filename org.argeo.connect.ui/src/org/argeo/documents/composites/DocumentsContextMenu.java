@@ -141,7 +141,7 @@ public class DocumentsContextMenu extends AbstractConnectContextMenu {
 		IStructuredSelection selection = ((IStructuredSelection) browser.getViewer().getSelection());
 		if (selection.isEmpty())
 			return;
-		else if (uiService.deleteItems(getShell(), selection))
+		else if (uiService.deleteItems(getParentShell(), selection))
 			browser.refresh();
 	}
 
@@ -151,12 +151,12 @@ public class DocumentsContextMenu extends AbstractConnectContextMenu {
 			// Should never happen
 			return;
 		Path toRenamePath = ((Path) selection.getFirstElement());
-		if (uiService.renameItem(getShell(), currFolderPath, toRenamePath))
+		if (uiService.renameItem(getParentShell(), currFolderPath, toRenamePath))
 			browser.refresh();
 	}
 
 	private void createFolder() {
-		if (uiService.createFolder(getShell(), currFolderPath))
+		if (uiService.createFolder(getParentShell(), currFolderPath))
 			browser.refresh();
 	}
 
@@ -178,7 +178,7 @@ public class DocumentsContextMenu extends AbstractConnectContextMenu {
 	}
 
 	private void uploadFiles() {
-		if (uiService.uploadFiles(getShell(), currFolderPath))
+		if (uiService.uploadFiles(getParentShell(), currFolderPath))
 			browser.refresh();
 	}
 }

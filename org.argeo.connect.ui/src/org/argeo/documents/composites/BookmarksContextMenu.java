@@ -58,7 +58,7 @@ public class BookmarksContextMenu extends AbstractConnectContextMenu {
 
 	private boolean deleteBookmark() {
 		IStructuredSelection selection = ((IStructuredSelection) viewer.getSelection());
-		return documentsUiService.deleteBookmark(getShell(), selection, bookmarkParent);
+		return documentsUiService.deleteBookmark(getParentShell(), selection, bookmarkParent);
 	}
 
 	private boolean renameBookmark() {

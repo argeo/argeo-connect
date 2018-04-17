@@ -24,6 +24,7 @@ import org.argeo.eclipse.ui.fs.FsTableViewer;
 import org.argeo.eclipse.ui.fs.FsUiConstants;
 import org.argeo.eclipse.ui.fs.FsUiUtils;
 import org.argeo.eclipse.ui.fs.NioFileLabelProvider;
+import org.argeo.eclipse.ui.fs.ParentDir;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -131,8 +132,13 @@ public class DocumentsFolderComposite extends Composite {
 				Path selected = null;
 				if (selection.isEmpty())
 					setSelected(null);
-				else
-					selected = ((Path) selection.getFirstElement());
+				else {
+					Object o = selection.getFirstElement();
+					if (o instanceof Path)
+						selected = (Path) o;
+					else if (o instanceof ParentDir)
+						selected = ((ParentDir) o).getPath();
+				}
 				if (selected != null) {
 					// TODO manage multiple selection
 					setSelected(selected);
@@ -145,8 +151,13 @@ public class DocumentsFolderComposite extends Composite {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection selection = (IStructuredSelection) directoryDisplayViewer.getSelection();
 				Path selected = null;
-				if (!selection.isEmpty())
-					selected = ((Path) selection.getFirstElement());
+				if (!selection.isEmpty()) {
+					Object o = selection.getFirstElement();
+					if (o instanceof Path)
+						selected = (Path) o;
+					else if (o instanceof ParentDir)
+						selected = ((ParentDir) o).getPath();
+				}
 				if (selected != null) {
 					if (Files.isDirectory(selected))
 						setInput(selected);
@@ -203,6 +214,8 @@ public class DocumentsFolderComposite extends Composite {
 	public void setInput(Path path) {
 		if (path.equals(currDisplayedFolder))
 			return;
+		if (!initialPath.equals(path) && initialPath.startsWith(path))
+			return;
 		currDisplayedFolder = path;
 
 		Path diff = initialPath.relativize(currDisplayedFolder);
@@ -237,8 +250,8 @@ public class DocumentsFolderComposite extends Composite {
 	}
 
 	/**
-	 * Recreates the content of the box that displays information about the
-	 * current selected Path.
+	 * Recreates the content of the box that displays information about the current
+	 * selected Path.
 	 */
 	private void setOverviewInput(Path path) {
 		try {

@@ -37,6 +37,7 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -97,7 +98,7 @@ public class DocumentsUiService {
 			params.put(OpenFile.PARAM_FILE_NAME, name);
 			params.put(OpenFile.PARAM_FILE_URI, uri);
 			// FIXME open file without a command
-			//CommandUtils.callCommand(OpenFile.ID, params);
+			// CommandUtils.callCommand(OpenFile.ID, params);
 		} catch (IOException e1) {
 			throw new DocumentsException("Cannot create tmp copy of " + toOpenPath, e1);
 		}
@@ -194,6 +195,7 @@ public class DocumentsUiService {
 	}
 
 	public boolean uploadFiles(Shell shell, Path currFolderPath) {
+//		shell = Display.getCurrent().getActiveShell();// ignore argument
 		try {
 			FileDialog dialog = new FileDialog(shell, SWT.MULTI);
 			dialog.setText("Choose one or more files to upload");

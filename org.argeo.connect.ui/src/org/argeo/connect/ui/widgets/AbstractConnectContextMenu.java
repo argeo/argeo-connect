@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Shell;
  */
 public abstract class AbstractConnectContextMenu {
 
+	private Shell parentShell;
 	private Shell shell;
 	// Local context
 
@@ -34,7 +35,8 @@ public abstract class AbstractConnectContextMenu {
 	private Map<String, Button> actionButtons = new HashMap<String, Button>();
 
 	public AbstractConnectContextMenu(Display display, String[] defaultActions) {
-		shell = new Shell(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
+		parentShell = display.getActiveShell();
+		shell = new Shell(parentShell, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 		this.defaultActions = defaultActions;
 	}
 
@@ -71,6 +73,10 @@ public abstract class AbstractConnectContextMenu {
 	}
 
 	public void show(Control source, Point location, IStructuredSelection selection) {
+		if (shell.isDisposed()) {
+			shell = new Shell(Display.getCurrent(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
+			createControl();
+		}
 		if (shell.isVisible())
 			shell.setVisible(false);
 
@@ -83,8 +89,8 @@ public abstract class AbstractConnectContextMenu {
 		}
 	}
 
-	protected Shell getShell() {
-		return shell;
+	protected Shell getParentShell() {
+		return parentShell;
 	}
 
 	class StyleButton extends Label {
@@ -114,6 +120,7 @@ public abstract class AbstractConnectContextMenu {
 		@Override
 		public void shellDeactivated(ShellEvent e) {
 			setVisible(false);
+			shell.close();
 		}
 	}
 
