@@ -59,22 +59,31 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 
 	@Override
 	public void openEntityEditor(Node entity) {
-		String entityEditorId = getEntityEditorId(entity);
-		MPart part = partService.createPart(entityEditorId);
-		if (part == null)
-			throw new CmsException("No entity editor found for id " + entityEditorId);
 		try {
+			String entityId = entity.getIdentifier();
+			String entityEditorId = getEntityEditorId(entity);
+			for (MPart part : partService.getParts()) {
+				String id = part.getPersistedState().get(ConnectE4Constants.ENTITY_ID);
+				if (id != null && entityId.equals(id)) {
+					partService.showPart(part, PartState.ACTIVATE);
+					return;
+				}
+			}
+
+			// new part
+			MPart part = partService.createPart(entityEditorId);
+			if (part == null)
+				throw new CmsException("No entity editor found for id " + entityEditorId);
 			part.setLabel(entity.getName());
 			// part.getPersistedState().put("nodeWorkspace",
 			// entity.getSession().getWorkspace().getName());
 			// part.getPersistedState().put("nodePath", entity.getPath());
-			part.getPersistedState().put(ConnectE4Constants.ENTITY_ID, entity.getIdentifier());
+			part.getPersistedState().put(ConnectE4Constants.ENTITY_ID, entityId);
+			partService.showPart(part, PartState.ACTIVATE);
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot open " + entity, e);
 		}
 
-		// the provided part is be shown
-		partService.showPart(part, PartState.ACTIVATE);
 	}
 
 	//
