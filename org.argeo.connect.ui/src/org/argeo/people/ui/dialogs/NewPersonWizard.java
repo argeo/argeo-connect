@@ -10,6 +10,7 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
+import org.argeo.people.ui.PeopleMsg;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
@@ -31,8 +32,8 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 	// This page widgets
 	protected Text lastNameTxt;
 	protected Text firstNameTxt;
-//	private Button useDistinctDisplayNameBtn;
-//	private Text displayNameTxt;
+	// private Button useDistinctDisplayNameBtn;
+	// private Text displayNameTxt;
 
 	public NewPersonWizard(Node person) {
 		this.person = person;
@@ -57,18 +58,18 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 	public boolean performFinish() {
 		String lastName = lastNameTxt.getText();
 		String firstName = firstNameTxt.getText();
-//		String displayName = displayNameTxt.getText();
-//		boolean useDistinct = useDistinctDisplayNameBtn.getSelection();
-		if (EclipseUiUtils.isEmpty(lastName) && EclipseUiUtils.isEmpty(firstName)
-				) {
+		// String displayName = displayNameTxt.getText();
+		// boolean useDistinct = useDistinctDisplayNameBtn.getSelection();
+		if (EclipseUiUtils.isEmpty(lastName) && EclipseUiUtils.isEmpty(firstName)) {
 			MessageDialog.openError(getShell(), "Non-valid information",
 					"Please enter at least a name that is not empty.");
 			return false;
 		} else {
 			ConnectJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME, PropertyType.STRING, lastName);
 			ConnectJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME, PropertyType.STRING, firstName);
-//			if (useDistinct && EclipseUiUtils.notEmpty(displayName))
-//				ConnectJcrUtils.setJcrProperty(person, PEOPLE_DISPLAY_NAME, PropertyType.STRING, displayName);
+			// if (useDistinct && EclipseUiUtils.notEmpty(displayName))
+			// ConnectJcrUtils.setJcrProperty(person, PEOPLE_DISPLAY_NAME,
+			// PropertyType.STRING, displayName);
 			return true;
 		}
 	}
@@ -101,36 +102,38 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// FirstName
-			ConnectUiUtils.createBoldLabel(parent, "First Name");
+			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.firstName.lead());
 			firstNameTxt = new Text(parent, SWT.BORDER);
-			firstNameTxt.setMessage("a first name");
+//			firstNameTxt.setMessage("a first name");
 			firstNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// LastName
-			ConnectUiUtils.createBoldLabel(parent, "Last Name");
+			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.lastName.lead());
 			lastNameTxt = new Text(parent, SWT.BORDER);
-			lastNameTxt.setMessage("a last name");
+//			lastNameTxt.setMessage("a last name");
 			lastNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// Display Name
-//			useDistinctDisplayNameBtn = new Button(parent, SWT.CHECK);
-//			useDistinctDisplayNameBtn.setText("Define a disting display name");
-//			useDistinctDisplayNameBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-//
-//			ConnectWorkbenchUtils.createBoldLabel(parent, "Display Name");
-//			displayNameTxt = new Text(parent, SWT.BORDER);
-//			displayNameTxt.setMessage("an optional display name");
-//			displayNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-//			displayNameTxt.setEnabled(false);
-//
-//			useDistinctDisplayNameBtn.addSelectionListener(new SelectionAdapter() {
-//				private static final long serialVersionUID = 1L;
-//
-//				@Override
-//				public void widgetSelected(SelectionEvent e) {
-//					displayNameTxt.setEnabled(useDistinctDisplayNameBtn.getSelection());
-//				}
-//			});
+			// useDistinctDisplayNameBtn = new Button(parent, SWT.CHECK);
+			// useDistinctDisplayNameBtn.setText("Define a disting display name");
+			// useDistinctDisplayNameBtn.setLayoutData(new GridData(SWT.FILL, SWT.CENTER,
+			// true, false, 2, 1));
+			//
+			// ConnectWorkbenchUtils.createBoldLabel(parent, "Display Name");
+			// displayNameTxt = new Text(parent, SWT.BORDER);
+			// displayNameTxt.setMessage("an optional display name");
+			// displayNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true,
+			// false));
+			// displayNameTxt.setEnabled(false);
+			//
+			// useDistinctDisplayNameBtn.addSelectionListener(new SelectionAdapter() {
+			// private static final long serialVersionUID = 1L;
+			//
+			// @Override
+			// public void widgetSelected(SelectionEvent e) {
+			// displayNameTxt.setEnabled(useDistinctDisplayNameBtn.getSelection());
+			// }
+			// });
 
 			ModifyListener ml = new ModifyListener() {
 				private static final long serialVersionUID = -1628130380128946886L;
@@ -143,7 +146,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 
 			firstNameTxt.addModifyListener(ml);
 			lastNameTxt.addModifyListener(ml);
-//			displayNameTxt.addModifyListener(ml);
+			// displayNameTxt.addModifyListener(ml);
 
 			// Don't forget this.
 			setControl(firstNameTxt);
