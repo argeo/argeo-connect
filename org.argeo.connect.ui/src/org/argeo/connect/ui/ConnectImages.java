@@ -86,7 +86,7 @@ public class ConnectImages {
 	public final static Image TODO = createType("todo.gif");
 	public final static Image RATE = createType("todo.gif");
 	// TODO We still use contact images: get more specific icons
-	public final static Image ACTIVITY = createType("activity.gif");
+	public final static Image ACTIVITY = createType("activity.png");
 	public final static Image NOTE = createType("note.gif");
 	public final static Image SENT_MAIL = createType("sentMail.png");
 	public final static Image PHONE_CALL = createType("phoneCall.png");
