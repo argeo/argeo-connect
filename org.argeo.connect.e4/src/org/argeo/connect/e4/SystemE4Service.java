@@ -15,6 +15,10 @@ import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextFunction;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -24,9 +28,16 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
+@SuppressWarnings("restriction")
 public class SystemE4Service extends ContextFunction implements SystemWorkbenchService, AppE4Service {
 	@Inject
 	EPartService partService;
+
+	@Inject
+	ECommandService commandService;
+
+	@Inject
+	EHandlerService handlerService;
 
 	// Injected known AppWorkbenchServices: order is important, first found
 	// result will be returned by the various methods.
@@ -36,15 +47,22 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 
 	@Override
 	public void callCommand(String commandId, Map<String, String> parameters) {
+		final Command command = commandService.getCommand(commandId);
+		final ParameterizedCommand pcmd = ParameterizedCommand.generateCommand(command, parameters);
+		handlerService.executeHandler(pcmd);
+	}
 
+	@Override
+	public String getOpenEntityEditorCmdId() {
+		return "org.argeo.suite.e4.command.openEntity";
 	}
 
 	@Override
 	public void openEntityEditor(Node entity) {
 		String entityEditorId = getEntityEditorId(entity);
 		MPart part = partService.createPart(entityEditorId);
-		if(part==null)
-			throw new CmsException("No entity editor found for id "+entityEditorId);
+		if (part == null)
+			throw new CmsException("No entity editor found for id " + entityEditorId);
 		try {
 			part.setLabel(entity.getName());
 			// part.getPersistedState().put("nodeWorkspace",
@@ -66,6 +84,8 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	@Override
 	public Object compute(IEclipseContext context, String contextKey) {
 		partService = context.get(EPartService.class);
+		commandService = context.get(ECommandService.class);
+		handlerService = context.get(EHandlerService.class);
 		MApplication app = context.get(MApplication.class);
 		IEclipseContext appCtx = app.getContext();
 		appCtx.set(SystemWorkbenchService.class, this);

@@ -15,7 +15,7 @@ public class ActivitiesE4Service extends ActivitiesUiService implements AppE4Ser
 		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_TASK))
 			return "org.argeo.suite.e4.partdescriptor.taskEditor";
 		else if (ConnectJcrUtils.isNodeType(entity, ActivitiesTypes.ACTIVITIES_ACTIVITY))
-			return null;
+			return "org.argeo.suite.e4.partdescriptor.activityEditor";
 		return null;
 	}
 

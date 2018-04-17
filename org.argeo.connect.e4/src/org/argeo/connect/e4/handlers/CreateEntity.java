@@ -18,6 +18,8 @@ import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -40,7 +42,11 @@ public class CreateEntity {
 	private SystemAppService systemAppService;
 	@Inject
 	private SystemWorkbenchService systemWorkbenchService;
-
+	@Inject
+	private EHandlerService handlerService;
+	@Inject
+	private ECommandService commandService;
+	
 	@Execute
 	public void execute(@Named(PARAM_TARGET_NODE_TYPE) String nodeType) {
 
@@ -96,9 +102,8 @@ public class CreateEntity {
 			Map<String, String> params = new HashMap<>();
 			params.put(ConnectEditor.PARAM_JCR_ID, jcrId);
 			params.put(ConnectEditor.PARAM_OPEN_FOR_EDIT, "true");
-			// ConnectWorkbenchUtils.callCommand(systemWorkbenchService.getOpenEntityEditorCmdId(),
-			// ConnectEditor.PARAM_JCR_ID, jcrId, ConnectEditor.PARAM_OPEN_FOR_EDIT,
-			// "true");
+			String openEntityCmd = systemWorkbenchService.getOpenEntityEditorCmdId();
+			systemWorkbenchService.callCommand(openEntityCmd, params);
 		}
 	}
 
