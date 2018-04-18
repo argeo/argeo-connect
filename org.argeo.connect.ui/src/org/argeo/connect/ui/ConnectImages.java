@@ -108,6 +108,7 @@ public class ConnectImages {
 	public final static Image TASK = createType("task.png");
 	public final static Image PROJECT = createType("project.png");
 	public final static Image MILESTONE = createType("milestone.png");
+	public final static Image LICENSE = createType("license.png");
 	public final static Image SPECIFICATION = createType("specification.gif");
 	public final static Image CATEGORY = createType("category.gif");
 }
