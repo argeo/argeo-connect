@@ -248,6 +248,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					super.refresh();
 				}
 			};
+			part.initialize(getManagedForm());
 			getManagedForm().addPart(part);
 			// addMainSectionMenu(part);
 		}
@@ -272,6 +273,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					super.refresh();
 				}
 			};
+			part.initialize(getManagedForm());
 			getManagedForm().addPart(part);
 			return section;
 		}
@@ -422,6 +424,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					super.refresh();
 				}
 			};
+			part.initialize(getManagedForm());
 			mf.addPart(part);
 			// form.reflow(true);
 		}

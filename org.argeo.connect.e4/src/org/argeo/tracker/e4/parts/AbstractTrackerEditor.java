@@ -319,27 +319,32 @@ public abstract class AbstractTrackerEditor extends AbstractConnectCTabEditor
 	// this.resourcesService = resourcesService;
 	// }
 
-//	public void setActivitiesService(ActivitiesService activitiesService) {
-//		this.activitiesService = activitiesService;
-//	}
-//
-//	public void setDocumentsService(DocumentsService documentsService) {
-//		this.documentsService = documentsService;
-//	}
-//
-//	public void setTrackerService(TrackerService trackerService) {
-//		this.trackerService = trackerService;
-//	}
+	// public void setActivitiesService(ActivitiesService activitiesService) {
+	// this.activitiesService = activitiesService;
+	// }
+	//
+	// public void setDocumentsService(DocumentsService documentsService) {
+	// this.documentsService = documentsService;
+	// }
+	//
+	// public void setTrackerService(TrackerService trackerService) {
+	// this.trackerService = trackerService;
+	// }
 
-//	public void setAppService(AppService appService) {
-//		this.appService = appService;
-//	}
-//
-//	public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
-//		this.appWorkbenchService = appWorkbenchService;
-//	}
-	
+	// public void setAppService(AppService appService) {
+	// this.appService = appService;
+	// }
+	//
+	// public void setAppWorkbenchService(AppWorkbenchService appWorkbenchService) {
+	// this.appWorkbenchService = appWorkbenchService;
+	// }
+	/** @deprecated Use {@link #createFormBoldLabel(Composite, String)} */
+	@Deprecated
 	protected Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
+		return createFormBoldLabel(parent, value);
+	}
+
+	protected Label createFormBoldLabel(Composite parent, String value) {
 		Label label = new Label(parent, SWT.END);
 		label.setText(" " + value);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));

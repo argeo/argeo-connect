@@ -18,7 +18,6 @@ import org.argeo.activities.ActivitiesTypes;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
@@ -118,81 +117,97 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			super(editor, PAGE_ID, "Main");
 		}
 
-		protected void createFormContent(final IManagedForm mf) {
+		protected void createFormContentX(final IManagedForm mf) {
 			// ScrolledForm form = mf.getForm();
 			// Composite body = form.getBody();
 			ScrolledComposite form = mf.getForm();
 			Composite body = new Composite(form, SWT.NONE);
 			GridLayout layout = new GridLayout();
 			body.setLayout(layout);
-			appendOverviewPart(body);
+			appendOverviewPartDebug(body);
 
-			Composite commentFormPart = new CommentListFormPart(getPageManagedForm(), body, SWT.NO_FOCUS,
+			// Composite commentFormPart = new CommentListFormPart(getManagedForm(), body,
+			// SWT.NO_FOCUS,
+			// getTrackerService(), getNode());
+			// commentFormPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		}
+
+		@Override
+		protected void createFormContent(Composite body) {
+			appendOverviewPart(body);
+			Composite commentFormPart = new CommentListFormPart(getManagedForm(), body, SWT.NO_FOCUS,
 					getTrackerService(), getNode());
 			commentFormPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		}
 
+		private void appendOverviewPartDebug(final Composite parent) {
+			new Label(parent, SWT.NONE).setText("TEST");
+
+		}
+
 		/** Creates the general section */
 		private void appendOverviewPart(final Composite parent) {
-			FormToolkit tk = getPageManagedForm().getToolkit();
+			// FormToolkit tk = getPageManagedForm().getToolkit();
 
-			final Section section = TrackerUiUtils.addFormSection(tk, parent, getIssueTitle());
-			section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-			Composite body = (Composite) section.getClient();
+			// final Section section = TrackerUiUtils.addFormSection(tk, parent,
+			// getIssueTitle());
+			// section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			//
+			// Composite body = (Composite) section.getClient();
+			Composite body = new Composite(parent, SWT.NONE);
 			GridLayout layout = new GridLayout();
-			layout.numColumns = 6;
+			layout.numColumns = 2;
 			body.setLayout(layout);
 
 			// Status
-			createFormBoldLabel(tk, body, "Status");
+			createFormBoldLabel(body, "Status");
 			statusCmb = new Combo(body, SWT.READ_ONLY);
 			statusCmb.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
 
 			// Project
-			createFormBoldLabel(tk, body, "Project");
+			createFormBoldLabel(body, "Project");
 			projectLk = new Link(body, SWT.NONE);
 			projectLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
-			configureOpenLink(projectLk, project);
+			// configureOpenLink(projectLk, project);
 
 			// Target milestone
-			createFormBoldLabel(tk, body, "Milestone");
+			createFormBoldLabel(body, "Milestone");
 			milestoneLk = new Link(body, SWT.NONE);
 			milestoneLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
 
 			// Assigned to
-			createFormBoldLabel(tk, body, "Assigned to");
+			createFormBoldLabel(body, "Assigned to");
 			assignedToLk = new Link(body, SWT.NONE);
 			assignedToLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, false, false));
 
 			// Due Date
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Due Date");
+			createFormBoldLabel(body, "Due Date");
 			dueDateLk = new Link(body, SWT.NONE);
 			dueDateLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
 
 			// Reported by
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Reported by");
+			createFormBoldLabel(body, "Reported by");
 			reporterLk = new Link(body, SWT.NONE);
 			reporterLk.setLayoutData(new GridData(SWT.FILL, SWT.BOTTOM, true, false));
 
 			// Related entities
-			TrackerUiUtils.createFormBoldLabel(tk, body, "Related to");
+			createFormBoldLabel(body, "Related to");
 			relatedCmp = new Composite(body, SWT.NO_FOCUS);
 			GridData twd = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
-//			twd.colspan = 5;
+			// twd.colspan = 5;
 			relatedCmp.setLayoutData(twd);
 
 			// TODO add linked documents
 
 			// Description
-			twd = (GridData) TrackerUiUtils.createFormBoldLabel(tk, body, "Details").getLayoutData();
-//			twd.valign = GridData.TOP;
+			twd = (GridData) createFormBoldLabel(body, "Details").getLayoutData();
+			// twd.valign = GridData.TOP;
 			descLbl = new Label(body, SWT.WRAP);
 			twd = new GridData(SWT.FILL, SWT.TOP, true, false);
-//			twd.colspan = 5;
+			// twd.colspan = 5;
 			descLbl.setLayoutData(twd);
 
-			SectionPart part = new SectionPart((Section) body.getParent()) {
+			SectionPart part = new SectionPart(body.getParent()) {
 
 				@Override
 				public void refresh() {
@@ -241,11 +256,12 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 					descLbl.setText(desc);
 
 					parent.layout(true, true);
-					section.setFocus();
+					// section.setFocus();
 					super.refresh();
 				}
 			};
 			addStatusCmbSelListener(part, statusCmb, task, ActivitiesNames.ACTIVITIES_TASK_STATUS, PropertyType.STRING);
+
 			// addLongCmbSelListener(part, importanceCmb, task,
 			// TrackerNames.TRACKER_IMPORTANCE,
 			// TrackerUtils.MAPS_ISSUE_IMPORTANCES);
@@ -257,7 +273,10 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 			// addFocusOutListener(part, descTxt, task,
 			// Property.JCR_DESCRIPTION);
 			// addChangeAssignListener(part, assignedToLk);
-			getPageManagedForm().addPart(part);
+
+			part.initialize(getManagedForm());
+			getManagedForm().addPart(part);
+
 			addMainSectionMenu(part);
 		}
 
@@ -318,7 +337,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	// SECTION MENU
 	private void addMainSectionMenu(SectionPart sectionPart) {
-		ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getSection());
+		ToolBarManager toolBarManager = TrackerUiUtils.addMenu(sectionPart.getComposite());
 		String tooltip = "Edit the task main information";
 		Action action = new OpenConfigureDialog(tooltip, ConnectImages.IMG_DESC_EDIT, sectionPart);
 		toolBarManager.add(action);
@@ -399,14 +418,15 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		return "#" + id + " " + name;
 	}
 
-//	private Label createFormBoldLabel(FormToolkit toolkit, Composite parent, String value) {
-//		// We add a blank space before to workaround the cropping of the
-//		// word
-//		// first letter in some OS/Browsers (typically MAC/Firefox 31 )
-//		Label label = toolkit.createLabel(parent, " " + value, SWT.END);
-//		label.setFont(EclipseUiUtils.getBoldFont(parent));
-//		GridData twd = new GridData(SWT.END, SWT.BOTTOM);
-//		label.setLayoutData(twd);
-//		return label;
-//	}
+	// private Label createFormBoldLabel(FormToolkit toolkit, Composite parent,
+	// String value) {
+	// // We add a blank space before to workaround the cropping of the
+	// // word
+	// // first letter in some OS/Browsers (typically MAC/Firefox 31 )
+	// Label label = toolkit.createLabel(parent, " " + value, SWT.END);
+	// label.setFont(EclipseUiUtils.getBoldFont(parent));
+	// GridData twd = new GridData(SWT.END, SWT.BOTTOM);
+	// label.setLayoutData(twd);
+	// return label;
+	// }
 }

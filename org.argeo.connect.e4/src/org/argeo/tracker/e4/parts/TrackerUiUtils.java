@@ -134,10 +134,10 @@ class TrackerUiUtils {
 		return section;
 	}
 
-	public static ToolBarManager addMenu(Section section) {
+	public static ToolBarManager addMenu(Composite section) {
 		ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT);
 		ToolBar toolbar = toolBarManager.createControl(section);
-		section.setTextClient(toolbar);
+		//section.setTextClient(toolbar);
 		final Cursor handCursor = new Cursor(section.getDisplay(), SWT.CURSOR_HAND);
 		toolbar.setCursor(handCursor);
 		toolbar.addDisposeListener(new DisposeListener() {
