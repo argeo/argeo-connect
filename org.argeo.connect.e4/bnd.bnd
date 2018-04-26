@@ -4,4 +4,5 @@ org.eclipse.jface.window,\
 org.argeo.eclipse.ui.dialogs,\
 org.argeo.node,\
 org.eclipse.core.commands.common,\
+org.eclipse.e4.ui.services,\
 *
