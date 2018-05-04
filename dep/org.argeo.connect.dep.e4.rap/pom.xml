@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -17,6 +18,21 @@
 		</dependency>
 
 		<!-- UIs -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.api</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.core</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.ui</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.e4</artifactId>
@@ -51,6 +67,7 @@
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.dep.cms.e4.rap</artifactId>
 			<version>${version.argeo-commons}</version>
+			<type>pom</type>
 		</dependency>
 	</dependencies>
 	<profiles>
@@ -59,26 +76,43 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
+						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>copy-argeo</id>
+								<id>prepare-source</id>
 								<phase>package</phase>
 								<goals>
-									<goal>copy-dependencies</goal>
+									<goal>single</goal>
 								</goals>
 								<configuration>
-									<includeTypes>jar</includeTypes>
-									<outputDirectory>${project.build.directory}/lib-argeo</outputDirectory>
-									<includeGroupIds>org.argeo.connect</includeGroupIds>
-									<includeTypes>jar</includeTypes>
-									<includeScope>runtime</includeScope>
-									<useRepositoryLayout>true</useRepositoryLayout>
+									<descriptorRefs>
+										<descriptorRef>a2-source</descriptorRef>
+									</descriptorRefs>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
+					<!-- <plugin> -->
+					<!-- <groupId>org.apache.maven.plugins</groupId> -->
+					<!-- <artifactId>maven-dependency-plugin</artifactId> -->
+					<!-- <executions> -->
+					<!-- <execution> -->
+					<!-- <id>copy-argeo</id> -->
+					<!-- <phase>package</phase> -->
+					<!-- <goals> -->
+					<!-- <goal>copy-dependencies</goal> -->
+					<!-- </goals> -->
+					<!-- <configuration> -->
+					<!-- <includeTypes>jar</includeTypes> -->
+					<!-- <outputDirectory>${project.build.directory}/lib-argeo</outputDirectory> -->
+					<!-- <includeGroupIds>org.argeo.connect</includeGroupIds> -->
+					<!-- <includeTypes>jar</includeTypes> -->
+					<!-- <includeScope>runtime</includeScope> -->
+					<!-- <useRepositoryLayout>true</useRepositoryLayout> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
+					<!-- </executions> -->
+					<!-- </plugin> -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>rpm-maven-plugin</artifactId>
@@ -100,7 +134,7 @@
 											<directoryIncluded>true</directoryIncluded>
 											<sources>
 												<source>
-													<location>${project.build.directory}/lib-argeo</location>
+													<location>${project.build.directory}/${project.artifactId}-${project.version}-a2-source</location>
 													<includes>
 														<include>**/*.jar</include>
 													</includes>
@@ -110,8 +144,88 @@
 									</mappings>
 									<requires>
 										<require>argeo-cms-e4-rap</require>
-										<require>argeo-connect-tp</require>
+										<require>argeo-connect-e4-tp</require>
 									</requires>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>rpmbuild-tp</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>prepare-source-tp</id>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<descriptorRefs>
+										<descriptorRef>a2-source-tp</descriptorRef>
+									</descriptorRefs>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+<!-- 					<plugin> -->
+<!-- 						<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 						<artifactId>maven-dependency-plugin</artifactId> -->
+<!-- 						<executions> -->
+<!-- 							<execution> -->
+<!-- 								<id>copy-tp</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>copy-dependencies</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<includeTypes>jar</includeTypes> -->
+<!-- 									<outputDirectory>${project.build.directory}/lib-tp</outputDirectory> -->
+<!-- 									<excludeGroupIds>org.argeo.connect</excludeGroupIds> -->
+<!-- 									<includeTypes>jar</includeTypes> -->
+<!-- 									<includeScope>runtime</includeScope> -->
+<!-- 									<useRepositoryLayout>true</useRepositoryLayout> -->
+<!-- 									<excludeTransitive>true</excludeTransitive> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
+<!-- 						</executions> -->
+<!-- 					</plugin> -->
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>rpm-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>rpm-tp</id>
+								<phase>package</phase>
+								<goals>
+									<goal>rpm</goal>
+								</goals>
+								<configuration>
+									<name>argeo-connect-e4-tp</name>
+									<version>${version.argeo-tp}</version>
+									<mappings>
+										<mapping>
+											<directory>/usr/share/osgi</directory>
+											<username>root</username>
+											<groupname>root</groupname>
+											<filemode>644</filemode>
+											<directoryIncluded>true</directoryIncluded>
+											<sources>
+												<source>
+													<location>${project.build.directory}/${project.artifactId}-${project.version}-a2-source-tp</location>
+													<includes>
+														<include>**/*.jar</include>
+													</includes>
+												</source>
+											</sources>
+										</mapping>
+									</mappings>
 								</configuration>
 							</execution>
 						</executions>

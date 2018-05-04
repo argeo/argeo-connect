@@ -19,6 +19,21 @@
 		<!-- UIs -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.api</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.core</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.ui</artifactId>
+			<version>2.1.79-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.e4</artifactId>
 			<version>2.1.79-SNAPSHOT</version>
 		</dependency>
@@ -46,6 +61,7 @@
 			<groupId>org.argeo.commons.rcp</groupId>
 			<artifactId>org.argeo.dep.cms.e4.rcp</artifactId>
 			<version>${version.argeo-rcp}</version>
+			<type>pom</type>
 		</dependency>
 	</dependencies>
 	<profiles>
@@ -54,26 +70,43 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
+						<artifactId>maven-assembly-plugin</artifactId>
 						<executions>
 							<execution>
-								<id>copy-argeo</id>
+								<id>prepare-source</id>
 								<phase>package</phase>
 								<goals>
-									<goal>copy-dependencies</goal>
+									<goal>single</goal>
 								</goals>
 								<configuration>
-									<includeTypes>jar</includeTypes>
-									<outputDirectory>${project.build.directory}/lib-argeo</outputDirectory>
-									<includeGroupIds>org.argeo.connect</includeGroupIds>
-									<includeTypes>jar</includeTypes>
-									<includeScope>runtime</includeScope>
-									<useRepositoryLayout>true</useRepositoryLayout>
+									<descriptorRefs>
+										<descriptorRef>a2-source</descriptorRef>
+									</descriptorRefs>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
+<!-- 					<plugin> -->
+<!-- 						<groupId>org.apache.maven.plugins</groupId> -->
+<!-- 						<artifactId>maven-dependency-plugin</artifactId> -->
+<!-- 						<executions> -->
+<!-- 							<execution> -->
+<!-- 								<id>copy-argeo</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>copy-dependencies</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<includeTypes>jar</includeTypes> -->
+<!-- 									<outputDirectory>${project.build.directory}/lib-argeo</outputDirectory> -->
+<!-- 									<includeGroupIds>org.argeo.connect</includeGroupIds> -->
+<!-- 									<includeTypes>jar</includeTypes> -->
+<!-- 									<includeScope>runtime</includeScope> -->
+<!-- 									<useRepositoryLayout>true</useRepositoryLayout> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
+<!-- 						</executions> -->
+<!-- 					</plugin> -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>rpm-maven-plugin</artifactId>
@@ -95,7 +128,7 @@
 											<directoryIncluded>true</directoryIncluded>
 											<sources>
 												<source>
-													<location>${project.build.directory}/lib-argeo</location>
+													<location>${project.build.directory}/${project.artifactId}-${project.version}-a2-source</location>
 													<includes>
 														<include>**/*.jar</include>
 													</includes>
