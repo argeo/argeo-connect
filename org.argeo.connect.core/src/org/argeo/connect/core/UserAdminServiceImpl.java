@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.jcr.Node;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.transaction.UserTransaction;
@@ -18,10 +19,12 @@ import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.util.UserAdminUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
+import org.argeo.jcr.JcrUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.naming.SharedSecret;
 import org.argeo.node.NodeConstants;
 import org.argeo.osgi.useradmin.UserAdminConf;
+import org.argeo.people.PeopleNames;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.useradmin.Authorization;
@@ -45,7 +48,9 @@ public class UserAdminServiceImpl implements UserAdminService {
 	private final static Log log = LogFactory.getLog(UserAdminServiceImpl.class);
 
 	private UserAdmin userAdmin;
+	@Deprecated
 	private ServiceReference<UserAdmin> userAdminServiceReference;
+	private Map<String, String> serviceProperties;
 	private UserTransaction userTransaction;
 
 	@Override
@@ -162,7 +167,9 @@ public class UserAdminServiceImpl implements UserAdminService {
 
 	public Map<String, String> getKnownBaseDns(boolean onlyWritable) {
 		Map<String, String> dns = new HashMap<String, String>();
-		for (String uri : userAdminServiceReference.getPropertyKeys()) {
+		String[] propertyKeys = userAdminServiceReference != null ? userAdminServiceReference.getPropertyKeys()
+				: serviceProperties.keySet().toArray(new String[serviceProperties.size()]);
+		for (String uri : propertyKeys) {
 			if (!uri.startsWith("/"))
 				continue;
 			Dictionary<String, ?> props = UserAdminConf.uriAsProperties(uri);
@@ -275,6 +282,38 @@ public class UserAdminServiceImpl implements UserAdminService {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public User createUserFromPerson(Node person) {
+		String email = JcrUtils.get(person, PeopleNames.PEOPLE_PRIMARY_EMAIL);
+		String dn = buildDefaultDN(email, Role.USER);
+		User user;
+		try {
+			userTransaction.begin();
+			user = (User) userAdmin.createRole(dn, Role.USER);
+			Dictionary<String, Object> userProperties = user.getProperties();
+			String name = JcrUtils.get(person, PeopleNames.PEOPLE_DISPLAY_NAME);
+			userProperties.put(LdapAttrs.cn.name(), name);
+			userProperties.put(LdapAttrs.displayName.name(), name);
+			String givenName = JcrUtils.get(person, PeopleNames.PEOPLE_FIRST_NAME);
+			String surname = JcrUtils.get(person, PeopleNames.PEOPLE_LAST_NAME);
+			userProperties.put(LdapAttrs.givenName.name(), givenName);
+			userProperties.put(LdapAttrs.sn.name(), surname);
+			userProperties.put(LdapAttrs.mail.name(), email.toLowerCase());
+			userTransaction.commit();
+		} catch (Exception e) {
+			try {
+				userTransaction.rollback();
+			} catch (Exception e1) {
+				log.error("Could not roll back", e1);
+			}
+			if (e instanceof RuntimeException)
+				throw (RuntimeException) e;
+			else
+				throw new ConnectException("Cannot create user", e);
+		}
+		return user;
+	}
+
 	public UserAdmin getUserAdmin() {
 		return userAdmin;
 	}
@@ -284,14 +323,16 @@ public class UserAdminServiceImpl implements UserAdminService {
 	}
 
 	/* DEPENDENCY INJECTION */
-	public void setUserAdmin(UserAdmin userAdmin) {
+	public void setUserAdmin(UserAdmin userAdmin, Map<String, String> serviceProperties) {
 		this.userAdmin = userAdmin;
+		this.serviceProperties = serviceProperties;
 	}
 
 	public void setUserTransaction(UserTransaction userTransaction) {
 		this.userTransaction = userTransaction;
 	}
 
+	@Deprecated
 	public void setUserAdminServiceReference(ServiceReference<UserAdmin> userAdminServiceReference) {
 		this.userAdminServiceReference = userAdminServiceReference;
 	}

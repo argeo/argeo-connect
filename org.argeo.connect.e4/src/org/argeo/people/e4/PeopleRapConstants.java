@@ -15,6 +15,7 @@ public interface PeopleRapConstants {
 	String CTAB_CONTACT_DETAILS = "people:contactDetails";
 	String CTAB_ACTIVITY_LOG = "people:activityLog";
 	String CTAB_JOBS = "people:jobs";
+	String CTAB_SECURITY = "people:security";
 	String CTAB_LEGAL_INFO = "people:legalInfo";
 	String CTAB_EMPLOYEES = "people:employees";
 	String CTAB_MEMBERS = "people:members";

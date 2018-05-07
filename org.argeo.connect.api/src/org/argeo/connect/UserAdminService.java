@@ -2,6 +2,7 @@ package org.argeo.connect;
 
 import java.util.List;
 
+import javax.jcr.Node;
 import javax.transaction.UserTransaction;
 
 import org.osgi.framework.InvalidSyntaxException;
@@ -59,8 +60,10 @@ public interface UserAdminService {
 	void changeOwnPassword(char[] oldPassword, char[] newPassword);
 
 	void resetPassword(String username, char[] newPassword);
-	
+
 	String addSharedSecret(String username, int hours);
+
+	User createUserFromPerson(Node person);
 
 	/* EXPOSE */
 	public UserAdmin getUserAdmin();

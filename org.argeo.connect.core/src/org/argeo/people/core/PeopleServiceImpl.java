@@ -3,7 +3,9 @@ package org.argeo.people.core;
 import static org.argeo.connect.util.ConnectUtils.isEmpty;
 import static org.argeo.connect.util.ConnectUtils.notEmpty;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -14,17 +16,23 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.CmsException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.RemoteJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeNames;
+import org.argeo.node.NodeTypes;
 import org.argeo.people.ContactService;
 import org.argeo.people.PeopleConstants;
 import org.argeo.people.PeopleException;
@@ -34,6 +42,8 @@ import org.argeo.people.PeopleTypes;
 import org.argeo.people.PersonService;
 import org.argeo.people.util.PeopleJcrUtils;
 import org.argeo.people.util.PersonJcrUtils;
+import org.osgi.service.useradmin.Role;
+import org.osgi.service.useradmin.User;
 
 /** Concrete access to {@link PeopleService} */
 public class PeopleServiceImpl extends AbstractAppService implements PeopleService, PeopleNames {
@@ -41,6 +51,7 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 
 	/* DEPENDENCY INJECTION */
 	private ResourcesService resourcesService;
+	private UserAdminService userAdminService;
 
 	/* Centralises the various specific People services */
 	private PersonService personService;
@@ -54,8 +65,26 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 			if (isEmpty(peopleUid))
 				throw new PeopleException(
 						"Unable to define default path for " + srcNode + ". No property people:uid is defined");
-			String relPath = getDefaultRelPath(ConnectJcrUtils.getSession(srcNode), nodeType, peopleUid);
-			Node createdNode = JcrUtils.mkdirs(parent, relPath);
+
+			Node createdNode = null;
+			if (srcNode.hasProperty(PeopleNames.PEOPLE_PRIMARY_EMAIL)) {
+				String email = JcrUtils.get(srcNode, PEOPLE_PRIMARY_EMAIL);
+				String dn = userAdminService.buildDefaultDN(email, Role.USER);
+				User user = userAdminService.getUser(dn);
+				if (user != null) {
+					String userPath = generateUserPath(dn);
+					Node userHome = JcrUtils.mkdirs(parent, userPath);
+					userHome.addMixin(NodeTypes.NODE_USER_HOME);
+					userHome.setProperty(NodeNames.LDAP_UID, dn);
+					// FIXME centralise
+					createdNode = userHome.addNode(".profile");
+				}
+			}
+
+			if (createdNode == null) {
+				String relPath = getDefaultRelPath(ConnectJcrUtils.getSession(srcNode), nodeType, peopleUid);
+				createdNode = JcrUtils.mkdirs(parent, relPath);
+			}
 			RemoteJcrUtils.copy(srcNode, createdNode, true);
 			createdNode.addMixin(nodeType);
 			JcrUtils.updateLastModified(createdNode);
@@ -64,6 +93,19 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 			return createdNode;
 		} else
 			return null;
+	}
+
+	private SimpleDateFormat usersDatePath = new SimpleDateFormat("YYYY/MM");
+
+	private String generateUserPath(String username) {
+		LdapName dn;
+		try {
+			dn = new LdapName(username);
+		} catch (InvalidNameException e) {
+			throw new CmsException("Invalid name " + username, e);
+		}
+		String userId = dn.getRdn(dn.size() - 1).getValue().toString();
+		return usersDatePath.format(new Date()) + '/' + userId;
 	}
 
 	@Override
@@ -336,4 +378,9 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 		this.resourcesService = resourcesService;
 		personService = new PersonServiceImpl(this, resourcesService);
 	}
+
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
+	}
+
 }

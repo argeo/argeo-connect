@@ -1,6 +1,8 @@
 package org.argeo.people.e4.parts;
 
 import javax.inject.Inject;
+import javax.jcr.AccessDeniedException;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
@@ -15,6 +17,7 @@ import org.argeo.activities.ui.RelatedActivityList;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -23,6 +26,7 @@ import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeTypes;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
@@ -49,7 +53,7 @@ import org.osgi.framework.FrameworkUtil;
 /** Edit a person with corresponding details */
 public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleNames {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
-//	public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".personEditor";
+	// public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".personEditor";
 	private BundleContext bc = FrameworkUtil.getBundle(PersonEditor.class).getBundleContext();
 
 	// Context
@@ -57,15 +61,16 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 	private ActivitiesService activitiesService;
 	@Inject
 	private PeopleService peopleService;
-	
+
 	private Node person;
 
 	public PersonEditor() {
-//		peopleService = bc.getService(bc.getServiceReference(PeopleService.class));
-//		activitiesService = bc.getService(bc.getServiceReference(ActivitiesService.class));
+		// peopleService = bc.getService(bc.getServiceReference(PeopleService.class));
+		// activitiesService =
+		// bc.getService(bc.getServiceReference(ActivitiesService.class));
 	}
 
-	public void init()  {
+	public void init() {
 		super.init();
 		person = getNode();
 	}
@@ -131,6 +136,19 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 				getSystemWorkbenchService(), person);
 		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
 		addLazyTabToFolder(folder, crewCmp, "Organisations", PeopleRapConstants.CTAB_JOBS, tooltip);
+
+		// Security
+		try {
+			Node home = person.getParent();
+			if (home.isNodeType(NodeTypes.NODE_USER_HOME)) {
+				tooltip = "Security";
+				LazyCTabControl securityCmp = new PersonSecurityCTab(folder, SWT.NO_FOCUS, this, getUserAdminService());
+				addLazyTabToFolder(folder, securityCmp, "Security", PeopleRapConstants.CTAB_SECURITY, tooltip);
+			}
+		} catch (RepositoryException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void populateTitleComposite(Composite parent) {
@@ -193,8 +211,8 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		// PeopleNames.PEOPLE_DISPLAY_NAME)))
 		// defineDistinctBtn.setSelection(true);
 
-		final Text salutationTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "Salutation",
-				"Mr, Mrs...", 60);
+		final Text salutationTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "Salutation", "Mr, Mrs...",
+				60);
 		final Text firstNameTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "First Name",
 				"Usual first name for this person", 100);
 		// final Text middleNameTxt =
