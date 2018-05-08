@@ -18,6 +18,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
+import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,7 +76,7 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 					String userPath = generateUserPath(dn);
 					Node userHome = JcrUtils.mkdirs(parent, userPath);
 					userHome.addMixin(NodeTypes.NODE_USER_HOME);
-					userHome.setProperty(NodeNames.LDAP_UID, dn);
+					userHome.setProperty(NodeNames.LDAP_UID, new X500Principal(dn).getName());
 					// FIXME centralise
 					createdNode = userHome.addNode(".profile");
 				}

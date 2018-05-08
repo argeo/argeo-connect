@@ -30,13 +30,13 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.e4.handlers.EditJob;
 import org.argeo.people.ui.providers.BooleanFlagLabelProvider;
 import org.argeo.people.ui.providers.OrgOverviewLabelProvider;
 import org.argeo.people.ui.providers.PersonOverviewLabelProvider;
 import org.argeo.people.ui.providers.RoleListLabelProvider;
 import org.argeo.people.util.PeopleJcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
@@ -167,8 +167,8 @@ public class JobListCTab extends LazyCTabControl {
 			col = ViewerUtils.createTableViewerColumn(viewer, "", SWT.CENTER, 25);
 			PrimaryEditingSupport editingSupport = new PrimaryEditingSupport(viewer, PeopleNames.PEOPLE_IS_PRIMARY);
 			col.setEditingSupport(editingSupport);
-			col.setLabelProvider( new BooleanFlagLabelProvider(PeopleNames.PEOPLE_IS_PRIMARY,
-					ConnectImages.PRIMARY, ConnectImages.PRIMARY_NOT));
+			col.setLabelProvider(new BooleanFlagLabelProvider(PeopleNames.PEOPLE_IS_PRIMARY, ConnectImages.PRIMARY,
+					ConnectImages.PRIMARY_NOT));
 			tableColumnLayout.setColumnData(col.getColumn(), new ColumnWeightData(0, 26, true));
 		}
 
@@ -232,9 +232,9 @@ public class JobListCTab extends LazyCTabControl {
 
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// Map<String, String> params = new HashMap<String, String>();
-				// params.put(EditJob.PARAM_RELEVANT_NODE_JCR_ID,
-				// ConnectJcrUtils.getIdentifier(entity));
+				Map<String, String> params = new HashMap<String, String>();
+				params.put(EditJob.PARAM_RELEVANT_NODE_JCR_ID, ConnectJcrUtils.getIdentifier(entity));
+				systemWorkbenchService.callCommand(EditJob.ID, params);
 				// CommandUtils.callCommand(EditJob.ID, params);
 			}
 		});

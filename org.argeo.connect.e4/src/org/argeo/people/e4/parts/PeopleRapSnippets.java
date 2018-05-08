@@ -16,6 +16,8 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.e4.handlers.EditJob;
+import org.argeo.people.e4.handlers.RemoveEntityReference;
 import org.argeo.people.ui.PeopleUiSnippets;
 import org.argeo.people.ui.PeopleWorkbenchService;
 import org.argeo.people.util.PeopleJcrUtils;
@@ -28,11 +30,11 @@ public class PeopleRapSnippets {
 	 * <code>RemoveEntityReference</code> from a cell of a HTML list.
 	 */
 	public static String getRemoveReferenceSnippetForLists(Node linkNode) {
-//		String toRemoveJcrId = ConnectJcrUtils.getIdentifier(linkNode);
-//		String href = RemoveEntityReference.ID + "/" + RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
-//				+ toRemoveJcrId;
-//		return ConnectUiSnippets.getRWTLink(href, ConnectUiConstants.CRUD_DELETE);
-		return "NULL";
+		String toRemoveJcrId = ConnectJcrUtils.getIdentifier(linkNode);
+		String href = RemoveEntityReference.ID + "/" + RemoveEntityReference.PARAM_TOREMOVE_JCR_ID + "="
+				+ toRemoveJcrId;
+		return ConnectUiSnippets.getRWTLink(href, ConnectUiConstants.CRUD_DELETE);
+//		return "NULL";
 	}
 
 	/**
@@ -40,11 +42,11 @@ public class PeopleRapSnippets {
 	 * <code>EditJob</code> command from a cell of a HTML list
 	 */
 	public static String getEditJobSnippetForLists(Node relevantNode, boolean isBackward) {
-//		String toEditJcrId = ConnectJcrUtils.getIdentifier(relevantNode);
-//		String href = EditJob.ID + "/" + EditJob.PARAM_RELEVANT_NODE_JCR_ID + "=" + toEditJcrId + "/"
-//				+ EditJob.PARAM_IS_BACKWARD + "=" + isBackward;
-//		return ConnectUiSnippets.getRWTLink(href, ConnectUiConstants.CRUD_EDIT);
-		return "NULL";
+		String toEditJcrId = ConnectJcrUtils.getIdentifier(relevantNode);
+		String href = EditJob.ID + "/" + EditJob.PARAM_RELEVANT_NODE_JCR_ID + "=" + toEditJcrId + "/"
+				+ EditJob.PARAM_IS_BACKWARD + "=" + isBackward;
+		return ConnectUiSnippets.getRWTLink(href, ConnectUiConstants.CRUD_EDIT);
+//		return "NULL";
 	}
 
 	public static String getClickableEntityContact(PeopleService peopleService, Node entity, String label,

@@ -41,7 +41,7 @@ public class HtmlListRwtAdapter extends SelectionAdapter {
 					systemWorkbenchService.callCommand(token[0], params);
 				} catch (Exception nde) {
 					log.warn("Error while trying to call " + "a command using a RWT.HYPERLINK.\n Retrieved href:"
-							+ string + "\n" + nde.getCause().getMessage());
+							+ string + "\n" + nde.getMessage());
 					nde.printStackTrace();
 				}
 			}

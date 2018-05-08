@@ -49,6 +49,8 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	public void callCommand(String commandId, Map<String, String> parameters) {
 		final Command command = commandService.getCommand(commandId);
 		final ParameterizedCommand pcmd = ParameterizedCommand.generateCommand(command, parameters);
+		if (pcmd == null)
+			throw new ConnectException("No command found for id " + commandId + " and parameters " + parameters);
 		handlerService.executeHandler(pcmd);
 	}
 
