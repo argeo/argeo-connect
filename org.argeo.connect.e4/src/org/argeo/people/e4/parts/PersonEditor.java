@@ -1,8 +1,6 @@
 package org.argeo.people.e4.parts;
 
 import javax.inject.Inject;
-import javax.jcr.AccessDeniedException;
-import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
@@ -17,7 +15,6 @@ import org.argeo.activities.ui.RelatedActivityList;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -26,7 +23,6 @@ import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.naming.LdapAttrs;
 import org.argeo.node.NodeNames;
 import org.argeo.node.NodeTypes;
 import org.argeo.people.PeopleException;
@@ -51,7 +47,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.service.useradmin.User;
 
 /** Edit a person with corresponding details */
 public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleNames {
