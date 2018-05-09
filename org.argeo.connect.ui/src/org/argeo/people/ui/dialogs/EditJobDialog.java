@@ -41,6 +41,7 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.ui.PeopleMsg;
 import org.argeo.people.ui.providers.EntitySingleColumnLabelProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
@@ -102,10 +103,10 @@ public class EditJobDialog extends TrayDialog {
 	private Button isPrimaryBtn;
 
 	// Labels
-	private final String positionLbl = "Role";
-	private final String chosenItemLbl = "Chosen item";
-	private final String departmentLbl = "Department";
-	private final String primaryLbl = "Is primary";
+	private final String positionLbl = PeopleMsg.position.lead();
+	private final String chosenItemLbl = PeopleMsg.chosenItem.lead();
+	private final String departmentLbl = PeopleMsg.department.lead();
+	private final String primaryLbl = PeopleMsg.isPrimary.lead();
 
 	// The search list
 	private Text filterTxt;
@@ -134,11 +135,12 @@ public class EditJobDialog extends TrayDialog {
 	 * @param referencedNode
 	 * @param toSearchNodeType
 	 * @param isBackward
-	 *            tells if we must remove referenced (if true) or referencing
-	 *            (if false) node
+	 *            tells if we must remove referenced (if true) or referencing (if
+	 *            false) node
 	 */
-	public EditJobDialog(Shell parentShell, String title, ResourcesService resourcesService, PeopleService peopleService,
-			SystemWorkbenchService systemWorkbenchService, Node oldLink, Node toUpdateNode, boolean isBackward) {
+	public EditJobDialog(Shell parentShell, String title, ResourcesService resourcesService,
+			PeopleService peopleService, SystemWorkbenchService systemWorkbenchService, Node oldLink, Node toUpdateNode,
+			boolean isBackward) {
 		super(parentShell);
 		this.title = title;
 		this.resourcesService = resourcesService;
@@ -172,7 +174,7 @@ public class EditJobDialog extends TrayDialog {
 				oldReferenced = peopleService.getEntityByUid(session, null,
 						oldLink.getProperty(PeopleNames.PEOPLE_REF_UID).getString());
 			} catch (RepositoryException e) {
-				throw new PeopleException("unable to initialize link edition", e);
+				throw new PeopleException("Unable to initialize link edition", e);
 			}
 		}
 	}
@@ -336,7 +338,7 @@ public class EditJobDialog extends TrayDialog {
 		parent.setLayout(layout);
 
 		boolean isDyn = systemWorkbenchService.queryWhenTyping();
-		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;	
+		int style = SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL;
 		if (isDyn) {
 			DelayedText delayedText = new DelayedText(parent, style, ConnectUiConstants.SEARCH_TEXT_DELAY);
 			final ServerPushSession pushSession = new ServerPushSession();
@@ -354,10 +356,9 @@ public class EditJobDialog extends TrayDialog {
 				}
 			});
 			filterTxt = delayedText.getText();
-		}
-		else
+		} else
 			filterTxt = new Text(parent, style);
-		filterTxt.setMessage("Search and choose a corresponding entity");
+		filterTxt.setMessage(PeopleMsg.searchAndChooseEntity.lead());
 		filterTxt.setLayoutData(EclipseUiUtils.fillWidth());
 
 		okBtn = new Button(parent, SWT.FLAT);

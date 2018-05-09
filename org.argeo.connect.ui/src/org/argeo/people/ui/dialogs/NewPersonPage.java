@@ -7,7 +7,6 @@ import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.ui.PeopleMsg;
-import org.argeo.people.util.PeopleJcrUtils;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -16,7 +15,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
-import org.osgi.service.useradmin.User;
 
 public class NewPersonPage extends WizardPage {
 	private static final long serialVersionUID = -944349994177526468L;
@@ -26,6 +24,7 @@ public class NewPersonPage extends WizardPage {
 
 	protected NewPersonPage(String pageName) {
 		super(pageName);
+		setTitle(PeopleMsg.personWizardPageTitle.lead());
 	}
 
 	@Override
@@ -73,6 +72,7 @@ public class NewPersonPage extends WizardPage {
 				firstNameTxt.getText() + " " + lastNameTxt.getText());
 		String email = emailTxt.getText();
 		ConnectJcrUtils.setJcrProperty(node, PeopleNames.PEOPLE_PRIMARY_EMAIL, PropertyType.STRING, email);
-		//PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), node, email, true, null, null);
+		// PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), node,
+		// email, true, null, null);
 	}
 }

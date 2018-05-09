@@ -22,13 +22,13 @@ import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeNames;
 import org.argeo.node.NodeTypes;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.e4.PeopleRapConstants;
+import org.argeo.people.ui.PeopleMsg;
 import org.argeo.people.ui.providers.PersonOverviewLabelProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
@@ -45,14 +45,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 /** Edit a person with corresponding details */
 public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleNames {
 	final static Log log = LogFactory.getLog(PersonEditor.class);
 	// public final static String ID = PeopleRapPlugin.PLUGIN_ID + ".personEditor";
-	private BundleContext bc = FrameworkUtil.getBundle(PersonEditor.class).getBundleContext();
+	// private BundleContext bc =
+	// FrameworkUtil.getBundle(PersonEditor.class).getBundleContext();
 
 	// Context
 	@Inject
@@ -114,35 +113,40 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 	@Override
 	protected void populateTabFolder(CTabFolder folder) {
 		// Contact informations
-		String tooltip = "Contact information for " + JcrUtils.get(person, Property.JCR_TITLE);
+		String tooltip = "";// "Contact information for " + JcrUtils.get(person, Property.JCR_TITLE);
 		LazyCTabControl cpc = new ContactListCTab(folder, SWT.NO_FOCUS, this, getNode(), getResourcesService(),
 				getPeopleService(), getSystemWorkbenchService());
 		cpc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		addLazyTabToFolder(folder, cpc, "Contact details", PeopleRapConstants.CTAB_CONTACT_DETAILS, tooltip);
+		addLazyTabToFolder(folder, cpc, PeopleMsg.personDetails.lead(), PeopleRapConstants.CTAB_CONTACT_DETAILS,
+				tooltip);
 
 		// Activities and tasks
-		tooltip = "Activities and tasks related to " + JcrUtils.get(person, Property.JCR_TITLE);
+		tooltip = "";// "Activities and tasks related to " + JcrUtils.get(person,
+						// Property.JCR_TITLE);
 		LazyCTabControl activitiesCmp = new RelatedActivityList(folder, SWT.NO_FOCUS, this, getUserAdminService(),
 				getResourcesService(), getActivitiesService(), getSystemAppService(), getSystemWorkbenchService(),
 				person);
 		activitiesCmp.setLayoutData(EclipseUiUtils.fillAll());
-		addLazyTabToFolder(folder, activitiesCmp, "Activity log", PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
+		addLazyTabToFolder(folder, activitiesCmp, PeopleMsg.personActivityLog.lead(),
+				PeopleRapConstants.CTAB_ACTIVITY_LOG, tooltip);
 
 		// Jobs panel
-		tooltip = "Organisations linked to " + JcrUtils.get(person, Property.JCR_TITLE);
+		tooltip = "";// "Organisations linked to " + JcrUtils.get(person, Property.JCR_TITLE);
 		LazyCTabControl crewCmp = new JobListCTab(folder, SWT.NO_FOCUS, this, getResourcesService(), getPeopleService(),
 				getSystemWorkbenchService(), person);
 		crewCmp.setLayoutData(EclipseUiUtils.fillAll());
-		addLazyTabToFolder(folder, crewCmp, "Organisations", PeopleRapConstants.CTAB_JOBS, tooltip);
+		addLazyTabToFolder(folder, crewCmp, PeopleMsg.personOrgs.lead(), PeopleRapConstants.CTAB_JOBS, tooltip);
 
 		// Security
 		try {
 			Node home = person.getParent();
 			if (home.isNodeType(NodeTypes.NODE_USER_HOME)) {
-				String dn = home.getProperty(NodeNames.LDAP_UID).getString(); 
-				tooltip = "Security";
-				LazyCTabControl securityCmp = new PersonSecurityCTab(folder, SWT.NO_FOCUS, this, getUserAdminService(),dn);
-				addLazyTabToFolder(folder, securityCmp, "Security", PeopleRapConstants.CTAB_SECURITY, tooltip);
+				String dn = home.getProperty(NodeNames.LDAP_UID).getString();
+				tooltip = "";// "Security";
+				LazyCTabControl securityCmp = new PersonSecurityCTab(folder, SWT.NO_FOCUS, this, getUserAdminService(),
+						dn);
+				addLazyTabToFolder(folder, securityCmp, PeopleMsg.personSecurity.lead(),
+						PeopleRapConstants.CTAB_SECURITY, tooltip);
 			}
 		} catch (RepositoryException e) {
 			// TODO Auto-generated catch block
@@ -210,16 +214,16 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		// PeopleNames.PEOPLE_DISPLAY_NAME)))
 		// defineDistinctBtn.setSelection(true);
 
-		final Text salutationTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "Salutation", "Mr, Mrs...",
-				60);
-		final Text firstNameTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "First Name",
-				"Usual first name for this person", 100);
+		final Text salutationTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, PeopleMsg.salutation.lead(),
+				"", 60);
+		final Text firstNameTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, PeopleMsg.firstName.lead(),
+				"", 100);
 		// final Text middleNameTxt =
 		// ConnectWorkbenchUtils.createRDText(getFormToolkit(), secondCmp, "Middle
 		// Name",
 		// "The second name if it exists", 100);
-		final Text lastNameTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, "Last Name",
-				"Usual last name for this person", 100);
+		final Text lastNameTxt = ConnectUiUtils.createRDText(getFormToolkit(), secondCmp, PeopleMsg.lastName.lead(), "",
+				100);
 		// final Text suffixTxt = ConnectWorkbenchUtils.createRDText(getFormToolkit(),
 		// secondCmp, "Suffix",
 		// "Junior, the third...", 80);

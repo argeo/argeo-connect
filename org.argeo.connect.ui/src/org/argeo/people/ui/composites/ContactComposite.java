@@ -17,6 +17,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.ui.PeopleMsg;
 import org.argeo.people.ui.PeopleUiSnippets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -113,8 +114,8 @@ public class ContactComposite extends Composite {
 			catCmb.select(0);
 		}
 
-		ConnectWorkbenchUtils.refreshFormText(editor, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE, "Value");
-		ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, Property.JCR_DESCRIPTION, "Description");
+		ConnectWorkbenchUtils.refreshFormText(editor, valueTxt, contactNode, PeopleNames.PEOPLE_CONTACT_VALUE, PeopleMsg.value.lead());
+		ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, Property.JCR_DESCRIPTION, PeopleMsg.description.lead());
 		if (catCmb != null) {
 			String currValue = ConnectJcrUtils.get(contactNode, Property.JCR_TITLE);
 			if (EclipseUiUtils.notEmpty(currValue))

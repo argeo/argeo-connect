@@ -16,6 +16,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.ui.PeopleMsg;
 import org.argeo.people.ui.composites.BankAccountComposite;
 import org.argeo.people.util.OrgJcrUtils;
 import org.eclipse.swt.SWT;
@@ -78,17 +79,17 @@ public class OrgAdminInfoCTab extends LazyCTabControl {
 		parent.setLayout(new GridLayout(4, false));
 
 		// Legal Name
-		ConnectUiUtils.createBoldLabel(toolkit, parent, "Legal Name");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, PeopleMsg.legalName.lead());
 		final Text legalNameTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
 		// Legal form
-		ConnectUiUtils.createBoldLabel(toolkit, parent, "Legal Form");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, PeopleMsg.legalForm.lead());
 		final Text legalFormTxt = toolkit.createText(parent, "", SWT.BORDER);
 		legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
 		// VAT ID Number
-		ConnectUiUtils.createBoldLabel(toolkit, parent, "VAT ID");
+		ConnectUiUtils.createBoldLabel(toolkit, parent, PeopleMsg.vatId.lead());
 		final Text vatIDTxt = toolkit.createText(parent, "", SWT.BORDER);
 		vatIDTxt.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
@@ -137,7 +138,7 @@ public class OrgAdminInfoCTab extends LazyCTabControl {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		final Group group = new Group(parent, 0);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group.setText("Payment account");
+		group.setText(PeopleMsg.paymentAccount.lead());
 		group.setLayout(EclipseUiUtils.noSpaceGridLayout());
 
 		formPart = new AbstractFormPart() {

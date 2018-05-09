@@ -5,6 +5,7 @@ import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.eclipse.ui.Selected;
+import org.argeo.people.ui.PeopleMsg;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,7 +40,7 @@ public class PersonSecurityCTab extends LazyCTabControl {
 		password1 = new Text(parent, SWT.PASSWORD | SWT.BORDER);
 		password2 = new Text(parent, SWT.PASSWORD | SWT.BORDER);
 		Button lbl = new Button(parent, SWT.PUSH);
-		lbl.setText("Reset password");
+		lbl.setText(PeopleMsg.resetPassword.lead());
 		lbl.addSelectionListener(new Selected() {
 			private static final long serialVersionUID = -3679890149990208064L;
 

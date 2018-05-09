@@ -9,6 +9,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.ui.PeopleMsg;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 
 /**
@@ -41,7 +42,7 @@ public class RoleListLabelProvider extends ColumnLabelProvider implements People
 			if (link.isNodeType(PeopleTypes.PEOPLE_JOB)) {
 				String dep = ConnectJcrUtils.get(link, PeopleNames.PEOPLE_DEPARTMENT);
 				if (EclipseUiUtils.notEmpty(dep))
-					builder.append("Department: ").append(dep);
+					builder.append(PeopleMsg.department.lead() + ": ").append(dep);
 
 			}
 			return ConnectUtils.replaceAmpersand(builder.toString());

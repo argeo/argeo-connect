@@ -47,7 +47,7 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 		} catch (Exception e) {
 			throw new PeopleException("Cannot add page to wizard", e);
 		}
-		setWindowTitle("New person");
+		setWindowTitle(PeopleMsg.personWizardWindowTitle.lead());
 	}
 
 	/**
@@ -94,8 +94,8 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 
 		public MainInfoPage(String pageName) {
 			super(pageName);
-			setTitle("Create a contact");
-			setMessage("Please enter a last name and/or a first name.");
+			setTitle(PeopleMsg.personWizardPageTitle.lead());
+			// setMessage("Please enter a last name and/or a first name.");
 		}
 
 		public void createControl(Composite parent) {
@@ -104,13 +104,13 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 			// FirstName
 			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.firstName.lead());
 			firstNameTxt = new Text(parent, SWT.BORDER);
-//			firstNameTxt.setMessage("a first name");
+			// firstNameTxt.setMessage("a first name");
 			firstNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// LastName
 			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.lastName.lead());
 			lastNameTxt = new Text(parent, SWT.BORDER);
-//			lastNameTxt.setMessage("a last name");
+			// lastNameTxt.setMessage("a last name");
 			lastNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// Display Name

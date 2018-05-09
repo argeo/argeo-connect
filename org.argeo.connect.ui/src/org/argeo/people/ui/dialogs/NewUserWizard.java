@@ -3,12 +3,10 @@ package org.argeo.people.ui.dialogs;
 import javax.jcr.Node;
 
 import org.argeo.connect.UserAdminService;
-import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
+import org.argeo.people.ui.PeopleMsg;
 import org.eclipse.jface.wizard.Wizard;
-import org.osgi.service.useradmin.Role;
-import org.osgi.service.useradmin.User;
 
 /** Ask first & last name. Update the passed node on finish */
 public class NewUserWizard extends Wizard implements PeopleNames {
@@ -33,7 +31,7 @@ public class NewUserWizard extends Wizard implements PeopleNames {
 		} catch (Exception e) {
 			throw new PeopleException("Cannot add page to wizard", e);
 		}
-		setWindowTitle("New person");
+		setWindowTitle(PeopleMsg.personWizardWindowTitle.lead());
 	}
 
 	/**

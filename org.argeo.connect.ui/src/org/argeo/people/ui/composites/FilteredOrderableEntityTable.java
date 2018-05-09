@@ -24,6 +24,7 @@ import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
 import org.argeo.eclipse.ui.utils.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.people.ui.PeopleMsg;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -49,7 +50,7 @@ public class FilteredOrderableEntityTable extends Composite {
 
 	private TableViewer entityViewer;
 	private Text filterTxt;
-	private final static String FILTER_HELP_MSG = "Type filter criterion " + "separated by a space";
+	private final static String FILTER_HELP_MSG = PeopleMsg.filterHelp.lead();
 	private Session session;
 
 	private int tableStyle;
@@ -58,7 +59,7 @@ public class FilteredOrderableEntityTable extends Composite {
 	private boolean hasSelectionColumn = false;
 	private List<JcrColumnDefinition> colDefs = new ArrayList<JcrColumnDefinition>();
 	{ // By default, it displays only title
-		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, "Name", 300));
+		colDefs.add(new JcrColumnDefinition(null, Property.JCR_TITLE, PropertyType.STRING, PeopleMsg.name.lead(), 300));
 	};
 	private String nodeType = ConnectTypes.CONNECT_ENTITY;
 
@@ -304,8 +305,8 @@ public class FilteredOrderableEntityTable extends Composite {
 	}
 
 	/**
-	 * Refresh the list: caller might overwrite in order to display a subset of
-	 * all nodes
+	 * Refresh the list: caller might overwrite in order to display a subset of all
+	 * nodes
 	 */
 	protected void refreshFilteredList() {
 		List<Node> nodes;

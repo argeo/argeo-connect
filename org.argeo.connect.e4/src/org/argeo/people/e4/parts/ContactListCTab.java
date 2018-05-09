@@ -28,6 +28,7 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.ui.PeopleMsg;
 import org.argeo.people.ui.composites.ContactAddressComposite;
 import org.argeo.people.ui.composites.ContactComposite;
 import org.argeo.people.ui.dialogs.PickUpOrgDialog;
@@ -157,7 +158,7 @@ public class ContactListCTab extends LazyCTabControl {
 				// innerCmp.getParent().layout(true, true);
 				ContactListCTab.this.layout(true, true);
 			} catch (Exception e) {
-				throw new PeopleException("unexpected error while refreshing node " + entity, e);
+				throw new PeopleException("Unexpected error while refreshing node " + entity, e);
 			}
 		}
 	}
@@ -206,7 +207,7 @@ public class ContactListCTab extends LazyCTabControl {
 
 	private void populateNotePanel(Composite parent) {
 		parent.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
-		Label label = ConnectUiUtils.createBoldLabel(toolkit, parent, "Notes: ");
+		Label label = ConnectUiUtils.createBoldLabel(toolkit, parent, PeopleMsg.notes.lead() + ": ");
 
 		GridData gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
 		gd.verticalIndent = 3;
@@ -231,12 +232,13 @@ public class ContactListCTab extends LazyCTabControl {
 
 		addContactCmb.setLayoutData(new RowData(140, SWT.DEFAULT));
 		addContactCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_TYPES);
-		addContactCmb.add("Add a contact", 0);
+		addContactCmb.add(PeopleMsg.addAContact.lead(), 0);
 		addContactCmb.select(0);
 
 		// NATURE(work or private) is only for persons
 		Combo natureCmb = ConnectJcrUtils.isNodeType(entity, PeopleTypes.PEOPLE_PERSON)
-				? new Combo(parent, SWT.READ_ONLY) : null;
+				? new Combo(parent, SWT.READ_ONLY)
+				: null;
 		if (natureCmb != null) {
 			natureCmb.setLayoutData(new RowData(100, SWT.DEFAULT));
 			natureCmb.setItems(ContactValueCatalogs.ARRAY_CONTACT_NATURES);
@@ -344,13 +346,13 @@ public class ContactListCTab extends LazyCTabControl {
 	private Control createMailWidgets(Composite parent, Node entity, String contactType, final String nature,
 			final Combo addContactCombo) {
 
-		final Text valueTxt = createRowDataLT(parent, "Contact value", 200);
+		final Text valueTxt = createRowDataLT(parent, PeopleMsg.contactValue.lead(), 200);
 
-		final Text labelTxt = createRowDataLT(parent, "Label", 120);
+		final Text labelTxt = createRowDataLT(parent, PeopleMsg.label.lead(), 120);
 
-		final Button primaryChk = toolkit.createButton(parent, "Primary", SWT.CHECK);
+		final Button primaryChk = toolkit.createButton(parent, PeopleMsg.primary.lead(), SWT.CHECK);
 
-		final Button validBtn = toolkit.createButton(parent, "Add", SWT.PUSH);
+		final Button validBtn = toolkit.createButton(parent, PeopleMsg.add.lead(), SWT.PUSH);
 
 		validBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -388,18 +390,18 @@ public class ContactListCTab extends LazyCTabControl {
 	private Control createContactWidgets(Composite parent, Combo addContactCombo, String contactType, boolean isPro)
 			throws RepositoryException {
 
-		final Text valueTxt = createRowDataLT(parent, "Contact value", 200);
+		final Text valueTxt = createRowDataLT(parent, PeopleMsg.contactValue.lead(), 200);
 
 		final Combo catCmb = new Combo(parent, SWT.READ_ONLY);
 		catCmb.setItems(peopleService.getContactService().getContactCategories(peopleService.getMainNodeType(entity),
 				contactType, isPro));
 		catCmb.select(0);
 
-		final Text labelTxt = createRowDataLT(parent, "Label", 120);
+		final Text labelTxt = createRowDataLT(parent, PeopleMsg.label.lead(), 120);
 
-		final Button primaryChk = toolkit.createButton(parent, "Primary", SWT.CHECK);
+		final Button primaryChk = toolkit.createButton(parent, PeopleMsg.primary.lead(), SWT.CHECK);
 
-		final Button validBtn = toolkit.createButton(parent, "Add", SWT.PUSH);
+		final Button validBtn = toolkit.createButton(parent, PeopleMsg.add.lead(), SWT.PUSH);
 
 		validBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -454,21 +456,21 @@ public class ContactListCTab extends LazyCTabControl {
 		catCmb.setItems(contactService.getContactCategories(entityType, contactType, isPro));
 		catCmb.select(0);
 
-		final Text streetTxt = createRowDataLT(parent, "Street", 150);
-		final Text street2Txt = createRowDataLT(parent, "Street Complement", 150);
-		final Text zipTxt = createRowDataLT(parent, "Zip code", 60);
-		final Text cityTxt = createRowDataLT(parent, "City", 150);
-		final Text stateTxt = createRowDataLT(parent, "State", 150);
+		final Text streetTxt = createRowDataLT(parent, PeopleMsg.street.lead(), 150);
+		final Text street2Txt = createRowDataLT(parent, PeopleMsg.streetComplement.lead(), 150);
+		final Text zipTxt = createRowDataLT(parent, PeopleMsg.zipCode.lead(), 60);
+		final Text cityTxt = createRowDataLT(parent, PeopleMsg.city.lead(), 150);
+		final Text stateTxt = createRowDataLT(parent, PeopleMsg.state.lead(), 150);
 		// Country: dropdown + text
-		Text countryTxt = createRowDataLT(parent, "Country", 150);
+		Text countryTxt = createRowDataLT(parent, PeopleMsg.country.lead(), 150);
 		final TagLikeDropDown countryDD = new TagLikeDropDown(ConnectJcrUtils.getSession(entity), resourcesService,
 				ConnectConstants.RESOURCE_COUNTRY, countryTxt);
-		final Text geoPointTxt = createRowDataLT(parent, "Geopoint", 200);
-		final Text labelTxt = createRowDataLT(parent, "Label", 120);
+		final Text geoPointTxt = createRowDataLT(parent, PeopleMsg.geopoint.lead(), 200);
+		final Text labelTxt = createRowDataLT(parent, PeopleMsg.label.lead(), 120);
 
-		final Button primaryChk = toolkit.createButton(parent, "Primary", SWT.CHECK);
+		final Button primaryChk = toolkit.createButton(parent, PeopleMsg.primary.lead(), SWT.CHECK);
 
-		final Button validBtn = toolkit.createButton(parent, "Save", SWT.PUSH);
+		final Button validBtn = toolkit.createButton(parent, PeopleMsg.save.lead(), SWT.PUSH);
 
 		validBtn.addSelectionListener(new SelectionAdapter() {
 
@@ -530,18 +532,18 @@ public class ContactListCTab extends LazyCTabControl {
 					.getContactCategories(peopleService.getMainNodeType(entity), contactType, true));
 			catCmb.select(0);
 
-			final Text valueTxt = createRowDataLT(parent, "Linked company", 200);
+			final Text valueTxt = createRowDataLT(parent, PeopleMsg.linkedCompany.lead(), 200);
 			CmsUtils.style(valueTxt, ConnectUiStyles.FORCE_BORDER);
 			valueTxt.setEnabled(false);
 
 			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);
 
 			toolkit.adapt(chooseOrgLk, false, false);
-			chooseOrgLk.setText("<a>Pick up</a>");
-			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(), "Choose an organisation",
-					entity.getSession(), systemWorkbenchService, entity);
+			chooseOrgLk.setText("<a>" + PeopleMsg.pickup.lead() + "</a>");
+			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(),
+					PeopleMsg.chooseAnOrganisation.lead(), entity.getSession(), systemWorkbenchService, entity);
 
-			final Text labelTxt = createRowDataLT(parent, "A custom label", 120);
+			final Text labelTxt = createRowDataLT(parent, PeopleMsg.aCustomLabel.lead(), 120);
 
 			final String PROP_SELECTED_NODE = "selectedNode";
 
@@ -559,9 +561,9 @@ public class ContactListCTab extends LazyCTabControl {
 				}
 			});
 
-			final Button primaryChk = toolkit.createButton(parent, "Primary", SWT.CHECK);
+			final Button primaryChk = toolkit.createButton(parent, PeopleMsg.primary.lead(), SWT.CHECK);
 
-			final Button validBtn = toolkit.createButton(parent, "Add", SWT.PUSH);
+			final Button validBtn = toolkit.createButton(parent, PeopleMsg.add.lead(), SWT.PUSH);
 
 			validBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;

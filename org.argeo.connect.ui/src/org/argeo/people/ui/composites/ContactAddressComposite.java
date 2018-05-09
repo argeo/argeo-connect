@@ -23,6 +23,7 @@ import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
+import org.argeo.people.ui.PeopleMsg;
 import org.argeo.people.ui.PeopleUiSnippets;
 import org.argeo.people.ui.dialogs.PickUpOrgDialog;
 import org.argeo.people.util.PeopleJcrUtils;
@@ -181,12 +182,12 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 			Link chooseOrgLk = new Link(parent, SWT.LEFT | SWT.BOTTOM);
 			chooseOrgLk.setText("<a>Change</a>");
 
-			Text labelTxt = ConnectUiUtils.createRDText(toolkit, parent, "A custom label", "A custom label", 120);
+			Text labelTxt = ConnectUiUtils.createRDText(toolkit, parent, PeopleMsg.aCustomLabel.lead(),  PeopleMsg.aCustomLabel.lead(), 120);
 
 			Combo catCmb = new Combo(parent, SWT.BOTTOM | SWT.READ_ONLY);
 			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));
 
-			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(), "Choose an organisation",
+			final PickUpOrgDialog diag = new PickUpOrgDialog(chooseOrgLk.getShell(), PeopleMsg.chooseAnOrganisation.lead(),
 					contactNode.getSession(), systemWorkbenchService, contactNode.getParent().getParent());
 
 			// REFRESH VALUES
@@ -257,35 +258,35 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 		EclipseUiUtils.clear(parent);
 		if (editor.isEditing()) {
 			// specific for addresses
-			final Text streetTxt = ConnectUiUtils.createRDText(toolkit, parent, "Street", "Street", 0);
-			final Text street2Txt = ConnectUiUtils.createRDText(toolkit, parent, "Street Complement", "", 0);
-			final Text zipTxt = ConnectUiUtils.createRDText(toolkit, parent, "Zip code", "", 0);
-			final Text cityTxt = ConnectUiUtils.createRDText(toolkit, parent, "City", "", 0);
-			final Text stateTxt = ConnectUiUtils.createRDText(toolkit, parent, "State", "", 0);
-			Text countryTxt = ConnectUiUtils.createRDText(toolkit, parent, "Country", "", 110);
+			final Text streetTxt = ConnectUiUtils.createRDText(toolkit, parent, PeopleMsg.street.lead(), PeopleMsg.street.lead(), 0);
+			final Text street2Txt = ConnectUiUtils.createRDText(toolkit, parent, PeopleMsg.streetComplement.lead(), "", 0);
+			final Text zipTxt = ConnectUiUtils.createRDText(toolkit, parent, PeopleMsg.zipCode.lead(), "", 0);
+			final Text cityTxt = ConnectUiUtils.createRDText(toolkit, parent, PeopleMsg.city.lead(), "", 0);
+			final Text stateTxt = ConnectUiUtils.createRDText(toolkit, parent,PeopleMsg.state.lead(), "", 0);
+			Text countryTxt = ConnectUiUtils.createRDText(toolkit, parent, PeopleMsg.country.lead(), "", 110);
 
 			// The country drop down
 			Session session = ConnectJcrUtils.getSession(contactNode);
 			final TagLikeDropDown countryDD = new TagLikeDropDown(session, resourcesService,
 					ConnectConstants.RESOURCE_COUNTRY, countryTxt);
 
-			final Text geoPointTxt = ConnectUiUtils.createRDText(toolkit, parent, "Geopoint", "", 0);
-			final Text labelTxt = ConnectUiUtils.createRDText(toolkit, parent, "Label", "", 0);
+			final Text geoPointTxt = ConnectUiUtils.createRDText(toolkit, parent, PeopleMsg.geopoint.lead(), "", 0);
+			final Text labelTxt = ConnectUiUtils.createRDText(toolkit, parent, PeopleMsg.label.lead(), "", 0);
 
 			Combo catCmb = new Combo(parent, SWT.READ_ONLY);
 			catCmb.setItems(peopleService.getContactService().getContactPossibleCategories(contactNode));
 
 			// Refresh
-			ConnectWorkbenchUtils.refreshFormText(editor, streetTxt, contactNode, PeopleNames.PEOPLE_STREET, "Street");
+			ConnectWorkbenchUtils.refreshFormText(editor, streetTxt, contactNode, PeopleNames.PEOPLE_STREET, PeopleMsg.street.lead());
 			ConnectWorkbenchUtils.refreshFormText(editor, street2Txt, contactNode, PeopleNames.PEOPLE_STREET_COMPLEMENT,
-					"Street complement");
-			ConnectWorkbenchUtils.refreshFormText(editor, zipTxt, contactNode, PeopleNames.PEOPLE_ZIP_CODE, "Zip code");
-			ConnectWorkbenchUtils.refreshFormText(editor, cityTxt, contactNode, PeopleNames.PEOPLE_CITY, "City");
-			ConnectWorkbenchUtils.refreshFormText(editor, stateTxt, contactNode, PeopleNames.PEOPLE_STATE, "State");
+					PeopleMsg.streetComplement.lead());
+			ConnectWorkbenchUtils.refreshFormText(editor, zipTxt, contactNode, PeopleNames.PEOPLE_ZIP_CODE, PeopleMsg.zipCode.lead());
+			ConnectWorkbenchUtils.refreshFormText(editor, cityTxt, contactNode, PeopleNames.PEOPLE_CITY, PeopleMsg.city.lead());
+			ConnectWorkbenchUtils.refreshFormText(editor, stateTxt, contactNode, PeopleNames.PEOPLE_STATE, PeopleMsg.state.lead());
 			ConnectWorkbenchUtils.refreshFormText(editor, geoPointTxt, contactNode, PeopleNames.PEOPLE_GEOPOINT,
-					"Geo point");
+					PeopleMsg.geopoint.lead());
 			ConnectWorkbenchUtils.refreshFormText(editor, labelTxt, contactNode, Property.JCR_DESCRIPTION,
-					"Description");
+					PeopleMsg.description.lead());
 			ConnectWorkbenchUtils.refreshFormCombo(editor, catCmb, contactNode, Property.JCR_TITLE);
 
 			// add listeners
