@@ -104,10 +104,10 @@ public class ConnectUiUtils {
 	 * toolkit.
 	 */
 	public static Label createBoldLabel(Composite parent, String value) {
-		Label label = new Label(parent, SWT.RIGHT);
+		Label label = new Label(parent, SWT.LEAD);
 		label.setText(" " + value);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+		label.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false));
 		return label;
 	}
 
@@ -116,10 +116,10 @@ public class ConnectUiUtils {
 	 * vertical alignment
 	 */
 	public static Label createBoldLabel(Composite parent, String value, int verticalAlign) {
-		Label label = new Label(parent, SWT.RIGHT);
+		Label label = new Label(parent, SWT.LEAD);
 		label.setText(" " + value);
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
-		label.setLayoutData(new GridData(SWT.RIGHT, verticalAlign, false, false));
+		label.setLayoutData(new GridData(SWT.LEAD, verticalAlign, false, false));
 		return label;
 	}
 
