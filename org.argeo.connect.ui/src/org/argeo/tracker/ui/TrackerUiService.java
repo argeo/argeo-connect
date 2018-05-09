@@ -3,7 +3,6 @@ package org.argeo.tracker.ui;
 import javax.jcr.Node;
 
 import org.argeo.activities.ActivitiesService;
-import org.argeo.activities.ActivitiesTypes;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.AppUiService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -33,8 +32,7 @@ public class TrackerUiService implements AppUiService {
 	public Wizard getCreationWizard(Node node) {
 		if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_ISSUE))
 			return new ConfigureIssueWizard(userAdminService, trackerService, node);
-		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_TASK)
-				|| ConnectJcrUtils.isNodeType(node, ActivitiesTypes.ACTIVITIES_TASK))
+		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_TASK))
 			return new ConfigureTaskWizard(userAdminService, activitiesService, trackerService, null, node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_MILESTONE))
 			return new ConfigureMilestoneWizard(userAdminService, trackerService, node);
