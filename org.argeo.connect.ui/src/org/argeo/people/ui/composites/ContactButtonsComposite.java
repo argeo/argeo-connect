@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 //import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Centralise management of contacts buttons */
@@ -66,7 +67,7 @@ public class ContactButtonsComposite extends Composite {
 	private void populate() {
 		// Initialization
 		Composite buttCmp = this;
-		GridLayout gl = ConnectUiUtils.noSpaceGridLayout(3);
+		GridLayout gl = ConnectUiUtils.noSpaceGridLayout(isEditing ? 3 : 2);
 		buttCmp.setLayout(gl);
 
 		// final Button categoryBtn =
@@ -74,7 +75,8 @@ public class ContactButtonsComposite extends Composite {
 
 		// Primary management
 		Button primaryBtn = createPrimaryButton(buttCmp);
-		configurePrimaryButton(primaryBtn);
+		if (primaryBtn != null)
+			configurePrimaryButton(primaryBtn);
 
 		// Deletion
 		if (isEditing) {
@@ -83,24 +85,24 @@ public class ContactButtonsComposite extends Composite {
 		}
 	}
 
-	private Button createCategoryButton(Composite parent) {
-		Button btn = new Button(parent, SWT.FLAT);
-		CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
+	private void createCategoryButton(Composite parent) {
+		Label btn = new Label(parent, SWT.NONE);
+		// CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
 
 		btn.setImage(systemWorkbenchService.getIconForType(contactNode));
 		GridData gd = new GridData();
-		gd.widthHint = 16;
-		gd.heightHint = 16;
+		// gd.widthHint = 16;
+		// gd.heightHint = 16;
 		btn.setLayoutData(gd);
-		return btn;
+		// return btn;
 	}
 
 	private Button createDeleteButton(Composite parent) {
-		Button btn = new Button(parent, SWT.FLAT | SWT.BOTTOM);
+		Button btn = new Button(parent, SWT.FLAT | SWT.CENTER);
 		CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
 		btn.setImage(ConnectImages.DELETE);
 		GridData gd = new GridData();
-		gd.widthHint = 16;
+		gd.widthHint = 20;
 		gd.heightHint = 16;
 		btn.setLayoutData(gd);
 		return btn;
@@ -108,24 +110,26 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createPrimaryButton(Composite parent) {
 		try {
-			Button btn = new Button(parent, SWT.FLAT);
-			CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
-
 			// update image
 			boolean isPrimary = (contactNode.hasProperty(PeopleNames.PEOPLE_IS_PRIMARY)
 					&& contactNode.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean());
-			if (isPrimary)
-				btn.setImage(ConnectImages.PRIMARY);
-			else
-				btn.setImage(ConnectImages.PRIMARY_NOT);
-			btn.setEnabled(isEditing);
-			// primaryBtn.setGrayed(false);
+			if (isEditing) {
+				Button btn = new Button(parent, SWT.FLAT | SWT.CENTER);
+				// CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
 
-			GridData gd = new GridData();
-			gd.widthHint = 16;
-			gd.heightHint = 16;
-			btn.setLayoutData(gd);
-			return btn;
+				btn.setImage(isPrimary ? ConnectImages.PRIMARY : ConnectImages.PRIMARY_NOT);
+				// btn.setEnabled(isEditing);
+				GridData gd = new GridData();
+				gd.widthHint = 20;
+				gd.heightHint = 16;
+				btn.setLayoutData(gd);
+				return btn;
+			} else {
+				Label lbl = new Label(parent, SWT.NONE);
+				lbl.setImage(isPrimary ? ConnectImages.PRIMARY : ConnectImages.PRIMARY_NOT);
+				return null;
+			}
+			// primaryBtn.setGrayed(false);
 		} catch (RepositoryException re) {
 			throw new PeopleException("Unable to create primary button for node " + contactNode, re);
 		}
