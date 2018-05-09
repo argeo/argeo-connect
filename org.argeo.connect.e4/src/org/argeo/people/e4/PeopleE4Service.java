@@ -4,11 +4,14 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
+import org.argeo.connect.UserAdminService;
 import org.argeo.connect.e4.AppE4Service;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
+import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.ui.PeopleWorkbenchService;
 import org.argeo.people.ui.dialogs.NewOrgWizard;
@@ -22,15 +25,18 @@ import org.eclipse.swt.graphics.Image;
  * specific extensions
  */
 public class PeopleE4Service implements PeopleWorkbenchService, AppE4Service {
+	private UserAdminService userAdminService;
+	private PeopleService peopleService;
+	private ResourcesService resourcesService;
 
 	@Override
 	public String getEntityEditorId(Node curNode) {
 		try {
 			if (curNode.isNodeType(PeopleTypes.PEOPLE_MAILING_LIST)) {
-//				return MailingListEditor.ID;
-			}else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+				// return MailingListEditor.ID;
+			} else if (curNode.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
 				return "org.argeo.suite.e4.partdescriptor.personEditor";
-			}else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORG)) {
+			} else if (curNode.isNodeType(PeopleTypes.PEOPLE_ORG)) {
 				return "org.argeo.suite.e4.partdescriptor.orgEditor";
 			} else
 				return null;
@@ -76,7 +82,6 @@ public class PeopleE4Service implements PeopleWorkbenchService, AppE4Service {
 			return null;
 		// throw new PeopleException("No defined wizard for node " + node);
 	}
-
 
 	/**
 	 * Specific management of contact icons. Might be overridden by client
@@ -130,4 +135,17 @@ public class PeopleE4Service implements PeopleWorkbenchService, AppE4Service {
 		}
 		return null;
 	}
+
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
+	}
+
+	public void setPeopleService(PeopleService peopleService) {
+		this.peopleService = peopleService;
+	}
+
+	public void setResourcesService(ResourcesService resourcesService) {
+		this.resourcesService = resourcesService;
+	}
+
 }
