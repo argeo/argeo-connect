@@ -3,10 +3,13 @@ package org.argeo.people.ui.dialogs;
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
 
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.people.PeopleNames;
+import org.argeo.people.PeopleService;
 import org.argeo.people.ui.PeopleMsg;
+import org.argeo.people.util.PeopleJcrUtils;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -64,7 +67,7 @@ public class NewPersonPage extends WizardPage {
 
 	}
 
-	public void updateNode(Node node) {
+	public void updateNode(Node node, PeopleService peopleService, ResourcesService resourcesService) {
 		ConnectJcrUtils.setJcrProperty(node, PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING, lastNameTxt.getText());
 		ConnectJcrUtils.setJcrProperty(node, PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING,
 				firstNameTxt.getText());
@@ -72,7 +75,6 @@ public class NewPersonPage extends WizardPage {
 				firstNameTxt.getText() + " " + lastNameTxt.getText());
 		String email = emailTxt.getText();
 		ConnectJcrUtils.setJcrProperty(node, PeopleNames.PEOPLE_PRIMARY_EMAIL, PropertyType.STRING, email);
-		// PeopleJcrUtils.createEmail(getResourcesService(), getPeopleService(), node,
-		// email, true, null, null);
+		PeopleJcrUtils.createEmail(resourcesService, peopleService, node, email, true, null, null);
 	}
 }
