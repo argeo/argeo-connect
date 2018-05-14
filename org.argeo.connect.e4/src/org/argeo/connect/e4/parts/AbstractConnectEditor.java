@@ -39,6 +39,8 @@ import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.client.service.BrowserNavigation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -99,11 +101,15 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 	// Context
 	private Node node;
+	private String partName;
 
 	// UI Context
 	private ConnectManagedForm mForm;
 	private FormToolkit toolkit;
 	private Composite main;
+
+	// RAP specific
+	private BrowserNavigation browserNavigation;
 
 	// public AbstractConnectEditor() {
 	// try {
@@ -168,6 +174,13 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		main = toolkit.createComposite(parent);
 		createMainLayout(main);
 		forceRefresh();
+
+		browserNavigation = RWT.getClient().getService(BrowserNavigation.class);
+//		try {
+//			browserNavigation.pushState(node.getPath(), partName);
+//		} catch (RepositoryException e) {
+//			log.error("Cannot set client state", e);
+//		}
 	}
 
 	// protected String getPartName() {
@@ -223,6 +236,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 	}
 
 	protected void setPartName(String name) {
+		this.partName = name;
 		mPart.setLabel(name);
 	}
 
@@ -584,6 +598,11 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 	@Focus
 	public void setFocus() {
+		try {
+			browserNavigation.pushState(node.getPath(), partName);
+		} catch (RepositoryException e) {
+			log.error("Cannot set client state", e);
+		}
 	}
 
 	public void doSaveAs() {

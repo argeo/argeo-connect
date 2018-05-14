@@ -1,9 +1,7 @@
 package org.argeo.connect.e4;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.inject.Inject;
 import javax.jcr.Node;
@@ -19,9 +17,6 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.e4.core.contexts.ContextFunction;
-import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
@@ -29,21 +24,33 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("restriction")
-public class SystemE4Service extends ContextFunction implements SystemWorkbenchService, AppE4Service {
-	@Inject
+public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 	EPartService partService;
 
-	@Inject
 	ECommandService commandService;
 
-	@Inject
 	EHandlerService handlerService;
 
-	// Injected known AppWorkbenchServices: order is important, first found
-	// result will be returned by the various methods.
-	private SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices = Collections
-			.synchronizedSortedMap(new TreeMap<>());
 	private String defaultEditorId = null;// DefaultDashboardEditor.ID;
+	private SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices;
+
+//	public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices) {
+//		super();
+//		this.knownAppWbServices = knownAppWbServices;
+//	}
+	
+	
+
+	public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices, EPartService partService,
+			ECommandService commandService, EHandlerService handlerService) {
+		super();
+		this.knownAppWbServices = knownAppWbServices;
+		this.partService = partService;
+		this.commandService = commandService;
+		this.handlerService = handlerService;
+	}
+
+
 
 	@Override
 	public void callCommand(String commandId, Map<String, String> parameters) {
@@ -91,17 +98,6 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 	//
 	// APP SERVICE
 	//
-
-	@Override
-	public Object compute(IEclipseContext context, String contextKey) {
-		partService = context.get(EPartService.class);
-		commandService = context.get(ECommandService.class);
-		handlerService = context.get(EHandlerService.class);
-		MApplication app = context.get(MApplication.class);
-		IEclipseContext appCtx = app.getContext();
-		appCtx.set(SystemWorkbenchService.class, this);
-		return this;
-	}
 
 	@Override
 	public String getDefaultEditorId() {
@@ -180,17 +176,9 @@ public class SystemE4Service extends ContextFunction implements SystemWorkbenchS
 		return null;
 	}
 
-	public void addAppService(AppWorkbenchService appService, Map<String, Object> properties) {
-		// String serviceRankingStr = properties.get(Constants.SERVICE_RANKING);
-		// int serviceRanking = serviceRankingStr == null ? 0 :
-		// Integer.parseInt(serviceRankingStr);
-		// Integer serviceRanking = (Integer) properties.get(Constants.SERVICE_RANKING);
-		// System.out.println(serviceRanking + " | " + properties);
-		knownAppWbServices.put(new ServiceRanking(properties), appService);
-	}
+//	void setKnownAppWbServices(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices) {
+//		this.knownAppWbServices = knownAppWbServices;
+//	}
 
-	public void removeAppService(AppWorkbenchService appService, Map<String, Object> properties) {
-		knownAppWbServices.remove(new ServiceRanking(properties));
-	}
-
+	
 }
