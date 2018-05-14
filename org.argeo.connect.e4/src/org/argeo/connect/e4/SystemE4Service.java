@@ -3,7 +3,6 @@ package org.argeo.connect.e4;
 import java.util.Map;
 import java.util.SortedMap;
 
-import javax.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
@@ -34,12 +33,11 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 	private String defaultEditorId = null;// DefaultDashboardEditor.ID;
 	private SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices;
 
-//	public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices) {
-//		super();
-//		this.knownAppWbServices = knownAppWbServices;
-//	}
-	
-	
+	// public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService>
+	// knownAppWbServices) {
+	// super();
+	// this.knownAppWbServices = knownAppWbServices;
+	// }
 
 	public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices, EPartService partService,
 			ECommandService commandService, EHandlerService handlerService) {
@@ -49,8 +47,6 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 		this.commandService = commandService;
 		this.handlerService = handlerService;
 	}
-
-
 
 	@Override
 	public void callCommand(String commandId, Map<String, String> parameters) {
@@ -71,7 +67,10 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 		try {
 			String entityId = entity.getIdentifier();
 			String entityEditorId = getEntityEditorId(entity);
-			for (MPart part : partService.getParts()) {
+			parts: for (MPart part : partService.getParts()) {
+				String elementId = part.getElementId();
+				if (!elementId.equals(entityEditorId))
+					continue parts;
 				String id = part.getPersistedState().get(ConnectE4Constants.ENTITY_ID);
 				if (id != null && entityId.equals(id)) {
 					partService.showPart(part, PartState.ACTIVATE);
@@ -134,13 +133,27 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 
 	@Override
 	public void openSearchEntityView(String nodeType, String label) {
-		String result = null;
-		for (AppWorkbenchService appWbService : knownAppWbServices.values()) {
-			// TODO make it more robust
-			result = appWbService.getSearchEntityEditorId(nodeType);
-			if (EclipseUiUtils.notEmpty(result))
-				appWbService.openSearchEntityView(nodeType, label);
+		// try {
+		String entityEditorId = getSearchEntityEditorId(nodeType);
+		for (MPart part : partService.getParts()) {
+			String id = part.getPersistedState().get(ConnectE4Constants.NODE_TYPE);
+			if (id != null && nodeType.equals(id)) {
+				partService.showPart(part, PartState.ACTIVATE);
+				return;
+			}
 		}
+
+		// new part
+		MPart part = partService.createPart(entityEditorId);
+		if (part == null)
+			throw new CmsException("No entity editor found for id " + entityEditorId);
+		part.setLabel(label);
+		part.getPersistedState().put(ConnectE4Constants.NODE_TYPE, nodeType);
+		partService.showPart(part, PartState.ACTIVATE);
+		// } catch (RepositoryException e) {
+		// throw new ConnectException("Cannot open search entity for type " + nodeType,
+		// e);
+		// }
 	}
 
 	@Override
@@ -176,9 +189,9 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 		return null;
 	}
 
-//	void setKnownAppWbServices(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices) {
-//		this.knownAppWbServices = knownAppWbServices;
-//	}
+	// void setKnownAppWbServices(SortedMap<ServiceRanking, AppWorkbenchService>
+	// knownAppWbServices) {
+	// this.knownAppWbServices = knownAppWbServices;
+	// }
 
-	
 }

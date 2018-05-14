@@ -50,7 +50,7 @@ public class PeopleE4Service implements PeopleWorkbenchService, AppE4Service {
 	public String getSearchEntityEditorId(String nodeType) {
 		if (PeopleTypes.PEOPLE_PERSON.equals(nodeType) || PeopleTypes.PEOPLE_ORG.equals(nodeType)
 				|| PeopleTypes.PEOPLE_MAILING_LIST.equals(nodeType))
-			return null;
+			return "org.argeo.suite.e4.partdescriptor.searchEntityPart";
 		return null;
 	}
 

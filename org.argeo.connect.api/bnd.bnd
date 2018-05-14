@@ -1,5 +1,5 @@
 Require-Capability: cms.datamodel;filter:="(name=node)
-Provide-Capability: cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd; abstract=true,\
+Provide-Capability: cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd,\
  cms.datamodel; name=activities; cnd=/org/argeo/activities/activities.cnd; abstract=true,\
  cms.datamodel; name=people; cnd=/org/argeo/people/people.cnd; abstract=true,\
  cms.datamodel; name=documents; cnd=/org/argeo/documents/documents.cnd; abstract=true,\
