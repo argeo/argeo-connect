@@ -5,5 +5,7 @@ org.eclipse.jface.window,\
 org.argeo.eclipse.ui.dialogs,\
 org.argeo.node,\
 org.eclipse.core.commands.common,\
+org.eclipse.core.runtime.jobs,\
 org.eclipse.e4.ui.services,\
+org.eclipse.e4.ui.model.application,\
 *
