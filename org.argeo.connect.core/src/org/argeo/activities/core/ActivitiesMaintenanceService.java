@@ -1,19 +1,27 @@
 package org.argeo.activities.core;
 
+import java.util.EnumSet;
+import java.util.List;
+
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.Privilege;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesRole;
-import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.core.AbstractMaintenanceService;
 import org.argeo.jcr.JcrUtils;
 
 /**
  * Default implementation of the AppMaintenanceService for the Activities app
  */
-public class ActivitiesMaintenanceService implements AppMaintenanceService {
+public class ActivitiesMaintenanceService extends AbstractMaintenanceService {
+
+	@Override
+	public List<String> getRequiredRoles() {
+		return enumToDns(EnumSet.allOf(ActivitiesRole.class));
+	}
 
 	@Override
 	public boolean prepareJcrTree(Session session) {

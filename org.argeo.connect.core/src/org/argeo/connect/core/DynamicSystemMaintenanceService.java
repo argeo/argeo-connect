@@ -48,7 +48,7 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		}
 	}
 
-	protected Session openAdminSession() {
+	private Session openAdminSession() {
 		try {
 			LoginContext lc = new LoginContext(NodeConstants.LOGIN_CONTEXT_DATA_ADMIN);
 			lc.login();
@@ -130,16 +130,16 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 
 	public void addAppService(AppMaintenanceService appService, Map<String, Object> properties) {
 		maintenanceServices.put(new ServiceRanking(properties), appService);
-		Session adminSession = openAdminSession();
-		try {
-			if (appService.prepareJcrTree(adminSession)) {
-				appService.configurePrivileges(adminSession);
-			}
-			if (log.isDebugEnabled())
-				log.debug("Added maintenance service " + appService);
-		} finally {
-			JcrUtils.logoutQuietly(adminSession);
-		}
+//		Session adminSession = openAdminSession();
+//		try {
+//			if (appService.prepareJcrTree(adminSession)) {
+//				appService.configurePrivileges(adminSession);
+//			}
+//			if (log.isDebugEnabled())
+//				log.debug("Added maintenance service " + appService);
+//		} finally {
+//			JcrUtils.logoutQuietly(adminSession);
+//		}
 	}
 
 	public void removeAppService(AppMaintenanceService appService, Map<String, Object> properties) {

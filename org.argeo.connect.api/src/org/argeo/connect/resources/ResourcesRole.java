@@ -1,10 +1,11 @@
 package org.argeo.connect.resources;
 
+import org.argeo.connect.Distinguished;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.node.NodeConstants;
 
 /** Resources specific roles used in the code */
-public enum ResourcesRole {
+public enum ResourcesRole implements Distinguished {
 	editor, reader;
 
 	public String dn() {

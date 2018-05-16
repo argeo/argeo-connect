@@ -1,11 +1,16 @@
 package org.argeo.tracker.core;
 
+import java.util.EnumSet;
+import java.util.List;
+
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.Privilege;
 
+import org.argeo.activities.ActivitiesRole;
 import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.core.AbstractMaintenanceService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerRole;
@@ -13,7 +18,11 @@ import org.argeo.tracker.TrackerRole;
 /**
  * Default implementation of the AppMaintenanceService for the Tracker app
  */
-public class TrackerMaintenanceService implements AppMaintenanceService {
+public class TrackerMaintenanceService extends AbstractMaintenanceService {
+	@Override
+	public List<String> getRequiredRoles() {
+		return enumToDns(EnumSet.allOf(TrackerRole.class));
+	}
 
 	@Override
 	public boolean prepareJcrTree(Session session) {

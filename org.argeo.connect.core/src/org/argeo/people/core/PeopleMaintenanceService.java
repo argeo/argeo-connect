@@ -1,11 +1,14 @@
 package org.argeo.people.core;
 
+import java.util.EnumSet;
+import java.util.List;
+
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.Privilege;
 
-import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
+import org.argeo.connect.core.AbstractMaintenanceService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.people.PeopleConstants;
 import org.argeo.people.PeopleRole;
@@ -13,7 +16,11 @@ import org.argeo.people.PeopleRole;
 /**
  * Default implementation of the AppMaintenanceService for the People App
  */
-public class PeopleMaintenanceService implements AppMaintenanceService {
+public class PeopleMaintenanceService extends AbstractMaintenanceService {
+	@Override
+	public List<String> getRequiredRoles() {
+		return enumToDns(EnumSet.allOf(PeopleRole.class));
+	}
 
 	@Override
 	public boolean prepareJcrTree(Session session) {

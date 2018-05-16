@@ -1,16 +1,24 @@
 package org.argeo.connect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.jcr.Session;
 
 /** Define API to manage the life cycle of a Connect App */
 public interface AppMaintenanceService {
 
+	/** The system roles that must be available in the system. */
+	default List<String> getRequiredRoles() {
+		return new ArrayList<>();
+	}
+
 	/**
 	 * Creates the base JCR tree structure expected for this app if necessary.
 	 * 
-	 * Expects a clean session ({@link Session#hasPendingChanges()} should
-	 * return false) and saves it once the changes have been done. Thus the
-	 * session can be rolled back if an exception occurs.
+	 * Expects a clean session ({@link Session#hasPendingChanges()} should return
+	 * false) and saves it once the changes have been done. Thus the session can be
+	 * rolled back if an exception occurs.
 	 * 
 	 * @return true if something as been updated
 	 */
@@ -19,12 +27,12 @@ public interface AppMaintenanceService {
 	/**
 	 * Adds app specific default privileges.
 	 * 
-	 * Expects a clean session ({@link Session#hasPendingChanges()} should
-	 * return false} and saves it once the changes have been done. Thus the
-	 * session can be rolled back if an exception occurs.
+	 * Expects a clean session ({@link Session#hasPendingChanges()} should return
+	 * false} and saves it once the changes have been done. Thus the session can be
+	 * rolled back if an exception occurs.
 	 * 
-	 * Warning: no check is done and corresponding privileges are always added,
-	 * so only call this when necessary
+	 * Warning: no check is done and corresponding privileges are always added, so
+	 * only call this when necessary
 	 */
 	public void configurePrivileges(Session session);
 

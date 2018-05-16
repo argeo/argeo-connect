@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -11,10 +13,10 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.security.Privilege;
 
-import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectTypes;
+import org.argeo.connect.core.AbstractMaintenanceService;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesRole;
 import org.argeo.connect.resources.ResourcesService;
@@ -24,8 +26,14 @@ import org.argeo.jcr.JcrUtils;
 import org.argeo.people.core.imports.EncodedTagCsvFileParser;
 
 /** Default implementation of an AppMaintenanceService for the Resources app */
-public class ResourcesMaintenanceService implements AppMaintenanceService {
+public class ResourcesMaintenanceService extends AbstractMaintenanceService {
 	private ResourcesService resourcesService;
+
+	@Override
+	public List<String> getRequiredRoles() {
+		return enumToDns(EnumSet.allOf(ResourcesRole.class));
+	}
+
 
 	@Override
 	public boolean prepareJcrTree(Session session) {
