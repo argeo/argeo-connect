@@ -8,12 +8,8 @@ import java.util.TreeMap;
 import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.SystemWorkbenchService;
-import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.ContextFunction;
-import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
 public class SystemE4ServiceFunction extends ContextFunction {
 	// Injected known AppWorkbenchServices: order is important, first found
@@ -23,21 +19,23 @@ public class SystemE4ServiceFunction extends ContextFunction {
 
 	@Override
 	public Object compute(IEclipseContext context, String contextKey) {
-		EPartService partService = context.get(EPartService.class);
-		ECommandService commandService = context.get(ECommandService.class);
-		EHandlerService handlerService = context.get(EHandlerService.class);
 //		MApplication app = context.get(MApplication.class);
+//		IEclipseContext appContext = app.getContext();
+//		EPartService partService = appContext.get(EPartService.class);
+//		ECommandService commandService = appContext.get(ECommandService.class);
+//		EHandlerService handlerService = appContext.get(EHandlerService.class);
 
-		SystemE4Service systemE4Service = new SystemE4Service(knownAppWbServices, partService, commandService, handlerService);;
-//		if (app == null) {// during login
-//			context.set(SystemWorkbenchService.class, systemE4Service);
-//		} else {// regular use case
-//			IEclipseContext appCtx = app.getContext();
-//			if (appCtx != null)
-//				appCtx.set(SystemWorkbenchService.class, systemE4Service);
-//			else
-//				context.set(SystemWorkbenchService.class, systemE4Service);
-//		}
+		SystemE4Service systemE4Service = new SystemE4Service(knownAppWbServices, context);
+
+		// if (app == null) {// during login
+		// context.set(SystemWorkbenchService.class, systemE4Service);
+		// } else {// regular use case
+		// IEclipseContext appCtx = app.getContext();
+		// if (appCtx != null)
+		// appCtx.set(SystemWorkbenchService.class, systemE4Service);
+		// else
+		// context.set(SystemWorkbenchService.class, systemE4Service);
+		// }
 		context.set(SystemWorkbenchService.class, systemE4Service);
 		return systemE4Service;
 	}

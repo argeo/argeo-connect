@@ -16,6 +16,7 @@ import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
@@ -24,11 +25,10 @@ import org.eclipse.swt.graphics.Image;
 
 @SuppressWarnings("restriction")
 public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
-	EPartService partService;
-
-	ECommandService commandService;
-
-	EHandlerService handlerService;
+	IEclipseContext eclipseContext;
+	// EPartService partService;
+	// ECommandService commandService;
+	// EHandlerService handlerService;
 
 	private String defaultEditorId = null;// DefaultDashboardEditor.ID;
 	private SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices;
@@ -39,22 +39,23 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 	// this.knownAppWbServices = knownAppWbServices;
 	// }
 
-	public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices, EPartService partService,
-			ECommandService commandService, EHandlerService handlerService) {
+	public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices,
+			IEclipseContext eclipseContext) {
 		super();
 		this.knownAppWbServices = knownAppWbServices;
-		this.partService = partService;
-		this.commandService = commandService;
-		this.handlerService = handlerService;
+		this.eclipseContext = eclipseContext;
+		// this.partService = partService;
+		// this.commandService = commandService;
+		// this.handlerService = handlerService;
 	}
 
 	@Override
 	public void callCommand(String commandId, Map<String, String> parameters) {
-		final Command command = commandService.getCommand(commandId);
+		final Command command = eclipseContext.get(ECommandService.class).getCommand(commandId);
 		final ParameterizedCommand pcmd = ParameterizedCommand.generateCommand(command, parameters);
 		if (pcmd == null)
 			throw new ConnectException("No command found for id " + commandId + " and parameters " + parameters);
-		handlerService.executeHandler(pcmd);
+		eclipseContext.get(EHandlerService.class).executeHandler(pcmd);
 	}
 
 	@Override
@@ -64,6 +65,7 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 
 	@Override
 	public void openEntityEditor(Node entity) {
+		EPartService partService = eclipseContext.get(EPartService.class);
 		try {
 			String entityId = entity.getIdentifier();
 			String entityEditorId = getEntityEditorId(entity);
@@ -133,6 +135,7 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 
 	@Override
 	public void openSearchEntityView(String nodeType, String label) {
+		EPartService partService = eclipseContext.get(EPartService.class);
 		// try {
 		String entityEditorId = getSearchEntityEditorId(nodeType);
 		for (MPart part : partService.getParts()) {
