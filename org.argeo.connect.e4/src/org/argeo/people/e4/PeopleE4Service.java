@@ -15,7 +15,7 @@ import org.argeo.people.PeopleService;
 import org.argeo.people.PeopleTypes;
 import org.argeo.people.ui.PeopleWorkbenchService;
 import org.argeo.people.ui.dialogs.NewOrgWizard;
-import org.argeo.people.ui.dialogs.NewPersonWizard;
+import org.argeo.people.ui.dialogs.NewUserWizard;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
@@ -75,7 +75,7 @@ public class PeopleE4Service implements PeopleWorkbenchService, AppE4Service {
 	@Override
 	public Wizard getCreationWizard(Node node) {
 		if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
-			return new NewPersonWizard(node);
+			return new NewUserWizard(node, userAdminService, peopleService, resourcesService);
 		else if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
 			return new NewOrgWizard(node);
 		else

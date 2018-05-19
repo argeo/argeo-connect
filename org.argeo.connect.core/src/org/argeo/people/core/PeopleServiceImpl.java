@@ -5,7 +5,7 @@ import static org.argeo.connect.util.ConnectUtils.notEmpty;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -16,13 +16,9 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
-import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.CmsException;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.UserAdminService;
@@ -32,8 +28,6 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.RemoteJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeNames;
-import org.argeo.node.NodeTypes;
 import org.argeo.people.ContactService;
 import org.argeo.people.PeopleConstants;
 import org.argeo.people.PeopleException;
@@ -68,26 +62,30 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 						"Unable to define default path for " + srcNode + ". No property people:uid is defined");
 
 			Node createdNode = null;
-			if (srcNode.hasProperty(PeopleNames.PEOPLE_PRIMARY_EMAIL)) {
+			//
+			// if (createdNode == null) {
+			// String relPath = getDefaultRelPath(ConnectJcrUtils.getSession(srcNode),
+			// nodeType, peopleUid);
+			// createdNode = JcrUtils.mkdirs(parent, relPath);
+			// }
+
+			String relPath = getDefaultRelPath(srcNode);
+			createdNode = JcrUtils.mkdirs(parent, relPath);
+
+			RemoteJcrUtils.copy(srcNode, createdNode, true);
+			createdNode.addMixin(nodeType);
+			// integration with user admin
+			if (createdNode.hasProperty(PeopleNames.PEOPLE_USERNAME)) {
+				createdNode.addMixin(PeopleTypes.PEOPLE_USER);
+			} else if (createdNode.hasProperty(PeopleNames.PEOPLE_PRIMARY_EMAIL)) {
 				String email = JcrUtils.get(srcNode, PEOPLE_PRIMARY_EMAIL);
 				String dn = userAdminService.buildDefaultDN(email, Role.USER);
 				User user = userAdminService.getUser(dn);
 				if (user != null) {
-					String userPath = generateUserPath(dn);
-					Node userHome = JcrUtils.mkdirs(parent, userPath);
-					userHome.addMixin(NodeTypes.NODE_USER_HOME);
-					userHome.setProperty(NodeNames.LDAP_UID, new X500Principal(dn).getName());
-					// FIXME centralise
-					createdNode = userHome.addNode(".profile");
+					createdNode.addMixin(PeopleTypes.PEOPLE_USER);
+					createdNode.setProperty(PeopleNames.PEOPLE_USERNAME, dn);
 				}
 			}
-
-			if (createdNode == null) {
-				String relPath = getDefaultRelPath(ConnectJcrUtils.getSession(srcNode), nodeType, peopleUid);
-				createdNode = JcrUtils.mkdirs(parent, relPath);
-			}
-			RemoteJcrUtils.copy(srcNode, createdNode, true);
-			createdNode.addMixin(nodeType);
 			JcrUtils.updateLastModified(createdNode);
 			if (removeSrc)
 				srcNode.remove();
@@ -98,16 +96,16 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 
 	private SimpleDateFormat usersDatePath = new SimpleDateFormat("YYYY/MM");
 
-	private String generateUserPath(String username) {
-		LdapName dn;
-		try {
-			dn = new LdapName(username);
-		} catch (InvalidNameException e) {
-			throw new CmsException("Invalid name " + username, e);
-		}
-		String userId = dn.getRdn(dn.size() - 1).getValue().toString();
-		return usersDatePath.format(new Date()) + '/' + userId;
-	}
+	// private String generateUserPath(String username) {
+	// LdapName dn;
+	// try {
+	// dn = new LdapName(username);
+	// } catch (InvalidNameException e) {
+	// throw new CmsException("Invalid name " + username, e);
+	// }
+	// String userId = dn.getRdn(dn.size() - 1).getValue().toString();
+	// return usersDatePath.format(new Date()) + '/' + userId;
+	// }
 
 	@Override
 	public Node saveEntity(Node entity, boolean publish) throws PeopleException {
@@ -139,16 +137,36 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		String peopleUid = ConnectJcrUtils.get(entity, ConnectNames.CONNECT_UID);
-		if (isEmpty(peopleUid))
-			throw new PeopleException(
-					"Unable to define default path for " + entity + ". No property people:uid is defined");
+		Calendar date = entity.getProperty(Property.JCR_CREATED).getDate();
+		String creationDatePath = usersDatePath.format(date.getTime());
+
+		String fullName;
+		if (entity.hasProperty(PeopleNames.PEOPLE_DISPLAY_NAME))
+			fullName = entity.getProperty(PeopleNames.PEOPLE_DISPLAY_NAME).getString();
+		else if (entity.hasProperty(PeopleNames.PEOPLE_LEGAL_NAME))
+			fullName = entity.getProperty(PeopleNames.PEOPLE_LEGAL_NAME).getString();
 		else
-			return getDefaultRelPath(ConnectJcrUtils.getSession(entity), null, peopleUid);
+			throw new IllegalArgumentException("Cannot find full name of " + entity);
+		String relPath = creationDatePath + "/" + fullName;
+		return relPath;
+		// String peopleUid = ConnectJcrUtils.get(entity, ConnectNames.CONNECT_UID);
+		// if (isEmpty(peopleUid))
+		// throw new PeopleException(
+		// "Unable to define default path for " + entity + ". No property people:uid is
+		// defined");
+		// else
+		// return getDefaultRelPath(ConnectJcrUtils.getSession(entity), null,
+		// peopleUid);
 	}
 
 	@Override
 	public String getDefaultRelPath(Session session, String nodeType, String peopleUid) {
+		// try {
+		// return getDefaultRelPath(ConnectJcrUtils.getNodeByIdentifier(session,
+		// peopleUid));
+		// } catch (RepositoryException e) {
+		// throw new ConnectException("Cannot get default relative path", e);
+		// }
 		String path = JcrUtils.firstCharsToPath(peopleUid, 2) + "/" + peopleUid;
 		return path;
 	}

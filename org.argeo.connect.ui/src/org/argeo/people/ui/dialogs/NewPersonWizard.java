@@ -67,6 +67,9 @@ public class NewPersonWizard extends Wizard implements PeopleNames {
 		} else {
 			ConnectJcrUtils.setJcrProperty(person, PEOPLE_LAST_NAME, PropertyType.STRING, lastName);
 			ConnectJcrUtils.setJcrProperty(person, PEOPLE_FIRST_NAME, PropertyType.STRING, firstName);
+			String fullName = firstName + " " + lastName;
+			//ConnectJcrUtils.setJcrProperty(person, PEOPLE_LEGAL_NAME, PropertyType.STRING, fullName);
+			ConnectJcrUtils.setJcrProperty(person, PEOPLE_DISPLAY_NAME, PropertyType.STRING, fullName);
 			// if (useDistinct && EclipseUiUtils.notEmpty(displayName))
 			// ConnectJcrUtils.setJcrProperty(person, PEOPLE_DISPLAY_NAME,
 			// PropertyType.STRING, displayName);

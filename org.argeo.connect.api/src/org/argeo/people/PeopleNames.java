@@ -103,6 +103,7 @@ public interface PeopleNames {
 
 	/* MISCENELLANEOUS */
 	String PEOPLE_ALT_LANGS = "people:altLangs";
+	String PEOPLE_USERNAME = "people:username";
 
 	// LEGACY: TODO remove
 
@@ -111,11 +112,11 @@ public interface PeopleNames {
 	// String PEOPLE_PICTURE = "people:picture";
 
 	/**
-	 * An implementation specific UID, might be a JCR node Identifier but it is
-	 * not compulsory We personally use the type 4 (pseudo randomly generated)
-	 * UUID - we retrieve them simply in java with this method
-	 * <code>UUID.randomUUID().toString()</code> Class 3 UUID of the
-	 * distinguished name in UTF-8
+	 * An implementation specific UID, might be a JCR node Identifier but it is not
+	 * compulsory We personally use the type 4 (pseudo randomly generated) UUID - we
+	 * retrieve them simply in java with this method
+	 * <code>UUID.randomUUID().toString()</code> Class 3 UUID of the distinguished
+	 * name in UTF-8
 	 */
 	// String PEOPLE_UID = "people:uid";
 
