@@ -7,8 +7,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.security.Privilege;
 
-import org.argeo.activities.ActivitiesRole;
-import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.core.AbstractMaintenanceService;
 import org.argeo.jcr.JcrUtils;
@@ -22,6 +20,12 @@ public class TrackerMaintenanceService extends AbstractMaintenanceService {
 	@Override
 	public List<String> getRequiredRoles() {
 		return enumToDns(EnumSet.allOf(TrackerRole.class));
+	}
+
+	@Override
+	protected void addOfficeGroups() {
+		addManagersToGroup(TrackerRole.editor.dn());
+		addCoworkersToGroup(TrackerRole.reader.dn());
 	}
 
 	@Override

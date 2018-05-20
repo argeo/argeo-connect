@@ -1,10 +1,11 @@
 package org.argeo.connect.core;
 
+import org.argeo.connect.Distinguished;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.node.NodeConstants;
 
 /** Office specific roles used in the code */
-public enum OfficeRole {
+public enum OfficeRole implements Distinguished {
 	coworker, manager;
 
 	public String dn() {

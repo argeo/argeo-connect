@@ -34,6 +34,11 @@ public class ResourcesMaintenanceService extends AbstractMaintenanceService {
 		return enumToDns(EnumSet.allOf(ResourcesRole.class));
 	}
 
+	@Override
+	protected void addOfficeGroups() {
+		addManagersToGroup(ResourcesRole.editor.dn());
+		addCoworkersToGroup(ResourcesRole.reader.dn());
+	}
 
 	@Override
 	public boolean prepareJcrTree(Session session) {

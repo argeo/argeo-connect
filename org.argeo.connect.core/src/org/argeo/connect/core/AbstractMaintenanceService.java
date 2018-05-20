@@ -18,6 +18,7 @@ import org.argeo.connect.Distinguished;
 import org.argeo.connect.UserAdminService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
+import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
 
 public abstract class AbstractMaintenanceService implements AppMaintenanceService {
@@ -27,24 +28,10 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 	private UserAdminService userAdminService;
 
 	public void init() {
-		List<String> requiredRoles = getRequiredRoles();
-		for (String role : requiredRoles) {
-			Role systemRole = userAdminService.getUserAdmin().getRole(role);
-			if (systemRole == null) {
-				try {
-					userAdminService.getUserTransaction().begin();
-					userAdminService.getUserAdmin().createRole(role, Role.GROUP);
-					userAdminService.getUserTransaction().commit();
-				} catch (Exception e) {
-					log.error("Cannot create role " + role, e);
-					try {
-						userAdminService.getUserTransaction().rollback();
-					} catch (Exception e1) {
-						// silent
-					}
-				}
-			}
-		}
+		makeSureRolesExists(EnumSet.allOf(OfficeRole.class));
+		addManagersToGroup(OfficeRole.coworker.dn());
+		makeSureRolesExists(getRequiredRoles());
+		addOfficeGroups();
 
 		Session adminSession = openAdminSession();
 		try {
@@ -54,6 +41,10 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 		} finally {
 			JcrUtils.logoutQuietly(adminSession);
 		}
+	}
+
+	protected void addOfficeGroups() {
+
 	}
 
 	public void destroy() {
@@ -78,12 +69,65 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 		}
 	}
 
-	protected List<String> enumToDns(EnumSet<? extends Distinguished> enumSet) {
+	protected static List<String> enumToDns(EnumSet<? extends Distinguished> enumSet) {
 		List<String> res = new ArrayList<>();
 		for (Enum<? extends Distinguished> enm : enumSet) {
 			res.add(((Distinguished) enm).dn());
 		}
 		return res;
+	}
+
+	protected void makeSureRolesExists(EnumSet<? extends Distinguished> enumSet) {
+		makeSureRolesExists(enumToDns(enumSet));
+	}
+
+	protected void makeSureRolesExists(List<String> requiredRoles) {
+		for (String role : requiredRoles) {
+			Role systemRole = userAdminService.getUserAdmin().getRole(role);
+			if (systemRole == null) {
+				try {
+					userAdminService.getUserTransaction().begin();
+					userAdminService.getUserAdmin().createRole(role, Role.GROUP);
+					userAdminService.getUserTransaction().commit();
+					log.info("Created role " + role);
+				} catch (Exception e) {
+					try {
+						userAdminService.getUserTransaction().rollback();
+					} catch (Exception e1) {
+						// silent
+					}
+					throw new ConnectException("Cannot create role " + role, e);
+				}
+			}
+		}
+	}
+
+	protected void addManagersToGroup(String groupDn) {
+		addToGroup(OfficeRole.manager.dn(), groupDn);
+	}
+
+	protected void addCoworkersToGroup(String groupDn) {
+		addToGroup(OfficeRole.coworker.dn(), groupDn);
+	}
+
+	private void addToGroup(String officeGroup, String groupDn) {
+		Group managerGroup = (Group) userAdminService.getUserAdmin().getRole(officeGroup);
+		Group group = (Group) userAdminService.getUserAdmin().getRole(groupDn);
+		if (group == null)
+			throw new ConnectException("Group " + groupDn + " not found");
+		try {
+			userAdminService.getUserTransaction().begin();
+			if (group.addMember(managerGroup))
+				log.info("Added " + officeGroup + " to " + group);
+			userAdminService.getUserTransaction().commit();
+		} catch (Exception e) {
+			try {
+				userAdminService.getUserTransaction().rollback();
+			} catch (Exception e1) {
+				// silent
+			}
+			throw new ConnectException("Cannot add " + managerGroup + " to " + group);
+		}
 	}
 
 	public void setRepository(Repository repository) {

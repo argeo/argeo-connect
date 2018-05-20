@@ -19,6 +19,7 @@ import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.SystemMaintenanceService;
+import org.argeo.connect.UserAdminService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
 
@@ -28,13 +29,34 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
-	private String workspaceName = "main";
+	// private String workspaceName = "main";
+	private UserAdminService userAdminService;
+
 	private SortedMap<ServiceRanking, AppMaintenanceService> maintenanceServices = Collections
 			.synchronizedSortedMap(new TreeMap<>());
 	// private List<AppMaintenanceService> maintenanceServices =
 	// Collections.synchronizedList(new ArrayList<>());
 
 	public void init() {
+//		List<String> requiredRoles = getRequiredRoles();
+//		for (String role : requiredRoles) {
+//			Role systemRole = userAdminService.getUserAdmin().getRole(role);
+//			if (systemRole == null) {
+//				try {
+//					userAdminService.getUserTransaction().begin();
+//					userAdminService.getUserAdmin().createRole(role, Role.GROUP);
+//					userAdminService.getUserTransaction().commit();
+//				} catch (Exception e) {
+//					log.error("Cannot create role " + role, e);
+//					try {
+//						userAdminService.getUserTransaction().rollback();
+//					} catch (Exception e1) {
+//						// silent
+//					}
+//				}
+//			}
+//		}
+
 		Session adminSession = openAdminSession();
 		try {
 			// adminSession = repository.login(workspaceName);
@@ -48,6 +70,11 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		}
 	}
 
+//	@Override
+//	public List<String> getRequiredRoles() {
+//		return AbstractMaintenanceService.enumToDns(EnumSet.allOf(OfficeRole.class));
+//	}
+
 	private Session openAdminSession() {
 		try {
 			LoginContext lc = new LoginContext(NodeConstants.LOGIN_CONTEXT_DATA_ADMIN);
@@ -56,7 +83,7 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 
 				@Override
 				public Session run() throws Exception {
-					return repository.login(workspaceName);
+					return repository.login();
 				}
 
 			});
@@ -84,10 +111,10 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot build model", e);
 		}
-		for (AppMaintenanceService service : maintenanceServices.values())
-			hasCHanged |= service.prepareJcrTree(session);
-		if (hasCHanged)
-			log.info("Repository has been initialised with Argeo Suite model");
+//		for (AppMaintenanceService service : maintenanceServices.values())
+//			hasCHanged |= service.prepareJcrTree(session);
+//		if (hasCHanged)
+//			log.info("Repository has been initialised with Argeo Suite model");
 		return hasCHanged;
 	}
 
@@ -111,8 +138,8 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot build model", e);
 		}
-		for (AppMaintenanceService service : maintenanceServices.values())
-			service.configurePrivileges(session);
+//		for (AppMaintenanceService service : maintenanceServices.values())
+//			service.configurePrivileges(session);
 		log.info("Access control configured");
 	}
 
@@ -124,22 +151,26 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 		this.repository = repository;
 	}
 
-	public void setWorkspaceName(String workspaceName) {
-		this.workspaceName = workspaceName;
+	// public void setWorkspaceName(String workspaceName) {
+	// this.workspaceName = workspaceName;
+	// }
+
+	public void setUserAdminService(UserAdminService userAdminService) {
+		this.userAdminService = userAdminService;
 	}
 
 	public void addAppService(AppMaintenanceService appService, Map<String, Object> properties) {
 		maintenanceServices.put(new ServiceRanking(properties), appService);
-//		Session adminSession = openAdminSession();
-//		try {
-//			if (appService.prepareJcrTree(adminSession)) {
-//				appService.configurePrivileges(adminSession);
-//			}
-//			if (log.isDebugEnabled())
-//				log.debug("Added maintenance service " + appService);
-//		} finally {
-//			JcrUtils.logoutQuietly(adminSession);
-//		}
+		// Session adminSession = openAdminSession();
+		// try {
+		// if (appService.prepareJcrTree(adminSession)) {
+		// appService.configurePrivileges(adminSession);
+		// }
+		// if (log.isDebugEnabled())
+		// log.debug("Added maintenance service " + appService);
+		// } finally {
+		// JcrUtils.logoutQuietly(adminSession);
+		// }
 	}
 
 	public void removeAppService(AppMaintenanceService appService, Map<String, Object> properties) {

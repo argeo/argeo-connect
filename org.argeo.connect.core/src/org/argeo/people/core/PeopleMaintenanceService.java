@@ -23,6 +23,12 @@ public class PeopleMaintenanceService extends AbstractMaintenanceService {
 	}
 
 	@Override
+	protected void addOfficeGroups() {
+		addManagersToGroup(PeopleRole.editor.dn());
+		addCoworkersToGroup(PeopleRole.reader.dn());
+	}
+
+	@Override
 	public boolean prepareJcrTree(Session session) {
 		try {
 			boolean hasChanged = false;
