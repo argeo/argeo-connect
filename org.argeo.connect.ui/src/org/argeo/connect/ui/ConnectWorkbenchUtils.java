@@ -10,6 +10,7 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.argeo.cms.ui.CmsEditable;
+import org.argeo.cms.ui.dialogs.CmsWizardDialog;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
@@ -26,7 +27,6 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -595,7 +595,8 @@ public class ConnectWorkbenchUtils {
 				draftNode.setProperty(additionnalProps[i], additionnalProps[i + 1]);
 			}
 			Wizard wizard = appWorkbenchService.getCreationWizard(draftNode);
-			WizardDialog dialog = new WizardDialog(shell, wizard);
+			CmsWizardDialog dialog = new CmsWizardDialog(shell, wizard);
+			// WizardDialog dialog = new WizardDialog(shell, wizard);
 			if (dialog.open() == Window.OK) {
 				String parentPath = "/" + appService.getBaseRelPath(mainMixin);
 				mainSession = referenceSession.getRepository().login();
