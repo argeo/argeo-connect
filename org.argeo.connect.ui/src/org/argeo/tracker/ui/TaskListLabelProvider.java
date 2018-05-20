@@ -9,12 +9,12 @@ import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.SystemAppService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
-import org.argeo.tracker.TrackerService;
 import org.eclipse.jface.viewers.LabelProvider;
 
 /** Provide a single column label provider for person lists */
@@ -22,13 +22,13 @@ public class TaskListLabelProvider extends LabelProvider {
 	private static final long serialVersionUID = 8524164843887702899L;
 
 	// private ActivitiesService activitiesService;
-	private TrackerService trackerService;
+	private SystemAppService trackerService;
 	private int descLength = 160;
 
 	private Node project;
 	private Node milestone;
 
-	public TaskListLabelProvider(TrackerService trackerService) {
+	public TaskListLabelProvider(SystemAppService trackerService) {
 		this.trackerService = trackerService;
 	}
 
