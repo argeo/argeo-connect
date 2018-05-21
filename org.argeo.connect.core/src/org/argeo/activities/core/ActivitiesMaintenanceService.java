@@ -57,7 +57,7 @@ public class ActivitiesMaintenanceService extends AbstractMaintenanceService {
 		}
 	}
 
-	private String getDefaultBasePath() {
+	public String getDefaultBasePath() {
 		return "/" + ActivitiesNames.ACTIVITIES_APP_BASE_NAME;
 	}
 }

@@ -36,6 +36,7 @@ public interface AppMaintenanceService {
 	 */
 	public void configurePrivileges(Session session);
 
+	public String getDefaultBasePath();
 	// public void importResources(Session session, Map<String, URI> resources);
 	//
 	// public void importData(Session session, URI uri, Map<String, URI>

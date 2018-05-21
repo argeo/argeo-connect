@@ -82,6 +82,8 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 	}
 
 	protected void makeSureRolesExists(List<String> requiredRoles) {
+		if (requiredRoles == null)
+			return;
 		for (String role : requiredRoles) {
 			Role systemRole = userAdminService.getUserAdmin().getRole(role);
 			if (systemRole == null) {

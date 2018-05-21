@@ -116,7 +116,7 @@ public class ResourcesMaintenanceService extends AbstractMaintenanceService {
 		}
 	}
 
-	private String getDefaultBasePath() {
+	public String getDefaultBasePath() {
 		return "/" + ResourcesNames.RESOURCES_BASE_NAME;
 	}
 

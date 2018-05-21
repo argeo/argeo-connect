@@ -56,7 +56,7 @@ public class TrackerMaintenanceService extends AbstractMaintenanceService {
 		}
 	}
 
-	private String getDefaultBasePath() {
+	public String getDefaultBasePath() {
 		return "/" + TrackerNames.TRACKER_PROJECTS;
 	}
 }

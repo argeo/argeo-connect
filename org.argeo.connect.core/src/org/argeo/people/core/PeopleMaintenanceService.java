@@ -56,7 +56,7 @@ public class PeopleMaintenanceService extends AbstractMaintenanceService {
 		}
 	}
 
-	private String getDefaultBasePath() {
+	public String getDefaultBasePath() {
 		return "/" + PeopleConstants.PEOPLE_APP_BASE_NAME;
 	}
 
