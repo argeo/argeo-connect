@@ -40,13 +40,6 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-//import org.eclipse.ui.IEditorInput;
-//import org.eclipse.ui.IEditorPart;
-//import org.eclipse.ui.ISharedImages;
-//import org.eclipse.ui.IWorkbench;
-//import org.eclipse.ui.IWorkbenchPage;
-//import org.eclipse.ui.PartInitException;
-//import org.eclipse.ui.forms.AbstractFormPart;
 
 /** Helper methods to ease UI implementation in a Connect Workbench */
 public class ConnectWorkbenchUtils {
