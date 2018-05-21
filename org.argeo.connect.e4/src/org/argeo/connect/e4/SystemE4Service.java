@@ -1,5 +1,6 @@
 package org.argeo.connect.e4;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -52,7 +53,8 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 	@Override
 	public void callCommand(String commandId, Map<String, String> parameters) {
 		final Command command = eclipseContext.get(ECommandService.class).getCommand(commandId);
-		final ParameterizedCommand pcmd = ParameterizedCommand.generateCommand(command, parameters);
+		final ParameterizedCommand pcmd = ParameterizedCommand.generateCommand(command,
+				parameters != null ? parameters : new HashMap<>());
 		if (pcmd == null)
 			throw new ConnectException("No command found for id " + commandId + " and parameters " + parameters);
 		eclipseContext.get(EHandlerService.class).executeHandler(pcmd);
@@ -61,6 +63,11 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 	@Override
 	public String getOpenEntityEditorCmdId() {
 		return "org.argeo.suite.e4.command.openEntity";
+	}
+
+	@Override
+	public String getDeleteEntityCmdId() {
+		return "org.argeo.suite.e4.command.deleteEntity";
 	}
 
 	@Override
