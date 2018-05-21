@@ -134,6 +134,6 @@ public abstract class AbstractPeopleWithImgEditor extends AbstractConnectCTabEdi
 	 * @return
 	 */
 	protected boolean displayImage() {
-		return true;
+		return false;
 	}
 }

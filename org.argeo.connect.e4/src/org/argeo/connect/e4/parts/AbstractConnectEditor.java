@@ -269,7 +269,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 			Button editBtn = toolkit.createButton(roPanelCmp, ConnectE4Msg.edit.lead(), SWT.PUSH);
 			// editBtn.setLayoutData(new RowData(60, 20));
 			editBtn.setFont(EclipseUiUtils.getBoldFont(roPanelCmp));
-			editBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+			editBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			editBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
@@ -289,18 +289,19 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		}
 		// Add a refresh button to enable forcing refresh when having some UI
 		// glitches.
-		Button refreshBtn = toolkit.createButton(roPanelCmp, ConnectE4Msg.refresh.lead(), SWT.PUSH);
-		// refreshBtn.setLayoutData(new RowData(60, 20));
-		refreshBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-		refreshBtn.addSelectionListener(new SelectionAdapter() {
-			private static final long serialVersionUID = 1L;
+		if (showRefreshButton()) {
+			Button refreshBtn = toolkit.createButton(roPanelCmp, ConnectE4Msg.refresh.lead(), SWT.PUSH);
+			// refreshBtn.setLayoutData(new RowData(60, 20));
+			refreshBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+			refreshBtn.addSelectionListener(new SelectionAdapter() {
+				private static final long serialVersionUID = 1L;
 
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				forceRefresh();
-			}
-		});
-
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					forceRefresh();
+				}
+			});
+		}
 		// EDIT PANEL
 		final Composite editPanelCmp = toolkit.createComposite(buttons, SWT.NONE);
 		ConnectUiUtils.setSwitchingFormData(editPanelCmp);
@@ -310,7 +311,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		Button saveBtn = toolkit.createButton(editPanelCmp, ConnectE4Msg.save.lead(), SWT.PUSH);
 		// saveBtn.setLayoutData(new RowData(60, 20));
 		saveBtn.setFont(EclipseUiUtils.getBoldFont(editPanelCmp));
-		saveBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		saveBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		saveBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -340,7 +341,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 		Button cancelBtn = toolkit.createButton(editPanelCmp, ConnectE4Msg.cancel.lead(), SWT.PUSH);
 		// cancelBtn.setLayoutData(new RowData(60, 20));
-		cancelBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+		cancelBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 		cancelBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -361,7 +362,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		if (showDeleteButton()) {
 			Button deleteBtn = toolkit.createButton(editPanelCmp, ConnectE4Msg.delete.lead(), SWT.PUSH);
 			// deleteBtn.setLayoutData(new RowData(60, 20));
-			deleteBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+			deleteBtn.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 			deleteBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = 1L;
 
@@ -441,7 +442,11 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 	/** Overwrite to hide the delete button */
 	protected boolean showDeleteButton() {
-		return canEdit();
+		return false;
+	}
+
+	protected boolean showRefreshButton() {
+		return false;
 	}
 
 	@Persist
@@ -602,6 +607,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		} finally {
 			JcrUtils.logoutQuietly(session);
 		}
+		browserNavigation.pushState("~", null);
 		// super.dispose();
 	}
 

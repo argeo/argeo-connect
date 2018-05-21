@@ -24,11 +24,10 @@ import org.argeo.connect.ui.parts.TagLikeListPart;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.node.NodeNames;
-import org.argeo.node.NodeTypes;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;
+import org.argeo.people.PeopleTypes;
 import org.argeo.people.e4.PeopleRapConstants;
 import org.argeo.people.ui.PeopleMsg;
 import org.argeo.people.ui.providers.PersonOverviewLabelProvider;
@@ -139,9 +138,8 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		// Security
 		try {
-			Node home = person.getParent();
-			if (home.isNodeType(NodeTypes.NODE_USER_HOME)) {
-				String dn = home.getProperty(NodeNames.LDAP_UID).getString();
+			if (person.isNodeType(PeopleTypes.PEOPLE_USER)) {
+				String dn = person.getProperty(PeopleNames.PEOPLE_USERNAME).getString();
 				tooltip = "";// "Security";
 				LazyCTabControl securityCmp = new PersonSecurityCTab(folder, SWT.NO_FOCUS, this, getUserAdminService(),
 						dn);
