@@ -49,8 +49,8 @@ public class ConnectJcrUtils {
 	private final static String NS_NT = "http://www.jcp.org/jcr/nt/1.0";
 
 	/**
-	 * Replace the generic namespace with the local "jcr:" value. It is a
-	 * workaround that must be later cleaned
+	 * Replace the generic namespace with the local "jcr:" value. It is a workaround
+	 * that must be later cleaned
 	 * 
 	 * @param name
 	 *            the property name which prefix has to be cleaned
@@ -87,10 +87,9 @@ public class ConnectJcrUtils {
 	 * Add '?' to the list of forbidden characters. See
 	 * JcrUtils.replaceInvalidChars(String name)
 	 */
-	public final static char[] INVALID_NAME_CHARACTERS = { '/', ':', '[', ']', '|', '*',
-			'?', /*
-					 * invalid XML chars :
-					 */
+	public final static char[] INVALID_NAME_CHARACTERS = { '/', ':', '[', ']', '|', '*', '?', /*
+																								 * invalid XML chars :
+																								 */
 			'<', '>', '&' };
 
 	/**
@@ -169,9 +168,9 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Helper for label provider: returns the Node if element is a Node or
-	 * retrieves the Node if the object is a row. Expects a single Node in the
-	 * row if no selector name is provided Call {@link Row#getNode()} catching
+	 * Helper for label provider: returns the Node if element is a Node or retrieves
+	 * the Node if the object is a row. Expects a single Node in the row if no
+	 * selector name is provided Call {@link Row#getNode()} catching
 	 * {@link RepositoryException}
 	 */
 	public static Node getNodeFromElement(Object element, String selectorName) {
@@ -195,8 +194,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Returns the versionable node in the parent path, this if it is
-	 * versionable or null if none is versionnable including root node.
+	 * Returns the versionable node in the parent path, this if it is versionable or
+	 * null if none is versionnable including root node.
 	 */
 	public static Node getVersionableAncestor(Node node) {
 		try {
@@ -212,8 +211,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Works around missing method to test if a node has been removed from
-	 * existing session
+	 * Works around missing method to test if a node has been removed from existing
+	 * session
 	 * 
 	 * @param node
 	 * @return
@@ -247,8 +246,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Shortcut to get a node iterator on all nodes of a given type under a
-	 * given subpath.
+	 * Shortcut to get a node iterator on all nodes of a given type under a given
+	 * subpath.
 	 */
 	public static NodeIterator getNodesOfType(Session session, String parentPath, String nodeType) {
 		try {
@@ -317,13 +316,13 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * If this node is has the {@link NodeType#MIX_LAST_MODIFIED} mixin, it
-	 * updates the {@link Property#JCR_LAST_MODIFIED} property with the current
-	 * time and the {@link Property#JCR_LAST_MODIFIED_BY} property with the
-	 * passed user id. In Jackrabbit 2.x,
-	 * <a href="https://issues.apache.org/jira/browse/JCR-2233">these properties
-	 * are not automatically updated</a>, hence the need for manual update. The
-	 * session is not saved.
+	 * If this node is has the {@link NodeType#MIX_LAST_MODIFIED} mixin, it updates
+	 * the {@link Property#JCR_LAST_MODIFIED} property with the current time and the
+	 * {@link Property#JCR_LAST_MODIFIED_BY} property with the passed user id. In
+	 * Jackrabbit 2.x,
+	 * <a href="https://issues.apache.org/jira/browse/JCR-2233">these properties are
+	 * not automatically updated</a>, hence the need for manual update. The session
+	 * is not saved.
 	 */
 	public static void updateLastModified(Node node, String userId) {
 		try {
@@ -346,8 +345,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Make a version snapshot of the current state of the given versionable
-	 * node. It wraps a JCR save and checkPoint methods
+	 * Make a version snapshot of the current state of the given versionable node.
+	 * It wraps a JCR save and checkPoint methods
 	 */
 	public static boolean saveAndPublish(Node node, boolean publish) {
 		try {
@@ -390,13 +389,13 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Wraps a best effort to versionMananger.checkedPoint(path) a list of path.
-	 * We check if the node still exists because the list might be out-dated
+	 * Wraps a best effort to versionMananger.checkedPoint(path) a list of path. We
+	 * check if the node still exists because the list might be out-dated
 	 * 
 	 * We assume the session has been saved.
 	 *
-	 * Not that are not versionable won't be touched TODO : add management of
-	 * check out by others.
+	 * Not that are not versionable won't be touched TODO : add management of check
+	 * out by others.
 	 */
 	public static void checkPoint(Session session, List<String> pathes, boolean updateLastModified) {
 		try {
@@ -435,8 +434,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Simply retrieves the first versionable node in the current node ancestor
-	 * tree (might be the ndoe itself) or null if none of them is versionable
+	 * Simply retrieves the first versionable node in the current node ancestor tree
+	 * (might be the ndoe itself) or null if none of them is versionable
 	 */
 	public static Node getParentVersionableNode(Node node) throws RepositoryException {
 		Node curr = node;
@@ -557,8 +556,8 @@ public class ConnectJcrUtils {
 
 	/**
 	 * Centralizes exception management to call
-	 * {@link Session#getNodeByIdentifier(String)}. The session is retrieved
-	 * using the passed node
+	 * {@link Session#getNodeByIdentifier(String)}. The session is retrieved using
+	 * the passed node
 	 */
 	public static Node getNodeByIdentifier(Node sessionNode, String identifier) {
 		return getNodeByIdentifier(getSession(sessionNode), identifier);
@@ -576,9 +575,9 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * If session.absParentPath exists and is visible, build a relative path
-	 * with the passed relative subpath and returns the node at corresponding
-	 * relative path if it exists
+	 * If session.absParentPath exists and is visible, build a relative path with
+	 * the passed relative subpath and returns the node at corresponding relative
+	 * path if it exists
 	 * 
 	 * Call {@link Session#getNode()} catching {@link RepositoryException}
 	 */
@@ -655,9 +654,9 @@ public class ConnectJcrUtils {
 
 	/* HELPERS FOR SINGLE VALUES */
 	/**
-	 * Concisely gets the String value of a property. Returns an empty String
-	 * rather than null if this node doesn't have this property or if the
-	 * corresponding property is an empty string.
+	 * Concisely gets the String value of a property. Returns an empty String rather
+	 * than null if this node doesn't have this property or if the corresponding
+	 * property is an empty string.
 	 */
 	public static String get(Node node, String propertyName) {
 		try {
@@ -671,8 +670,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Concisely gets the value of a long property or null if this node doesn't
-	 * have this property
+	 * Concisely gets the value of a long property or null if this node doesn't have
+	 * this property
 	 */
 	public static Long getLongValue(Node node, String propRelPath) {
 		try {
@@ -686,8 +685,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Concisely gets the value of a double property or null if this node
-	 * doesn't have this property
+	 * Concisely gets the value of a double property or null if this node doesn't
+	 * have this property
 	 */
 	public static Double getDoubleValue(Node node, String propRelPath) {
 		try {
@@ -701,8 +700,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Concisely gets the value of a date property or null if this node doesn't
-	 * have this property
+	 * Concisely gets the value of a date property or null if this node doesn't have
+	 * this property
 	 */
 	public static Calendar getDateValue(Node node, String propRelPath) {
 		try {
@@ -716,8 +715,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Concisely gets the value of a boolean property or null if this node
-	 * doesn't have this property
+	 * Concisely gets the value of a boolean property or null if this node doesn't
+	 * have this property
 	 */
 	public static Boolean getBooleanValue(Node node, String propertyName) {
 		try {
@@ -731,8 +730,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Concisely gets the value of a date property formatted as String or an
-	 * empty String this node doesn't have this property
+	 * Concisely gets the value of a date property formatted as String or an empty
+	 * String this node doesn't have this property
 	 */
 	public static String getDateFormattedAsString(Node node, String propertyName, String dateFormatPattern) {
 		try {
@@ -748,8 +747,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Concisely gets a referenced node or null if the given node doesn't have
-	 * this property or if the property is of the wrong type
+	 * Concisely gets a referenced node or null if the given node doesn't have this
+	 * property or if the property is of the wrong type
 	 */
 	public static Node getReference(Node node, String propName) {
 		try {
@@ -825,7 +824,16 @@ public class ConnectJcrUtils {
 					return true;
 				}
 			case PropertyType.DOUBLE:
-				Double dbValue = (Double) value;
+				Double dbValue;
+				if (value instanceof Double)
+					dbValue = (Double) value;
+				else {
+					try {
+						dbValue = Double.parseDouble(value.toString());
+					} catch (NumberFormatException e) {
+						return false;
+					}
+				}
 				if (node.hasProperty(propName) && node.getProperty(propName).getDouble() == dbValue)
 					return false;
 				else {
@@ -851,8 +859,8 @@ public class ConnectJcrUtils {
 
 	/* MULTIPLE VALUES MANAGEMENT */
 	/**
-	 * Removes a given String from a multi value property of a node. If the
-	 * String is not found, it does nothing
+	 * Removes a given String from a multi value property of a node. If the String
+	 * is not found, it does nothing
 	 */
 	public static void removeMultiPropertyValue(Node node, String propName, String stringToRemove) {
 		try {
@@ -876,9 +884,8 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Adds a string value on a multivalued property. If this value is already
-	 * part of the list, it returns an error message. We use case insensitive
-	 * comparison
+	 * Adds a string value on a multivalued property. If this value is already part
+	 * of the list, it returns an error message. We use case insensitive comparison
 	 */
 	public static String addMultiPropertyValue(Node node, String propName, String value) {
 		try {
@@ -937,12 +944,11 @@ public class ConnectJcrUtils {
 
 	/**
 	 * Concisely gets a string that concatenates values of a multi-valued String
-	 * property. It returns an empty String rather than null if this node
-	 * doesn't have this property or if the corresponding property is an empty
-	 * string.
+	 * property. It returns an empty String rather than null if this node doesn't
+	 * have this property or if the corresponding property is an empty string.
 	 * 
-	 * Useful in the read only label providers. Caller might define a
-	 * concatenation string, otherwise a semi-colon and a space are used.
+	 * Useful in the read only label providers. Caller might define a concatenation
+	 * string, otherwise a semi-colon and a space are used.
 	 */
 	public static String getMultiAsString(Node node, String propertyName, String separator) {
 		try {
@@ -975,7 +981,7 @@ public class ConnectJcrUtils {
 	public static List<String> getMultiAsList(Node node, String propertyName) {
 		List<String> results = new ArrayList<String>();
 		try {
-			if(propertyName==null)
+			if (propertyName == null)
 				return results;
 			if (!node.hasProperty(propertyName))
 				return results;
@@ -1026,13 +1032,13 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Adds a reference to a JCR Node to the multi valued REFERENCE property of
-	 * a Node. An error message is returned if the Node is already referenced.
-	 * The new reference is always added after all already existing references
+	 * Adds a reference to a JCR Node to the multi valued REFERENCE property of a
+	 * Node. An error message is returned if the Node is already referenced. The new
+	 * reference is always added after all already existing references
 	 * 
-	 * TODO rather use exception when trying to add an already referenced node
-	 * TODO Enable definition of a primary item by adding the new property as
-	 * first element in the list
+	 * TODO rather use exception when trying to add an already referenced node TODO
+	 * Enable definition of a primary item by adding the new property as first
+	 * element in the list
 	 */
 	public static String addRefToMultiValuedProp(Node node, String propName, Node nodeToReference) {
 		try {
@@ -1062,12 +1068,11 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Insert a reference to a given node in a multi value reference property
-	 * just before the reference that is passed as target parameter. Usefull
-	 * among other in the UI drag and drop mechanisms. If the target reference is
-	 * not found, the new reference is added at the end of the list. This
-	 * mechanism also check if another occurence of the source reference is
-	 * present and remove it
+	 * Insert a reference to a given node in a multi value reference property just
+	 * before the reference that is passed as target parameter. Usefull among other
+	 * in the UI drag and drop mechanisms. If the target reference is not found, the
+	 * new reference is added at the end of the list. This mechanism also check if
+	 * another occurence of the source reference is present and remove it
 	 */
 	public static void orderReferenceBefore(Node node, String propName, Node sourceNode, Node targetNode) {
 		try {
@@ -1103,9 +1108,9 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Simply checks a multi valued STRING property of a Node and returns true
-	 * if the given property has already such a value. comparison is case
-	 * insensitive and trimmed.
+	 * Simply checks a multi valued STRING property of a Node and returns true if
+	 * the given property has already such a value. comparison is case insensitive
+	 * and trimmed.
 	 */
 	public static boolean valueExists(Node node, String propName, String value) {
 		try {
@@ -1125,13 +1130,13 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Adds a String to the multi valued STRING property of a Node. An error
-	 * message is returned if the String is already in the list. The new String
-	 * is always added after all already existing Strings.
+	 * Adds a String to the multi valued STRING property of a Node. An error message
+	 * is returned if the String is already in the list. The new String is always
+	 * added after all already existing Strings.
 	 * 
-	 * TODO rather use exception when trying to add an already existing String
-	 * TODO Enable definition of a primary item by adding the new property as
-	 * first element in the list
+	 * TODO rather use exception when trying to add an already existing String TODO
+	 * Enable definition of a primary item by adding the new property as first
+	 * element in the list
 	 */
 	public static String addStringToMultiValuedProp(Node node, String propName, String value) {
 		try {
@@ -1209,9 +1214,9 @@ public class ConnectJcrUtils {
 	}
 
 	/**
-	 * Browses a {@code RowIterator} to build the corresponding row array.
-	 * Performs a kind of "select distinct" based on the JcrUID of the nodes
-	 * designed by the selector name
+	 * Browses a {@code RowIterator} to build the corresponding row array. Performs
+	 * a kind of "select distinct" based on the JcrUID of the nodes designed by the
+	 * selector name
 	 */
 	public static Row[] rowIteratorToDistinctArray(RowIterator rit, String distinctSelectorName)
 			throws RepositoryException {
@@ -1232,8 +1237,8 @@ public class ConnectJcrUtils {
 
 	/**
 	 * Convert a {@link RowIterator} to a list of {@link Node} given a selector
-	 * name. It relies on the &lt;code&gt;Row.getNode(String selectorName)&lt;/code&gt;
-	 * method.
+	 * name. It relies on the &lt;code&gt;Row.getNode(String
+	 * selectorName)&lt;/code&gt; method.
 	 */
 	public static List<Node> rowIteratorToNodeList(RowIterator rowIterator, String selectorName)
 			throws RepositoryException {
@@ -1277,8 +1282,8 @@ public class ConnectJcrUtils {
 
 	/* QOM HELPERS */
 	/**
-	 * Returns and(constraintA, constraintB) if constraintA != null, or
-	 * constraintB otherwise (that cannot be null)
+	 * Returns and(constraintA, constraintB) if constraintA != null, or constraintB
+	 * otherwise (that cannot be null)
 	 */
 	public static Constraint localAnd(QueryObjectModelFactory factory, Constraint defaultC, Constraint newC)
 			throws RepositoryException {

@@ -2,6 +2,7 @@ package org.argeo.connect.ui;
 
 import javax.jcr.Node;
 
+import org.argeo.cms.i18n.Localized;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
@@ -106,6 +107,14 @@ public class ConnectUiUtils {
 	public static Label createBoldLabel(Composite parent, String value) {
 		Label label = new Label(parent, SWT.LEAD);
 		label.setText(" " + value);
+		label.setFont(EclipseUiUtils.getBoldFont(parent));
+		label.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false));
+		return label;
+	}
+
+	public static Label createBoldLabel(Composite parent, Localized localized) {
+		Label label = new Label(parent, SWT.LEAD);
+		label.setText(localized.lead());
 		label.setFont(EclipseUiUtils.getBoldFont(parent));
 		label.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false));
 		return label;
