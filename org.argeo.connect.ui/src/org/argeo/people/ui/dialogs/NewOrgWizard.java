@@ -1,20 +1,32 @@
 package org.argeo.people.ui.dialogs;
 
+import java.util.UUID;
+
 import javax.jcr.Node;
 import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeType;
 
+import org.argeo.connect.ConnectException;
+import org.argeo.connect.ConnectNames;
+import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.eclipse.ui.Selected;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
+import org.argeo.people.PeopleService;
+import org.argeo.people.PeopleTypes;
 import org.argeo.people.ui.PeopleMsg;
+import org.argeo.people.util.PeopleJcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
@@ -26,7 +38,10 @@ import org.eclipse.swt.widgets.Text;
 public class NewOrgWizard extends Wizard implements PeopleNames {
 
 	// Context
-	private Node org;
+	private Node draft;
+
+	private PeopleService peopleService;
+	private ResourcesService resourcesService;
 
 	// This page widgets
 	private Text legalNameTxt;
@@ -34,8 +49,13 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 	// private Text displayNameTxt;
 	private Text legalFormTxt;
 
-	public NewOrgWizard(Node org) {
-		this.org = org;
+	Button createUser;
+	Text userFirstName, userLastName, userEmail;
+
+	public NewOrgWizard(Node org, PeopleService peopleService, ResourcesService resourcesService) {
+		this.draft = org;
+		this.peopleService = peopleService;
+		this.resourcesService = resourcesService;
 	}
 
 	@Override
@@ -66,23 +86,46 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			return false;
 		}
 
-		ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_NAME, PropertyType.STRING, legalName);
+		ConnectJcrUtils.setJcrProperty(draft, PEOPLE_LEGAL_NAME, PropertyType.STRING, legalName);
 		// if (useDistinctDisplayName)
 		// ConnectJcrUtils.setJcrProperty(org, PEOPLE_DISPLAY_NAME, PropertyType.STRING,
 		// displayName);
 		if (EclipseUiUtils.notEmpty(legalForm))
-			ConnectJcrUtils.setJcrProperty(org, PEOPLE_LEGAL_FORM, PropertyType.STRING, legalForm);
+			ConnectJcrUtils.setJcrProperty(draft, PEOPLE_LEGAL_FORM, PropertyType.STRING, legalForm);
+
+		if (createUser.getSelection()) {
+			try {
+				Node person = draft.addNode(PeopleNames.PEOPLE_ROLE);
+				person.addMixin(PeopleTypes.PEOPLE_PERSON);
+				String personUid = UUID.randomUUID().toString();
+				// TODO centralize with new person page
+				ConnectJcrUtils.setJcrProperty(person, ConnectNames.CONNECT_UID, PropertyType.STRING, personUid);
+				ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_FIRST_NAME, PropertyType.STRING,
+						userFirstName.getText());
+				ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_LAST_NAME, PropertyType.STRING,
+						userLastName.getText());
+				ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_DISPLAY_NAME, PropertyType.STRING,
+						userFirstName.getText() + " " + userLastName.getText());
+				String email = userEmail.getText();
+				ConnectJcrUtils.setJcrProperty(person, PeopleNames.PEOPLE_PRIMARY_EMAIL, PropertyType.STRING, email);
+				PeopleJcrUtils.createEmail(resourcesService, peopleService, person, email, true, null, null);
+			} catch (RepositoryException e) {
+				throw new ConnectException("Cannot add person", e);
+			}
+		}
 		return true;
 	}
 
-	@Override
-	public boolean performCancel() {
-		return true;
+	protected Node getDraft() {
+		return draft;
 	}
 
-	@Override
-	public boolean canFinish() {
-		return true;
+	protected PeopleService getPeopleService() {
+		return peopleService;
+	}
+
+	protected ResourcesService getResourcesService() {
+		return resourcesService;
 	}
 
 	protected class MainInfoPage extends WizardPage {
@@ -98,13 +141,13 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			parent.setLayout(new GridLayout(2, false));
 
 			// Legal Name
-			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.legalName.lead());
+			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.legalName);
 			legalNameTxt = new Text(parent, SWT.BORDER);
 			// legalNameTxt.setMessage("the legal name");
 			legalNameTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 			// Legal Form
-			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.legalForm.lead());
+			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.legalForm);
 			legalFormTxt = new Text(parent, SWT.BORDER);
 			// legalFormTxt.setMessage("the legal name (Ltd, Org, GmbH...) ");
 			legalFormTxt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
@@ -131,10 +174,35 @@ public class NewOrgWizard extends Wizard implements PeopleNames {
 			// displayNameTxt.setEnabled(useDistinctDisplayNameBtn.getSelection());
 			// }
 			// });
+			createUser = new Button(parent, SWT.CHECK);
+			createUser.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
+			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.personWizardPageTitle);
+
+			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.firstName);
+			userFirstName = new Text(parent, SWT.BORDER);
+			userFirstName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.lastName);
+			userLastName = new Text(parent, SWT.BORDER);
+			userLastName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+			ConnectUiUtils.createBoldLabel(parent, PeopleMsg.email);
+			userEmail = new Text(parent, SWT.BORDER);
+			userEmail.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+			createUser.addSelectionListener((Selected) (e) -> {
+				updateUserForm();
+			});
+			createUser.setSelection(true);
+			updateUserForm();
 
 			// Don't forget this.
 			setControl(legalNameTxt);
 			legalNameTxt.setFocus();
+		}
+
+		private void updateUserForm() {
+			userFirstName.setEnabled(createUser.getSelection());
+			userLastName.setEnabled(createUser.getSelection());
+			userEmail.setEnabled(createUser.getSelection());
 		}
 	}
 }

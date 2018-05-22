@@ -2,7 +2,6 @@ package org.argeo.people.ui.dialogs;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -18,14 +17,11 @@ public class NewUserWizard extends Wizard implements PeopleNames {
 	private Node person;
 
 	private NewPersonPage newPersonPage;
-	private UserAdminService userAdminService;
 	private PeopleService peopleService;
 	private ResourcesService resourcesService;
 
-	public NewUserWizard(Node person, UserAdminService userAdminService, PeopleService peopleService,
-			ResourcesService resourcesService) {
+	public NewUserWizard(Node person, PeopleService peopleService, ResourcesService resourcesService) {
 		this.person = person;
-		this.userAdminService = userAdminService;
 		this.peopleService = peopleService;
 		this.resourcesService = resourcesService;
 	}
@@ -48,7 +44,6 @@ public class NewUserWizard extends Wizard implements PeopleNames {
 	@Override
 	public boolean performFinish() {
 		newPersonPage.updateNode(person, peopleService, resourcesService);
-		userAdminService.createUserFromPerson(person);
 		return true;
 	}
 

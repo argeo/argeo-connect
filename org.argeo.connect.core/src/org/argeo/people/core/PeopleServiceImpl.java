@@ -6,6 +6,7 @@ import static org.argeo.connect.util.ConnectUtils.notEmpty;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.Node;
@@ -52,6 +53,8 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 	private PersonService personService;
 	private ContactService contactService = new ContactServiceImpl();
 
+	private SimpleDateFormat usersDatePath = new SimpleDateFormat("YYYY/MM");
+
 	@Override
 	public Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrc)
 			throws RepositoryException {
@@ -61,41 +64,58 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 				throw new PeopleException(
 						"Unable to define default path for " + srcNode + ". No property people:uid is defined");
 
-			Node createdNode = null;
-			//
-			// if (createdNode == null) {
-			// String relPath = getDefaultRelPath(ConnectJcrUtils.getSession(srcNode),
-			// nodeType, peopleUid);
-			// createdNode = JcrUtils.mkdirs(parent, relPath);
-			// }
-
 			String relPath = getDefaultRelPath(srcNode);
-			createdNode = JcrUtils.mkdirs(parent, relPath);
+			Node createdNode = JcrUtils.mkdirs(parent, relPath);
+
+			// add primary contact
+			Node personCreatedNode = null;
+			if (srcNode.hasNode(PeopleNames.PEOPLE_ROLE)) {
+				Node subNode = srcNode.getNode(PeopleNames.PEOPLE_ROLE);
+				String personRelPath = getDefaultRelPath(subNode);
+				personCreatedNode = JcrUtils.mkdirs(parent, personRelPath);
+				RemoteJcrUtils.copy(subNode, personCreatedNode, true);
+				personCreatedNode.addMixin(PeopleTypes.PEOPLE_PERSON);
+				// remove draft before copying org
+				subNode.removeMixin(PeopleTypes.PEOPLE_PERSON);
+				subNode.remove();
+			}
 
 			RemoteJcrUtils.copy(srcNode, createdNode, true);
 			createdNode.addMixin(nodeType);
 			// integration with user admin
-			if (createdNode.hasProperty(PeopleNames.PEOPLE_USERNAME)) {
-				createdNode.addMixin(PeopleTypes.PEOPLE_USER);
-			} else if (createdNode.hasProperty(PeopleNames.PEOPLE_PRIMARY_EMAIL)) {
-				String email = JcrUtils.get(srcNode, PEOPLE_PRIMARY_EMAIL);
-				String dn = userAdminService.buildDefaultDN(email, Role.USER);
-				User user = userAdminService.getUser(dn);
-				if (user != null) {
-					createdNode.addMixin(PeopleTypes.PEOPLE_USER);
-					createdNode.setProperty(PeopleNames.PEOPLE_USERNAME, dn);
-				}
+			configureUser(createdNode);
+			if (personCreatedNode != null) {
+				configureUser(personCreatedNode);
+				JcrUtils.updateLastModified(personCreatedNode);
 			}
 			JcrUtils.updateLastModified(createdNode);
-			if (removeSrc)
+
+			if (removeSrc) {
+				srcNode.removeMixin(nodeType);
 				srcNode.remove();
+			}
+			// must be after removing source since there is a save
+			if (personCreatedNode != null) {
+				personService.createOrUpdateJob(null, personCreatedNode, createdNode, null, null, true);
+			}
 			return createdNode;
 		} else
 			return null;
 	}
 
-	private SimpleDateFormat usersDatePath = new SimpleDateFormat("YYYY/MM");
-
+	private void configureUser(Node createdNode) throws RepositoryException {
+		if (createdNode.hasProperty(PeopleNames.PEOPLE_USERNAME)) {
+			createdNode.addMixin(PeopleTypes.PEOPLE_USER);
+		} else if (createdNode.hasProperty(PeopleNames.PEOPLE_PRIMARY_EMAIL)) {
+			String email = JcrUtils.get(createdNode, PEOPLE_PRIMARY_EMAIL);
+			String dn = userAdminService.buildDefaultDN(email, Role.USER);
+			User user = userAdminService.getUser(dn);
+			if (user == null)
+				user = userAdminService.createUserFromPerson(createdNode);
+			createdNode.addMixin(PeopleTypes.PEOPLE_USER);
+			createdNode.setProperty(PeopleNames.PEOPLE_USERNAME, dn);
+		}
+	}
 	// private String generateUserPath(String username) {
 	// LdapName dn;
 	// try {
@@ -137,7 +157,11 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 
 	@Override
 	public String getDefaultRelPath(Node entity) throws RepositoryException {
-		Calendar date = entity.getProperty(Property.JCR_CREATED).getDate();
+		Calendar date;
+		if (entity.hasProperty(Property.JCR_CREATED))
+			date = entity.getProperty(Property.JCR_CREATED).getDate();
+		else
+			date = new GregorianCalendar();
 		String creationDatePath = usersDatePath.format(date.getTime());
 
 		String fullName;

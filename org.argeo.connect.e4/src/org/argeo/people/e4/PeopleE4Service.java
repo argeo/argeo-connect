@@ -75,9 +75,9 @@ public class PeopleE4Service implements PeopleWorkbenchService, AppE4Service {
 	@Override
 	public Wizard getCreationWizard(Node node) {
 		if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
-			return new NewUserWizard(node, userAdminService, peopleService, resourcesService);
+			return new NewUserWizard(node, peopleService, resourcesService);
 		else if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
-			return new NewOrgWizard(node);
+			return new NewOrgWizard(node, peopleService, resourcesService);
 		else
 			return null;
 		// throw new PeopleException("No defined wizard for node " + node);
