@@ -1,6 +1,5 @@
 package org.argeo.people.e4.parts;
 
-import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.util.LazyCTabControl;
@@ -8,9 +7,11 @@ import org.argeo.eclipse.ui.Selected;
 import org.argeo.people.ui.PeopleMsg;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.User;
 
@@ -41,6 +42,8 @@ public class PersonSecurityCTab extends LazyCTabControl {
 		password2 = new Text(parent, SWT.PASSWORD | SWT.BORDER);
 		Button lbl = new Button(parent, SWT.PUSH);
 		lbl.setText(PeopleMsg.resetPassword.lead());
+		Label messageLbl = new Label(parent, SWT.NONE);
+		messageLbl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 3, 1));
 		lbl.addSelectionListener(new Selected() {
 			private static final long serialVersionUID = -3679890149990208064L;
 
@@ -63,14 +66,20 @@ public class PersonSecurityCTab extends LazyCTabControl {
 						} catch (Exception e2) {
 							e2.printStackTrace();
 						}
+					} finally {
+						password1.setText("");
+						password2.setText("");
 					}
 				} else {
 					msg = "Passwords are not equals";
 				}
-				if (msg != null)// TODO make it more user friendly
-					throw new ConnectException("Cannot change password: " + msg);
+				if (msg != null)
+					messageLbl.setText(msg);
+				else
+					messageLbl.setText("Password changed");
 			}
 		});
+
 		parent.layout(true, true);
 	}
 
