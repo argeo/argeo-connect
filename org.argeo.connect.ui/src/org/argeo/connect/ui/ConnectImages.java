@@ -83,8 +83,8 @@ public class ConnectImages {
 	// ACTIVITIES
 	//
 	public final static Image DONE_TASK = createType("doneTask.png");
-	public final static Image TODO = createType("todo.gif");
-	public final static Image RATE = createType("todo.gif");
+	public final static Image TODO = createType("todo.png");
+	public final static Image RATE = createType("todo.png");
 	// TODO We still use contact images: get more specific icons
 	public final static Image ACTIVITY = createType("activity.png");
 	public final static Image NOTE = createType("note.gif");
