@@ -81,9 +81,9 @@ public class PeopleWorkbenchServiceImpl implements PeopleWorkbenchService, Legac
 	@Override
 	public Wizard getCreationWizard(Node node) {
 		if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_PERSON))
-			return new NewPersonWizard(node);
+			return null;//NewPersonWizard(node);
 		else if (ConnectJcrUtils.isNodeType(node, PeopleTypes.PEOPLE_ORG))
-			return new NewOrgWizard(node);
+			return null;//new NewOrgWizard(node);
 		else
 			return null;
 		// throw new PeopleException("No defined wizard for node " + node);
