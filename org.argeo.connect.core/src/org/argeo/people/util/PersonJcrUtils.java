@@ -108,6 +108,24 @@ public class PersonJcrUtils implements PeopleNames {
 		return null;
 	}
 
+	public static Node getPersonWithUsername(Session session, String username)
+			throws RepositoryException {
+		QueryObjectModelFactory factory = session.getWorkspace().getQueryManager().getQOMFactory();
+		final String typeSelector = "person";
+		Selector source = factory.selector(PeopleTypes.PEOPLE_USER, typeSelector);
+		DynamicOperand dynOp = factory.propertyValue(source.getSelectorName(), PEOPLE_USERNAME);
+		StaticOperand statOp = factory.literal(session.getValueFactory().createValue(username));
+		Constraint defaultC = factory.comparison(dynOp, QueryObjectModelFactory.JCR_OPERATOR_EQUAL_TO, statOp);
+
+		QueryObjectModel query = factory.createQuery(source, defaultC, null, null);
+		QueryResult result = query.execute();
+		NodeIterator ni = result.getNodes();
+		// TODO clean this to handle multiple result
+		if (ni.hasNext())
+			return ni.nextNode();
+		return null;
+	}
+
 	/**
 	 * Add a job for a given person
 	 * 
