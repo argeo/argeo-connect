@@ -9,6 +9,7 @@ import javax.jcr.Session;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.documents.composites.DocumentsFolderComposite;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
@@ -17,7 +18,7 @@ public class FolderEditor extends AbstractDocumentsEditor {
 //	public static final String ID = DocumentsUiPlugin.PLUGIN_ID + ".folderEditor";
 
 	@PostConstruct
-	public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent, EMenuService menuService) {
 		init();
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		DocumentsFolderComposite dfc = new DocumentsFolderComposite(parent, SWT.NO_FOCUS, getNode(),
@@ -40,5 +41,6 @@ public class FolderEditor extends AbstractDocumentsEditor {
 		Path path = getDocumentsService().getPath(getNodeFileSystemProvider(), jcrPath);
 		dfc.populate(path);
 		parent.layout(true, true);
+		//menuService.registerContextMenu(dfc.getViewer().getControl(), "org.argeo.suite.e4.popupmenu.folder");
 	}
 }

@@ -52,7 +52,7 @@ public abstract class AbstractConnectContextMenu {
 	protected void createContextMenu(Composite boxCmp) {
 		ActionsSelListener asl = new ActionsSelListener();
 		for (String actionId : defaultActions) {
-			Button btn = new Button(boxCmp, SWT.FLAT | SWT.PUSH | SWT.LEAD);
+			Button btn = new Button(boxCmp, SWT.FLAT | SWT.LEAD);
 			btn.setText(getLabel(actionId));
 			btn.setLayoutData(EclipseUiUtils.fillWidth());
 			CmsUtils.markup(btn);
