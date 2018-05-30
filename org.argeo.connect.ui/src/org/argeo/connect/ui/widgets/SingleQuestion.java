@@ -55,7 +55,7 @@ public class SingleQuestion extends TrayDialog {
 	}
 
 	public SingleQuestion(String title, String message, String defaultValue) {
-		this(Display.getDefault().getActiveShell(), title, message, defaultValue, false);
+		this(Display.getCurrent().getActiveShell(), title, message, defaultValue, false);
 	}
 
 	public SingleQuestion(Shell parentShell, String title, String message, String defaultValue, Boolean multiline) {

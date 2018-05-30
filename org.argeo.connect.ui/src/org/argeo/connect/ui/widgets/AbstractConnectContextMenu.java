@@ -110,6 +110,7 @@ public abstract class AbstractConnectContextMenu {
 			if (eventSource instanceof Button) {
 				Button pressedBtn = (Button) eventSource;
 				performAction((String) pressedBtn.getData(KEY_ACTION_ID));
+				shell.close();
 			}
 		}
 	}
@@ -120,7 +121,8 @@ public abstract class AbstractConnectContextMenu {
 		@Override
 		public void shellDeactivated(ShellEvent e) {
 			setVisible(false);
-			shell.close();
+			shell.setVisible(false);
+			//shell.close();
 		}
 	}
 
