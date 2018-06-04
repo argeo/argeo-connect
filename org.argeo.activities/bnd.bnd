@@ -9,6 +9,7 @@ Import-Package: javax.jcr.nodetype,\
 javax.jcr.security,\
 javax.servlet.http,\
 org.argeo.cms.ui.fs,\
+org.argeo.cms.i18n,\
 org.argeo.connect,\
 org.argeo.connect.ui,\
 org.argeo.connect.ui.util,\
