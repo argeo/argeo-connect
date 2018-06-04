@@ -328,6 +328,11 @@ public class UserAdminServiceImpl implements UserAdminService {
 		this.serviceProperties = serviceProperties;
 	}
 
+	@Deprecated
+	public void setUserAdmin(UserAdmin userAdmin) {
+		this.userAdmin = userAdmin;
+	}
+
 	public void setUserTransaction(UserTransaction userTransaction) {
 		this.userTransaction = userTransaction;
 	}

@@ -26,6 +26,7 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.naming.NamingUtils;
+import org.argeo.node.NodeUtils;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
@@ -39,6 +40,27 @@ import org.osgi.service.useradmin.User;
  */
 public class PeopleJcrUtils implements PeopleNames {
 	// private final static Log log = LogFactory.getLog(PeopleJcrUtils.class);
+
+	/**
+	 * @deprecated Use {@link PersonJcrUtils#getPersonWithUsername(Session, String)}
+	 */
+	@Deprecated
+	public static Node getProfile(Session session, String username) throws RepositoryException {
+		// FIXME search instead
+		if (username == null)
+			username = session.getUserID();
+		Node userHome = NodeUtils.getUserHome(session, username);
+		Node profile = null;
+		NodeIterator children = userHome.getNodes();
+		while (children.hasNext()) {
+			Node child = children.nextNode();
+			if (child.isNodeType(PeopleTypes.PEOPLE_PERSON)) {
+				profile = child;
+				break;
+			}
+		}
+		return profile;
+	}
 
 	/* GROUP MANAGEMENT */
 	/**
