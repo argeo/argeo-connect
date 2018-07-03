@@ -329,7 +329,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 	}
 
 	@Deprecated
-	public void setUserAdmin(UserAdmin userAdmin) {
+	public void setUserAdminOld(UserAdmin userAdmin) {
 		this.userAdmin = userAdmin;
 	}
 
