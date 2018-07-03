@@ -16,6 +16,7 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.ConnectEditor;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -115,8 +116,10 @@ public class DateTextPart extends Composite {
 		dateTxt.setToolTipText(
 				"Enter a date with form \"" + ConnectConstants.DEFAULT_SHORT_DATE_FORMAT + "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
-		CmsUtils.style(openCalBtn, ConnectUiStyles.OPEN_CALENDAR_BTN);
-		openCalBtn.setLayoutData(new GridData(24, 16));
+		openCalBtn.setAlignment(SWT.CENTER);
+		openCalBtn.setImage(ConnectImages.CALENDAR);
+		// CmsUtils.style(openCalBtn, ConnectUiStyles.OPEN_CALENDAR_BTN);
+		// openCalBtn.setLayoutData(new GridData(16, 16));
 
 		openCalBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;

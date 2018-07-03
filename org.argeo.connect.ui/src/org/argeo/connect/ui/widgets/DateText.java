@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -59,8 +60,7 @@ public class DateText extends Composite {
 	}
 
 	/**
-	 * Returns the user defined date as Calendar or null if none has been
-	 * defined
+	 * Returns the user defined date as Calendar or null if none has been defined
 	 */
 	public Calendar getCalendar() {
 		return calendar;
@@ -87,8 +87,10 @@ public class DateText extends Composite {
 		dateTxt.setToolTipText(
 				"Enter a date with form \"" + ConnectConstants.DEFAULT_SHORT_DATE_FORMAT + "\" or use the calendar");
 		openCalBtn = new Button(dateComposite, SWT.FLAT);
-		CmsUtils.style(openCalBtn, ConnectUiStyles.OPEN_CALENDAR_BTN);
-		openCalBtn.setLayoutData(new GridData(24, 16));
+		openCalBtn.setAlignment(SWT.CENTER);
+		openCalBtn.setImage(ConnectImages.CALENDAR);
+		// CmsUtils.style(openCalBtn, ConnectUiStyles.OPEN_CALENDAR_BTN);
+		// openCalBtn.setLayoutData(new GridData(16, 16));
 
 		openCalBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
@@ -151,7 +153,7 @@ public class DateText extends Composite {
 		private DateTime dateTimeCtl;
 
 		public CalendarPopup(Control source) {
-			super(source.getDisplay(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
+			super(source.getDisplay().getActiveShell(), SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 			populate();
 			// Add border and shadow style
 			CmsUtils.style(CalendarPopup.this, ConnectUiStyles.POPUP_SHELL);

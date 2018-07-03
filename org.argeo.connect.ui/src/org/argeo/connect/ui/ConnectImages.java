@@ -82,6 +82,7 @@ public class ConnectImages {
 	//
 	// ACTIVITIES
 	//
+	public final static Image CALENDAR = createType("calendar.png");
 	public final static Image DONE_TASK = createType("doneTask.png");
 	public final static Image TODO = createType("todo.png");
 	public final static Image RATE = createType("todo.png");
