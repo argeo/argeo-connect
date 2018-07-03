@@ -14,7 +14,7 @@
 	<version>2.1.79-SNAPSHOT</version>
 	<properties>
 		<version.argeo-connect>2.1.79-SNAPSHOT</version.argeo-connect>
-		<version.argeo-rcp>2.1.18-SNAPSHOT</version.argeo-rcp>
+<!-- 		<version.argeo-rcp>2.1.18-SNAPSHOT</version.argeo-rcp> -->
 		<version.argeo-tp-extras>2.1.10</version.argeo-tp-extras>
 	</properties>
 	<modules>

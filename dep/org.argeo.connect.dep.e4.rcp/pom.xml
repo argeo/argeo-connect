@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>org.argeo.commons.rcp</groupId>
 			<artifactId>org.argeo.dep.cms.e4.rcp</artifactId>
-			<version>${version.argeo-rcp}</version>
+			<version>${version.argeo-commons}</version>
 			<type>pom</type>
 		</dependency>
 	</dependencies>
