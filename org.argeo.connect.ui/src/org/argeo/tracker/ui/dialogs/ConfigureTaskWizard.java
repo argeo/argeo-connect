@@ -272,10 +272,10 @@ public class ConfigureTaskWizard extends Wizard {
 				relatedToCmp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 			}
 			// Description
-			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);
+			Label label = new Label(parent, SWT.LEAD | SWT.TOP);
 			label.setText("Description");
 			label.setFont(EclipseUiUtils.getBoldFont(parent));
-			gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+			gd = new GridData(SWT.LEAD, SWT.TOP, false, false);
 			label.setLayoutData(gd);
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 			descTxt.setMessage("A longer description");

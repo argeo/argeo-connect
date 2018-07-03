@@ -197,9 +197,10 @@ public class NewSimpleTaskWizard extends Wizard {
 			wakeUpDateCmp = new DateText(parent, SWT.NO_FOCUS);
 
 			// DESCRIPTION
-			Label label = new Label(parent, SWT.RIGHT | SWT.TOP);
+			Label label = new Label(parent, SWT.LEAD | SWT.TOP);
 			label.setText("Description");
-			gd = new GridData(SWT.RIGHT, SWT.TOP, false, false);
+			label.setFont(EclipseUiUtils.getBoldFont(parent));
+			gd = new GridData(SWT.LEAD, SWT.TOP, false, false);
 			label.setLayoutData(gd);
 
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);

@@ -312,7 +312,7 @@ public class ConfigureMilestoneWizard extends Wizard {
 		Label lbl = new Label(parent, SWT.NONE);
 		lbl.setText(label);
 		lbl.setFont(EclipseUiUtils.getBoldFont(parent));
-		lbl.setLayoutData(new GridData(SWT.RIGHT, verticalAlign, false, false));
+		lbl.setLayoutData(new GridData(SWT.LEAD, verticalAlign, false, false));
 		return lbl;
 	}
 }

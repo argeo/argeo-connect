@@ -120,7 +120,7 @@ public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 		Label lbl = new Label(parent, SWT.NONE);
 		lbl.setText(label);
 		lbl.setFont(EclipseUiUtils.getBoldFont(parent));
-		lbl.setLayoutData(new GridData(SWT.RIGHT, verticalAlign, false, false));
+		lbl.setLayoutData(new GridData(SWT.LEAD, verticalAlign, false, false));
 		return lbl;
 	}
 
