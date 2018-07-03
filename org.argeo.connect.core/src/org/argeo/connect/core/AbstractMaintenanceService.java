@@ -84,6 +84,10 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 	protected void makeSureRolesExists(List<String> requiredRoles) {
 		if (requiredRoles == null)
 			return;
+		if (userAdminService == null) {
+			log.warn("No user admin service available, cannot make sure that role exists");
+			return;
+		}
 		for (String role : requiredRoles) {
 			Role systemRole = userAdminService.getUserAdmin().getRole(role);
 			if (systemRole == null) {
@@ -113,6 +117,10 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 	}
 
 	private void addToGroup(String officeGroup, String groupDn) {
+		if (userAdminService == null) {
+			log.warn("No user admin service available, cannot add group " + officeGroup + " to " + groupDn);
+			return;
+		}
 		Group managerGroup = (Group) userAdminService.getUserAdmin().getRole(officeGroup);
 		Group group = (Group) userAdminService.getUserAdmin().getRole(groupDn);
 		if (group == null)
