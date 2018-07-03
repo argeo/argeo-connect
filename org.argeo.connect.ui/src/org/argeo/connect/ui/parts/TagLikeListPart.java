@@ -11,6 +11,7 @@ import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.VersionManager;
 
+import org.argeo.cms.ui.dialogs.CmsMessageDialog;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.util.CmsUtils;
@@ -18,6 +19,7 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectEditor;
+import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
@@ -25,6 +27,7 @@ import org.argeo.connect.ui.widgets.TagLikeDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.people.ui.PeopleMsg;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -36,6 +39,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -161,7 +165,12 @@ public class TagLikeListPart extends Composite {
 
 						Composite tagCmp = toolkit.createComposite(parentCmp, SWT.NO_FOCUS);
 						tagCmp.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
+						// Label hashTagLbl = new Label(tagCmp, SWT.NONE);
+						// hashTagLbl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+						// hashTagLbl.setImage(ConnectImages.TAG);
 						Link link = new Link(tagCmp, SWT.NONE);
+						// link.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+
 						CmsUtils.markup(link);
 						CmsUtils.style(link, ConnectUiStyles.ENTITY_HEADER);
 						link.setText(getLinkText(taggablePropName, tagValue));
@@ -252,15 +261,17 @@ public class TagLikeListPart extends Composite {
 
 	protected String getLinkText(String taggablePropName, String value) {
 		if (taggablePropName.equals(ResourcesNames.CONNECT_TAGS))
-			return " #<a>" + value + "</a>";
+			return " <a>#" + value + "</a>";
 		else
 			return " <a>" + value + "</a>";
 	}
 
 	private void addDeleteButton(final AbstractFormPart part, Composite parent, final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
-		deleteBtn.setLayoutData(new GridData(16, 8));
+		deleteBtn.setImage(ConnectImages.DELETE_SMALL);
+		// deleteBtn.setText("-");
+		// CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
+		// deleteBtn.setLayoutData(new GridData(24, 24));
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
 
@@ -322,16 +333,22 @@ public class TagLikeListPart extends Composite {
 			if (registered == null) {
 				if (resourcesService.canCreateTag(session)) {
 					// Ask end user if we create a new tag
-					msg = "\"" + newTag + "\" is not yet registered.\n Are you sure you want to create it?";
-					if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
+					// msg = "\"" + newTag + "\" is not yet registered.\n Are you sure you want to
+					// create it?";
+					msg = PeopleMsg.confirmNewTag.format(new String[] { newTag });
+					// if (MessageDialog.openConfirm(shell, "Confirm creation", msg)) {
+					if (CmsMessageDialog.openConfirm(msg)) {
 						registered = registerNewTag(newTag);
 					} else
 						return;
 				} else {
-					msg = "\"" + newTag + "\" is not yet registered "
-							+ "and you don't have sufficient rights to create it.\n"
-							+ "Please contact a Business Admin and ask him " + "to register it for you if it is valid.";
-					MessageDialog.openError(shell, "Unvalid choice", msg);
+					// msg = "\"" + newTag + "\" is not yet registered "
+					// + "and you don't have sufficient rights to create it.\n"
+					// + "Please contact a Business Admin and ask him " + "to register it for you if
+					// it is valid.";
+					msg = PeopleMsg.cannotCreateTag.format(new String[] { newTag });
+					CmsMessageDialog.openWarning(msg);
+					// MessageDialog.openError(shell, "Unvalid choice", msg);
 					return;
 				}
 			}

@@ -53,6 +53,8 @@ import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.client.service.BrowserNavigation;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -91,9 +93,13 @@ public class TagEditor implements Refreshable, IJcrTableViewer {
 	private Label titleROLbl;
 	private ColumnLabelProvider groupTitleLP;
 
-	// Business Objects
+	// Context
 	private Session session;
 	private Node node;
+	private String partName;
+
+	// RAP specific
+	private BrowserNavigation browserNavigation;
 
 	// LIFE CYCLE
 	public void init(String entityId) {
@@ -124,7 +130,7 @@ public class TagEditor implements Refreshable, IJcrTableViewer {
 	}
 
 	protected void setPartName(String name) {
-		// this.partName = name;
+		this.partName = name;
 		mPart.setLabel(name);
 	}
 
@@ -147,6 +153,8 @@ public class TagEditor implements Refreshable, IJcrTableViewer {
 		Composite main = new Composite(parent, SWT.NONE);
 		createMainLayout(main);
 		afterNameUpdate(null);
+
+		browserNavigation = RWT.getClient().getService(BrowserNavigation.class);
 	}
 
 	protected void createMainLayout(Composite parent) {
@@ -277,6 +285,7 @@ public class TagEditor implements Refreshable, IJcrTableViewer {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		VirtualJcrTableViewer tableCmp = new VirtualJcrTableViewer(parent, SWT.MULTI, colDefs, enableBatchUpdate());
 		TableViewer tableViewer = tableCmp.getTableViewer();
+		tableViewer.getTable().setHeaderVisible(false);
 		tableCmp.setLayoutData(EclipseUiUtils.fillAll());
 		tableViewer.getTable().addSelectionListener(new HtmlListRwtAdapter(systemWorkbenchService));
 		return tableViewer;
@@ -342,10 +351,16 @@ public class TagEditor implements Refreshable, IJcrTableViewer {
 	@PreDestroy
 	public void dispose() {
 		JcrUtils.logoutQuietly(session);
+		browserNavigation.pushState("~", null);
 	}
 
 	@Focus
 	public void setFocus() {
+		try {
+			browserNavigation.pushState(node.getPath(), partName);
+		} catch (RepositoryException e) {
+			log.error("Cannot set client state", e);
+		}
 	}
 
 	/* DEPENDENCY INJECTION */

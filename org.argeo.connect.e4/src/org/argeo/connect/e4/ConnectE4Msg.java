@@ -4,7 +4,7 @@ import org.argeo.cms.i18n.Localized;
 
 public enum ConnectE4Msg implements Localized {
 	// editor
-	save, edit, cancel, refresh, delete,
+	save, edit, cancel, refresh, delete, addTag,
 	// handlers
 	confirmEntityDeletion;
 }

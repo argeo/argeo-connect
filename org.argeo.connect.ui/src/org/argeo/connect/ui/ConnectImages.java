@@ -25,6 +25,7 @@ public class ConnectImages {
 	// Actions
 	public final static Image DELETE = createAction("delete.png");
 	public final static Image DELETE_LEFT = createAction("delete_left.gif");
+	public final static Image DELETE_SMALL = createAction("delete_small.gif");
 	public final static Image MERGE = createAction("merge.gif");
 	// Image Descriptors still required for some Actions
 	public final static ImageDescriptor IMG_DESC_EDIT = CmsImages.createDesc(CmsImages.ACTIONS_BASE + "edit.gif");

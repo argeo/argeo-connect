@@ -15,6 +15,7 @@ import org.argeo.activities.ui.RelatedActivityList;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.e4.ConnectE4Msg;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
@@ -97,7 +98,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 		// // Tags Management
 		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
 				getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, person, ResourcesNames.CONNECT_TAGS,
-				"Add a tag");
+				ConnectE4Msg.addTag.lead());
 		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		//
 		// // Mailing lists management

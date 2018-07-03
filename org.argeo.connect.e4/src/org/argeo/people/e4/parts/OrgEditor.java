@@ -10,7 +10,11 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ui.RelatedActivityList;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectConstants;
+import org.argeo.connect.e4.ConnectE4Msg;
+import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.ui.ConnectUiUtils;
+import org.argeo.connect.ui.parts.TagLikeListPart;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -76,12 +80,10 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 		populateTitleComposite(titleCmp);
 
 		// Tags Management
-		// Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS,
-		// getResourcesService(),
-		// getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, org,
-		// ResourcesNames.CONNECT_TAGS,
-		// "Add a tag");
-		// tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+		Composite tagsCmp = new TagLikeListPart(this, parent, SWT.NO_FOCUS, getResourcesService(),
+				getSystemWorkbenchService(), ConnectConstants.RESOURCE_TAG, org, ResourcesNames.CONNECT_TAGS,
+				ConnectE4Msg.addTag.lead());
+		tagsCmp.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		//
 		// // Mailing lists management
 		// Composite mlCmp = new MailingListListPart(this, parent, SWT.NO_FOCUS,

@@ -46,9 +46,9 @@ public class OtherTagsLabelProvider extends ColumnLabelProvider {
 		this.tagId = tagId;
 		this.currentTag = currentTag;
 		tagLikeResPar = resourcesService.getTagLikeResourceParent(session, tagId);
-		if(tagLikeResPar!=null){// workaround
-		taggablePropName = ConnectJcrUtils.getMultiAsString(tagLikeResPar, RESOURCES_TAGGABLE_PROP_NAME, ",");
-		}else{
+		if (tagLikeResPar != null) {// workaround
+			taggablePropName = ConnectJcrUtils.getMultiAsString(tagLikeResPar, RESOURCES_TAGGABLE_PROP_NAME, ",");
+		} else {
 			taggablePropName = null;
 		}
 	}
@@ -71,8 +71,8 @@ public class OtherTagsLabelProvider extends ColumnLabelProvider {
 
 	@Override
 	public String getText(Object element) {
-//		if(true)
-//			return "";
+		// if(true)
+		// return "";
 		// try {
 		Node currNode = ConnectJcrUtils.getNodeFromElement(element, selectorName);
 		// TODO also handle encoded tag case.
@@ -82,8 +82,9 @@ public class OtherTagsLabelProvider extends ColumnLabelProvider {
 			if (EclipseUiUtils.notEmpty(currentTag) && tag.equals(currentTag))
 				continue loop;
 			// TODO rather display links to open corresponding tag editor
-			String value = ConnectWorkbenchUtils.getTagLink(session, resourcesService, appWorkbenchService, tagId, tag);
-			builder.append(labelPrefix).append(value).append(" ");
+			// String value = ConnectWorkbenchUtils.getTagLink(session, resourcesService,
+			// appWorkbenchService, tagId, tag);
+			builder.append(labelPrefix).append(tag).append(" ");
 		}
 
 		if (builder.length() > 2)

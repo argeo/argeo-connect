@@ -26,5 +26,7 @@ public enum PeopleMsg implements Localized {
 	// PersonSecurityCTab (e4)
 	resetPassword,
 	// Generic
-	label, aCustomLabel, description, value, name, primary, add, save, pickup;
+	label, aCustomLabel, description, value, name, primary, add, save, pickup,
+	// Tag
+	confirmNewTag, cannotCreateTag;
 }
