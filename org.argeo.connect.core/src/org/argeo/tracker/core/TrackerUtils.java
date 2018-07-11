@@ -369,7 +369,7 @@ public class TrackerUtils {
 		return limitedCount;
 	}
 
-	private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+	private static Map<String, Long> sortByValue(Map<String, Long> map) {
 		return map.entrySet().stream().sorted(Map.Entry.comparingByValue(Collections.reverseOrder()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 	}
