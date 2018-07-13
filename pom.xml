@@ -101,7 +101,6 @@ limitations under the License.
 	<reporting>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>2.9</version>
 				<reportSets>
@@ -124,19 +123,13 @@ limitations under the License.
 					<excludePackageNames>*.internal.*,org.eclipse.*</excludePackageNames>
 					<encoding>UTF-8</encoding>
 					<detectLinks>true</detectLinks>
-					<!-- <sourcepath>src</sourcepath> -->
 					<links>
-						<!-- Java -->
 						<link>http://docs.oracle.com/javase/8/docs/api</link>
-						<!-- OSGi -->
-						<link>http://www.osgi.org/javadoc/r5/core</link>
-						<link>http://www.osgi.org/javadoc/r5/enterprise</link>
-						<!-- Spring -->
+						<link>https://osgi.org/javadoc/r5/core</link>
+						<link>https://osgi.org/javadoc/r5/enterprise</link>
+						<link>https://docs.adobe.com/docs/en/spec/javax.jcr/javadocs/jcr-2.0</link>
+						<link>http://help.eclipse.org/oxygen/topic/org.eclipse.platform.doc.isv/reference/api</link>
 						<link>http://docs.spring.io/spring/docs/3.2.x/javadoc-api</link>
-						<!-- JCR -->
-						<link>http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0</link>
-						<!-- Eclipse -->
-						<link>http://help.eclipse.org/neon/topic/org.eclipse.platform.doc.isv/reference/api</link>
 					</links>
 				</configuration>
 				<reportSets>
@@ -149,8 +142,7 @@ limitations under the License.
 					</reportSet>
 					<reportSet>
 						<id>javadoc</id>
-						<reports>
-						</reports>
+						<reports></reports>
 					</reportSet>
 				</reportSets>
 			</plugin>
@@ -167,11 +159,21 @@ limitations under the License.
 					</reportSet>
 					<reportSet>
 						<id>jxr</id>
-						<reports>
-						</reports>
+						<reports></reports>
 					</reportSet>
 				</reportSets>
 			</plugin>
 		</plugins>
 	</reporting>
+	<profiles>
+		<profile>
+			<id>localrepo</id>
+			<distributionManagement>
+				<site>
+					<id>staging</id>
+					<url>file:///home/mbaudier/tmp/site/argeo-connect</url>
+				</site>
+			</distributionManagement>
+		</profile>
+	</profiles>
 </project>
