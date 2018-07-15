@@ -41,7 +41,6 @@
 		<module>org.argeo.media</module>
 		<module>dep</module>
 	</modules>
-	<url>${site.urlBase}/${developmentCycle.connect}</url>
 	<scm>
 		<connection>scm:git:http://git.argeo.org/apache2/argeo-connect.git</connection>
 		<url>http://git.argeo.org/?p=apache2/argeo-connect.git;a=summary</url>
@@ -165,13 +164,19 @@ limitations under the License.
 			</plugin>
 		</plugins>
 	</reporting>
+	<distributionManagement>
+		<site>
+			<id>staging</id>
+			<url>dav:https://forge.argeo.org/data/docs/argeo-2.1/site/argeo-connect/</url>
+		</site>
+	</distributionManagement>
 	<profiles>
 		<profile>
 			<id>localrepo</id>
 			<distributionManagement>
 				<site>
 					<id>staging</id>
-					<url>file:///home/mbaudier/tmp/site/argeo-connect</url>
+					<url>dav:http://localhost:7080/data/docs/argeo-2.1/site/argeo-connect/</url>
 				</site>
 			</distributionManagement>
 		</profile>
