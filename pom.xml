@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.commons</groupId>
@@ -13,7 +15,7 @@
 	<version>2.1.80-SNAPSHOT</version>
 	<properties>
 		<version.argeo-connect>2.1.80-SNAPSHOT</version.argeo-connect>
-		<version.argeo-tp-extras>2.1.10</version.argeo-tp-extras>
+		<!-- <version.argeo-tp-extras>2.1.10</version.argeo-tp-extras> -->
 	</properties>
 	<modules>
 		<module>org.argeo.connect.api</module>
@@ -168,4 +170,27 @@ limitations under the License.
 			<url>file:///srv/docfactory/argeo-2.1/site/argeo-connect/</url>
 		</site>
 	</distributionManagement>
+	<profiles>
+		<profile>
+			<id>localrepo</id>
+			<repositories>
+				<repository>
+					<id>argeo</id>
+					<url>http://localhost:7080/data/java/argeo-2.1</url>
+					<releases>
+						<enabled>true</enabled>
+						<updatePolicy>daily</updatePolicy>
+						<checksumPolicy>warn</checksumPolicy>
+					</releases>
+				</repository>
+			</repositories>
+			<distributionManagement>
+				<repository>
+					<id>staging</id>
+					<url>dav:http://localhost:7080/data/java/argeo-2.1/</url>
+					<uniqueVersion>false</uniqueVersion>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
 </project>

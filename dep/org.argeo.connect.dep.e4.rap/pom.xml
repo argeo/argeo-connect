@@ -44,9 +44,18 @@
 
 		<!-- Additional third parties -->
 		<dependency>
+			<groupId>org.argeo.tp.apache.commons</groupId>
+			<artifactId>org.apache.commons.lang3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache.commons</groupId>
+			<artifactId>org.apache.commons.collections4</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.argeo.tp.misc</groupId>
 			<artifactId>net.sf.jxl</artifactId>
 		</dependency>
+		<!-- PDFBox -->
 		<dependency>
 			<groupId>org.argeo.tp.apache</groupId>
 			<artifactId>org.apache.pdfbox</artifactId>
@@ -55,9 +64,50 @@
 			<groupId>org.argeo.tp.apache</groupId>
 			<artifactId>org.apache.pdfbox.fontbox</artifactId>
 		</dependency>
+		<!-- POI (MS office documents) -->
 		<dependency>
 			<groupId>org.argeo.tp.apache.commons</groupId>
-			<artifactId>org.apache.commons.lang3</artifactId>
+			<artifactId>org.apache.commons.math3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.xml.security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.xmlbeans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.xalan</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.xalan.serializer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.xml.resolver</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.xerces</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.poi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.poi.ooxml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.poi.ooxml.schemas</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.poi.scratchpad</artifactId>
 		</dependency>
 
 		<!-- Base Argeo platform distribution -->
