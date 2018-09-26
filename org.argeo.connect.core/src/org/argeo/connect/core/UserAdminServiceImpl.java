@@ -1,5 +1,10 @@
 package org.argeo.connect.core;
 
+import static org.argeo.naming.LdapAttrs.cn;
+import static org.argeo.naming.LdapAttrs.description;
+import static org.argeo.naming.LdapAttrs.owner;
+
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
@@ -11,6 +16,7 @@ import java.util.UUID;
 import javax.jcr.Node;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
+import javax.transaction.Status;
 import javax.transaction.UserTransaction;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +27,7 @@ import org.argeo.connect.ConnectException;
 import org.argeo.connect.UserAdminService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.naming.LdapAttrs;
+import org.argeo.naming.NamingUtils;
 import org.argeo.naming.SharedSecret;
 import org.argeo.node.NodeConstants;
 import org.argeo.osgi.useradmin.UserAdminConf;
@@ -28,6 +35,7 @@ import org.argeo.people.PeopleNames;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.useradmin.Authorization;
+import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
 import org.osgi.service.useradmin.User;
 import org.osgi.service.useradmin.UserAdmin;
@@ -279,6 +287,68 @@ public class UserAdminServiceImpl implements UserAdminService {
 				throw (RuntimeException) e;
 			else
 				throw new ConnectException("Cannot change password", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public String addSharedSecret(String username, String authInfo, String authToken) {
+		try {
+			userTransaction.begin();
+			User user = (User) userAdmin.getRole(username);
+			SharedSecret sharedSecret = new SharedSecret(authInfo, authToken);
+			user.getCredentials().put(SharedSecret.X_SHARED_SECRET, sharedSecret.toAuthPassword());
+			String tokenStr = sharedSecret.getAuthInfo() + '$' + sharedSecret.getAuthValue();
+			userTransaction.commit();
+			return tokenStr;
+		} catch (Exception e1) {
+			try {
+				if (userTransaction.getStatus() != Status.STATUS_NO_TRANSACTION)
+					userTransaction.rollback();
+			} catch (Exception e2) {
+				if (log.isTraceEnabled())
+					log.trace("Cannot rollback transaction", e2);
+			}
+			throw new ConnectException("Cannot add sheared secret", e1);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void addAuthToken(String userDn, String token, Integer hours, String... roles) {
+		try {
+			userTransaction.begin();
+			User user = (User) userAdmin.getRole(userDn);
+			String tokenDn = cn + "=" + token + "," + NodeConstants.TOKENS_BASEDN;
+			Group tokenGroup = (Group) userAdmin.createRole(tokenDn, Role.GROUP);
+			// userTransaction.commit();
+			// userTransaction.begin();
+			// tokenGroup = (Group) userAdmin.getRole(tokenGroup.getName());
+			for (String role : roles) {
+				Role r = userAdmin.getRole(role);
+				if (r != null)
+					tokenGroup.addMember(r);
+				else {
+					if (!role.equals(NodeConstants.ROLE_USER)) {
+						throw new ConnectException("Cannot add role " + role + " to token " + token + " for " + userDn);
+					}
+				}
+			}
+			tokenGroup.getProperties().put(owner.name(), user.getName());
+			if (hours != null) {
+				String ldapDate = NamingUtils.instantToLdapDate(ZonedDateTime.now().plusHours(hours));
+				tokenGroup.getProperties().put(description.name(), ldapDate);
+			}
+			userTransaction.commit();
+		} catch (Exception e1) {
+			try {
+				if (userTransaction.getStatus() != Status.STATUS_NO_TRANSACTION)
+					userTransaction.rollback();
+			} catch (Exception e2) {
+				if (log.isTraceEnabled())
+					log.trace("Cannot rollback transaction", e2);
+			}
+			throw new ConnectException("Cannot add token", e1);
 		}
 	}
 

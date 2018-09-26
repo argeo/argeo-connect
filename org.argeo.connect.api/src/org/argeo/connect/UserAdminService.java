@@ -63,6 +63,10 @@ public interface UserAdminService {
 
 	String addSharedSecret(String username, int hours);
 
+	String addSharedSecret(String username, String authInfo, String authToken);
+
+	void addAuthToken(String userDn, String token, Integer hours, String... roles);
+
 	User createUserFromPerson(Node person);
 
 	/* EXPOSE */
