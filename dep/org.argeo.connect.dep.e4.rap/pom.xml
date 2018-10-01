@@ -64,6 +64,10 @@
 			<groupId>org.argeo.tp.apache</groupId>
 			<artifactId>org.apache.pdfbox.fontbox</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.apache</groupId>
+			<artifactId>org.apache.pdfbox.jempbox</artifactId>
+		</dependency>
 		<!-- POI (MS office documents) -->
 		<dependency>
 			<groupId>org.argeo.tp.apache.commons</groupId>
