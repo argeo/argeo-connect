@@ -188,6 +188,8 @@ public class UserAdminServiceImpl implements UserAdminService {
 				continue;
 			if (baseDn.equalsIgnoreCase(NodeConstants.ROLES_BASEDN))
 				continue;
+			if (baseDn.equalsIgnoreCase(NodeConstants.TOKENS_BASEDN))
+				continue;
 			dns.put(baseDn, uri);
 		}
 		return dns;
@@ -206,7 +208,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 		return dn;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void changeOwnPassword(char[] oldPassword, char[] newPassword) {
 		String name = CurrentUser.getUsername();
@@ -238,7 +239,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public void resetPassword(String username, char[] newPassword) {
 		LdapName dn;
 		try {
@@ -266,7 +266,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public String addSharedSecret(String email, int hours) {
 		User user = (User) userAdmin.getUser(LdapAttrs.mail.name(), email);
 		try {
@@ -290,7 +289,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public String addSharedSecret(String username, String authInfo, String authToken) {
 		try {
@@ -314,7 +312,7 @@ public class UserAdminServiceImpl implements UserAdminService {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+
 	public void addAuthToken(String userDn, String token, Integer hours, String... roles) {
 		try {
 			userTransaction.begin();
@@ -352,7 +350,6 @@ public class UserAdminServiceImpl implements UserAdminService {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public User createUserFromPerson(Node person) {
 		String email = JcrUtils.get(person, PeopleNames.PEOPLE_PRIMARY_EMAIL);
 		String dn = buildDefaultDN(email, Role.USER);
