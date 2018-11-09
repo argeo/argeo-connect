@@ -144,7 +144,7 @@ public abstract class AbstractTrackerEditor extends AbstractConnectCTabEditor
 			// page.createUi(body);
 
 			ScrolledComposite form = addScrolledTabToFolder(tabFolder, SWT.NONE, page.getLabel(), page.getPageId(),
-					"TOOLTIP");
+					null);
 			IManagedForm managedForm = new ManagedForm(getManagedForm().getToolkit(), form);
 			// managedForm.getForm().setLayout(new GridLayout());
 
