@@ -356,17 +356,17 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 		@Override
 		public void run() {
-			Shell currShell = sectionPart.getSection().getShell();
+			Shell currShell = sectionPart.getComposite().getShell();
 			ConfigureTaskWizard wizard = new ConfigureTaskWizard(getUserAdminService(), getActivitiesService(),
 					getTrackerService(), getAppWorkbenchService(), task);
 			WizardDialog dialog = new WizardDialog(currShell, wizard);
 			try {
 				if (dialog.open() == Window.OK && task.getSession().hasPendingChanges()) {
 					updatePartName();
-					sectionPart.getSection().setText(getIssueTitle());
+					//sectionPart.getSection().setText(getIssueTitle());
 					sectionPart.refresh();
 					sectionPart.markDirty();
-					sectionPart.getSection().setFocus();
+					sectionPart.getComposite().setFocus();
 				}
 			} catch (RepositoryException e) {
 				throw new TrackerException("Cannot check session state on " + task, e);

@@ -61,8 +61,10 @@ public class CommentListFormPart extends Composite {
 
 		Composite body = ((Composite) section.getClient());
 		body.setLayout(new GridLayout());
+		body.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		Composite newCommentCmp = new Composite(body, SWT.NO_FOCUS);
+		newCommentCmp.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		newCommentCmp.setLayout(layout);
@@ -70,33 +72,34 @@ public class CommentListFormPart extends Composite {
 		// Add a new comment fields
 		final Text newCommentTxt = new Text(newCommentCmp, SWT.MULTI | SWT.WRAP | SWT.BORDER);
 		GridData twd = new GridData(SWT.FILL, SWT.FILL, true, true);
+		twd.heightHint = 200;
 		newCommentTxt.setLayoutData(twd);
 
 		newCommentTxt.setMessage("Enter a new comment...");
-		newCommentTxt.addFocusListener(new FocusListener() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void focusLost(FocusEvent event) {
-				String currText = newCommentTxt.getText();
-				if (EclipseUiUtils.isEmpty(currText)) {
-					GridData twd = ((GridData) newCommentTxt.getLayoutData());
-					twd.heightHint = SWT.DEFAULT;
-					newCommentTxt.getParent().layout(true, true);
-					managedForm.reflow(true);
-				}
-			}
-
-			@Override
-			public void focusGained(FocusEvent event) {
-				GridData twd = ((GridData) newCommentTxt.getLayoutData());
-				twd.heightHint = 200;
-				newCommentTxt.getParent().layout(true, true);
-				managedForm.reflow(true);
-			}
-		});
+//		newCommentTxt.addFocusListener(new FocusListener() {
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void focusLost(FocusEvent event) {
+//				String currText = newCommentTxt.getText();
+//				if (EclipseUiUtils.isEmpty(currText)) {
+//					GridData twd = ((GridData) newCommentTxt.getLayoutData());
+//					twd.heightHint = SWT.DEFAULT;
+//					body.layout(true, true);
+//					managedForm.reflow(true);
+//				}
+//			}
+//
+//			@Override
+//			public void focusGained(FocusEvent event) {
+//				GridData twd = ((GridData) newCommentTxt.getLayoutData());
+//				twd.heightHint = 200;
+//				body.layout(true, true);
+//				managedForm.reflow(true);
+//			}
+//		});
 		Button okBtn = new Button(newCommentCmp, SWT.BORDER | SWT.PUSH | SWT.BOTTOM);
-		okBtn.setLayoutData(new GridData(SWT.CENTER, SWT.TOP));
+		okBtn.setLayoutData(new GridData(SWT.CENTER, SWT.TOP, false, false));
 		okBtn.setText("OK");
 
 		// Existing comment list
