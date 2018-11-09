@@ -68,9 +68,10 @@ public class DocumentsFolderComposite extends Composite {
 
 	// UI Parts for the browser
 	private Composite filterCmp;
+	private Composite breadCrumbCmp;
 	private Text filterTxt;
 	private FsTableViewer directoryDisplayViewer;
-	private Composite rightPannelCmp;
+	private Composite rightPanelCmp;
 
 	private DocumentsContextMenu contextMenu;
 
@@ -90,7 +91,7 @@ public class DocumentsFolderComposite extends Composite {
 		Composite centerCmp = new Composite(form, SWT.BORDER | SWT.NO_FOCUS);
 		createDisplay(centerCmp);
 
-		rightPannelCmp = new Composite(form, SWT.NO_FOCUS);
+		rightPanelCmp = new Composite(form, SWT.NO_FOCUS);
 
 		form.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		form.setWeights(new int[] { 55, 20 });
@@ -111,7 +112,11 @@ public class DocumentsFolderComposite extends Composite {
 		// top filter
 		filterCmp = new Composite(parent, SWT.NO_FOCUS);
 		filterCmp.setLayoutData(EclipseUiUtils.fillWidth());
-		addFilterPanel(filterCmp);
+		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+		rl.wrap = true;
+		rl.center = true;
+		filterCmp.setLayout(rl);
+		// addFilterPanel(filterCmp);
 
 		// Main display
 		directoryDisplayViewer = new FsTableViewer(parent, SWT.MULTI);
@@ -193,13 +198,14 @@ public class DocumentsFolderComposite extends Composite {
 	}
 
 	private void addPathElementBtn(Path path) {
-		Button elemBtn = new Button(filterCmp, SWT.PUSH);
+		Button elemBtn = new Button(breadCrumbCmp, SWT.PUSH);
 		String nameStr;
 		if (path.toString().equals("/"))
 			nameStr = "[jcr:root]";
 		else
 			nameStr = path.getFileName().toString();
-		elemBtn.setText(nameStr + " >> ");
+//		elemBtn.setText(nameStr + " >> ");
+		elemBtn.setText(nameStr);
 		CmsUtils.style(elemBtn, FsStyles.BREAD_CRUMB_BTN);
 		elemBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = -4103695476023480651L;
@@ -224,6 +230,16 @@ public class DocumentsFolderComposite extends Composite {
 			if (!child.equals(filterTxt))
 				child.dispose();
 
+		// Bread crumbs
+		breadCrumbCmp = new Composite(filterCmp, SWT.NO_FOCUS);
+		CmsUtils.style(breadCrumbCmp, FsStyles.BREAD_CRUMB_BTN);
+		RowLayout breadCrumbLayout = new RowLayout();
+		breadCrumbLayout.spacing = 0;
+		breadCrumbLayout.marginTop = 0;
+		breadCrumbLayout.marginBottom = 0;
+		breadCrumbLayout.marginRight = 0;
+		breadCrumbLayout.marginLeft = 0;
+		breadCrumbCmp.setLayout(breadCrumbLayout);
 		addPathElementBtn(initialPath);
 		Path currTarget = initialPath;
 		if (!diff.toString().equals(""))
@@ -232,8 +248,12 @@ public class DocumentsFolderComposite extends Composite {
 				addPathElementBtn(currTarget);
 			}
 
-		filterTxt.setText("");
-		filterTxt.moveBelow(null);
+		if (filterTxt != null) {
+			filterTxt.setText("");
+			filterTxt.moveBelow(null);
+		} else {
+			modifyFilter(false);
+		}
 		setSelected(null);
 		filterCmp.getParent().layout(true, true);
 	}
@@ -255,8 +275,8 @@ public class DocumentsFolderComposite extends Composite {
 	 */
 	private void setOverviewInput(Path path) {
 		try {
-			EclipseUiUtils.clear(rightPannelCmp);
-			rightPannelCmp.setLayout(new GridLayout());
+			EclipseUiUtils.clear(rightPanelCmp);
+			rightPanelCmp.setLayout(new GridLayout());
 			if (path != null) {
 				// if (isImg(context)) {
 				// EditableImage image = new Img(parent, RIGHT, context,
@@ -266,38 +286,34 @@ public class DocumentsFolderComposite extends Composite {
 				// 2, 1));
 				// }
 
-				Label contextL = new Label(rightPannelCmp, SWT.NONE);
+				Label contextL = new Label(rightPanelCmp, SWT.NONE);
 				contextL.setText(path.getFileName().toString());
-				contextL.setFont(EclipseUiUtils.getBoldFont(rightPannelCmp));
+				contextL.setFont(EclipseUiUtils.getBoldFont(rightPanelCmp));
 				try {
-					addProperty(rightPannelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
+					addProperty(rightPanelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
 				} catch (Exception e) {
 					log.error("Workarounded issue while getting last update date for " + path, e);
-					addProperty(rightPannelCmp, "Last modified", "-");
+					addProperty(rightPanelCmp, "Last modified", "-");
 				}
 				// addProperty(rightPannelCmp, "Owner",
 				// Files.getOwner(path).getName());
 				if (Files.isDirectory(path)) {
-					addProperty(rightPannelCmp, "Type", "Folder");
+					addProperty(rightPanelCmp, "Type", "Folder");
 				} else {
 					String mimeType = Files.probeContentType(path);
 					if (EclipseUiUtils.isEmpty(mimeType))
 						mimeType = "<i>Unknown</i>";
-					addProperty(rightPannelCmp, "Type", mimeType);
-					addProperty(rightPannelCmp, "Size", FsUiUtils.humanReadableByteCount(Files.size(path), false));
+					addProperty(rightPanelCmp, "Type", mimeType);
+					addProperty(rightPanelCmp, "Size", FsUiUtils.humanReadableByteCount(Files.size(path), false));
 				}
 			}
-			rightPannelCmp.layout(true, true);
+			rightPanelCmp.layout(true, true);
 		} catch (IOException e) {
 			throw new DocumentsException("Cannot display details for " + path.toString(), e);
 		}
 	}
 
 	private void addFilterPanel(Composite parent) {
-		RowLayout rl = new RowLayout(SWT.HORIZONTAL);
-		rl.wrap = true;
-		rl.center = true;
-		parent.setLayout(rl);
 		// parent.setLayout(EclipseUiUtils.noSpaceGridLayout(new GridLayout(2,
 		// false)));
 
