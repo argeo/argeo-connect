@@ -13,9 +13,10 @@ import javax.jcr.Value;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.core.OfficeRole;
 import org.argeo.connect.ui.ConnectUiUtils;
-import org.argeo.connect.ui.widgets.AssignedToDropDown;
 import org.argeo.connect.ui.widgets.DateText;
+import org.argeo.connect.ui.widgets.GroupDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
@@ -63,7 +64,7 @@ public class ConfigureIssueWizard extends Wizard {
 	private ProjectDropDown projectDD;
 	private MilestoneDropDown milestoneDD;
 	private Text titleTxt;
-	private AssignedToDropDown assignedToDD;
+	private GroupDropDown assignedToDD;
 	private DateText dueDateCmp;
 
 	private Combo importanceCmb;
@@ -207,7 +208,7 @@ public class ConfigureIssueWizard extends Wizard {
 			// Assigned to
 			Text assignedToTxt = createBoldLT(parent, "Assigned to", "",
 					"Choose a group or person to manage this issue", 1);
-			assignedToDD = new AssignedToDropDown(assignedToTxt, userAdminService, true, false);
+			assignedToDD = new GroupDropDown(assignedToTxt, userAdminService, OfficeRole.coworker.dn());
 
 			// DUE DATE
 			ConnectUiUtils.createBoldLabel(parent, "Due date");

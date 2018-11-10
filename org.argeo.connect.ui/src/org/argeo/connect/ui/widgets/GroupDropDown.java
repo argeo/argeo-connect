@@ -1,9 +1,11 @@
 package org.argeo.connect.ui.widgets;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.argeo.connect.UserAdminService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -11,28 +13,21 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.User;
 
 /** Drop down that displays the list of existing groups */
-@Deprecated
-public class ExistingGroupsDropDown extends ConnectAbstractDropDown {
+public class GroupDropDown extends ConnectAbstractDropDown {
 	private final UserAdminService userService;
-	private final boolean includeUsers;
-	private final boolean includeSystemRoles;
+	private final String groupDn;
 
-	// We use a map: the displayed value is not the key we want to retrieve
-	// use a linked map to keep ordered returned by the query
-	private Map<String, User> userMap = new LinkedHashMap<String, User>();
+	private Map<String, User> userMap = new TreeMap<String, User>();
 
 	/**
 	 * @param text
 	 * @param userAdminService
-	 * @param includeUsers
-	 * @param includeSystemRoles
+	 * @param groupDn
 	 */
-	public ExistingGroupsDropDown(Text text, UserAdminService userAdminService, boolean includeUsers,
-			boolean includeSystemRoles) {
+	public GroupDropDown(Text text, UserAdminService userAdminService, String groupDn) {
 		super(text);
 		this.userService = userAdminService;
-		this.includeUsers = includeUsers;
-		this.includeSystemRoles = includeSystemRoles;
+		this.groupDn = groupDn;
 		init();
 	}
 
@@ -54,9 +49,9 @@ public class ExistingGroupsDropDown extends ConnectAbstractDropDown {
 
 	@Override
 	protected List<String> getFilteredValues(String filter) {
-		List<User> users = userService.listGroups(filter, includeUsers, includeSystemRoles);
+		Set<User> users = userService.listUsersInGroup(groupDn, filter);
 		userMap.clear();
-		List<String> res = new ArrayList<String>();
+		Set<String> res = new TreeSet<String>();
 
 		for (User user : users) {
 			String dn = user.getName();
@@ -64,6 +59,7 @@ public class ExistingGroupsDropDown extends ConnectAbstractDropDown {
 			userMap.put(userDName, user);
 			res.add(userDName);
 		}
-		return res;
+		// TODO make order configurable
+		return new ArrayList<>(res);
 	}
 }

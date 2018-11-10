@@ -1,6 +1,7 @@
 package org.argeo.connect;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.jcr.Node;
 import javax.transaction.UserTransaction;
@@ -39,6 +40,9 @@ public interface UserAdminService {
 	// Search
 	/** Returns a filtered list of roles */
 	public Role[] getRoles(String filter) throws InvalidSyntaxException;
+
+	/** Recursively lists users in a given group. */
+	public Set<User> listUsersInGroup(String groupDn, String filter);
 
 	/** Search among groups including system roles and users if needed */
 	public List<User> listGroups(String filter, boolean includeUsers, boolean includeSystemRoles);

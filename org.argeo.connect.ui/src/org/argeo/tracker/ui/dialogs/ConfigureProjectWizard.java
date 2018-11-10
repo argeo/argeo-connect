@@ -8,7 +8,8 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.UserAdminService;
-import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
+import org.argeo.connect.core.OfficeRole;
+import org.argeo.connect.ui.widgets.GroupDropDown;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
@@ -36,7 +37,7 @@ public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 
 	// UI controls
 	private Text titleTxt;
-	private ExistingGroupsDropDown managerDD;
+	private GroupDropDown managerDD;
 	private Text descTxt;
 
 	public ConfigureProjectWizard(UserAdminService userAdminService, TrackerService trackerService, Node project) {
@@ -100,7 +101,7 @@ public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 			Text managerTxt = new Text(parent, SWT.BORDER);
 			managerTxt.setMessage("Choose a group");
 			managerTxt.setLayoutData(EclipseUiUtils.fillWidth());
-			managerDD = new ExistingGroupsDropDown(managerTxt, userAdminService, true, false);
+			managerDD = new GroupDropDown(managerTxt, userAdminService, OfficeRole.coworker.dn());
 
 			createLabel(parent, "Description", SWT.TOP);
 			descTxt = new Text(parent, SWT.BORDER | SWT.MULTI | SWT.WRAP);

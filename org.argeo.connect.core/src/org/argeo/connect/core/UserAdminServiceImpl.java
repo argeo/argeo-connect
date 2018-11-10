@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.jcr.Node;
@@ -113,8 +115,31 @@ public class UserAdminServiceImpl implements UserAdminService {
 	private final String[] knownProps = { LdapAttrs.cn.name(), LdapAttrs.sn.name(), LdapAttrs.givenName.name(),
 			LdapAttrs.uid.name() };
 
-	public List<User> listGroups(String filter, boolean includeUsers, boolean includeSystemRoles) {
+	public Set<User> listUsersInGroup(String groupDn, String filter) {
+		Group group = (Group) userAdmin.getRole(groupDn);
+		if (group == null)
+			throw new ConnectException("Group " + groupDn + " not found");
+		Set<User> users = new HashSet<User>();
+		addUsers(users, group, filter);
+		return users;
+	}
 
+	/** Recursively add users to list */
+	private void addUsers(Set<User> users, Group group, String filter) {
+		Role[] roles = group.getMembers();
+		for (Role role : roles) {
+			if (role.getType() == Role.GROUP) {
+				addUsers(users, (Group) role, filter);
+			} else if (role.getType() == Role.USER) {
+				if (match(role, filter))
+					users.add((User) role);
+			} else {
+				// ignore
+			}
+		}
+	}
+
+	public List<User> listGroups(String filter, boolean includeUsers, boolean includeSystemRoles) {
 		Role[] roles = null;
 		try {
 			roles = getUserAdmin().getRoles(null);
@@ -123,31 +148,36 @@ public class UserAdminServiceImpl implements UserAdminService {
 		}
 
 		List<User> users = new ArrayList<User>();
-		boolean doFilter = filter != null && !"".equals(filter);
-		loop: for (Role role : roles) {
+		for (Role role : roles) {
 			if ((includeUsers && role.getType() == Role.USER || role.getType() == Role.GROUP) && !users.contains(role)
 					&& (includeSystemRoles || !role.getName().toLowerCase().endsWith(NodeConstants.ROLES_BASEDN))) {
-				if (doFilter) {
-					for (String prop : knownProps) {
-						Object currProp = null;
-						try {
-							currProp = role.getProperties().get(prop);
-						} catch (Exception e) {
-							throw e;
-						}
-						if (currProp != null) {
-							String currPropStr = ((String) currProp).toLowerCase();
-							if (currPropStr.contains(filter.toLowerCase())) {
-								users.add((User) role);
-								continue loop;
-							}
-						}
-					}
-				} else
+				if (match(role, filter))
 					users.add((User) role);
 			}
 		}
 		return users;
+	}
+
+	private boolean match(Role role, String filter) {
+		boolean doFilter = filter != null && !"".equals(filter);
+		if (doFilter) {
+			for (String prop : knownProps) {
+				Object currProp = null;
+				try {
+					currProp = role.getProperties().get(prop);
+				} catch (Exception e) {
+					throw e;
+				}
+				if (currProp != null) {
+					String currPropStr = ((String) currProp).toLowerCase();
+					if (currPropStr.contains(filter.toLowerCase())) {
+						return true;
+					}
+				}
+			}
+			return false;
+		} else
+			return true;
 	}
 
 	@Override

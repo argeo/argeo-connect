@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.User;
 
 /** Drop down that displays the list of existing groups */
+@Deprecated
 public class AssignedToDropDown extends ConnectAbstractDropDown {
 	private final UserAdminService userService;
 	private final boolean includeUsers;

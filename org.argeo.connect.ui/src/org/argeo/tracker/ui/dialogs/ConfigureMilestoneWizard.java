@@ -12,9 +12,10 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.core.OfficeRole;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.DateText;
-import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
+import org.argeo.connect.ui.widgets.GroupDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
@@ -55,8 +56,8 @@ public class ConfigureMilestoneWizard extends Wizard {
 	// UI objects
 	private ProjectDropDown projectDD;
 	private Text titleTxt;
-	private ExistingGroupsDropDown managerDD;
-	private ExistingGroupsDropDown defaultAssigneeDD;
+	private GroupDropDown managerDD;
+	private GroupDropDown defaultAssigneeDD;
 	private DateText targetDateCmp;
 	private Label isVersionLbl;
 	private Button isVersionBtn;
@@ -194,13 +195,13 @@ public class ConfigureMilestoneWizard extends Wizard {
 			Text managerTxt = new Text(parent, SWT.BORDER);
 			managerTxt.setMessage("Choose a group");
 			managerTxt.setLayoutData(EclipseUiUtils.fillWidth());
-			managerDD = new ExistingGroupsDropDown(managerTxt, userAdminService, true, false);
+			managerDD = new GroupDropDown(managerTxt, userAdminService, OfficeRole.coworker.dn());
 
 			createLabel(parent, "Default Assignee", SWT.CENTER);
 			Text defaultAssigneeTxt = new Text(parent, SWT.BORDER);
 			defaultAssigneeTxt.setMessage("Choose a group");
 			defaultAssigneeTxt.setLayoutData(EclipseUiUtils.fillWidth());
-			defaultAssigneeDD = new ExistingGroupsDropDown(defaultAssigneeTxt, userAdminService, true, false);
+			defaultAssigneeDD = new GroupDropDown(defaultAssigneeTxt, userAdminService, OfficeRole.coworker.dn());
 
 			createLabel(parent, "Target Date", SWT.CENTER);
 			targetDateCmp = new DateText(parent, SWT.NO_FOCUS);
@@ -251,11 +252,11 @@ public class ConfigureMilestoneWizard extends Wizard {
 			if (project == null) {
 				setControl(projectTxt);
 				projectTxt.setFocus();
-			} else if (isEmpty(titleStr)){
+			} else if (isEmpty(titleStr)) {
 				setControl(titleTxt);
 				titleTxt.setFocus();
-			} else setControl(titleTxt);
-			
+			} else
+				setControl(titleTxt);
 
 			isVersionBtn.addSelectionListener(new SelectionAdapter() {
 				private static final long serialVersionUID = -9065523003707104389L;

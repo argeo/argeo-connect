@@ -12,9 +12,10 @@ import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.connect.UserAdminService;
+import org.argeo.connect.core.OfficeRole;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.DateText;
-import org.argeo.connect.ui.widgets.ExistingGroupsDropDown;
+import org.argeo.connect.ui.widgets.GroupDropDown;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.TableViewer;
@@ -55,7 +56,7 @@ public class NewSimpleTaskWizard extends Wizard {
 	// This page widgets
 	protected Text titleTxt;
 	protected Text descTxt;
-	private ExistingGroupsDropDown assignedToDD;
+	private GroupDropDown assignedToDD;
 
 	private DateText dueDateCmp;
 	private DateText wakeUpDateCmp;
@@ -150,7 +151,9 @@ public class NewSimpleTaskWizard extends Wizard {
 			assignedToTxt.setMessage("Pick up a group");
 			assignedToTxt.setToolTipText("Choose a group or person to manage this issue");
 			assignedToTxt.setLayoutData(EclipseUiUtils.fillWidth(3));
-			assignedToDD = new ExistingGroupsDropDown(assignedToTxt, userAdminService, true, false);
+			// assignedToDD = new ExistingGroupsDropDown(assignedToTxt, userAdminService,
+			// true, false);
+			assignedToDD = new GroupDropDown(assignedToTxt, userAdminService, OfficeRole.coworker.dn());
 
 			// ConnectWorkbenchUtils.createBoldLabel(parent, "Assigned to");
 			// Composite assignedToCmp = new Composite(parent, SWT.NO_FOCUS);
