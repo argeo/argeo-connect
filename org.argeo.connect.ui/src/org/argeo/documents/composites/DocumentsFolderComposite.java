@@ -402,7 +402,11 @@ public class DocumentsFolderComposite extends Composite {
 	private void modifyFilter(boolean fromOutside) {
 		if (!fromOutside)
 			if (currDisplayedFolder != null) {
-				String filter = filterTxt.getText() + "*";
+				String filter;
+				if (filterTxt != null)
+					filter = filterTxt.getText() + "*";
+				else
+					filter = "*";
 				directoryDisplayViewer.setInput(currDisplayedFolder, filter);
 			}
 	}
