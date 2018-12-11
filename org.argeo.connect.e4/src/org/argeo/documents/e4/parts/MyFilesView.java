@@ -46,7 +46,6 @@ import org.argeo.documents.DocumentsNames;
 import org.argeo.documents.DocumentsService;
 import org.argeo.documents.DocumentsTypes;
 import org.argeo.documents.composites.BookmarksTableViewer;
-import org.argeo.documents.ui.DocumentsSingleColumnLP;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FsTableViewer;
 import org.argeo.jcr.JcrUtils;
@@ -104,13 +103,13 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 		session = ConnectJcrUtils.login(repository);
 		// MainLayout
 		parent.setLayout(new GridLayout());
-		addFilterPanel(parent);
-		searchCmp = new Composite(parent, SWT.NO_FOCUS);
-		searchCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		searchResultsViewer = createListPart(searchCmp, new DocumentsSingleColumnLP(systemWorkbenchService));
-		GridData gd = EclipseUiUtils.fillWidth();
-		gd.heightHint = 0;
-		searchCmp.setLayoutData(gd);
+//		addFilterPanel(parent);
+//		searchCmp = new Composite(parent, SWT.NO_FOCUS);
+//		searchCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
+//		searchResultsViewer = createListPart(searchCmp, new DocumentsSingleColumnLP(systemWorkbenchService));
+//		GridData gd = EclipseUiUtils.fillWidth();
+//		gd.heightHint = 0;
+//		searchCmp.setLayoutData(gd);
 
 		bookmarkCmp = new Composite(parent, SWT.NO_FOCUS);
 		bookmarkCmp.setLayoutData(EclipseUiUtils.fillAll());
@@ -263,7 +262,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 
 		Path[] wkGpHomes = documentsService.getMyGroupsFilesPath(nodeFileSystemProvider, session);
 		if (wkGpHomes != null && wkGpHomes.length > 0) {
-			appendTitle(parent, "Shared files");
+			appendTitle(parent, "Shared");
 			FsTableViewer groupsViewer = new FsTableViewer(parent, SWT.SINGLE | SWT.NO_SCROLL);
 			table = groupsViewer.configureDefaultSingleColumnTable(bookmarkColWith, lp);
 			gd = EclipseUiUtils.fillWidth();
@@ -273,7 +272,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 			groupsViewer.setPathsInput(wkGpHomes);
 		}
 
-		appendTitle(parent, "My bookmarks");
+		appendTitle(parent, "Bookmarks");
 		BookmarksTableViewer bookmarksViewer = new BookmarksTableViewer(parent, SWT.MULTI | SWT.NO_SCROLL,
 				documentsService.getMyBookmarksParent(session), documentsService, systemWorkbenchService);
 		table = bookmarksViewer.configureDefaultSingleColumnTable(bookmarkColWith);
@@ -296,11 +295,11 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 			try {
 				String path = curr.toString();
 				Node currNode = session.getNode(path);
-				Node parent = currNode.getParent();
-				if (parent.isNodeType(NodeTypes.NODE_USER_HOME))
-					return "My Documents";
-				else if (parent.isNodeType(NodeTypes.NODE_GROUP_HOME))
-					return parent.getProperty(NodeNames.LDAP_CN).getString();
+//				Node parent = currNode.getParent();
+				if (currNode.isNodeType(NodeTypes.NODE_USER_HOME))
+					return "Private";
+				else if (currNode.isNodeType(NodeTypes.NODE_GROUP_HOME))
+					return currNode.getProperty(NodeNames.LDAP_CN).getString();
 
 				else
 					return super.getText(element);

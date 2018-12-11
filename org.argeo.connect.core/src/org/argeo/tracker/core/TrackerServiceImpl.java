@@ -321,8 +321,8 @@ public class TrackerServiceImpl extends AbstractAppService implements TrackerSer
 				builder.append("[").append(allCond).append("]");
 
 			builder.append(" order by @").append(Property.JCR_LAST_MODIFIED).append(" descending");
-			if (log.isDebugEnabled())
-				log.debug("Getting open project list for " + CurrentUser.getDisplayName() + " (DN: "
+			if (log.isTraceEnabled())
+				log.trace("Getting open project list for " + CurrentUser.getDisplayName() + " (DN: "
 						+ CurrentUser.getUsername() + ") with query: " + builder.toString());
 			Query query = XPathUtils.createQuery(session, builder.toString());
 			return query.execute().getNodes();
@@ -350,7 +350,7 @@ public class TrackerServiceImpl extends AbstractAppService implements TrackerSer
 			for (String role : roles) {
 				String attrQuery = XPathUtils.getPropertyEquals(TrackerNames.TRACKER_MANAGER, role);
 //				if (StringUtils.notEmpty(attrQuery))
-					tmpBuilder.append(attrQuery).append(" or ");
+				tmpBuilder.append(attrQuery).append(" or ");
 			}
 			String groupCond = null;
 			if (tmpBuilder.length() > 4)
@@ -366,8 +366,8 @@ public class TrackerServiceImpl extends AbstractAppService implements TrackerSer
 				builder.append("[").append(allCond).append("]");
 
 			builder.append(" order by @").append(Property.JCR_LAST_MODIFIED).append(" descending");
-			if (log.isDebugEnabled())
-				log.debug("Getting open milestone list for " + CurrentUser.getDisplayName() + " (DN: "
+			if (log.isTraceEnabled())
+				log.trace("Getting open milestone list for " + CurrentUser.getDisplayName() + " (DN: "
 						+ CurrentUser.getUsername() + ") with query: " + builder.toString());
 			Query query = XPathUtils.createQuery(session, builder.toString());
 			return query.execute().getNodes();
@@ -484,5 +484,5 @@ public class TrackerServiceImpl extends AbstractAppService implements TrackerSer
 	public void setActivitiesService(ActivitiesService activitiesService) {
 		this.activitiesService = activitiesService;
 	}
-	
+
 }

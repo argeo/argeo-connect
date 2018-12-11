@@ -75,7 +75,7 @@ public class DocumentsFolderComposite extends Composite {
 
 	private DocumentsContextMenu contextMenu;
 
-	// Local context (this composite is statefull)
+	// Local context
 	private Path initialPath;
 	private Path currDisplayedFolder;
 
@@ -99,6 +99,7 @@ public class DocumentsFolderComposite extends Composite {
 
 	public void populate(Path path) {
 		initialPath = path;
+		directoryDisplayViewer.setInitialPath(initialPath);
 		setInput(path);
 	}
 
@@ -123,7 +124,7 @@ public class DocumentsFolderComposite extends Composite {
 		List<ColumnDefinition> colDefs = new ArrayList<>();
 		colDefs.add(new ColumnDefinition(new FileIconNameLabelProvider(), " Name", 250));
 		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_SIZE), "Size", 100));
-		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_TYPE), "Type", 150));
+//		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_TYPE), "Type", 150));
 		colDefs.add(new ColumnDefinition(new NioFileLabelProvider(FsUiConstants.PROPERTY_LAST_MODIFIED),
 				"Last modified", 400));
 		final Table table = directoryDisplayViewer.configureDefaultTable(colDefs);
@@ -220,6 +221,7 @@ public class DocumentsFolderComposite extends Composite {
 	public void setInput(Path path) {
 		if (path.equals(currDisplayedFolder))
 			return;
+		// below initial path
 		if (!initialPath.equals(path) && initialPath.startsWith(path))
 			return;
 		currDisplayedFolder = path;

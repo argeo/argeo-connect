@@ -286,8 +286,8 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 
 			builder.append(" order by @").append(ActivitiesNames.ACTIVITIES_DUE_DATE).append(", @")
 					.append(Property.JCR_LAST_MODIFIED).append(" ascending");
-			if (log.isDebugEnabled())
-				log.debug("Getting todo list for " + CurrentUser.getDisplayName() + " (DN: " + CurrentUser.getUsername()
+			if (log.isTraceEnabled())
+				log.trace("Getting todo list for " + CurrentUser.getDisplayName() + " (DN: " + CurrentUser.getUsername()
 						+ ") with query: " + builder.toString());
 			Query query = XPathUtils.createQuery(session, builder.toString());
 			return query.execute().getNodes();

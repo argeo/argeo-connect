@@ -79,14 +79,11 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);
+		Path[] paths = { getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(home)) };
 		// Insure the parent node is there.
-		Node documents = JcrUtils.mkdirs(home, getAppBaseName(), NodeType.NT_FOLDER);
-		ConnectJcrUtils.saveIfNecessary(documents);
-		Path[] paths = { getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)) };
-
-		// CMS: must use a doAs
-		// Path[] paths = { getPath(nodeFileSystemProvider,
-		// getMyDocumentsNodePath(session)) };
+//		Node documents = JcrUtils.mkdirs(home, getAppBaseName(), NodeType.NT_FOLDER);
+//		ConnectJcrUtils.saveIfNecessary(documents);
+//		Path[] paths = { getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)) };
 		return paths;
 	}
 
@@ -98,22 +95,15 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 				String cn = (String) ln.getRdn(ln.size() - 1).getValue();
 				Node workgroupHome = NodeUtils.getGroupHome(session, cn);
 				if (workgroupHome != null) {
-					// URI uri = nodePathToURI(workgroupHome.getPath());
-					// Path path = getPath(nodeFileSystemProvider, uri);
-					// Path docPath = path.resolve(getAppBaseName());
-					// if(!Files.exists(docPath)){
-					// Files.createDirectory(docPath);
-					// }
-					// paths.add(docPath);
-
-					Node documents = JcrUtils.mkdirs(workgroupHome, getAppBaseName(), NodeType.NT_FOLDER);
-					documents.addMixin(NodeType.MIX_TITLE);
-					if (session.hasPendingChanges()) {
-						documents.setProperty(Property.JCR_TITLE, cn);
-						session.save();
-					}
-					// Insure the correct subNode is there
-					paths.add(getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)));
+					paths.add(getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(workgroupHome)));
+//					Node documents = JcrUtils.mkdirs(workgroupHome, getAppBaseName(), NodeType.NT_FOLDER);
+//					documents.addMixin(NodeType.MIX_TITLE);
+//					if (session.hasPendingChanges()) {
+//						documents.setProperty(Property.JCR_TITLE, cn);
+//						session.save();
+//					}
+//					// Insure the correct subNode is there
+//					paths.add(getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)));
 				}
 			}
 			return paths.toArray(new Path[0]);

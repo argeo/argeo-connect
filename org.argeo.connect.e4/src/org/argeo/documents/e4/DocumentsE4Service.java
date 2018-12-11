@@ -1,23 +1,23 @@
 package org.argeo.documents.e4;
 
+import static org.argeo.connect.util.ConnectJcrUtils.isNodeType;
+
 import javax.jcr.Node;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.e4.AppE4Service;
 import org.argeo.connect.ui.ConnectImages;
-import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.documents.DocumentsTypes;
+import org.argeo.node.NodeTypes;
 import org.eclipse.swt.graphics.Image;
 
 public class DocumentsE4Service implements AppE4Service {
 
 	@Override
 	public String getEntityEditorId(Node entity) {
-		if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FILE)) {
-			// return FileEditor.ID;
+		if (isFileNodeType(entity)) {
 			return "org.argeo.suite.e4.partdescriptor.file";
-		} else if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FOLDER)) {
-			// return FolderEditor.ID;
+		} else if (isFolderNodeType(entity)) {
 			return "org.argeo.suite.e4.partdescriptor.folder";
 		} else
 			return null;
@@ -30,13 +30,22 @@ public class DocumentsE4Service implements AppE4Service {
 
 	@Override
 	public Image getIconForType(Node entity) {
-		if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FILE))
+		if (isFileNodeType(entity))
 			return ConnectImages.FILE;
-		else if (ConnectJcrUtils.isNodeType(entity, NodeType.NT_FOLDER))
+		else if (isFolderNodeType(entity))
 			return ConnectImages.FOLDER;
-		else if (ConnectJcrUtils.isNodeType(entity, DocumentsTypes.DOCUMENTS_BOOKMARK))
+		else if (isNodeType(entity, DocumentsTypes.DOCUMENTS_BOOKMARK))
 			return ConnectImages.BOOKMARK;
 		else
 			return null;
+	}
+
+	private static boolean isFolderNodeType(Node entity) {
+		return isNodeType(entity, NodeType.NT_FOLDER) || isNodeType(entity, NodeTypes.NODE_USER_HOME)
+				|| isNodeType(entity, NodeTypes.NODE_GROUP_HOME);
+	}
+
+	private static boolean isFileNodeType(Node entity) {
+		return isNodeType(entity, NodeType.NT_FILE) || isNodeType(entity, NodeType.NT_LINKED_FILE);
 	}
 }
