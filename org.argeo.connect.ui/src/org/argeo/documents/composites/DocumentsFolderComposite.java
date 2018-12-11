@@ -1,6 +1,7 @@
 package org.argeo.documents.composites;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,8 +11,10 @@ import javax.jcr.Node;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.ui.fs.FileDrop;
 import org.argeo.cms.ui.fs.FsStyles;
 import org.argeo.cms.util.CmsUtils;
+import org.argeo.connect.ConnectException;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.documents.DocumentsException;
@@ -77,7 +80,7 @@ public class DocumentsFolderComposite extends Composite {
 
 	// Local context
 	private Path initialPath;
-	private Path currDisplayedFolder;
+	private Path currentFolder;
 
 	public DocumentsFolderComposite(Composite parent, int style, Node context, DocumentsService documentService) {
 		super(parent, style);
@@ -185,10 +188,25 @@ public class DocumentsFolderComposite extends Composite {
 				if (e.button == 3) {
 					// contextMenu.setCurrFolderPath(currDisplayedFolder);
 					contextMenu.show(table, new Point(e.x, e.y),
-							(IStructuredSelection) directoryDisplayViewer.getSelection(), currDisplayedFolder);
+							(IStructuredSelection) directoryDisplayViewer.getSelection(), currentFolder);
 				}
 			}
 		});
+
+		FileDrop fileDrop = new FileDrop() {
+
+			@Override
+			protected void processUpload(InputStream in, String fileName, String contetnType) {
+				try {
+					Path file = currentFolder.resolve(fileName);
+					Files.copy(in, file);
+					refresh();
+				} catch (IOException e) {
+					throw new ConnectException("Cannot upload " + fileName, e);
+				}
+			}
+		};
+		fileDrop.createDropTarget(directoryDisplayViewer.getTable());
 	}
 
 	/**
@@ -219,14 +237,14 @@ public class DocumentsFolderComposite extends Composite {
 	}
 
 	public void setInput(Path path) {
-		if (path.equals(currDisplayedFolder))
+		if (path.equals(currentFolder))
 			return;
 		// below initial path
 		if (!initialPath.equals(path) && initialPath.startsWith(path))
 			return;
-		currDisplayedFolder = path;
+		currentFolder = path;
 
-		Path diff = initialPath.relativize(currDisplayedFolder);
+		Path diff = initialPath.relativize(currentFolder);
 
 		for (Control child : filterCmp.getChildren())
 			if (!child.equals(filterTxt))
@@ -262,7 +280,7 @@ public class DocumentsFolderComposite extends Composite {
 
 	private void setSelected(Path path) {
 		if (path == null)
-			setOverviewInput(currDisplayedFolder);
+			setOverviewInput(currentFolder);
 		else
 			setOverviewInput(path);
 	}
@@ -403,13 +421,13 @@ public class DocumentsFolderComposite extends Composite {
 
 	private void modifyFilter(boolean fromOutside) {
 		if (!fromOutside)
-			if (currDisplayedFolder != null) {
+			if (currentFolder != null) {
 				String filter;
 				if (filterTxt != null)
 					filter = filterTxt.getText() + "*";
 				else
 					filter = "*";
-				directoryDisplayViewer.setInput(currDisplayedFolder, filter);
+				directoryDisplayViewer.setInput(currentFolder, filter);
 			}
 	}
 
@@ -419,4 +437,9 @@ public class DocumentsFolderComposite extends Composite {
 		propLbl.setText(ConnectUtils.replaceAmpersand(propName + ": " + value));
 		CmsUtils.markup(propLbl);
 	}
+
+	public Path getCurrentFolder() {
+		return currentFolder;
+	}
+
 }
