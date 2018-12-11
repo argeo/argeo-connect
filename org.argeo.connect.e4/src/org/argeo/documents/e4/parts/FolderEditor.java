@@ -15,8 +15,6 @@ import org.eclipse.swt.widgets.Composite;
 
 /** Default editor to display and edit a document folder */
 public class FolderEditor extends AbstractDocumentsEditor {
-//	public static final String ID = DocumentsUiPlugin.PLUGIN_ID + ".folderEditor";
-
 	@PostConstruct
 	public void createPartControl(Composite parent, EMenuService menuService) {
 		init();
@@ -30,9 +28,6 @@ public class FolderEditor extends AbstractDocumentsEditor {
 				// TODO rather directly use the jcrPath / an URI?
 				Session session = ConnectJcrUtils.getSession(getNode());
 				Node currNode = ConnectJcrUtils.getNode(session, path.toString());
-				// String nodeId = ConnectJcrUtils.getIdentifier(currNode);
-				// CommandUtils.callCommand(getSystemWorkbenchService().getOpenEntityEditorCmdId(),
-				// ConnectEditor.PARAM_JCR_ID, nodeId);
 				getSystemWorkbenchService().openEntityEditor(currNode);
 			}
 		};
@@ -41,6 +36,5 @@ public class FolderEditor extends AbstractDocumentsEditor {
 		Path path = getDocumentsService().getPath(getNodeFileSystemProvider(), jcrPath);
 		dfc.populate(path);
 		parent.layout(true, true);
-		//menuService.registerContextMenu(dfc.getViewer().getControl(), "org.argeo.suite.e4.popupmenu.folder");
 	}
 }

@@ -107,33 +107,8 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 	private FormToolkit toolkit;
 	private Composite main;
 
-	// RAP specific
+	// FIXME RAP specific
 	private BrowserNavigation browserNavigation;
-
-	// public AbstractConnectEditor() {
-	// try {
-	// // TODO centralise in Activator?
-	// Filter homeRepositoryFilter = bc
-	// .createFilter("(&(" + Constants.OBJECTCLASS +
-	// "=javax.jcr.Repository)(cn=home))");
-	// ServiceTracker<Repository, Repository> repositoryST = new
-	// ServiceTracker<>(bc, homeRepositoryFilter, null);
-	// repositoryST.open();
-	// repository = repositoryST.waitForService(60 * 1000);
-	// repositoryST.close();
-	//
-	// userAdminService =
-	// bc.getService(bc.getServiceReference(UserAdminService.class));
-	// resourcesService =
-	// bc.getService(bc.getServiceReference(ResourcesService.class));
-	// systemAppService =
-	// bc.getService(bc.getServiceReference(SystemAppService.class));
-	// systemWorkbenchService =
-	// bc.getService(bc.getServiceReference(SystemWorkbenchService.class));
-	// } catch (Exception e) {
-	// throw new ConnectException("Cannot retrieve services", e);
-	// }
-	// }
 
 	// LIFE CYCLE
 	private void init(String entityId) {
@@ -175,11 +150,6 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		forceRefresh();
 
 		browserNavigation = RWT.getClient().getService(BrowserNavigation.class);
-		// try {
-		// browserNavigation.pushState(node.getPath(), partName);
-		// } catch (RepositoryException e) {
-		// log.error("Cannot set client state", e);
-		// }
 	}
 
 	// protected String getPartName() {

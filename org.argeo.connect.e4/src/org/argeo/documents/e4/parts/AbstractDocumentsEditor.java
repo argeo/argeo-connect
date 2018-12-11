@@ -11,19 +11,25 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.connect.e4.ConnectE4Constants;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.documents.DocumentsException;
 import org.argeo.documents.DocumentsService;
 import org.argeo.jcr.JcrUtils;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.client.service.BrowserNavigation;
 
 /**
  * Base Editor for a Documents entity. Centralise methods to ease business
  * specific development
  */
 public abstract class AbstractDocumentsEditor implements CmsEditable {
+	private final static Log log = LogFactory.getLog(AbstractDocumentsEditor.class);
 
 	/* DEPENDENCY INJECTION */
 	@Inject
@@ -34,7 +40,7 @@ public abstract class AbstractDocumentsEditor implements CmsEditable {
 	private DocumentsService documentsService;
 	@Inject
 	private FileSystemProvider nodeFileSystemProvider;
-	
+
 	@Inject
 	private MPart mPart;
 
@@ -42,20 +48,20 @@ public abstract class AbstractDocumentsEditor implements CmsEditable {
 	private Session session;
 	private Node node;
 
+	// FIXME RAP specific
+	private BrowserNavigation browserNavigation;
+
 	public void init() {
 		String uid = mPart.getPersistedState().get(ConnectE4Constants.ENTITY_ID);
-//		setSite(site);
-//		setInput(input);
 		try {
 			session = repository.login();
-//			NodeEditorInput sei = (NodeEditorInput) input;
-//			String uid = sei.getUid();
 			node = session.getNodeByIdentifier(uid);
 			// Set a default part name and tooltip
 			updatePartName();
 		} catch (RepositoryException e) {
 			throw new DocumentsException("Unable to create new session" + " to use with current editor", e);
 		}
+		browserNavigation = RWT.getClient().getService(BrowserNavigation.class);
 	}
 
 	protected void updatePartName() {
@@ -103,6 +109,15 @@ public abstract class AbstractDocumentsEditor implements CmsEditable {
 	@PreDestroy
 	public void dispose() {
 		JcrUtils.logoutQuietly(session);
+	}
+
+	@Focus
+	public void setFocus() {
+		try {
+			browserNavigation.pushState(node.getPath(), mPart.getLabel());
+		} catch (RepositoryException e) {
+			log.error("Cannot set client state", e);
+		}
 	}
 
 	// CmsEditable LIFE CYCLE
