@@ -9,9 +9,12 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,7 +40,6 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -123,8 +125,20 @@ public class DocumentsUiService {
 		if (MessageDialog.openConfirm(shell, "Confirm deletion", msg)) {
 			for (Path path : paths) {
 				try {
-					// Might have already been deleted if we are in a tree
-					Files.deleteIfExists(path);
+					// recursively delete directory and its content
+					Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+						@Override
+						public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+							Files.delete(file);
+							return FileVisitResult.CONTINUE;
+						}
+
+						@Override
+						public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+							Files.delete(dir);
+							return FileVisitResult.CONTINUE;
+						}
+					});
 				} catch (DirectoryNotEmptyException e) {
 					String errMsg = path.getFileName() + " cannot be deleted: directory is not empty.";
 					MessageDialog.openError(shell, "Deletion forbidden", errMsg);
