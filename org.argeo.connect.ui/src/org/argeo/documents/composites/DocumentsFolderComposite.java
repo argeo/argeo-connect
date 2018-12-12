@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -309,12 +310,14 @@ public class DocumentsFolderComposite extends Composite {
 				Label contextL = new Label(rightPanelCmp, SWT.NONE);
 				contextL.setText(path.getFileName().toString());
 				contextL.setFont(EclipseUiUtils.getBoldFont(rightPanelCmp));
-				try {
-					addProperty(rightPanelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
-				} catch (Exception e) {
-					log.error("Workarounded issue while getting last update date for " + path, e);
-					addProperty(rightPanelCmp, "Last modified", "-");
-				}
+				FileTime lastModified = Files.getLastModifiedTime(path);
+				if (lastModified.toMillis() != 0)
+					try {
+						addProperty(rightPanelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
+					} catch (Exception e) {
+						log.error("Workarounded issue while getting last update date for " + path, e);
+						addProperty(rightPanelCmp, "Last modified", "-");
+					}
 				// addProperty(rightPannelCmp, "Owner",
 				// Files.getOwner(path).getName());
 				if (Files.isDirectory(path)) {

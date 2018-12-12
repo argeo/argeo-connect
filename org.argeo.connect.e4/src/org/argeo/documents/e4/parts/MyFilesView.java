@@ -297,7 +297,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 				Node currNode = session.getNode(path);
 //				Node parent = currNode.getParent();
 				if (currNode.isNodeType(NodeTypes.NODE_USER_HOME))
-					return "Private";
+					return currNode.getName();
 				else if (currNode.isNodeType(NodeTypes.NODE_GROUP_HOME))
 					return currNode.getProperty(NodeNames.LDAP_CN).getString();
 
