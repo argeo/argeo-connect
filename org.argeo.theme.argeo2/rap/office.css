@@ -217,7 +217,7 @@ Button.breadCrumb_btn:hover {
 }
 
 Button[PUSH][FLAT].createFolder_btn {
-	background-image: url( icons/fs/addFolder.gif);
+	background-image: url( icons/fs/folder-create.png);
 }
 
 Button[PUSH][FLAT].shareFolder_btn {
@@ -225,7 +225,7 @@ Button[PUSH][FLAT].shareFolder_btn {
 }
 
 Button[PUSH][FLAT].bookmarkFolder_btn {
-	background-image: url( icons/fs/bookmarkFolder.png);
+	background-image: url( icons/fs/folder-bookmark.png);
 }
 
 Button[PUSH][FLAT].downloadFolder_btn {
@@ -233,15 +233,15 @@ Button[PUSH][FLAT].downloadFolder_btn {
 }
 
 Button[PUSH][FLAT].delete_btn, Button[PUSH][FLAT].deleteBookmark_btn {
-	background-image: url( icons/fs/delete.png);
+	background-image: url( icons/actions/delete.png);
 }
 
 Button[PUSH][FLAT].rename_btn, Button[PUSH][FLAT].renameBookmark_btn {
-	background-image: url( icons/fs/rename.png);
+	background-image: url( icons/fs/file-rename.png);
 }
 
 Button[PUSH][FLAT].uploadFiles_btn {
-	background-image: url( icons/fs/upload.png);
+	background-image: url( icons/fs/file-upload.png);
 }
 
 Button[PUSH][FLAT].open_btn {
