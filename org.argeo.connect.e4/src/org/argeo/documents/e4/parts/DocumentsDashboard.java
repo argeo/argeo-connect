@@ -3,6 +3,7 @@ package org.argeo.documents.e4.parts;
 import java.nio.file.Path;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.Node;
@@ -218,4 +219,8 @@ public class DocumentsDashboard implements IDoubleClickListener {
 		RWT.getClient().getService(BrowserNavigation.class).pushState("~", "Docs");
 	}
 
+	@PreDestroy
+	public void destroy() {
+		JcrUtils.logoutQuietly(session);
+	}
 }
