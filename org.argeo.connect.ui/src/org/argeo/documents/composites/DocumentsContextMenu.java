@@ -4,7 +4,6 @@ import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_BOOKMARK_FOLDE
 import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_CREATE_FOLDER;
 import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_DELETE;
 import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_DOWNLOAD_FOLDER;
-import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_OPEN;
 import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_RENAME;
 import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_SHARE_FOLDER;
 import static org.argeo.documents.ui.DocumentsUiService.ACTION_ID_UPLOAD_FILE;
@@ -31,7 +30,7 @@ public class DocumentsContextMenu extends AbstractConnectContextMenu {
 
 	private final static String[] DEFAULT_ACTIONS = { ACTION_ID_CREATE_FOLDER, ACTION_ID_BOOKMARK_FOLDER,
 			ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_RENAME,
-			ACTION_ID_DELETE, ACTION_ID_OPEN };
+			ACTION_ID_DELETE };
 
 	private Path currFolderPath;
 
@@ -63,20 +62,20 @@ public class DocumentsContextMenu extends AbstractConnectContextMenu {
 		}
 		if (emptySel) {
 			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_BOOKMARK_FOLDER);
-			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_RENAME, ACTION_ID_DELETE,
-					ACTION_ID_OPEN);
+			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_RENAME, ACTION_ID_DELETE
+				);
 		} else if (multiSel) {
 			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_DELETE,
 					ACTION_ID_BOOKMARK_FOLDER);
-			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_RENAME, ACTION_ID_OPEN);
+			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_RENAME);
 		} else if (isFolder) {
 			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_RENAME, ACTION_ID_DELETE,
 					ACTION_ID_BOOKMARK_FOLDER);
-			setVisible(false, ACTION_ID_OPEN,
+			setVisible(false, 
 					// to be implemented
 					ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER);
 		} else {
-			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_OPEN, ACTION_ID_RENAME,
+			setVisible(true, ACTION_ID_CREATE_FOLDER, ACTION_ID_UPLOAD_FILE, ACTION_ID_RENAME,
 					ACTION_ID_DELETE);
 			setVisible(false, ACTION_ID_SHARE_FOLDER, ACTION_ID_DOWNLOAD_FOLDER, ACTION_ID_BOOKMARK_FOLDER);
 		}
@@ -106,9 +105,9 @@ public class DocumentsContextMenu extends AbstractConnectContextMenu {
 		case ACTION_ID_DELETE:
 			deleteItems();
 			break;
-		case ACTION_ID_OPEN:
-			openFile();
-			break;
+//		case ACTION_ID_OPEN:
+//			openFile();
+//			break;
 		case ACTION_ID_UPLOAD_FILE:
 			uploadFiles();
 			break;

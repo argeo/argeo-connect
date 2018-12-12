@@ -52,7 +52,7 @@ public class DocumentsUiService {
 	public final static String ACTION_ID_RENAME = "rename";
 	public final static String ACTION_ID_DELETE = "delete";
 	public final static String ACTION_ID_UPLOAD_FILE = "uploadFiles";
-	public final static String ACTION_ID_OPEN = "open";
+	//public final static String ACTION_ID_OPEN = "open";
 	public final static String ACTION_ID_DELETE_BOOKMARK = "deleteBookmark";
 	public final static String ACTION_ID_RENAME_BOOKMARK = "renameBookmark";
 
@@ -72,8 +72,8 @@ public class DocumentsUiService {
 			return "Delete";
 		case ACTION_ID_UPLOAD_FILE:
 			return "Upload Files";
-		case ACTION_ID_OPEN:
-			return "Open";
+//		case ACTION_ID_OPEN:
+//			return "Open";
 		case ACTION_ID_DELETE_BOOKMARK:
 			return "Delete bookmark";
 		case ACTION_ID_RENAME_BOOKMARK:
