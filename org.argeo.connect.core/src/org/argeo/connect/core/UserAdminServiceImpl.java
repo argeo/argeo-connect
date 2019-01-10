@@ -4,6 +4,7 @@ import static org.argeo.naming.LdapAttrs.cn;
 import static org.argeo.naming.LdapAttrs.description;
 import static org.argeo.naming.LdapAttrs.owner;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.UUID;
 import javax.jcr.Node;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
+import javax.security.auth.Subject;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
 
@@ -32,6 +34,7 @@ import org.argeo.naming.LdapAttrs;
 import org.argeo.naming.NamingUtils;
 import org.argeo.naming.SharedSecret;
 import org.argeo.node.NodeConstants;
+import org.argeo.osgi.useradmin.TokenUtils;
 import org.argeo.osgi.useradmin.UserAdminConf;
 import org.argeo.people.PeopleNames;
 import org.osgi.framework.InvalidSyntaxException;
@@ -342,16 +345,42 @@ public class UserAdminServiceImpl implements UserAdminService {
 	}
 
 	@Override
+	public void expireAuthToken(String token) {
+		try {
+			userTransaction.begin();
+			String dn = cn + "=" + token + "," + NodeConstants.TOKENS_BASEDN;
+			Group tokenGroup = (Group) userAdmin.getRole(dn);
+			String ldapDate = NamingUtils.instantToLdapDate(ZonedDateTime.now(ZoneOffset.UTC));
+			tokenGroup.getProperties().put(description.name(), ldapDate);
+			userTransaction.commit();
+			if (log.isDebugEnabled())
+				log.debug("Token " + token + " expired.");
+		} catch (Exception e1) {
+			try {
+				if (userTransaction.getStatus() != Status.STATUS_NO_TRANSACTION)
+					userTransaction.rollback();
+			} catch (Exception e2) {
+				if (log.isTraceEnabled())
+					log.trace("Cannot rollback transaction", e2);
+			}
+			throw new ConnectException("Cannot expire token", e1);
+		}
+	}
 
+	@Override
+	public void expireAuthTokens(Subject subject) {
+		Set<String> tokens = TokenUtils.tokensUsed(subject, NodeConstants.TOKENS_BASEDN);
+		for (String token : tokens)
+			expireAuthToken(token);
+	}
+
+	@Override
 	public void addAuthToken(String userDn, String token, Integer hours, String... roles) {
 		try {
 			userTransaction.begin();
 			User user = (User) userAdmin.getRole(userDn);
 			String tokenDn = cn + "=" + token + "," + NodeConstants.TOKENS_BASEDN;
 			Group tokenGroup = (Group) userAdmin.createRole(tokenDn, Role.GROUP);
-			// userTransaction.commit();
-			// userTransaction.begin();
-			// tokenGroup = (Group) userAdmin.getRole(tokenGroup.getName());
 			for (String role : roles) {
 				Role r = userAdmin.getRole(role);
 				if (r != null)

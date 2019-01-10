@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.jcr.Node;
+import javax.security.auth.Subject;
 import javax.transaction.UserTransaction;
 
 import org.osgi.framework.InvalidSyntaxException;
@@ -70,6 +71,10 @@ public interface UserAdminService {
 	String addSharedSecret(String username, String authInfo, String authToken);
 
 	void addAuthToken(String userDn, String token, Integer hours, String... roles);
+
+	void expireAuthToken(String token);
+
+	void expireAuthTokens(Subject subject);
 
 	User createUserFromPerson(Node person);
 
