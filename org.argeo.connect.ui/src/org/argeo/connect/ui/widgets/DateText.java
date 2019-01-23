@@ -62,6 +62,12 @@ public class DateText extends Composite {
 	/**
 	 * Returns the user defined date as Calendar or null if none has been defined
 	 */
+	public Calendar getDate() {
+		return calendar;
+	}
+
+	/** @deprecated use {@link #getDate()} instead */
+	@Deprecated
 	public Calendar getCalendar() {
 		return calendar;
 	}
@@ -118,7 +124,7 @@ public class DateText extends Composite {
 					} catch (ParseException pe) {
 						// Silent. Manage error popup?
 						if (calendar != null)
-							DateText.this.setText(calendar);
+							DateText.this.setDate(calendar);
 					}
 				}
 			}
@@ -129,13 +135,19 @@ public class DateText extends Composite {
 		});
 	}
 
+	/** @deprecated Use {@link #setDate(Calendar)} instead */
+	@Deprecated
 	public void setText(Calendar cal) {
+		setDate(cal);
+	}
+
+	public void setDate(Calendar calendar) {
 		String newValueStr = "";
-		if (cal != null)
-			newValueStr = dateFormat.format(cal.getTime());
+		if (calendar != null)
+			newValueStr = dateFormat.format(calendar.getTime());
 		if (!newValueStr.equals(dateTxt.getText()))
 			dateTxt.setText(newValueStr);
-		calendar = cal;
+		this.calendar = calendar;
 	}
 
 	private Calendar parseDate(String newVal) throws ParseException {
