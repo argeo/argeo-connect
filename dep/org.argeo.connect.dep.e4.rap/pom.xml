@@ -113,6 +113,11 @@
 			<groupId>org.argeo.tp.apache</groupId>
 			<artifactId>org.apache.poi.scratchpad</artifactId>
 		</dependency>
+		<!--  Mail -->
+		<dependency>
+			<groupId>org.argeo.tp.javax</groupId>
+			<artifactId>javax.mail</artifactId>
+		</dependency>
 
 		<!-- Base Argeo platform distribution -->
 		<dependency>

@@ -1,6 +1,6 @@
 package org.argeo.people.ui;
 
-import org.argeo.cms.i18n.Localized;
+import org.argeo.cms.Localized;
 
 public enum PeopleMsg implements Localized {
 	// NewPersonWizard

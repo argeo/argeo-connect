@@ -2,7 +2,7 @@ package org.argeo.connect.ui;
 
 import javax.jcr.Node;
 
-import org.argeo.cms.i18n.Localized;
+import org.argeo.cms.Localized;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;

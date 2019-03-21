@@ -1,6 +1,6 @@
 package org.argeo.connect.e4;
 
-import org.argeo.cms.i18n.Localized;
+import org.argeo.cms.Localized;
 
 public enum ConnectE4Msg implements Localized {
 	// editor
