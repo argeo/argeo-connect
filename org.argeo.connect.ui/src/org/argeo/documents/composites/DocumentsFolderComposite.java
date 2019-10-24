@@ -15,7 +15,6 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.fs.FileDrop;
 import org.argeo.cms.ui.fs.FsStyles;
 import org.argeo.cms.util.CmsUtils;
-import org.argeo.connect.ConnectException;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.documents.DocumentsException;
@@ -197,14 +196,10 @@ public class DocumentsFolderComposite extends Composite {
 		FileDrop fileDrop = new FileDrop() {
 
 			@Override
-			protected void processUpload(InputStream in, String fileName, String contetnType) {
-				try {
-					Path file = currentFolder.resolve(fileName);
-					Files.copy(in, file);
-					refresh();
-				} catch (IOException e) {
-					throw new ConnectException("Cannot upload " + fileName, e);
-				}
+			protected void processFileUpload(InputStream in, String fileName, String contetnType) throws IOException {
+				Path file = currentFolder.resolve(fileName);
+				Files.copy(in, file);
+				refresh();
 			}
 		};
 		fileDrop.createDropTarget(directoryDisplayViewer.getTable());
