@@ -31,7 +31,7 @@ public abstract class AbstractConnectCTabEditor extends AbstractConnectEditor {
 	@Override
 	protected final void populateBody(Composite parent) {
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		folder = createCTabFolder(parent, SWT.NO_FOCUS);
+		folder = createCTabFolder(parent, SWT.NO_FOCUS | SWT.BORDER);
 		populateTabFolder(folder);
 		folder.setSelection(0);
 	}
