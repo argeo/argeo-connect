@@ -10,5 +10,6 @@ org.argeo.jcr,\
 org.argeo.node,\
 org.argeo.cms,\
 jxl.*;resolution:=optional,\
+javax.mail.*;resolution:=optional,\
 *
 
