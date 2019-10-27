@@ -1,6 +1,6 @@
 package org.argeo.people;
 
-import org.argeo.connect.Distinguished;
+import org.argeo.naming.Distinguished;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.node.NodeConstants;
 
