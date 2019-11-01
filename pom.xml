@@ -14,7 +14,7 @@
 	<description>Real world IT</description>
 	<version>2.1.81-SNAPSHOT</version>
 	<properties>
-		<version.argeo-connect>2.1.81-SNAPSHOT</version.argeo-connect>
+		<version.argeo-connect>2.1.81</version.argeo-connect>
 	</properties>
 	<modules>
 		<module>org.argeo.connect.api</module>
