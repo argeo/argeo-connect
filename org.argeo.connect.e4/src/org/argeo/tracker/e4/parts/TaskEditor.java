@@ -14,7 +14,6 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.argeo.activities.ActivitiesNames;
-import org.argeo.activities.ActivitiesTypes;
 import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
@@ -80,24 +79,6 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 		} catch (Exception e) {
 			throw new TrackerException("Cannot add pages for editor of " + getNode(), e);
 		}
-	}
-
-	@Override
-	public Boolean canEdit() {
-		return true;
-	}
-
-	@Override
-	public Boolean isEditing() {
-		return true;
-	}
-
-	@Override
-	public void startEditing() {
-	}
-
-	@Override
-	public void stopEditing() {
 	}
 
 	// Specific pages
@@ -399,8 +380,12 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	/** Override this to add specific rights for status change */
 	private void refreshStatusCombo(Combo combo, Node currTask) {
-		List<String> values = getResourcesService().getTemplateCatalogue(session, ActivitiesTypes.ACTIVITIES_TASK,
-				ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
+//		List<String> values = getResourcesService().getTemplateCatalogue(session, ActivitiesTypes.ACTIVITIES_TASK,
+//				ActivitiesNames.ACTIVITIES_TASK_STATUS, null);
+		// FIXME Use resource catalogues
+		List<String> values = new ArrayList<String>();
+		values.add("In progress");
+		values.add("Closed");
 		combo.setItems(values.toArray(new String[values.size()]));
 		ConnectWorkbenchUtils.refreshFormCombo(TaskEditor.this, combo, currTask,
 				ActivitiesNames.ACTIVITIES_TASK_STATUS);
