@@ -1,4 +1,0 @@
-Field,Values
-people:taskStatus,New; Assigned; Resolved; Reoppened; Closed; Verified; Works for me; Won't fix
-people:closingStatuses,Closed; Verified; Works for me; Won't fix
-single:people:defaultStatus,New

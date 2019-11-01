@@ -23,21 +23,11 @@
 		<!-- UI -->
 		<module>org.argeo.connect.ui</module>
 		<module>org.argeo.people.web</module>
+		<module>org.argeo.theme.argeo2</module>
 
 		<!-- Eclipse 4 -->
 		<module>org.argeo.connect.e4</module>
-
-		<!-- Workbench -->
-		<module>org.argeo.connect.ui.workbench</module>
-		<module>org.argeo.theme.argeo2</module>
-		<!-- Workbench Apps -->
-		<module>org.argeo.activities</module>
-		<module>org.argeo.documents</module>
-		<module>org.argeo.people.workbench.rap</module>
-		<module>org.argeo.tracker</module>
-
-		<!-- Legacy -->
-		<module>org.argeo.media</module>
+		
 		<module>dep</module>
 	</modules>
 	<scm>

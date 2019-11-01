@@ -11,10 +11,8 @@
 	<name>Connect Dependencies</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>org.argeo.connect.platform</module>
 		<module>org.argeo.connect.dep.e4.rap</module>
 		<module>org.argeo.connect.dep.e4.rcp</module>
-		<!-- <module>org.argeo.connect.sdk</module> -->
 	</modules>
 	<build>
 		<plugins>
