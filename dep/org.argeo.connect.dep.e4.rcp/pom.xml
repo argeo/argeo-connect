@@ -39,6 +39,14 @@
 
 		<!-- Additional third parties -->
 		<dependency>
+			<groupId>org.argeo.tp.javax</groupId>
+			<artifactId>javax.activation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.javax</groupId>
+			<artifactId>javax.xml.bind</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.argeo.tp.misc</groupId>
 			<artifactId>net.sf.jxl</artifactId>
 		</dependency>

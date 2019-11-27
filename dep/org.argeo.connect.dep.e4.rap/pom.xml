@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.connect</groupId>
@@ -44,6 +46,14 @@
 
 		<!-- Additional third parties -->
 		<dependency>
+			<groupId>org.argeo.tp.javax</groupId>
+			<artifactId>javax.activation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.javax</groupId>
+			<artifactId>javax.xml.bind</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.argeo.tp.apache.commons</groupId>
 			<artifactId>org.apache.commons.lang3</artifactId>
 		</dependency>
@@ -68,6 +78,35 @@
 			<groupId>org.argeo.tp.apache</groupId>
 			<artifactId>org.apache.pdfbox.jempbox</artifactId>
 		</dependency>
+		<!-- Batik (required by POI) -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.tp.misc</groupId> -->
+		<!-- <artifactId>org.w3c.dom.svg</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.tp.apache</groupId> -->
+		<!-- <artifactId>org.apache.xmlgraphics.commons</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.tp.apache</groupId> -->
+		<!-- <artifactId>org.apache.batik.constants</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.tp.apache</groupId> -->
+		<!-- <artifactId>org.apache.batik.i18n</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.tp.apache</groupId> -->
+		<!-- <artifactId>org.apache.batik.util</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.tp.apache</groupId> -->
+		<!-- <artifactId>org.apache.batik.css</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>org.argeo.tp.apache</groupId> -->
+		<!-- <artifactId>org.apache.batik.anim</artifactId> -->
+		<!-- </dependency> -->
 		<!-- POI (MS office documents) -->
 		<dependency>
 			<groupId>org.argeo.tp.apache.commons</groupId>
@@ -113,7 +152,7 @@
 			<groupId>org.argeo.tp.apache</groupId>
 			<artifactId>org.apache.poi.scratchpad</artifactId>
 		</dependency>
-		<!--  Mail -->
+		<!-- Mail -->
 		<dependency>
 			<groupId>org.argeo.tp.javax</groupId>
 			<artifactId>javax.mail</artifactId>
@@ -231,28 +270,28 @@
 							</execution>
 						</executions>
 					</plugin>
-<!-- 					<plugin> -->
-<!-- 						<groupId>org.apache.maven.plugins</groupId> -->
-<!-- 						<artifactId>maven-dependency-plugin</artifactId> -->
-<!-- 						<executions> -->
-<!-- 							<execution> -->
-<!-- 								<id>copy-tp</id> -->
-<!-- 								<phase>package</phase> -->
-<!-- 								<goals> -->
-<!-- 									<goal>copy-dependencies</goal> -->
-<!-- 								</goals> -->
-<!-- 								<configuration> -->
-<!-- 									<includeTypes>jar</includeTypes> -->
-<!-- 									<outputDirectory>${project.build.directory}/lib-tp</outputDirectory> -->
-<!-- 									<excludeGroupIds>org.argeo.connect</excludeGroupIds> -->
-<!-- 									<includeTypes>jar</includeTypes> -->
-<!-- 									<includeScope>runtime</includeScope> -->
-<!-- 									<useRepositoryLayout>true</useRepositoryLayout> -->
-<!-- 									<excludeTransitive>true</excludeTransitive> -->
-<!-- 								</configuration> -->
-<!-- 							</execution> -->
-<!-- 						</executions> -->
-<!-- 					</plugin> -->
+					<!-- <plugin> -->
+					<!-- <groupId>org.apache.maven.plugins</groupId> -->
+					<!-- <artifactId>maven-dependency-plugin</artifactId> -->
+					<!-- <executions> -->
+					<!-- <execution> -->
+					<!-- <id>copy-tp</id> -->
+					<!-- <phase>package</phase> -->
+					<!-- <goals> -->
+					<!-- <goal>copy-dependencies</goal> -->
+					<!-- </goals> -->
+					<!-- <configuration> -->
+					<!-- <includeTypes>jar</includeTypes> -->
+					<!-- <outputDirectory>${project.build.directory}/lib-tp</outputDirectory> -->
+					<!-- <excludeGroupIds>org.argeo.connect</excludeGroupIds> -->
+					<!-- <includeTypes>jar</includeTypes> -->
+					<!-- <includeScope>runtime</includeScope> -->
+					<!-- <useRepositoryLayout>true</useRepositoryLayout> -->
+					<!-- <excludeTransitive>true</excludeTransitive> -->
+					<!-- </configuration> -->
+					<!-- </execution> -->
+					<!-- </executions> -->
+					<!-- </plugin> -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>rpm-maven-plugin</artifactId>
