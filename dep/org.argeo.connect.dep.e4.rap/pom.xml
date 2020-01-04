@@ -65,6 +65,29 @@
 			<groupId>org.argeo.tp.misc</groupId>
 			<artifactId>net.sf.jxl</artifactId>
 		</dependency>
+
+		<!-- HTML -->
+		<!-- Freemarker -->
+		<dependency>
+			<groupId>org.argeo.tp.misc</groupId>
+			<artifactId>org.freemarker</artifactId>
+		</dependency>
+
+		<!-- Flexmark -->
+		<dependency>
+			<groupId>org.argeo.tp.misc</groupId>
+			<artifactId>com.vladsch.flexmark</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.misc</groupId>
+			<artifactId>com.vladsch.flexmark.util</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.misc</groupId>
+			<artifactId>com.vladsch.flexmark.formatter</artifactId>
+		</dependency>
+
+
 		<!-- PDFBox -->
 		<dependency>
 			<groupId>org.argeo.tp.apache</groupId>
