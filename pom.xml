@@ -29,6 +29,8 @@
 		<module>org.argeo.connect.e4</module>
 
 		<module>dep</module>
+		<!-- Example -->
+		<module>example</module>
 	</modules>
 	<scm>
 		<connection>scm:git:http://git.argeo.org/apache2/argeo-connect.git</connection>

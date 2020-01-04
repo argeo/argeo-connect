@@ -2,44 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.argeo.connect</groupId>
-		<artifactId>argeo-connect</artifactId>
-		<version>2.1.82-SNAPSHOT</version>
+		<groupId>org.argeo.commons.example</groupId>
+		<artifactId>argeo-commons-example</artifactId>
+		<version>2.1.85-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
-	<artifactId>org.argeo.connect.ui</artifactId>
-	<name>Connect UI</name>
+	<artifactId>org.argeo.example.cms.e4</artifactId>
+	<name>Example CMS E4</name>
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.core</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.cms.ui</artifactId>
-			<version>${version.argeo-commons}</version>
+			<version>2.1.85-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.cms.ui.theme</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-		<!-- Base UI Utilities -->
+
+		<!-- UI -->
 		<dependency>
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
-			<version>${version.argeo-commons}</version>
+			<version>2.1.85-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.argeo.commons</groupId>
-			<artifactId>org.argeo.eclipse.ui</artifactId>
-			<version>${version.argeo-commons}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.argeo.tp</groupId>
 			<artifactId>argeo-tp-rap-e4</artifactId>
@@ -47,6 +31,5 @@
 			<type>pom</type>
 			<scope>provided</scope>
 		</dependency>
-
 	</dependencies>
 </project>

@@ -1,5 +1,6 @@
 Import-Package: org.eclipse.swt,\
 javax.jcr.nodetype,\
+org.argeo.docbook.jcr,\
 org.argeo.cms.i18n,\
 org.eclipse.jface.window,\
 org.argeo.eclipse.ui.dialogs,\

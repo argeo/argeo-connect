@@ -2,6 +2,7 @@
 #Provide-Capability: cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd; abstract=true
 
 Import-Package: javax.jcr.nodetype,\
+org.argeo.docbook.jcr,\
 javax.jcr.security,\
 org.apache.jackrabbit.util,\
 org.argeo.cms.auth,\
