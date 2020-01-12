@@ -15,5 +15,6 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>org.argeo.example.cms.e4</module>
+		<module>org.argeo.example.data</module>
 	</modules>
 </project>
