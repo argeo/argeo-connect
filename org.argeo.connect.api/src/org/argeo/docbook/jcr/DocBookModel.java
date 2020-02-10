@@ -21,9 +21,9 @@ public class DocBookModel {
 	}
 
 	public void importXml(String path, InputStream in) throws RepositoryException, IOException {
-		long begin = System.currentTimeMillis();
+//		long begin = System.currentTimeMillis();
 		session.importXML(path, in, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REPLACE_EXISTING);
-		long duration = System.currentTimeMillis() - begin;
+//		long duration = System.currentTimeMillis() - begin;
 //		if (log.isTraceEnabled())
 //			log.trace("Imported " + path + " in " + duration + " ms");
 
