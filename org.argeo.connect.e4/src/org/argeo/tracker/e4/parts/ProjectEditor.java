@@ -16,7 +16,6 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.security.AccessControlException;
 
 import org.argeo.activities.ActivitiesNames;
-import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
@@ -127,7 +126,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 	}
 
 	// Specific pages
-	private class MainPage extends AbstractEditorPage implements ArgeoNames {
+	private class MainPage extends AbstractEditorPage {
 		public final static String PAGE_ID = ".mainPage";
 
 		private Link managerLk;
@@ -390,7 +389,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 	}
 
-	private class TasksPage extends AbstractEditorPage implements ArgeoNames {
+	private class TasksPage extends AbstractEditorPage {
 		private final static String PAGE_ID = ".tasksPage";
 
 		private TableViewer tableViewer;

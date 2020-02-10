@@ -10,7 +10,6 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.IFormPart;
@@ -63,7 +62,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
-public class MilestoneListPage extends AbstractEditorPage implements ArgeoNames {
+public class MilestoneListPage extends AbstractEditorPage {
 
 	private final UserAdminService userAdminService;
 	private final TrackerService trackerService;

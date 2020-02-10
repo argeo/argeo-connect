@@ -14,7 +14,6 @@ import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.argeo.activities.ActivitiesNames;
-import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
@@ -82,7 +81,7 @@ public class TaskEditor extends AbstractTrackerEditor implements CmsEditable {
 	}
 
 	// Specific pages
-	private class TaskMainPage extends AbstractEditorPage implements ArgeoNames {
+	private class TaskMainPage extends AbstractEditorPage {
 		public final static String PAGE_ID = ".taskMainPage";
 
 		private Combo statusCmb;

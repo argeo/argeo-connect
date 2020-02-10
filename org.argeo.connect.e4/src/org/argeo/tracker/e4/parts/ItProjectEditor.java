@@ -12,7 +12,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
-import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IFormPart;
@@ -113,7 +112,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 	}
 
 	// Specific pages
-	private class MainPage extends AbstractEditorPage implements ArgeoNames {
+	private class MainPage extends AbstractEditorPage {
 		public final static String PAGE_ID = "mainPage";
 
 		private Link managerLk;
@@ -384,7 +383,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 	// descLbl.setText(desc);
 	// }
 
-	private class IssuesPage extends AbstractEditorPage implements ArgeoNames {
+	private class IssuesPage extends AbstractEditorPage {
 		public final static String PAGE_ID = ".issueListPage";
 
 		private TableViewer tableViewer;
@@ -520,7 +519,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 		}
 	}
 
-	private class VersionsPage extends AbstractEditorPage implements ArgeoNames {
+	private class VersionsPage extends AbstractEditorPage {
 		public final static String ID = "projectEditor.issuesPage";
 
 		private TableViewer tableViewer;
@@ -653,7 +652,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 		}
 	}
 
-	private class ComponentsPage extends AbstractEditorPage implements ArgeoNames {
+	private class ComponentsPage extends AbstractEditorPage {
 		public final static String ID = "projectEditor.componentsPage";
 
 		private TableViewer tableViewer;

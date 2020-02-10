@@ -20,7 +20,6 @@ import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ui.AssignedToLP;
-import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
@@ -119,7 +118,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 		}
 	}
 
-	private class MainPage extends AbstractEditorPage implements ArgeoNames {
+	private class MainPage extends AbstractEditorPage {
 		public final static String PAGE_ID = ".mainPage";
 
 		private Link projectLk;

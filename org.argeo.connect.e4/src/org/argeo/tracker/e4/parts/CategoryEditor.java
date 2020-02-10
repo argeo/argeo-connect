@@ -13,7 +13,6 @@ import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ui.AssignedToLP;
-import org.argeo.cms.ArgeoNames;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.connect.AppService;
@@ -99,7 +98,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 			super.updatePartName();
 	}
 
-	private class MainPage extends AbstractEditorPage implements ArgeoNames {
+	private class MainPage extends AbstractEditorPage {
 		public final static String PAGE_ID = "mainPage";
 
 		private TableViewer tableViewer;
