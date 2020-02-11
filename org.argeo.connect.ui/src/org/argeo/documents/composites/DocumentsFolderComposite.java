@@ -5,8 +5,13 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.jcr.Node;
 
@@ -77,6 +82,7 @@ public class DocumentsFolderComposite extends Composite {
 	private Composite rightPanelCmp;
 
 	private DocumentsContextMenu contextMenu;
+	private DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd HH:mm");
 
 	// Local context
 	private Path initialPath;
@@ -308,7 +314,8 @@ public class DocumentsFolderComposite extends Composite {
 				FileTime lastModified = Files.getLastModifiedTime(path);
 				if (lastModified.toMillis() != 0)
 					try {
-						addProperty(rightPanelCmp, "Last modified", Files.getLastModifiedTime(path).toString());
+						String lastModifiedStr = dateFormat.format(new Date(lastModified.toMillis()));
+						addProperty(rightPanelCmp, "Last modified", lastModifiedStr);
 					} catch (Exception e) {
 						log.error("Workarounded issue while getting last update date for " + path, e);
 						addProperty(rightPanelCmp, "Last modified", "-");
@@ -324,6 +331,20 @@ public class DocumentsFolderComposite extends Composite {
 					addProperty(rightPanelCmp, "Type", mimeType);
 					addProperty(rightPanelCmp, "Size", FsUiUtils.humanReadableByteCount(Files.size(path), false));
 				}
+
+				// read all attributes
+//				Map<String, Object> attrs = Files.readAttributes(path, "*");
+//				for (String attr : attrs.keySet()) {
+//					Object value = attrs.get(attr);
+//					String str;
+//					if (value instanceof Calendar) {
+//						str = dateFormat.format(((Calendar) value).getTime());
+//					} else {
+//						str = value.toString();
+//					}
+//					addProperty(rightPanelCmp, attr, str);
+//
+//				}
 			}
 			rightPanelCmp.layout(true, true);
 		} catch (IOException e) {
