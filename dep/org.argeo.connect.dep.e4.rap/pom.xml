@@ -211,27 +211,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					<!-- <plugin> -->
-					<!-- <groupId>org.apache.maven.plugins</groupId> -->
-					<!-- <artifactId>maven-dependency-plugin</artifactId> -->
-					<!-- <executions> -->
-					<!-- <execution> -->
-					<!-- <id>copy-argeo</id> -->
-					<!-- <phase>package</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>copy-dependencies</goal> -->
-					<!-- </goals> -->
-					<!-- <configuration> -->
-					<!-- <includeTypes>jar</includeTypes> -->
-					<!-- <outputDirectory>${project.build.directory}/lib-argeo</outputDirectory> -->
-					<!-- <includeGroupIds>org.argeo.connect</includeGroupIds> -->
-					<!-- <includeTypes>jar</includeTypes> -->
-					<!-- <includeScope>runtime</includeScope> -->
-					<!-- <useRepositoryLayout>true</useRepositoryLayout> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
-					<!-- </executions> -->
-					<!-- </plugin> -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>rpm-maven-plugin</artifactId>
@@ -293,28 +272,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					<!-- <plugin> -->
-					<!-- <groupId>org.apache.maven.plugins</groupId> -->
-					<!-- <artifactId>maven-dependency-plugin</artifactId> -->
-					<!-- <executions> -->
-					<!-- <execution> -->
-					<!-- <id>copy-tp</id> -->
-					<!-- <phase>package</phase> -->
-					<!-- <goals> -->
-					<!-- <goal>copy-dependencies</goal> -->
-					<!-- </goals> -->
-					<!-- <configuration> -->
-					<!-- <includeTypes>jar</includeTypes> -->
-					<!-- <outputDirectory>${project.build.directory}/lib-tp</outputDirectory> -->
-					<!-- <excludeGroupIds>org.argeo.connect</excludeGroupIds> -->
-					<!-- <includeTypes>jar</includeTypes> -->
-					<!-- <includeScope>runtime</includeScope> -->
-					<!-- <useRepositoryLayout>true</useRepositoryLayout> -->
-					<!-- <excludeTransitive>true</excludeTransitive> -->
-					<!-- </configuration> -->
-					<!-- </execution> -->
-					<!-- </executions> -->
-					<!-- </plugin> -->
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>rpm-maven-plugin</artifactId>
@@ -328,6 +285,7 @@
 								<configuration>
 									<name>argeo-connect-e4-tp</name>
 									<version>${version.argeo-tp}</version>
+									<release>${maven.build.timestamp}</release>
 									<mappings>
 										<mapping>
 											<directory>/usr/share/osgi</directory>
