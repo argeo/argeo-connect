@@ -1,11 +1,12 @@
 Require-Capability: cms.datamodel;filter:="(name=node)",\
  cms.datamodel;filter:="(name=cms)"
 Provide-Capability: cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd,\
- cms.datamodel; name=activities; cnd=/org/argeo/activities/activities.cnd; abstract=true,\
- cms.datamodel; name=people; cnd=/org/argeo/people/people.cnd; abstract=true,\
- cms.datamodel; name=documents; cnd=/org/argeo/documents/documents.cnd; abstract=true,\
- cms.datamodel; name=tracker; cnd=/org/argeo/tracker/tracker.cnd; abstract=true,\
- cms.datamodel;name=docbook;cnd=/org/argeo/docbook/jcr/docbook.cnd
+cms.datamodel; name=cms; cnd=/org/argeo/connect/cms.cnd; abstract=true,\
+cms.datamodel; name=activities; cnd=/org/argeo/activities/activities.cnd; abstract=true,\
+cms.datamodel; name=people; cnd=/org/argeo/people/people.cnd; abstract=true,\
+cms.datamodel; name=documents; cnd=/org/argeo/documents/documents.cnd; abstract=true,\
+cms.datamodel; name=tracker; cnd=/org/argeo/tracker/tracker.cnd; abstract=true,\
+cms.datamodel; name=docbook; cnd=/org/argeo/docbook/jcr/docbook.cnd; abstract=true
 
 
  Import-Package: org.argeo.node,\
