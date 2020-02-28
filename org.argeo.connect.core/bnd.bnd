@@ -1,5 +1,10 @@
-#Require-Capability: cms.datamodel;filter:="(name=node)
-#Provide-Capability: cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd; abstract=true
+Require-Capability: cms.datamodel;filter:="(name=connect)",\
+cms.datamodel;filter:="(name=activities)",\
+cms.datamodel;filter:="(name=people)",\
+cms.datamodel;filter:="(name=documents)",\
+cms.datamodel;filter:="(name=tracker)",\
+cms.datamodel;filter:="(name=docbook)",\
+cms.datamodel;filter:="(name=cms)",\
 
 Import-Package: javax.jcr.nodetype,\
 org.argeo.docbook.jcr,\

@@ -76,6 +76,8 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 		try {
 			String entityId = entity.getIdentifier();
 			String entityEditorId = getEntityEditorId(entity);
+			if (entityEditorId == null)
+				throw new CmsException("No entity editor found for " + entity);
 			parts: for (MPart part : partService.getParts()) {
 				String elementId = part.getElementId();
 				if (!elementId.equals(entityEditorId))

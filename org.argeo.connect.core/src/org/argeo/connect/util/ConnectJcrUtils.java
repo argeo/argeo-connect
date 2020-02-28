@@ -37,6 +37,7 @@ import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 
 /**
  * Utility methods to ease interaction with a JCR repository while implementing.
@@ -52,8 +53,7 @@ public class ConnectJcrUtils {
 	 * Replace the generic namespace with the local "jcr:" value. It is a workaround
 	 * that must be later cleaned
 	 * 
-	 * @param name
-	 *            the property name which prefix has to be cleaned
+	 * @param name the property name which prefix has to be cleaned
 	 * @return the short property name
 	 */
 	public static String getLocalJcrItemName(String name) {
@@ -465,6 +465,18 @@ public class ConnectJcrUtils {
 		}
 	}
 
+	/**
+	 * Call {@link Repository#login()} without exceptions (useful in super
+	 * constructors).
+	 */
+	public static Session login(Repository repository, String workspace) {
+		try {
+			return repository.login(workspace);
+		} catch (RepositoryException re) {
+			throw new ConnectException("Unable to login", re);
+		}
+	}
+
 	/** Centralises exception management to call {@link Node#getSession()} */
 	public static Session getSession(Node node) {
 		try {
@@ -622,6 +634,17 @@ public class ConnectJcrUtils {
 			return node.isNodeType(nodeTypeName);
 		} catch (RepositoryException re) {
 			throw new ConnectException("Unable to test NodeType " + nodeTypeName + " for " + node, re);
+		}
+	}
+
+	/** Whether this node is a user or group home. */
+	public static boolean isHome(Node node) {
+		try {
+			String workspaceName = node.getSession().getWorkspace().getName();
+			return (workspaceName.equals(NodeConstants.HOME) || workspaceName.equals(NodeConstants.SRV))
+					&& node.hasProperty(Property.JCR_ID);
+		} catch (RepositoryException re) {
+			throw new ConnectException("Unable to test that " + node + " is home ", re);
 		}
 	}
 

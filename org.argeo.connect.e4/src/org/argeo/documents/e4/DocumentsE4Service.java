@@ -7,8 +7,8 @@ import javax.jcr.nodetype.NodeType;
 
 import org.argeo.connect.e4.AppE4Service;
 import org.argeo.connect.ui.ConnectImages;
+import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.documents.DocumentsTypes;
-import org.argeo.node.NodeTypes;
 import org.eclipse.swt.graphics.Image;
 
 public class DocumentsE4Service implements AppE4Service {
@@ -41,8 +41,9 @@ public class DocumentsE4Service implements AppE4Service {
 	}
 
 	private static boolean isFolderNodeType(Node entity) {
-		return isNodeType(entity, NodeType.NT_FOLDER) || isNodeType(entity, NodeTypes.NODE_USER_HOME)
-				|| isNodeType(entity, NodeTypes.NODE_GROUP_HOME);
+//		return isNodeType(entity, NodeType.NT_FOLDER) || isNodeType(entity, NodeTypes.NODE_USER_HOME)
+//				|| isNodeType(entity, NodeTypes.NODE_GROUP_HOME);
+		return isNodeType(entity, NodeType.NT_FOLDER) || ConnectJcrUtils.isHome(entity);
 	}
 
 	private static boolean isFileNodeType(Node entity) {

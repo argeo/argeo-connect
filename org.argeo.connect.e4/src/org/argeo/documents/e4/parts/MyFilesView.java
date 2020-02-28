@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -49,6 +50,7 @@ import org.argeo.documents.composites.BookmarksTableViewer;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FsTableViewer;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.argeo.node.NodeNames;
 import org.argeo.node.NodeTypes;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -92,7 +94,8 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 	@Inject
 	private DocumentsService documentsService;
 
-	private Session session;
+	private Session homeSession;
+	private Session groupSession;
 	private Text filterTxt;
 	private TableViewer searchResultsViewer;
 	private Composite searchCmp;
@@ -100,7 +103,8 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 
 	@PostConstruct
 	public void createPartControl(Composite parent) {
-		session = ConnectJcrUtils.login(repository);
+		homeSession = ConnectJcrUtils.login(repository, NodeConstants.HOME);
+		groupSession = ConnectJcrUtils.login(repository, NodeConstants.SRV);
 		// MainLayout
 		parent.setLayout(new GridLayout());
 //		addFilterPanel(parent);
@@ -202,7 +206,8 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 
 	@PreDestroy
 	public void dispose() {
-		JcrUtils.logoutQuietly(session);
+		JcrUtils.logoutQuietly(homeSession);
+		JcrUtils.logoutQuietly(groupSession);
 	}
 
 	protected int refreshFilteredList() {
@@ -229,7 +234,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 			// SQL2 QUERY
 			String cf = XPathUtils.encodeXPathStringValue(filter);
 			String qStr = "SELECT * FROM [nt:hierarchyNode] WHERE UPPER(LOCALNAME()) LIKE '%" + cf.toUpperCase() + "%'";
-			QueryManager queryManager = session.getWorkspace().getQueryManager();
+			QueryManager queryManager = homeSession.getWorkspace().getQueryManager();
 			Query xpathQuery = queryManager.createQuery(qStr, Query.JCR_SQL2);
 
 			// xpathQuery.setLimit(TrackerUiConstants.SEARCH_DEFAULT_LIMIT);
@@ -258,9 +263,9 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 		gd.horizontalIndent = 10;
 		table.setLayoutData(gd);
 		homeViewer.addDoubleClickListener(this);
-		homeViewer.setPathsInput(documentsService.getMyDocumentsPath(nodeFileSystemProvider, session));
+		homeViewer.setPathsInput(documentsService.getMyDocumentsPath(nodeFileSystemProvider, homeSession));
 
-		Path[] wkGpHomes = documentsService.getMyGroupsFilesPath(nodeFileSystemProvider, session);
+		Path[] wkGpHomes = documentsService.getMyGroupsFilesPath(nodeFileSystemProvider, groupSession);
 		if (wkGpHomes != null && wkGpHomes.length > 0) {
 			appendTitle(parent, "Shared");
 			FsTableViewer groupsViewer = new FsTableViewer(parent, SWT.SINGLE | SWT.NO_SCROLL);
@@ -274,7 +279,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 
 		appendTitle(parent, "Bookmarks");
 		BookmarksTableViewer bookmarksViewer = new BookmarksTableViewer(parent, SWT.MULTI | SWT.NO_SCROLL,
-				documentsService.getMyBookmarksParent(session), documentsService, systemWorkbenchService);
+				documentsService.getMyBookmarksParent(homeSession), documentsService, systemWorkbenchService);
 		table = bookmarksViewer.configureDefaultSingleColumnTable(bookmarkColWith);
 		gd = EclipseUiUtils.fillWidth();
 		gd.horizontalIndent = 10;
@@ -294,13 +299,18 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 			Path curr = ((Path) element);
 			try {
 				String path = curr.toString();
-				Node currNode = session.getNode(path);
+				Node currNode = homeSession.getNode(path);
 //				Node parent = currNode.getParent();
-				if (currNode.isNodeType(NodeTypes.NODE_USER_HOME))
-					return currNode.getName();
-				else if (currNode.isNodeType(NodeTypes.NODE_GROUP_HOME))
-					return currNode.getProperty(NodeNames.LDAP_CN).getString();
+//				if (currNode.isNodeType(NodeTypes.NODE_USER_HOME))
+//					return currNode.getName();
+//				else if (currNode.isNodeType(NodeTypes.NODE_GROUP_HOME))
+//					return currNode.getProperty(NodeNames.LDAP_CN).getString();
 
+				// FIXME make recognition of home and group home more robust
+				if (currNode.hasProperty(Property.JCR_TITLE))
+					return currNode.getProperty(Property.JCR_TITLE).getString();
+				else if (currNode.hasProperty(Property.JCR_ID))
+					return currNode.getProperty(Property.JCR_ID).getString();
 				else
 					return super.getText(element);
 			} catch (RepositoryException e) {
@@ -313,7 +323,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 			if (element instanceof Path) {
 				Path curr = ((Path) element);
 				String path = curr.toString();
-				Node currNode = ConnectJcrUtils.getNode(session, path);
+				Node currNode = ConnectJcrUtils.getNode(homeSession, path);
 				return systemWorkbenchService.getIconForType(currNode);
 			}
 			return null;
@@ -347,7 +357,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 					try {
 						Path currPath = documentsService.getPath(nodeFileSystemProvider, new URI(uriStr));
 						String jcrPath = currPath.toString();
-						if (!session.itemExists(jcrPath)) {
+						if (!homeSession.itemExists(jcrPath)) {
 							String msg = "Bookmarked folder at URI " + uriStr
 									+ " cannot be found. If it is a local folder "
 									+ "it has been removed or renamed.\nDo you want to delete corresponding bookmark?";
@@ -355,12 +365,12 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 									"Missing target folder", msg);
 							if (remove) {
 								tmpNode.remove();
-								session.save();
+								homeSession.save();
 								forceRefresh(null);
 							}
 							return;
 						} else
-							currNode = session.getNode(jcrPath);
+							currNode = homeSession.getNode(jcrPath);
 					} catch (URISyntaxException | RepositoryException e) {
 						throw new DocumentsException("Cannot get target node for bookmark " + tmpNode, e);
 					}
@@ -370,7 +380,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 				Path currPath = (Path) element;
 				String jcrPath = currPath.toString();
 				// TODO rather directly use the jcrPath / an URI?
-				currNode = ConnectJcrUtils.getNode(session, jcrPath);
+				currNode = ConnectJcrUtils.getNode(homeSession, jcrPath);
 			} else
 				throw new IllegalArgumentException("Cannot manage " + element + ", only Node and Path are supported.");
 			// String nodeId = ConnectJcrUtils.getIdentifier(currNode);

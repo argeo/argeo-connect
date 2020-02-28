@@ -292,7 +292,7 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 			Query query = XPathUtils.createQuery(session, builder.toString());
 			return query.execute().getNodes();
 		} catch (RepositoryException e) {
-			throw new ActivitiesException("Unable to get tasks for groups " + roles.toString());
+			throw new ActivitiesException("Unable to get tasks for groups " + roles.toString(), e);
 		}
 	}
 

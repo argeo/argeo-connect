@@ -18,6 +18,7 @@ import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -61,7 +62,7 @@ public class CreateEntity {
 		String jcrId = null;
 
 		try {
-			draftSession = repository.login();
+			draftSession = repository.login(NodeConstants.HOME);
 
 			Node tmpNode = systemAppService.createDraftEntity(draftSession, nodeType);
 			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);

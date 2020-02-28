@@ -242,7 +242,7 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 	public Node createFolderBookmark(Path path, String name, Repository repository) {
 		Session session = null;
 		try {
-			session = repository.login();
+			session = repository.login(NodeConstants.HOME);
 			Node bookmarkParent = getMyBookmarksParent(session);
 			// String uriStr = NODE_PREFIX + path.toString();
 			// uriStr = uriStr.replaceAll(" ", "%20");

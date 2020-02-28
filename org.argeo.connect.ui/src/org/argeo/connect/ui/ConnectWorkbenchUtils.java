@@ -24,6 +24,7 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.node.NodeConstants;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;
@@ -582,7 +583,8 @@ public class ConnectWorkbenchUtils {
 		Session tmpSession = null;
 		Session mainSession = null;
 		try {
-			tmpSession = referenceSession.getRepository().login();
+			// FIXME would not work if home is another physical workspace
+			tmpSession = referenceSession.getRepository().login(NodeConstants.HOME);
 			Node draftNode = appService.createDraftEntity(tmpSession, mainMixin);
 			for (int i = 0; i < additionnalProps.length - 1; i += 2) {
 				draftNode.setProperty(additionnalProps[i], additionnalProps[i + 1]);
@@ -592,6 +594,7 @@ public class ConnectWorkbenchUtils {
 			// WizardDialog dialog = new WizardDialog(shell, wizard);
 			if (dialog.open() == Window.OK) {
 				String parentPath = "/" + appService.getBaseRelPath(mainMixin);
+				// FIXME it should be possible to specify the workspace
 				mainSession = referenceSession.getRepository().login();
 				Node parent = mainSession.getNode(parentPath);
 				Node task = appService.publishEntity(parent, mainMixin, draftNode);
