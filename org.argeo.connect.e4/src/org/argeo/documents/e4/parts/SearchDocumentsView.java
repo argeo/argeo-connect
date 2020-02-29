@@ -44,7 +44,6 @@ public class SearchDocumentsView {
 	private final static Log log = LogFactory.getLog(SearchDocumentsView.class);
 
 	@Inject
-	@Named("(cn=home)")
 	private Repository repository;
 
 	private Session session;

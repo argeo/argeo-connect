@@ -24,7 +24,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -50,9 +49,8 @@ import org.argeo.documents.composites.BookmarksTableViewer;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FsTableViewer;
 import org.argeo.jcr.JcrUtils;
+import org.argeo.jcr.fs.JcrPath;
 import org.argeo.node.NodeConstants;
-import org.argeo.node.NodeNames;
-import org.argeo.node.NodeTypes;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -85,7 +83,6 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 	// public final static String ID = DocumentsUiPlugin.PLUGIN_ID + ".myFilesView";
 
 	@Inject
-	@Named("(cn=home)")
 	private Repository repository;
 	@Inject
 	private SystemWorkbenchService systemWorkbenchService;
@@ -298,8 +295,11 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 		public String getText(Object element) {
 			Path curr = ((Path) element);
 			try {
-				String path = curr.toString();
-				Node currNode = homeSession.getNode(path);
+//				String path = curr.toString();
+//				Node currNode = homeSession.getNode(path);
+				// TODO do it via an attributes view
+				JcrPath jcrPath = (JcrPath) curr;
+				Node currNode = jcrPath.getNode();
 //				Node parent = currNode.getParent();
 //				if (currNode.isNodeType(NodeTypes.NODE_USER_HOME))
 //					return currNode.getName();
@@ -322,9 +322,16 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 		public Image getImage(Object element) {
 			if (element instanceof Path) {
 				Path curr = ((Path) element);
-				String path = curr.toString();
-				Node currNode = ConnectJcrUtils.getNode(homeSession, path);
-				return systemWorkbenchService.getIconForType(currNode);
+//				String path = curr.toString();
+//				Node currNode = ConnectJcrUtils.getNode(homeSession, path);
+				// TODO do it via an attributes view
+				JcrPath jcrPath = (JcrPath) curr;
+				try {
+					Node currNode = jcrPath.getNode();
+					return systemWorkbenchService.getIconForType(currNode);
+				} catch (RepositoryException e) {
+					throw new IllegalStateException(e);
+				}
 			}
 			return null;
 		}
@@ -378,9 +385,16 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 					currNode = tmpNode;
 			} else if (element instanceof Path) {
 				Path currPath = (Path) element;
-				String jcrPath = currPath.toString();
-				// TODO rather directly use the jcrPath / an URI?
-				currNode = ConnectJcrUtils.getNode(homeSession, jcrPath);
+//				String jcrPath = currPath.toString();
+//				// TODO rather directly use the jcrPath / an URI?
+//				currNode = ConnectJcrUtils.getNode(homeSession, jcrPath);
+				JcrPath jcrPath = (JcrPath) currPath;
+				try {
+					currNode = jcrPath.getNode();
+				} catch (RepositoryException e) {
+					throw new IllegalStateException(e);
+				}
+
 			} else
 				throw new IllegalArgumentException("Cannot manage " + element + ", only Node and Path are supported.");
 			// String nodeId = ConnectJcrUtils.getIdentifier(currNode);

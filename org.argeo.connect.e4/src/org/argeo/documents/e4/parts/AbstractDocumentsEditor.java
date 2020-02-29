@@ -53,8 +53,9 @@ public abstract class AbstractDocumentsEditor implements CmsEditable {
 
 	public void init() {
 		String uid = mPart.getPersistedState().get(ConnectE4Constants.ENTITY_ID);
+		String workspace = mPart.getPersistedState().get(ConnectE4Constants.WORKSPACE);
 		try {
-			session = repository.login();
+			session = repository.login(workspace);
 			node = session.getNodeByIdentifier(uid);
 			// Set a default part name and tooltip
 			updatePartName();

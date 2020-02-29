@@ -51,7 +51,6 @@ import org.eclipse.swt.widgets.Text;
 
 public class DocumentsDashboard implements IDoubleClickListener {
 	@Inject
-	@Named("(cn=home)")
 	private Repository repository;
 	@Inject
 	private SystemWorkbenchService systemWorkbenchService;

@@ -79,7 +79,8 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);
-		Path[] paths = { getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(home)) };
+		// TODO make it more robust
+		Path[] paths = { getPath(nodeFileSystemProvider, '/' + NodeConstants.HOME + ConnectJcrUtils.getPath(home)) };
 		// Insure the parent node is there.
 //		Node documents = JcrUtils.mkdirs(home, getAppBaseName(), NodeType.NT_FOLDER);
 //		ConnectJcrUtils.saveIfNecessary(documents);

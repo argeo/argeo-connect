@@ -38,7 +38,6 @@ public class CreateEntity {
 	public final static String PARAM_TARGET_NODE_TYPE = "targetNodeType";
 
 	@Inject
-	@Named("(cn=home)")
 	private Repository repository;
 	@Inject
 	private SystemAppService systemAppService;

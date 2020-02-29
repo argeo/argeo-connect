@@ -75,6 +75,7 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 		EPartService partService = eclipseContext.get(EPartService.class);
 		try {
 			String entityId = entity.getIdentifier();
+			String workspace = entity.getSession().getWorkspace().getName();
 			String entityEditorId = getEntityEditorId(entity);
 			if (entityEditorId == null)
 				throw new CmsException("No entity editor found for " + entity);
@@ -98,6 +99,7 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 			// entity.getSession().getWorkspace().getName());
 			// part.getPersistedState().put("nodePath", entity.getPath());
 			part.getPersistedState().put(ConnectE4Constants.ENTITY_ID, entityId);
+			part.getPersistedState().put(ConnectE4Constants.WORKSPACE, workspace);
 			partService.showPart(part, PartState.ACTIVATE);
 		} catch (RepositoryException e) {
 			throw new ConnectException("Cannot open " + entity, e);
