@@ -13,7 +13,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.core.OfficeRole;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -52,7 +52,7 @@ import org.eclipse.swt.widgets.Text;
 public class ConfigureTaskWizard extends Wizard {
 	// private final static Log log = LogFactory.getLog(NewIssueWizard.class);
 
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private final TrackerService trackerService;
 	private final ActivitiesService activitiesService;
 	private final AppWorkbenchService appWorkbenchService;
@@ -75,7 +75,7 @@ public class ConfigureTaskWizard extends Wizard {
 	private RelatedToList relatedToCmp;
 	private Text descTxt;
 
-	public ConfigureTaskWizard(UserAdminService userAdminService, ActivitiesService activitiesService,
+	public ConfigureTaskWizard(CmsUserManager userAdminService, ActivitiesService activitiesService,
 			TrackerService trackerService, AppWorkbenchService appWorkbenchService, Node draftEntity) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;

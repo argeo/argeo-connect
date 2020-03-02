@@ -4,7 +4,7 @@ import static org.argeo.eclipse.ui.EclipseUiUtils.notEmpty;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 
@@ -16,9 +16,9 @@ public class UserNameLP extends SimpleJcrNodeLabelProvider {
 	private static final long serialVersionUID = 1L;
 
 	private String selectorName;
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 
-	public UserNameLP(UserAdminService userAdminService, String selectorName, String propertyName) {
+	public UserNameLP(CmsUserManager userAdminService, String selectorName, String propertyName) {
 		super(propertyName);
 		if (notEmpty(selectorName))
 			this.selectorName = selectorName;

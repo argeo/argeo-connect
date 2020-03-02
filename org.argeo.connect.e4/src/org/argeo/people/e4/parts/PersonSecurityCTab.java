@@ -1,6 +1,6 @@
 package org.argeo.people.e4.parts;
 
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.eclipse.ui.Selected;
@@ -19,14 +19,14 @@ public class PersonSecurityCTab extends LazyCTabControl {
 	private static final long serialVersionUID = 4873664608113834820L;
 
 	private final ConnectEditor editor;
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 
 	private Text password1;
 	private Text password2;
 
 	private String dn;
 
-	public PersonSecurityCTab(Composite parent, int style, ConnectEditor editor, UserAdminService userAdminService,
+	public PersonSecurityCTab(Composite parent, int style, ConnectEditor editor, CmsUserManager userAdminService,
 			String dn) {
 		super(parent, style);
 		this.editor = editor;

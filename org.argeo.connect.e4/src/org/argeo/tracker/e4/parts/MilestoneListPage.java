@@ -10,13 +10,13 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.IFormPart;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectUiConstants;
@@ -64,7 +64,7 @@ import org.eclipse.swt.widgets.Text;
 
 public class MilestoneListPage extends AbstractEditorPage {
 
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private final TrackerService trackerService;
 	private final AppWorkbenchService appWorkbenchService;
 	private final Node project;
@@ -72,7 +72,7 @@ public class MilestoneListPage extends AbstractEditorPage {
 	private TableViewer tableViewer;
 	private Text filterTxt;
 
-	public MilestoneListPage(AbstractTrackerEditor editor, String id, Node project, UserAdminService userAdminService,
+	public MilestoneListPage(AbstractTrackerEditor editor, String id, Node project, CmsUserManager userAdminService,
 			TrackerService trackerService, AppWorkbenchService appWorkbenchService) {
 		super(editor, id, "Milestones");
 		this.userAdminService = userAdminService;

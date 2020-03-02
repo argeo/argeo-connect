@@ -14,10 +14,10 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.connect.SystemAppService;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectEditor;
@@ -58,7 +58,7 @@ public class RelatedActivityList extends LazyCTabControl {
 	public final static String CTAB_ID = "activityList";
 
 	// Context
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private final ResourcesService resourcesService;
 	private final ActivitiesService activitiesService;
 	private final SystemAppService systemAppService;
@@ -78,7 +78,7 @@ public class RelatedActivityList extends LazyCTabControl {
 	}
 
 	public RelatedActivityList(Composite parent, int style, ConnectEditor editor,
-			UserAdminService userAdminService, ResourcesService resourcesService, ActivitiesService activitiesService,
+			CmsUserManager userAdminService, ResourcesService resourcesService, ActivitiesService activitiesService,
 			SystemAppService systemAppService, SystemWorkbenchService systemWorkbenchService, Node entity) {
 		super(parent, style);
 		this.userAdminService = userAdminService;

@@ -10,10 +10,10 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ui.LinkListPart;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.e4.parts.AbstractConnectEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.ConnectWorkbenchUtils;
@@ -106,7 +106,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 		private static final long serialVersionUID = 6434106955847719839L;
 
 		private final ActivitiesService activityService;
-		private final UserAdminService userAdminService;
+		private final CmsUserManager userAdminService;
 		private final Node activity;
 
 		// UI Context
@@ -120,7 +120,7 @@ public class ActivityEditor extends AbstractConnectEditor {
 		private LinkListPart relatedCmp;
 
 		public ActivityHeader(FormToolkit toolkit, IManagedForm form, Composite parent, int style,
-				UserAdminService userAdminService, ActivitiesService activityService, Node activity) {
+				CmsUserManager userAdminService, ActivitiesService activityService, Node activity) {
 			super(parent, style);
 			this.userAdminService = userAdminService;
 			this.activityService = activityService;

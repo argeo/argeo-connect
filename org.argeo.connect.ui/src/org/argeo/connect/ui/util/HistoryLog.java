@@ -14,6 +14,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
@@ -22,7 +23,6 @@ import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.versioning.ItemDiff;
 import org.argeo.connect.versioning.VersionDiff;
@@ -49,7 +49,7 @@ public class HistoryLog extends LazyCTabControl {
 
 	private final IManagedForm editor;
 	private final FormToolkit toolkit;
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private final Node entity;
 	private DateFormat dateTimeFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
@@ -57,7 +57,7 @@ public class HistoryLog extends LazyCTabControl {
 	private MyFormPart myFormPart;
 
 	public HistoryLog(Composite parent, int style, FormToolkit toolkit, IManagedForm editor,
-			UserAdminService userAdminService, Node entity) {
+			CmsUserManager userAdminService, Node entity) {
 		super(parent, style);
 		this.editor = editor;
 		this.toolkit = toolkit;

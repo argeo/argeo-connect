@@ -11,7 +11,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.core.OfficeRole;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.DateText;
@@ -45,7 +45,7 @@ import org.eclipse.swt.widgets.Text;
 public class ConfigureMilestoneWizard extends Wizard {
 
 	// Context
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private final TrackerService trackerService;
 	private final Node project;
 	private final Node milestone;
@@ -67,7 +67,7 @@ public class ConfigureMilestoneWizard extends Wizard {
 	private DateText releaseDateCmp;
 	private Text descTxt;
 
-	public ConfigureMilestoneWizard(UserAdminService userAdminService, TrackerService trackerService, Node milestone) {
+	public ConfigureMilestoneWizard(CmsUserManager userAdminService, TrackerService trackerService, Node milestone) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
 		this.milestone = milestone;

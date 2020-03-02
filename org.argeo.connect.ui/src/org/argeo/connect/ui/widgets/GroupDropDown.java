@@ -7,14 +7,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.User;
 
 /** Drop down that displays the list of existing groups */
 public class GroupDropDown extends ConnectAbstractDropDown {
-	private final UserAdminService userService;
+	private final CmsUserManager userService;
 	private final String groupDn;
 
 	private Map<String, User> userMap = new TreeMap<String, User>();
@@ -24,7 +24,7 @@ public class GroupDropDown extends ConnectAbstractDropDown {
 	 * @param userAdminService
 	 * @param groupDn
 	 */
-	public GroupDropDown(Text text, UserAdminService userAdminService, String groupDn) {
+	public GroupDropDown(Text text, CmsUserManager userAdminService, String groupDn) {
 		super(text);
 		this.userService = userAdminService;
 		this.groupDn = groupDn;

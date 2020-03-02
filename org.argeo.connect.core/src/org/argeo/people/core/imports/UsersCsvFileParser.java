@@ -7,9 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.UserAdminService;
-import org.argeo.connect.core.UserAdminServiceImpl;
-import org.argeo.connect.util.ConnectUtils;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.util.CsvParserWithLinesAsMap;
 import org.osgi.service.useradmin.Role;
@@ -19,10 +17,10 @@ import org.osgi.service.useradmin.User;
 public class UsersCsvFileParser extends CsvParserWithLinesAsMap {
 	private final static Log log = LogFactory.getLog(UsersCsvFileParser.class);
 
-	private final UserAdminServiceImpl userAdminService;
+	private final CmsUserManager userAdminService;
 
-	public UsersCsvFileParser(UserAdminService userAdminService) {
-		this.userAdminService = (UserAdminServiceImpl) userAdminService;
+	public UsersCsvFileParser(CmsUserManager userAdminService) {
+		this.userAdminService = userAdminService;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -37,13 +35,11 @@ public class UsersCsvFileParser extends CsvParserWithLinesAsMap {
 
 		User existingUser = userAdminService.getUserFromLocalId(userName);
 		if (existingUser != null) {
-			log.warn("User " + userName
-					+ " already exists in the system, skipping line");
+			log.warn("User " + userName + " already exists in the system, skipping line");
 			return;
 		}
 		String dn = userAdminService.buildDefaultDN(userName, Role.USER);
-		User user = (User) userAdminService.getUserAdmin().createRole(dn,
-				Role.USER);
+		User user = (User) userAdminService.getUserAdmin().createRole(dn, Role.USER);
 
 		Dictionary props = user.getProperties();
 

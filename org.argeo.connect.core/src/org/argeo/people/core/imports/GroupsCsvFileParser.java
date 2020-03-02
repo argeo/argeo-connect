@@ -7,8 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.connect.UserAdminService;
-import org.argeo.connect.core.UserAdminServiceImpl;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.util.CsvParserWithLinesAsMap;
@@ -23,10 +22,10 @@ import org.osgi.service.useradmin.User;
 public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 	private final static Log log = LogFactory.getLog(GroupsCsvFileParser.class);
 
-	private final UserAdminServiceImpl userAdminWrapper;
+	private final CmsUserManager userAdminService;
 
-	public GroupsCsvFileParser(UserAdminService userAdminWrapper) {
-		this.userAdminWrapper = (UserAdminServiceImpl) userAdminWrapper;
+	public GroupsCsvFileParser(CmsUserManager userAdminService) {
+		this.userAdminService = userAdminService;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -37,14 +36,14 @@ public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 		String desc = line.get("description");
 		String memberStr = line.get("members");
 
-		User existingUser = userAdminWrapper.getUserFromLocalId(cn);
+		User existingUser = userAdminService.getUserFromLocalId(cn);
 		Group group = null;
 		if (existingUser != null) {
 			log.warn("Group " + cn + " already exists in the system, check if some user must yet be added");
 			group = (Group) existingUser;
 		} else {
-			String dn = userAdminWrapper.buildDefaultDN(cn, Role.GROUP);
-			group = (Group) userAdminWrapper.getUserAdmin().createRole(dn, Role.GROUP);
+			String dn = userAdminService.buildDefaultDN(cn, Role.GROUP);
+			group = (Group) userAdminService.getUserAdmin().createRole(dn, Role.GROUP);
 			Dictionary props = group.getProperties();
 			if (notEmpty(desc))
 				props.put(LdapAttrs.description.name(), desc);
@@ -52,7 +51,7 @@ public class GroupsCsvFileParser extends CsvParserWithLinesAsMap {
 
 		String[] members = ConnectJcrUtils.parseAndClean(memberStr, ",", true);
 		for (String member : members) {
-			User user = userAdminWrapper.getUserFromLocalId(member);
+			User user = userAdminService.getUserFromLocalId(member);
 			if (user != null)
 				group.addMember(user);
 			else

@@ -8,9 +8,9 @@ import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.Session;
 
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.e4.ConnectE4Constants;
 import org.argeo.connect.e4.resources.parts.TagOrUntagInstancesWizard;
 import org.argeo.connect.resources.ResourcesNames;
@@ -70,7 +70,7 @@ public abstract class AbstractSearchEntityEditor implements Refreshable {
 	@Inject
 	private ResourcesService resourcesService;
 	@Inject
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 	@Inject
 	private SystemWorkbenchService systemWorkbenchService;
 	@Inject
@@ -586,7 +586,7 @@ public abstract class AbstractSearchEntityEditor implements Refreshable {
 		return session;
 	}
 
-	protected UserAdminService getUserAdminService() {
+	protected CmsUserManager getUserAdminService() {
 		return userAdminService;
 	}
 

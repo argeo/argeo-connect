@@ -12,9 +12,9 @@ import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.UserAdminService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.naming.Distinguished;
 import org.argeo.node.NodeConstants;
@@ -25,7 +25,7 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 	private final static Log log = LogFactory.getLog(AbstractMaintenanceService.class);
 
 	private Repository repository;
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 
 	public void init() {
 		makeSureRolesExists(EnumSet.allOf(OfficeRole.class));
@@ -144,7 +144,7 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 		this.repository = repository;
 	}
 
-	public void setUserAdminService(UserAdminService userAdminService) {
+	public void setUserAdminService(CmsUserManager userAdminService) {
 		this.userAdminService = userAdminService;
 	}
 

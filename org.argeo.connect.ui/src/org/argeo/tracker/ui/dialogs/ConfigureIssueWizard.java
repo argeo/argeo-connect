@@ -12,7 +12,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.argeo.activities.ActivitiesNames;
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.core.OfficeRole;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.DateText;
@@ -49,7 +49,7 @@ import org.eclipse.swt.widgets.Text;
 public class ConfigureIssueWizard extends Wizard {
 	// private final static Log log = LogFactory.getLog(NewIssueWizard.class);
 
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private final TrackerService trackerService;
 	private final Node project;
 	private final Node issue;
@@ -73,7 +73,7 @@ public class ConfigureIssueWizard extends Wizard {
 	private TagListWithDropDownComposite componentsCmp;
 	private Text descTxt;
 
-	public ConfigureIssueWizard(UserAdminService userAdminService, TrackerService trackerService, Node issue) {
+	public ConfigureIssueWizard(CmsUserManager userAdminService, TrackerService trackerService, Node issue) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
 		this.issue = issue;

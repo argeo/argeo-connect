@@ -11,7 +11,7 @@ import javax.jcr.RepositoryException;
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.core.OfficeRole;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.DateText;
@@ -45,7 +45,7 @@ public class NewSimpleTaskWizard extends Wizard {
 	// .getLog(CreateSimpleTaskWizard.class);
 
 	// Set upon instantiation
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private final ActivitiesService activityService;
 	private final Node draftTask;
 
@@ -63,7 +63,7 @@ public class NewSimpleTaskWizard extends Wizard {
 
 	protected TableViewer itemsViewer;
 
-	public NewSimpleTaskWizard(UserAdminService userAdminService, ActivitiesService activityService, Node draftTask) {
+	public NewSimpleTaskWizard(CmsUserManager userAdminService, ActivitiesService activityService, Node draftTask) {
 		this.userAdminService = userAdminService;
 		this.activityService = activityService;
 		this.draftTask = draftTask;

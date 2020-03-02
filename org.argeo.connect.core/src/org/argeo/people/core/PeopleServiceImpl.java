@@ -20,9 +20,9 @@ import javax.jcr.query.QueryResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ConnectTypes;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -47,7 +47,7 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 
 	/* DEPENDENCY INJECTION */
 	private ResourcesService resourcesService;
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 
 	/* Centralises the various specific People services */
 	private PersonService personService;
@@ -422,7 +422,7 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 		personService = new PersonServiceImpl(this, resourcesService);
 	}
 
-	public void setUserAdminService(UserAdminService userAdminService) {
+	public void setUserAdminService(CmsUserManager userAdminService) {
 		this.userAdminService = userAdminService;
 	}
 

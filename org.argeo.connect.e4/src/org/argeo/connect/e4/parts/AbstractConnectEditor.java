@@ -17,13 +17,13 @@ import javax.jcr.security.Privilege;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IFormPart;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.SystemAppService;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.e4.ConnectE4Constants;
 import org.argeo.connect.e4.ConnectE4Msg;
 import org.argeo.connect.resources.ResourcesService;
@@ -67,7 +67,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 	@Inject
 	private Repository repository;
 	@Inject
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 	@Inject
 	private ResourcesService resourcesService;
 	@Inject
@@ -633,7 +633,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		return node;
 	}
 
-	protected UserAdminService getUserAdminService() {
+	protected CmsUserManager getUserAdminService() {
 		return userAdminService;
 	}
 
@@ -655,7 +655,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 		// this.repository = repository;
 	}
 
-	public void setUserAdminService(UserAdminService userAdminService) {
+	public void setUserAdminService(CmsUserManager userAdminService) {
 		log.trace("setUserAdminService is deprecated and ignored");
 		// this.userAdminService = userAdminService;
 	}

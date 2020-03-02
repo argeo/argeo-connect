@@ -25,9 +25,9 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.core.ActivityUtils;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.util.CmsUtils;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
@@ -56,7 +56,7 @@ public class ActivityTable extends Composite {
 	private TableViewer tableViewer;
 	private Session session;
 	private Node entity;
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 	private ResourcesService resourceService;
 	private ActivitiesService activitiesService;
 	private SystemWorkbenchService systemWorkbenchService;
@@ -69,7 +69,7 @@ public class ActivityTable extends Composite {
 	 *            the style of the table
 	 * @param session
 	 */
-	public ActivityTable(Composite parent, int style, UserAdminService userAdminService,
+	public ActivityTable(Composite parent, int style, CmsUserManager userAdminService,
 			ResourcesService resourceService, ActivitiesService activityService,
 			SystemWorkbenchService systemWorkbenchService, Node entity) {
 		super(parent, SWT.NONE);

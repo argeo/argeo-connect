@@ -15,11 +15,11 @@ import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.SystemMaintenanceService;
-import org.argeo.connect.UserAdminService;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.node.NodeConstants;
 
@@ -30,7 +30,7 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	// private String workspaceName = "main";
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 
 	private SortedMap<ServiceRanking, AppMaintenanceService> maintenanceServices = Collections
 			.synchronizedSortedMap(new TreeMap<>());
@@ -155,7 +155,7 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 	// this.workspaceName = workspaceName;
 	// }
 
-	public void setUserAdminService(UserAdminService userAdminService) {
+	public void setUserAdminService(CmsUserManager userAdminService) {
 		this.userAdminService = userAdminService;
 	}
 

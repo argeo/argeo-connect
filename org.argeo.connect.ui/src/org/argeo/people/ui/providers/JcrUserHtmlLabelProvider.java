@@ -2,7 +2,7 @@ package org.argeo.people.ui.providers;
 
 import javax.jcr.Node;
 
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.ui.util.JcrRowLabelProvider;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
@@ -18,11 +18,11 @@ import org.argeo.people.PeopleException;
 public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 	private static final long serialVersionUID = 2134911527741337612L;
 
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private String selectorName;
 	private String propertyName;
 
-	public JcrUserHtmlLabelProvider(UserAdminService userAdminService, String selectorName, String propertyName) {
+	public JcrUserHtmlLabelProvider(CmsUserManager userAdminService, String selectorName, String propertyName) {
 		super(propertyName);
 		this.propertyName = propertyName;
 		this.userAdminService = userAdminService;
@@ -30,7 +30,7 @@ public class JcrUserHtmlLabelProvider extends JcrRowLabelProvider {
 			this.selectorName = selectorName;
 	}
 
-	public JcrUserHtmlLabelProvider(UserAdminService userAdminService, String propertyName) {
+	public JcrUserHtmlLabelProvider(CmsUserManager userAdminService, String propertyName) {
 		super(propertyName);
 		this.userAdminService = userAdminService;
 	}

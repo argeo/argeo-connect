@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.service.useradmin.User;
@@ -13,7 +13,7 @@ import org.osgi.service.useradmin.User;
 /** Drop down that displays the list of existing groups */
 @Deprecated
 public class ExistingGroupsDropDown extends ConnectAbstractDropDown {
-	private final UserAdminService userService;
+	private final CmsUserManager userService;
 	private final boolean includeUsers;
 	private final boolean includeSystemRoles;
 
@@ -27,7 +27,7 @@ public class ExistingGroupsDropDown extends ConnectAbstractDropDown {
 	 * @param includeUsers
 	 * @param includeSystemRoles
 	 */
-	public ExistingGroupsDropDown(Text text, UserAdminService userAdminService, boolean includeUsers,
+	public ExistingGroupsDropDown(Text text, CmsUserManager userAdminService, boolean includeUsers,
 			boolean includeSystemRoles) {
 		super(text);
 		this.userService = userAdminService;

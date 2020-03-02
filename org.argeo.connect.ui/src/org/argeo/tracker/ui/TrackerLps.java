@@ -9,11 +9,11 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.activities.ActivitiesNames;
-import org.argeo.cms.util.UserAdminUtils;
+import org.argeo.cms.CmsUserManager;
+import org.argeo.cms.auth.UserAdminUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
@@ -29,10 +29,10 @@ public class TrackerLps {
 
 	public class DnLabelProvider extends ColumnLabelProvider {
 		private static final long serialVersionUID = -848512622910895692L;
-		private final UserAdminService userAdminService;
+		private final CmsUserManager userAdminService;
 		private final String propName;
 
-		public DnLabelProvider(UserAdminService userAdminService, String propName) {
+		public DnLabelProvider(CmsUserManager userAdminService, String propName) {
 			this.userAdminService = userAdminService;
 			this.propName = propName;
 		}

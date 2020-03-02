@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.e4.AppE4Service;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectImages;
@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.Image;
  * specific extensions
  */
 public class PeopleE4Service implements PeopleWorkbenchService, AppE4Service {
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 	private PeopleService peopleService;
 	private ResourcesService resourcesService;
 
@@ -136,7 +136,7 @@ public class PeopleE4Service implements PeopleWorkbenchService, AppE4Service {
 		return null;
 	}
 
-	public void setUserAdminService(UserAdminService userAdminService) {
+	public void setUserAdminService(CmsUserManager userAdminService) {
 		this.userAdminService = userAdminService;
 	}
 

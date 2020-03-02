@@ -3,7 +3,7 @@ package org.argeo.tracker.ui;
 import javax.jcr.Node;
 
 import org.argeo.activities.ActivitiesService;
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.ui.AppUiService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.tracker.TrackerService;
@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.Image;
  */
 public class TrackerUiService implements AppUiService {
 
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 	private TrackerService trackerService;
 	private ActivitiesService activitiesService;
 
@@ -54,7 +54,7 @@ public class TrackerUiService implements AppUiService {
 		return null;
 	}
 
-	public void setUserAdminService(UserAdminService userAdminService) {
+	public void setUserAdminService(CmsUserManager userAdminService) {
 		this.userAdminService = userAdminService;
 	}
 

@@ -29,10 +29,10 @@ import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.util.XPathUtils;
@@ -304,7 +304,7 @@ public class TrackerUtils {
 	private final static String UNKNOWN = "Unknown";
 	private final static String OTHERS = "Others";
 
-	public static Map<String, String> getOpenTasksByAssignee(UserAdminService uas, Node project, String milestoneUid,
+	public static Map<String, String> getOpenTasksByAssignee(CmsUserManager uas, Node project, String milestoneUid,
 			int maxSize) {
 		try {
 			StringBuilder builder = new StringBuilder();
@@ -527,7 +527,7 @@ public class TrackerUtils {
 		// }
 	}
 
-	public static String getCreationLabel(UserAdminService userAdminService, Node issue) {
+	public static String getCreationLabel(CmsUserManager userAdminService, Node issue) {
 		try {
 			String result = "";
 			if (issue.hasProperty(Property.JCR_CREATED_BY)) {
@@ -549,7 +549,7 @@ public class TrackerUtils {
 
 	private static DateFormat dtFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 
-	public static String getStatusText(UserAdminService userAdminService, ActivitiesService activityService,
+	public static String getStatusText(CmsUserManager userAdminService, ActivitiesService activityService,
 			Node issue) {
 		try {
 			StringBuilder builder = new StringBuilder();

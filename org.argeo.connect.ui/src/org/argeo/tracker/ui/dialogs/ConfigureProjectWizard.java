@@ -7,7 +7,7 @@ import static org.argeo.connect.util.ConnectJcrUtils.get;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.core.OfficeRole;
 import org.argeo.connect.ui.widgets.GroupDropDown;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -31,7 +31,7 @@ public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 	private static final long serialVersionUID = -8365425809976445458L;
 
 	// Context
-	final private UserAdminService userAdminService;
+	final private CmsUserManager userAdminService;
 	final private TrackerService trackerService;
 	final private Node project;
 
@@ -40,7 +40,7 @@ public class ConfigureProjectWizard extends Wizard implements ModifyListener {
 	private GroupDropDown managerDD;
 	private Text descTxt;
 
-	public ConfigureProjectWizard(UserAdminService userAdminService, TrackerService trackerService, Node project) {
+	public ConfigureProjectWizard(CmsUserManager userAdminService, TrackerService trackerService, Node project) {
 		this.userAdminService = userAdminService;
 		this.trackerService = trackerService;
 		this.project = project;

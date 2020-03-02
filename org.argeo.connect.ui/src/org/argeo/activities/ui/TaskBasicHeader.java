@@ -15,11 +15,11 @@ import javax.jcr.Session;
 import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.useradmin.PickUpUserDialog;
 import org.argeo.connect.ConnectConstants;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiUtils;
@@ -49,7 +49,7 @@ public class TaskBasicHeader extends Composite {
 	// Context
 	private final Session session;
 
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	private final ResourcesService resourceService;
 	private final ActivitiesService activityService;
 	private final SystemWorkbenchService systemWorkbenchService;
@@ -85,14 +85,14 @@ public class TaskBasicHeader extends Composite {
 	private DateFormat dtFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_TIME_FORMAT);
 	private DateFormat dateFormat = new SimpleDateFormat(ConnectConstants.DEFAULT_DATE_FORMAT);
 
-	public TaskBasicHeader(ConnectEditor editor, Composite parent, int style, UserAdminService uas,
+	public TaskBasicHeader(ConnectEditor editor, Composite parent, int style, CmsUserManager uas,
 			ResourcesService resourceService, ActivitiesService activityService,
 			SystemWorkbenchService systemWorkbenchService, String taskTypeId, Node task) {
 		this(editor, parent, style, uas, resourceService, activityService, systemWorkbenchService, taskTypeId, task,
 				null);
 	}
 
-	public TaskBasicHeader(ConnectEditor editor, Composite parent, int style, UserAdminService uas,
+	public TaskBasicHeader(ConnectEditor editor, Composite parent, int style, CmsUserManager uas,
 			ResourcesService resourceService, ActivitiesService activityService,
 			SystemWorkbenchService systemWorkbenchService, String taskTypeId, Node task, List<String> hiddenItemIds) {
 		super(parent, style);

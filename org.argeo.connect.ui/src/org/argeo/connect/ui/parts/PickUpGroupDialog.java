@@ -22,8 +22,8 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.ConnectException;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -61,7 +61,7 @@ public class PickUpGroupDialog extends TrayDialog {
 	private static final long serialVersionUID = -7137186164861036609L;
 
 	// Business objects
-	private final UserAdminService userAdminService;
+	private final CmsUserManager userAdminService;
 	// private final UserAdmin userAdmin;
 	private User selectedUser;
 
@@ -74,7 +74,7 @@ public class PickUpGroupDialog extends TrayDialog {
 	/**
 	 * A dialog to pick up a group or a user, showing a table with default columns
 	 */
-	public PickUpGroupDialog(Shell parentShell, String title, UserAdminService userAdminService) {
+	public PickUpGroupDialog(Shell parentShell, String title, CmsUserManager userAdminService) {
 		super(parentShell);
 		this.title = title;
 		this.userAdminService = userAdminService;
@@ -85,7 +85,7 @@ public class PickUpGroupDialog extends TrayDialog {
 	}
 
 	/** A dialog to pick up a group or a user */
-	public PickUpGroupDialog(Shell parentShell, String title, UserAdminService userAdminService,
+	public PickUpGroupDialog(Shell parentShell, String title, CmsUserManager userAdminService,
 			List<ColumnDefinition> columnDefs) {
 		super(parentShell);
 		this.title = title;

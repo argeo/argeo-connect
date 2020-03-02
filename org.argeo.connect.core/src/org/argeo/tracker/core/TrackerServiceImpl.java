@@ -32,7 +32,7 @@ import org.argeo.activities.ActivitiesException;
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.cms.auth.CurrentUser;
-import org.argeo.cms.util.UserAdminUtils;
+import org.argeo.cms.auth.UserAdminUtils;
 import org.argeo.connect.CmsTypes;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.core.AbstractAppService;

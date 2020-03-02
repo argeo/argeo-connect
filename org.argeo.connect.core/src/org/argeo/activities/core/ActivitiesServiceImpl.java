@@ -19,10 +19,10 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.auth.CurrentUser;
-import org.argeo.cms.util.UserAdminUtils;
+import org.argeo.cms.auth.UserAdminUtils;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.UserAdminService;
 import org.argeo.connect.core.AbstractAppService;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -36,7 +36,7 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 	private final static Log log = LogFactory.getLog(ActivitiesServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 	private ResourcesService resourcesService;
 
 	/* API METHODS */
@@ -496,7 +496,7 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 	// }
 
 	/* DEPENDENCY INJECTION */
-	public void setUserAdminService(UserAdminService userAdminService) {
+	public void setUserAdminService(CmsUserManager userAdminService) {
 		this.userAdminService = userAdminService;
 	}
 

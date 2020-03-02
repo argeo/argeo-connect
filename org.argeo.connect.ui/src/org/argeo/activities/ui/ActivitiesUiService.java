@@ -4,7 +4,7 @@ import javax.jcr.Node;
 
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
-import org.argeo.connect.UserAdminService;
+import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.ui.AppUiService;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.Image;
 /** Activities specific implementation of AppUiService */
 public class ActivitiesUiService implements AppUiService {
 
-	private UserAdminService userAdminService;
+	private CmsUserManager userAdminService;
 	private ActivitiesService activitiesService;
 
 	@Override
@@ -35,7 +35,7 @@ public class ActivitiesUiService implements AppUiService {
 		return null;
 	}
 
-	public void setUserAdminService(UserAdminService userAdminService) {
+	public void setUserAdminService(CmsUserManager userAdminService) {
 		this.userAdminService = userAdminService;
 	}
 
