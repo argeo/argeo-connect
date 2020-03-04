@@ -18,7 +18,9 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.argeo.cms.CmsException;
+import org.argeo.cms.util.CmsUtils;
 import org.argeo.cms.viewers.JcrVersionCmsEditable;
+import org.argeo.cms.widgets.ScrolledPage;
 import org.argeo.connect.ui.widgets.DocumentTextEditor;
 import org.argeo.docbook.jcr.DocBookNames;
 import org.argeo.docbook.jcr.DocBookTypes;
@@ -26,6 +28,7 @@ import org.argeo.jcr.JcrUtils;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
@@ -72,11 +75,18 @@ public class CmsDocBookEditor implements Observer {
 					e.printStackTrace();
 				}
 
+			// UX
 			cmsEditable = new JcrVersionCmsEditable(textNode);
 			if (session.hasPendingChanges())
 				session.save();
 			cmsEditable.addObserver(this);
-			DocumentTextEditor textEditor = new DocumentTextEditor(parent, SWT.NONE,
+
+			ScrolledPage page = new ScrolledPage(parent, SWT.NONE);
+			page.setLayout(CmsUtils.noSpaceGridLayout());
+			GridData textGd = CmsUtils.fillAll();
+			page.setLayoutData(textGd);
+
+			DocumentTextEditor textEditor = new DocumentTextEditor(page, SWT.NONE,
 					textNode.getNode(DocBookNames.DBK_ARTICLE), cmsEditable);
 			mpart.setDirty(isDirty());
 		} catch (RepositoryException e) {
