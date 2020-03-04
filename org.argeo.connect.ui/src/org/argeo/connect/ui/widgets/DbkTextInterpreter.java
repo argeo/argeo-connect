@@ -57,13 +57,11 @@ public class DbkTextInterpreter implements TextInterpreter {
 			if (item instanceof Node) {
 				Node node = (Node) item;
 				if (node.isNodeType(DocBookTypes.PARA)) {
-					// WORKAROUND FOR BROKEN PARARAPHS
-					// if (!node.hasProperty(CMS_CONTENT)) {
-					// node.setProperty(CMS_CONTENT, "");
-					// node.getSession().save();
-					// }
 					Node jcrText = node.getNode(DocBookNames.JCR_XMLTEXT);
-					return jcrText.getProperty(DocBookNames.JCR_XMLCHARACTERS).getString();
+					String txt = jcrText.getProperty(DocBookNames.JCR_XMLCHARACTERS).getString();
+					// TODO make it more robust
+					txt = txt.replace("\n", "").replace("\t", "");
+					return txt;
 				} else {
 					throw new CmsException("Don't know how to interpret " + node);
 				}
