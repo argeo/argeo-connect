@@ -8,7 +8,7 @@
           <children xsi:type="menu:HandledToolItem" xmi:id="_alIUoMctEeiIG7Bq51Btuw" elementId="org.argeo.cms.e4.handledtoolitem.save" label="Save" command="_vsxg8McmEeiIG7Bq51Btuw"/>
         </toolbar>
       </children>
-      <children xsi:type="basic:Part" xmi:id="_fPCGgMcCEeiIG7Bq51Btuw" elementId="org.argeo.cms.e4.part.texteditor" contributionURI="bundleclass://org.argeo.connect.e4/org.argeo.cms.e4.partsarts.CmsTextEditor" label="Text Editor">
+      <children xsi:type="basic:Part" xmi:id="_fPCGgMcCEeiIG7Bq51Btuw" elementId="org.argeo.cms.e4.part.texteditor" contributionURI="bundleclass://org.argeo.connect.e4/org.argeo.cms.e4.parts.CmsTextEditor" label="Text Editor">
         <toolbar xmi:id="_jlPucMcmEeiIG7Bq51Btuw" elementId="org.argeo.cms.e4.toolbar.0">
           <children xsi:type="menu:HandledToolItem" xmi:id="_r3TEMMcmEeiIG7Bq51Btuw" elementId="org.argeo.cms.e4.handledtoolitem.0" command="_vsxg8McmEeiIG7Bq51Btuw"/>
         </toolbar>
