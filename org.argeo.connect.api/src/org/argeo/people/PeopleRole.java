@@ -1,8 +1,8 @@
 package org.argeo.people;
 
+import org.argeo.api.NodeConstants;
 import org.argeo.naming.Distinguished;
 import org.argeo.naming.LdapAttrs;
-import org.argeo.node.NodeConstants;
 
 /** Resources specific roles used in the code */
 public enum PeopleRole implements Distinguished {

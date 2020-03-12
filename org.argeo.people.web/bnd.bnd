@@ -4,5 +4,5 @@ org.eclipse.swt,\
 org.argeo.connect,\
 org.argeo.connect.ui,\
 org.argeo.util,\
-org.argeo.node,\
+org.argeo.api,\
 *

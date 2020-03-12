@@ -25,7 +25,7 @@ import org.argeo.connect.ui.util.HtmlListRwtAdapter;
 import org.argeo.connect.ui.util.LazyCTabControl;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
-import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.eclipse.ui.util.ViewerUtils;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;
 import org.argeo.people.PeopleService;

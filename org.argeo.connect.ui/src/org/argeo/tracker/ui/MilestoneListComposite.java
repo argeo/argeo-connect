@@ -3,7 +3,7 @@ package org.argeo.tracker.ui;
 import javax.jcr.Node;
 import javax.jcr.Property;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.AppWorkbenchService;
@@ -37,7 +37,7 @@ public class MilestoneListComposite extends Composite {
 	}
 
 	public void setInput(Node[] milestones) {
-		CmsUtils.clear(this);
+		CmsUiUtils.clear(this);
 
 		for (Node currMS : milestones)
 			appendMilestoneCmp(this, currMS);

@@ -102,7 +102,7 @@ class TrackerUiUtils {
 	/** Appends a section with a title in a table wrap layout */
 	public static Section addFormSection(FormToolkit tk, Composite parent, String title) {
 		// Section section = new Section(parent, Section.TITLE_BAR);
-		// CmsUtils.style(section, "custom");
+		// CmsUiUtils.style(section, "custom");
 		// Section section = tk.createSection(parent,SWT.NONE); // SWT.NONE
 		Section section = new Section(parent, SWT.NONE);
 		section.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

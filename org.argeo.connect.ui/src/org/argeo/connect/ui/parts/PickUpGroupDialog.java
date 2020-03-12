@@ -22,6 +22,7 @@ import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.ConnectImages;
@@ -30,7 +31,6 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.parts.LdifUsersTable;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.naming.LdapObjs;
-import org.argeo.node.NodeConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.viewers.ColumnLabelProvider;

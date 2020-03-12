@@ -3,7 +3,7 @@ package org.argeo.connect.ui.parts;
 import javax.jcr.Node;
 
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.ConnectEditor;
 import org.eclipse.swt.widgets.Composite;
 
@@ -35,7 +35,7 @@ public abstract class AbstractPanelFormPart extends AbstractFormPart {
 
 		if ((isEditing == null) || isEditing != editor.isEditing()) {
 			isEditing = editor.isEditing();
-			CmsUtils.clear(parent);
+			CmsUiUtils.clear(parent);
 			reCreateChildComposite(parent, entity);
 			parent.layout();
 		} else

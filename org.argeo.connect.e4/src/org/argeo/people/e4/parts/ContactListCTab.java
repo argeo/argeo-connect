@@ -8,8 +8,8 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.widgets.ScrolledPage;
+import org.argeo.cms.ui.util.CmsUiUtils;
+import org.argeo.cms.ui.widgets.ScrolledPage;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectEditor;
@@ -113,7 +113,7 @@ public class ContactListCTab extends LazyCTabControl {
 					return;
 
 				// We redraw the full part at each refresh
-				CmsUtils.clear(innerCmp);
+				CmsUiUtils.clear(innerCmp);
 
 				boolean checkedOut = editor.isEditing();
 				GridData gd;
@@ -533,7 +533,7 @@ public class ContactListCTab extends LazyCTabControl {
 			catCmb.select(0);
 
 			final Text valueTxt = createRowDataLT(parent, PeopleMsg.linkedCompany.lead(), 200);
-			CmsUtils.style(valueTxt, ConnectUiStyles.FORCE_BORDER);
+			CmsUiUtils.style(valueTxt, ConnectUiStyles.FORCE_BORDER);
 			valueTxt.setEnabled(false);
 
 			final Link chooseOrgLk = new Link(parent, SWT.BOTTOM);

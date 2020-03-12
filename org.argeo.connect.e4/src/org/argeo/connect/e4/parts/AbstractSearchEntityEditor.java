@@ -9,7 +9,7 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 
 import org.argeo.cms.CmsUserManager;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.e4.ConnectE4Constants;
 import org.argeo.connect.e4.resources.parts.TagOrUntagInstancesWizard;
@@ -270,7 +270,7 @@ public abstract class AbstractSearchEntityEditor implements Refreshable {
 
 			populate();
 			// Add border and shadow style
-			CmsUtils.style(DropDownPopup.this, ConnectUiStyles.POPUP_SHELL);
+			CmsUiUtils.style(DropDownPopup.this, ConnectUiStyles.POPUP_SHELL);
 			pack();
 			layout();
 
@@ -421,7 +421,7 @@ public abstract class AbstractSearchEntityEditor implements Refreshable {
 
 		// add static filter abilities
 		final Link more = new Link(parent, SWT.NONE);
-		CmsUtils.markup(more);
+		CmsUiUtils.markup(more);
 		Composite staticFilterCmp = new Composite(parent, SWT.NO_FOCUS);
 		staticFilterCmp.setLayoutData(EclipseUiUtils.fillWidth(2));
 		populateStaticFilters(staticFilterCmp);

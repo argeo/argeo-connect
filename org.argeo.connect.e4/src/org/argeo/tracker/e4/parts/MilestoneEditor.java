@@ -23,7 +23,7 @@ import org.argeo.activities.ui.AssignedToLP;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectColumnDefinition;
@@ -167,7 +167,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 			// getMilestoneTitle());
 
 			Composite body = new Composite(parent, SWT.BORDER);
-			body.setLayoutData(CmsUtils.fillAll());
+			body.setLayoutData(CmsUiUtils.fillAll());
 			GridLayout layout = new GridLayout(2, false);
 			// layout.numColumns = 2;
 			body.setLayout(layout);
@@ -237,7 +237,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 					descLbl.setText(desc);
 
 					// The chart
-					CmsUtils.clear(chartCmp);
+					CmsUiUtils.clear(chartCmp);
 					GridData twd = (GridData) chartCmp.getLayoutData();
 					Map<String, String> ot = TrackerUtils.getOpenTasksByAssignee(getUserAdminService(), project,
 							milestoneUid, CHART_DATA_LIMIT);

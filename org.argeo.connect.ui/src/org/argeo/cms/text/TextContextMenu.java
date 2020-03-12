@@ -3,9 +3,9 @@ package org.argeo.cms.text;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.argeo.cms.viewers.EditablePart;
-import org.argeo.cms.viewers.SectionPart;
-import org.argeo.cms.widgets.TextStyles;
+import org.argeo.cms.ui.viewers.EditablePart;
+import org.argeo.cms.ui.viewers.SectionPart;
+import org.argeo.cms.ui.widgets.TextStyles;
 import org.argeo.connect.CmsNames;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;

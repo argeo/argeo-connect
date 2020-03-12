@@ -20,6 +20,8 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.naming.ldap.LdapName;
 
+import org.argeo.api.NodeConstants;
+import org.argeo.api.NodeUtils;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.core.AbstractAppService;
@@ -30,8 +32,6 @@ import org.argeo.documents.DocumentsNames;
 import org.argeo.documents.DocumentsService;
 import org.argeo.documents.DocumentsTypes;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeConstants;
-import org.argeo.node.NodeUtils;
 
 /** Default backend for the Documents App */
 public class DocumentsServiceImpl extends AbstractAppService implements DocumentsService {

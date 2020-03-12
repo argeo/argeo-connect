@@ -166,7 +166,7 @@ public class NewSimpleTaskWizard extends Wizard {
 			// final Text assignedToTxt = new Text(assignedToCmp, SWT.BORDER |
 			// SWT.NO_FOCUS);
 			// assignedToTxt.setMessage("Assign a group to manage this task");
-			// CmsUtils.style(assignedToTxt, ConnectUiStyles.FORCE_BORDER);
+			// CmsUiUtils.style(assignedToTxt, ConnectUiStyles.FORCE_BORDER);
 			// assignedToTxt.setLayoutData(EclipseUiUtils.fillWidth());
 			// assignedToTxt.setEnabled(false);
 			//

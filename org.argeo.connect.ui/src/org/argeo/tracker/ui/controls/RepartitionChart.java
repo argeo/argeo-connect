@@ -7,7 +7,7 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.eclipse.swt.SWT;
@@ -40,7 +40,7 @@ public class RepartitionChart extends Composite {
 	public void setInput(String title, Map<String, String> valueMap, int width, int height) {
 		Composite parent = this;
 		parent.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		CmsUtils.clear(parent);
+		CmsUiUtils.clear(parent);
 
 		StringBuilder labels = new StringBuilder();
 		StringBuilder data = new StringBuilder();

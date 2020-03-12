@@ -17,6 +17,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
+import org.argeo.api.NodeUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
@@ -26,7 +27,6 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.naming.LdapAttrs;
 import org.argeo.naming.NamingUtils;
-import org.argeo.node.NodeUtils;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleException;
 import org.argeo.people.PeopleNames;

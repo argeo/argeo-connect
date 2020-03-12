@@ -26,7 +26,7 @@ import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.core.ActivityUtils;
 import org.argeo.cms.CmsUserManager;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectWorkbenchUtils;
@@ -93,8 +93,8 @@ public class ActivityTable extends Composite {
 
 		Table table = viewer.getTable();
 		table.setLayoutData(EclipseUiUtils.fillAll());
-		CmsUtils.markup(table);
-		CmsUtils.setItemHeight(table, 54);
+		CmsUiUtils.markup(table);
+		CmsUiUtils.setItemHeight(table, 54);
 		table.setHeaderVisible(false);
 		table.setLinesVisible(true);
 

@@ -5,7 +5,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsUiProvider;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.people.ContactValueCatalogs;
 import org.argeo.people.PeopleTypes;
@@ -38,7 +38,7 @@ public class ContactButtonsPart implements CmsUiProvider {
 
 	private Button createCategoryButton(Composite parent, Node context) throws RepositoryException {
 		Button btn = new Button(parent, SWT.NONE);
-		btn.setLayoutData(CmsUtils.rowData16px());
+		btn.setLayoutData(CmsUiUtils.rowData16px());
 		btn.setData(RWT.CUSTOM_VARIANT, getCssStyle(context));
 		return btn;
 	}
@@ -94,14 +94,14 @@ public class ContactButtonsPart implements CmsUiProvider {
 	@SuppressWarnings("unused")
 	private Button createDeleteButton(Composite parent, Node context) {
 		Button btn = new Button(parent, SWT.NONE);
-		btn.setLayoutData(CmsUtils.rowData16px());
+		btn.setLayoutData(CmsUiUtils.rowData16px());
 		btn.setData(RWT.CUSTOM_VARIANT, "cms_icon_delete");
 		return btn;
 	}
 
 	private Button createPrimaryButton(Composite parent, Node context) throws RepositoryException {
 		Button btn = new Button(parent, SWT.NONE);
-		btn.setLayoutData(CmsUtils.rowData16px());
+		btn.setLayoutData(CmsUiUtils.rowData16px());
 		// update image
 		boolean isPrimary = PeopleJcrUtils.isPrimary(context.getParent().getParent(), context);
 

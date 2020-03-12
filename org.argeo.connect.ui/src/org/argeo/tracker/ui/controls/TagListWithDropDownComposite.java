@@ -6,7 +6,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Property;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.connect.ui.ConnectUiUtils;
 import org.argeo.connect.ui.widgets.ConnectAbstractDropDown;
@@ -148,7 +148,7 @@ public abstract class TagListWithDropDownComposite extends Composite {
 
 	private void addDeleteButton(Composite parent, String value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
+		CmsUiUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
 		deleteBtn.setLayoutData(new GridData(8, 8));
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;

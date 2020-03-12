@@ -8,7 +8,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectUiStyles;
@@ -161,7 +161,7 @@ public class RelatedToList extends Composite {
 
 	private void addDeleteButton(Composite parent, String value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
+		CmsUiUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
 		deleteBtn.setLayoutData(new GridData(8, 8));
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;

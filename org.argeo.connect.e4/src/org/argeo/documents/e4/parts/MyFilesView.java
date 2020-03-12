@@ -34,7 +34,8 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.api.NodeConstants;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.Refreshable;
 import org.argeo.connect.ui.SystemWorkbenchService;
@@ -50,7 +51,6 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FsTableViewer;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.fs.JcrPath;
-import org.argeo.node.NodeConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CellLabelProvider;
@@ -193,8 +193,8 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 		Table table = v.getTable();
 		table.setLinesVisible(false);
 		table.setHeaderVisible(false);
-		CmsUtils.markup(table);
-		CmsUtils.setItemHeight(table, 26);
+		CmsUiUtils.markup(table);
+		CmsUiUtils.setItemHeight(table, 26);
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(this);
@@ -246,7 +246,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 	}
 
 	private void populateBookmarks(Composite parent) {
-		CmsUtils.clear(parent);
+		CmsUiUtils.clear(parent);
 		GridLayout layout = EclipseUiUtils.noSpaceGridLayout();
 		layout.verticalSpacing = 5;
 		parent.setLayout(layout);

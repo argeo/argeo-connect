@@ -11,7 +11,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
 import org.argeo.cms.ui.CmsUiProvider;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -93,8 +93,8 @@ public class PeopleQueryPage implements CmsUiProvider {
 		Table table = v.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		CmsUtils.markup(table);
-		CmsUtils.setItemHeight(table, 23);
+		CmsUiUtils.markup(table);
+		CmsUiUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
 		ILabelProvider labelProvider = new SearchEntitiesLP(resourcesService, peopleService, table.getDisplay(),
 				iconPathes);
@@ -104,7 +104,7 @@ public class PeopleQueryPage implements CmsUiProvider {
 			public void doubleClick(DoubleClickEvent event) {
 				Object firstObj = ((IStructuredSelection) event.getSelection()).getFirstElement();
 				String path = ConnectJcrUtils.getPath((Node) firstObj);
-				CmsUtils.getCmsView().navigateTo(path);
+				CmsUiUtils.getCmsView().navigateTo(path);
 			}
 		});
 		return v;

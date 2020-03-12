@@ -15,7 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
@@ -165,7 +165,7 @@ public class TagLikeListSmallPart extends Composite {
 
 			// We redraw the full control at each refresh, might be a more
 			// efficient way to do
-			CmsUtils.clear(parentCmp);
+			CmsUiUtils.clear(parentCmp);
 			boolean isCO = editor.isEditing();
 
 			try {
@@ -183,7 +183,7 @@ public class TagLikeListSmallPart extends Composite {
 						Composite tagCmp = toolkit.createComposite(parentCmp, SWT.NO_FOCUS);
 						tagCmp.setLayout(ConnectUiUtils.noSpaceGridLayout(2));
 						Link link = new Link(tagCmp, SWT.NONE);
-						CmsUtils.markup(link);
+						CmsUiUtils.markup(link);
 
 						if (taggablePropName.equals(ResourcesNames.CONNECT_TAGS)) {
 							link.setText(" #<a>" + tagValue + "</a>");
@@ -194,7 +194,7 @@ public class TagLikeListSmallPart extends Composite {
 						} else
 							link.setText(" <a>" + tagValue + "</a>");
 
-						CmsUtils.style(link, cssStyle);
+						CmsUiUtils.style(link, cssStyle);
 
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
@@ -348,7 +348,7 @@ public class TagLikeListSmallPart extends Composite {
 
 	private void addDeleteButton(final AbstractFormPart part, Composite parent, final Value value) {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
-		CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
+		CmsUiUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
 		deleteBtn.setLayoutData(new GridData(8, 8));
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;

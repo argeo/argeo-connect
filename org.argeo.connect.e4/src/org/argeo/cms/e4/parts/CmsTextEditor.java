@@ -13,7 +13,7 @@ import javax.jcr.Session;
 
 import org.argeo.cms.CmsException;
 import org.argeo.cms.text.StandardTextEditor;
-import org.argeo.cms.viewers.JcrVersionCmsEditable;
+import org.argeo.cms.ui.viewers.JcrVersionCmsEditable;
 import org.argeo.connect.CmsTypes;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.e4.ui.di.Persist;

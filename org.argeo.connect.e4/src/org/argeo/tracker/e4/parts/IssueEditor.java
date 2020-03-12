@@ -17,7 +17,7 @@ import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.ConnectImages;
 import org.argeo.connect.ui.ConnectWorkbenchUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -358,7 +358,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 
 	// LOCAL HELPERS
 	private void populateMuliValueClickableList(Composite parent, Node[] nodes) {
-		CmsUtils.clear(parent);
+		CmsUiUtils.clear(parent);
 		GridData twd = ((GridData) parent.getLayoutData());
 		if (nodes == null || nodes.length < 1) {
 			twd.heightHint = 0;
@@ -375,7 +375,7 @@ public class IssueEditor extends AbstractTrackerEditor implements CmsEditable {
 		for (Node node : nodes) {
 			String value = ConnectJcrUtils.get(node, Property.JCR_TITLE);
 			Link link = new Link(parent, SWT.NONE);
-			CmsUtils.markup(link);
+			CmsUiUtils.markup(link);
 			link.setText(" <a>" + value + "</a>");
 
 			link.addSelectionListener(new SelectionAdapter() {

@@ -18,9 +18,9 @@ import javax.jcr.Session;
 
 import org.apache.commons.logging.Log;
 import org.argeo.cms.CmsException;
-import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.viewers.JcrVersionCmsEditable;
-import org.argeo.cms.widgets.ScrolledPage;
+import org.argeo.cms.ui.util.CmsUiUtils;
+import org.argeo.cms.ui.viewers.JcrVersionCmsEditable;
+import org.argeo.cms.ui.widgets.ScrolledPage;
 import org.argeo.connect.ui.widgets.DocumentTextEditor;
 import org.argeo.docbook.jcr.DocBookNames;
 import org.argeo.docbook.jcr.DocBookTypes;
@@ -82,8 +82,8 @@ public class CmsDocBookEditor implements Observer {
 			cmsEditable.addObserver(this);
 
 			ScrolledPage page = new ScrolledPage(parent, SWT.NONE);
-			page.setLayout(CmsUtils.noSpaceGridLayout());
-			GridData textGd = CmsUtils.fillAll();
+			page.setLayout(CmsUiUtils.noSpaceGridLayout());
+			GridData textGd = CmsUiUtils.fillAll();
 			page.setLayoutData(textGd);
 
 			DocumentTextEditor textEditor = new DocumentTextEditor(page, SWT.NONE,

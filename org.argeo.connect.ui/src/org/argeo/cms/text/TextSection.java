@@ -3,9 +3,9 @@ package org.argeo.cms.text;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.viewers.Section;
-import org.argeo.cms.widgets.TextStyles;
+import org.argeo.cms.ui.util.CmsUiUtils;
+import org.argeo.cms.ui.viewers.Section;
+import org.argeo.cms.ui.widgets.TextStyles;
 import org.argeo.connect.CmsNames;
 import org.eclipse.swt.widgets.Composite;
 
@@ -27,7 +27,7 @@ public class TextSection extends Section implements CmsNames {
 	private TextSection(Composite parent, Section parentSection, int style,
 			Node node) throws RepositoryException {
 		super(parent, parentSection, style, node);
-		CmsUtils.style(this, TextStyles.TEXT_SECTION);
+		CmsUiUtils.style(this, TextStyles.TEXT_SECTION);
 	}
 
 	public String getDefaultTextStyle() {

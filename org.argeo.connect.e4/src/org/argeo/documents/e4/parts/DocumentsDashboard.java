@@ -15,7 +15,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.ui.util.BasicNodeListContentProvider;
@@ -144,8 +144,8 @@ public class DocumentsDashboard implements IDoubleClickListener {
 		Table table = v.getTable();
 		table.setLinesVisible(false);
 		table.setHeaderVisible(false);
-		CmsUtils.markup(table);
-		CmsUtils.setItemHeight(table, 26);
+		CmsUiUtils.markup(table);
+		CmsUiUtils.setItemHeight(table, 26);
 
 		v.setContentProvider(new BasicNodeListContentProvider());
 		v.addDoubleClickListener(this);

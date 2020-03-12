@@ -19,7 +19,7 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.ConnectImages;
@@ -172,7 +172,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 
 			// layout.numColumns = 5;
 			body.setLayout(layout);
-			body.setLayoutData(CmsUtils.fillWidth());
+			body.setLayoutData(CmsUiUtils.fillWidth());
 			// new Label(body, SWT.BORDER).setText("TEST PARENT");
 			//// if(true)
 			// return;
@@ -222,7 +222,7 @@ public class ProjectEditor extends AbstractTrackerEditor {
 					descLbl.setText(desc);
 
 					// The chart
-					CmsUtils.clear(chartCmp);
+					CmsUiUtils.clear(chartCmp);
 					GridData twd = (GridData) chartCmp.getLayoutData();
 					Map<String, String> ot = TrackerUtils.getOpenTasksByAssignee(getUserAdminService(), project, null,
 							CHART_DATA_LIMIT);

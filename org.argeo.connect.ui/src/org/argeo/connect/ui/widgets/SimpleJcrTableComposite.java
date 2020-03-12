@@ -22,7 +22,7 @@ import org.argeo.eclipse.ui.jcr.lists.JcrColumnDefinition;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
-import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.eclipse.ui.util.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;

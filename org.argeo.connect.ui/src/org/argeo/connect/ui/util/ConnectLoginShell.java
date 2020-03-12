@@ -2,8 +2,8 @@ package org.argeo.connect.ui.util;
 
 import javax.jcr.Node;
 
-import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.widgets.auth.CmsLoginShell;
+import org.argeo.cms.ui.util.CmsUiUtils;
+import org.argeo.cms.ui.widgets.auth.CmsLoginShell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
@@ -18,7 +18,7 @@ public class ConnectLoginShell extends CmsLoginShell {
 	private final Node context;
 
 	public ConnectLoginShell(Control source, Node context) {
-		super(CmsUtils.getCmsView());
+		super(CmsUiUtils.getCmsView());
 		this.context = context;
 		createUi();
 		open();

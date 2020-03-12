@@ -10,6 +10,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.ui.dialogs.CmsWizardDialog;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
@@ -18,7 +19,6 @@ import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeConstants;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Execute;

@@ -6,7 +6,7 @@ import java.io.InputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.tracker.TrackerException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -34,7 +34,7 @@ public class CategoryOverviewChart extends Composite {
 
 	public void setInput(String title, int closedNb, int totalNb) {
 		Composite parent = this;
-		CmsUtils.clear(parent);
+		CmsUiUtils.clear(parent);
 
 		final String jscData = "{labels: ['" + title + "'], datasets: ["
 				+ "{ label: 'Open', backgroundColor: \"rgb(141,192,66) \", data: [" + closedNb + "], },"

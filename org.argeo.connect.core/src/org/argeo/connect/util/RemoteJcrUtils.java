@@ -20,9 +20,9 @@ import javax.jcr.nodetype.NodeType;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.api.NodeUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeUtils;
 
 /** Centralize convenience methods to manage a remote JCR repository */
 public class RemoteJcrUtils {

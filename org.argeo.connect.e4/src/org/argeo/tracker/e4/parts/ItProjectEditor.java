@@ -16,7 +16,7 @@ import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IFormPart;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
@@ -190,7 +190,7 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 					descLbl.setText(desc);
 
 					// The chart
-					CmsUtils.clear(chartCmp);
+					CmsUiUtils.clear(chartCmp);
 					GridData twd = (GridData) chartCmp.getLayoutData();
 					Map<String, String> ot = TrackerUtils.getOpenTasksByAssignee(getUserAdminService(), project, null,
 							CHART_DATA_LIMIT);
@@ -584,8 +584,8 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 
 			if (canEdit()) {
 				Table table = tableViewer.getTable();
-				CmsUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
-				CmsUtils.markup(table);
+				CmsUiUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
+				CmsUiUtils.markup(table);
 				table.addSelectionListener(new EditionRwtAdapter(part));
 			}
 			refreshViewer(null);
@@ -719,8 +719,8 @@ public class ItProjectEditor extends AbstractTrackerEditor {
 
 			if (canEdit()) {
 				Table table = tableViewer.getTable();
-				CmsUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
-				CmsUtils.markup(table);
+				CmsUiUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
+				CmsUiUtils.markup(table);
 				table.addSelectionListener(new EditionRwtAdapter(part));
 			}
 			refreshViewer(null);

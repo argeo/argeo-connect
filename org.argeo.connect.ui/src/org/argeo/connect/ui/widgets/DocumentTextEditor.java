@@ -8,7 +8,7 @@ import javax.jcr.RepositoryException;
 
 import org.argeo.cms.text.TextSection;
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.docbook.jcr.DocBookNames;
 import org.argeo.docbook.jcr.DocBookTypes;
 import org.eclipse.swt.widgets.Composite;
@@ -21,7 +21,7 @@ public class DocumentTextEditor extends AbstractDbkViewer {
 			throws RepositoryException {
 		super(new TextSection(parent, style, textNode), style, cmsEditable);
 		refresh();
-		getMainSection().setLayoutData(CmsUtils.fillWidth());
+		getMainSection().setLayoutData(CmsUiUtils.fillWidth());
 	}
 
 	@Override

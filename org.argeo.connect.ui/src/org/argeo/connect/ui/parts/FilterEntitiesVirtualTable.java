@@ -10,7 +10,7 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.ui.AppWorkbenchService;
@@ -21,7 +21,7 @@ import org.argeo.connect.ui.widgets.DelayedText;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
-import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.eclipse.ui.util.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -109,8 +109,8 @@ public class FilterEntitiesVirtualTable extends Composite {
 		Table table = entityViewer.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		CmsUtils.markup(table);
-		CmsUtils.setItemHeight(table, 26);
+		CmsUiUtils.markup(table);
+		CmsUiUtils.setItemHeight(table, 26);
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();
 		TableViewerColumn column;
 

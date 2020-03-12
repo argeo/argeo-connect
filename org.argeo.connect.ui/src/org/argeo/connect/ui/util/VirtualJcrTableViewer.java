@@ -3,10 +3,10 @@ package org.argeo.connect.ui.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
-import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.eclipse.ui.util.ViewerUtils;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
@@ -87,7 +87,7 @@ public class VirtualJcrTableViewer extends Composite {
 		Table table = new Table(parent, swtStyle);
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		CmsUtils.markup(table);
+		CmsUiUtils.markup(table);
 
 		TableViewerColumn column;
 		TableColumnLayout tableColumnLayout = new TableColumnLayout();

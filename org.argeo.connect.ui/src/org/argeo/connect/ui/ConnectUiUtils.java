@@ -3,7 +3,7 @@ package org.argeo.connect.ui;
 import javax.jcr.Node;
 
 import org.argeo.cms.Localized;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 //import org.argeo.connect.workbench.AppWorkbenchService;
@@ -138,7 +138,7 @@ public class ConnectUiUtils {
 	 */
 	public static Button createDeleteButton(Composite parent) {
 		Button button = new Button(parent, SWT.FLAT | SWT.PUSH);
-		CmsUtils.style(button, ConnectUiStyles.SMALL_DELETE_BTN);
+		CmsUiUtils.style(button, ConnectUiStyles.SMALL_DELETE_BTN);
 		RowData rd = new RowData();
 		rd.height = 8;
 		rd.width = 8;
@@ -199,8 +199,8 @@ public class ConnectUiUtils {
 	public static void setTableDefaultStyle(Table table, int customItemHeight) {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		CmsUtils.setItemHeight(table, customItemHeight);
-		CmsUtils.markup(table);
+		CmsUiUtils.setItemHeight(table, customItemHeight);
+		CmsUiUtils.markup(table);
 	}
 
 	public static void setTableDefaultStyle(TableViewer viewer, int customItemHeight) {

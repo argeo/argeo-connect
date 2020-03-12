@@ -9,11 +9,11 @@ import javax.jcr.security.Privilege;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.api.NodeConstants;
 import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.SystemMaintenanceService;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeConstants;
 
 /** Make the DJay-ing to provide a full running Suite platform */
 public class DefaultSystemMaintenanceService implements SystemMaintenanceService {

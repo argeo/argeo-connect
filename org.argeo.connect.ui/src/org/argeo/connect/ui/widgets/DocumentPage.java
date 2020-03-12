@@ -9,10 +9,10 @@ import javax.jcr.nodetype.NodeType;
 import org.argeo.cms.text.TextEditorHeader;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.CmsUiProvider;
-import org.argeo.cms.util.CmsLink;
-import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.viewers.JcrVersionCmsEditable;
-import org.argeo.cms.widgets.ScrolledPage;
+import org.argeo.cms.ui.util.CmsLink;
+import org.argeo.cms.ui.util.CmsUiUtils;
+import org.argeo.cms.ui.viewers.JcrVersionCmsEditable;
+import org.argeo.cms.ui.widgets.ScrolledPage;
 import org.argeo.connect.CmsNames;
 import org.argeo.docbook.jcr.DocBookTypes;
 import org.argeo.jcr.JcrUtils;
@@ -29,11 +29,11 @@ public class DocumentPage implements CmsUiProvider {
 	public Control createUi(Composite parent, Node context) throws RepositoryException {
 		CmsEditable cmsEditable = new JcrVersionCmsEditable(context);
 		if (cmsEditable.canEdit())
-			new TextEditorHeader(cmsEditable, parent, SWT.NONE).setLayoutData(CmsUtils.fillWidth());
+			new TextEditorHeader(cmsEditable, parent, SWT.NONE).setLayoutData(CmsUiUtils.fillWidth());
 
 		ScrolledPage page = new ScrolledPage(parent, SWT.NONE);
-		page.setLayout(CmsUtils.noSpaceGridLayout());
-		GridData textGd = CmsUtils.fillAll();
+		page.setLayout(CmsUiUtils.noSpaceGridLayout());
+		GridData textGd = CmsUiUtils.fillAll();
 		page.setLayoutData(textGd);
 
 		if (context.isNodeType(DocBookTypes.ARTICLE)) {

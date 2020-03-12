@@ -1,8 +1,8 @@
 package org.argeo.connect.core;
 
+import org.argeo.api.NodeConstants;
 import org.argeo.naming.Distinguished;
 import org.argeo.naming.LdapAttrs;
-import org.argeo.node.NodeConstants;
 
 /** Office specific roles used in the code */
 public enum OfficeRole implements Distinguished {

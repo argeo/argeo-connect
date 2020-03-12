@@ -8,5 +8,5 @@ cms.datamodel; name=documents; cnd=/org/argeo/documents/documents.cnd; abstract=
 cms.datamodel; name=tracker; cnd=/org/argeo/tracker/tracker.cnd; abstract=true,\
 cms.datamodel; name=docbook; cnd=/org/argeo/docbook/jcr/docbook.cnd; abstract=true
 
-Import-Package: org.argeo.node,\
+Import-Package: org.argeo.api,\
 *

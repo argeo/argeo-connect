@@ -3,11 +3,11 @@ package org.argeo.cms.text;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.viewers.Section;
-import org.argeo.cms.viewers.SectionPart;
-import org.argeo.cms.widgets.EditableText;
-import org.argeo.cms.widgets.TextStyles;
+import org.argeo.cms.ui.util.CmsUiUtils;
+import org.argeo.cms.ui.viewers.Section;
+import org.argeo.cms.ui.viewers.SectionPart;
+import org.argeo.cms.ui.widgets.EditableText;
+import org.argeo.cms.ui.widgets.TextStyles;
 
 public class Paragraph extends EditableText implements SectionPart {
 	private static final long serialVersionUID = 3746457776229542887L;
@@ -18,7 +18,7 @@ public class Paragraph extends EditableText implements SectionPart {
 			throws RepositoryException {
 		super(section, style, node);
 		this.section = section;
-		CmsUtils.style(this, TextStyles.TEXT_PARAGRAPH);
+		CmsUiUtils.style(this, TextStyles.TEXT_PARAGRAPH);
 	}
 
 	public Section getSection() {

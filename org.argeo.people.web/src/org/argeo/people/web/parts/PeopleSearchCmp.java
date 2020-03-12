@@ -15,7 +15,7 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 import javax.jcr.query.qom.Selector;
 import javax.jcr.query.qom.StaticOperand;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -98,8 +98,8 @@ public class PeopleSearchCmp extends Composite {
 		Table table = v.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		CmsUtils.markup(table);
-		CmsUtils.setItemHeight(table, 23);
+		CmsUiUtils.markup(table);
+		CmsUiUtils.setItemHeight(table, 23);
 		v.setContentProvider(new BasicContentProvider());
 		ILabelProvider labelProvider = new SearchEntitiesLP(resourceService, peopleService, table.getDisplay(),
 				iconPaths);

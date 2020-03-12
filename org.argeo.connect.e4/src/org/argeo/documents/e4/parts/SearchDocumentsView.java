@@ -16,7 +16,7 @@ import javax.jcr.query.RowIterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.documents.DocumentsService;
@@ -55,13 +55,13 @@ public class SearchDocumentsView {
 		parent.setLayout(new GridLayout());
 
 		Text searchTxt = new Text(parent, SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL);
-		searchTxt.setLayoutData(CmsUtils.fillWidth());
+		searchTxt.setLayoutData(CmsUiUtils.fillWidth());
 
 		TableViewer viewer = new TableViewer(parent);
 		viewer.getTable().setData(RWT.MARKUP_ENABLED, Boolean.TRUE);
 		viewer.getTable().setData(RWT.TOOLTIP_MARKUP_ENABLED, Boolean.TRUE);
 		EclipseUiSpecificUtils.enableToolTipSupport(viewer);
-		viewer.getTable().setLayoutData(CmsUtils.fillAll());
+		viewer.getTable().setLayoutData(CmsUiUtils.fillAll());
 		viewer.setContentProvider(new ArrayContentProvider());
 		TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
 		column.getColumn().setWidth(400);
@@ -104,7 +104,7 @@ public class SearchDocumentsView {
 		});
 
 		Browser browser = new Browser(parent, SWT.NONE);
-		GridData gd = CmsUtils.fillWidth();
+		GridData gd = CmsUiUtils.fillWidth();
 		gd.heightHint = 200;
 		browser.setLayoutData(gd);
 

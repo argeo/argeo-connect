@@ -9,7 +9,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectUiStyles;
@@ -139,13 +139,13 @@ public class LinkListPart extends Composite {
 
 		Link relatedLk = new Link(part, SWT.LEFT);
 		relatedLk.setText("<a>" + label + "</a>");
-		CmsUtils.style(relatedLk, ConnectUiStyles.ENTITY_HEADER);
+		CmsUiUtils.style(relatedLk, ConnectUiStyles.ENTITY_HEADER);
 		relatedLk.addSelectionListener(new OpenEditorAdapter(value));
 
 		if (isEditing) {
 			// Display delete button only in edit mode.
 			Button deleteBtn = new Button(part, SWT.FLAT);
-			CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
+			CmsUiUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
 			GridData gd = new GridData(8, 8);
 			gd.horizontalIndent = 2;
 			deleteBtn.setLayoutData(gd);

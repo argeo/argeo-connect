@@ -14,12 +14,13 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectNames;
@@ -29,7 +30,6 @@ import org.argeo.connect.versioning.VersionDiff;
 import org.argeo.connect.versioning.VersionUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.PropertyDiff;
-import org.argeo.node.NodeConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -78,7 +78,7 @@ public class HistoryLog extends LazyCTabControl {
 		// Add info to be able to find the node via the data explorer
 		if (CurrentUser.isInRole(NodeConstants.ROLE_DATA_ADMIN) || CurrentUser.isInRole(NodeConstants.ROLE_ADMIN)) {
 			Label label = new Label(parent, SWT.WRAP);
-			CmsUtils.markup(label);
+			CmsUiUtils.markup(label);
 			GridData gd = EclipseUiUtils.fillWidth();
 			gd.verticalIndent = 3;
 			gd.horizontalIndent = 5;

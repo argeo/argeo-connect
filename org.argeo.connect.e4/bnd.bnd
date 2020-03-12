@@ -1,10 +1,9 @@
 Import-Package: org.eclipse.swt,\
 javax.jcr.nodetype,\
 org.argeo.docbook.jcr,\
-org.argeo.cms.i18n,\
 org.eclipse.jface.window,\
 org.argeo.eclipse.ui.dialogs,\
-org.argeo.node,\
+org.argeo.api,\
 org.eclipse.core.commands.common,\
 org.eclipse.core.runtime.jobs,\
 org.eclipse.e4.ui.services,\

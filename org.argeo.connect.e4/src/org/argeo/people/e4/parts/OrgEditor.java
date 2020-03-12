@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ui.RelatedActivityList;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.e4.ConnectE4Msg;
 import org.argeo.connect.resources.ResourcesNames;
@@ -135,7 +135,7 @@ public class OrgEditor extends AbstractPeopleWithImgEditor {
 
 			// Add a label with info provided by the OrgOverviewLabelProvider
 			final Label orgInfoROLbl = getFormToolkit().createLabel(roPanelCmp, "", SWT.WRAP);
-			CmsUtils.markup(orgInfoROLbl);
+			CmsUiUtils.markup(orgInfoROLbl);
 			final ColumnLabelProvider orgLP = new OrgOverviewLabelProvider(false, getResourcesService(),
 					getPeopleService(), getSystemWorkbenchService());
 

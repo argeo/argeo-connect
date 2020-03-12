@@ -12,6 +12,7 @@ import javax.jcr.query.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.api.NodeUtils;
 import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
@@ -22,7 +23,6 @@ import org.argeo.connect.util.RemoteJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeUtils;
 
 public abstract class AbstractAppService implements AppService {
 	private final static Log log = LogFactory.getLog(AbstractAppService.class);

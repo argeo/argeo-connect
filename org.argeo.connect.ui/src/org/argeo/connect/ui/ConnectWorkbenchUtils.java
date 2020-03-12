@@ -9,6 +9,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.dialogs.CmsWizardDialog;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
@@ -24,7 +25,6 @@ import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.NodeViewerComparator;
 import org.argeo.eclipse.ui.jcr.lists.RowViewerComparator;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeConstants;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.Wizard;

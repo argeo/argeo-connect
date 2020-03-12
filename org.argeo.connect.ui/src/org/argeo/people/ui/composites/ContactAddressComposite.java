@@ -125,7 +125,7 @@ public class ContactAddressComposite extends Composite implements PeopleNames {
 					refUid);
 
 			Link readOnlyInfoLk = new Link(readOnlyPanel, SWT.WRAP);
-			// CmsUtils.markup(readOnlyInfoLk);
+			// CmsUiUtils.markup(readOnlyInfoLk);
 			StringBuilder builder = new StringBuilder();
 			// the referenced org
 			if (referencedEntity != null) {

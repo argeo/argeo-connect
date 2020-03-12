@@ -12,12 +12,12 @@ import javax.security.auth.login.LoginContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.naming.Distinguished;
-import org.argeo.node.NodeConstants;
 import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
 

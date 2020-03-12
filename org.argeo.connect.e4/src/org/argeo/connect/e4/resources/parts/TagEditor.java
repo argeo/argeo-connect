@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ConnectTypes;
@@ -172,7 +172,7 @@ public class TagEditor implements Refreshable, IJcrTableViewer {
 	protected void populateHeader(final Composite parent) {
 		parent.setLayout(new GridLayout(2, false));
 		titleROLbl = toolkit.createLabel(parent, "", SWT.WRAP);
-		CmsUtils.markup(titleROLbl);
+		CmsUiUtils.markup(titleROLbl);
 		groupTitleLP = new TagLabelProvider(resourcesService, ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE);
 		titleROLbl.setText(groupTitleLP.getText(getNode()));
 		titleROLbl.setLayoutData(EclipseUiUtils.fillWidth());

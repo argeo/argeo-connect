@@ -33,11 +33,11 @@ import javax.jcr.version.VersionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.argeo.api.NodeConstants;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeConstants;
 
 /**
  * Utility methods to ease interaction with a JCR repository while implementing.

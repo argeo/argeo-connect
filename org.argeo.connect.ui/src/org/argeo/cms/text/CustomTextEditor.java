@@ -1,12 +1,12 @@
 package org.argeo.cms.text;
 
-import static org.argeo.cms.util.CmsUtils.fillWidth;
+import static org.argeo.cms.ui.util.CmsUiUtils.fillWidth;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.cms.viewers.Section;
+import org.argeo.cms.ui.viewers.Section;
 import org.eclipse.swt.widgets.Composite;
 
 /**

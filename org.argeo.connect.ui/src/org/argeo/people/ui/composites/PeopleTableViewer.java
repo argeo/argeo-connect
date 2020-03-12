@@ -5,7 +5,7 @@ import java.util.List;
 import org.argeo.connect.ui.ConnectColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.specific.EclipseUiSpecificUtils;
-import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.eclipse.ui.util.ViewerUtils;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;

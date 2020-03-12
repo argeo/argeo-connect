@@ -10,12 +10,13 @@ import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.auth.CurrentUser;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.IFormPart;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.ConnectImages;
@@ -28,7 +29,6 @@ import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
 import org.argeo.jcr.JcrUtils;
-import org.argeo.node.NodeConstants;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
@@ -154,8 +154,8 @@ public class MilestoneListPage extends AbstractEditorPage {
 
 		if (canEdit()) {
 			Table table = tableViewer.getTable();
-			CmsUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
-			CmsUtils.markup(table);
+			CmsUiUtils.setItemHeight(table, TrackerUiConstants.DEFAULT_ROW_HEIGHT);
+			CmsUiUtils.markup(table);
 			table.addSelectionListener(new EditionRwtAdapter(part));
 		}
 		refreshViewer(null);

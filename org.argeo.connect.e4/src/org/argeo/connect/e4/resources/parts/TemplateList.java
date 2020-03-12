@@ -23,7 +23,7 @@ import org.argeo.connect.ui.util.JcrViewerDClickListener;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
-import org.argeo.eclipse.ui.utils.ViewerUtils;
+import org.argeo.eclipse.ui.util.ViewerUtils;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.jface.layout.TableColumnLayout;

@@ -26,7 +26,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectUiConstants;
 import org.argeo.connect.ui.ConnectUiStyles;
@@ -245,7 +245,7 @@ public class EditJobDialog extends TrayDialog {
 		// Display chosen org or person
 		selectedItemTxt = createLT(dialogarea, chosenItemLbl);
 		selectedItemTxt.setEnabled(false);
-		CmsUtils.style(selectedItemTxt, ConnectUiStyles.FORCE_BORDER);
+		CmsUiUtils.style(selectedItemTxt, ConnectUiStyles.FORCE_BORDER);
 
 		if (isBackward) {
 			if (oldReferencing != null)

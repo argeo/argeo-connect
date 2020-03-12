@@ -10,7 +10,7 @@ import javax.jcr.RepositoryException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.documents.DocumentsException;
@@ -66,7 +66,7 @@ public class DocumentsFileComposite extends Composite {
 		browser.setLayoutData(EclipseUiUtils.fillAll());
 		try {
 			// FIXME make it more robust
-			String url = CmsUtils.getDataUrl(currentBaseContext, RWT.getRequest());
+			String url = CmsUiUtils.getDataUrl(currentBaseContext, RWT.getRequest());
 			// FIXME issue with the redirection to https
 			if (url.startsWith("http://") && !url.startsWith("http://localhost"))
 				url = "https://" + url.substring("http://".length(), url.length());
@@ -122,6 +122,6 @@ public class DocumentsFileComposite extends Composite {
 	private void addProperty(Composite parent, String propName, String value) {
 		Label propLbl = new Label(parent, SWT.NONE);
 		propLbl.setText(ConnectUtils.replaceAmpersand(propName + ": " + value));
-		CmsUtils.markup(propLbl);
+		CmsUiUtils.markup(propLbl);
 	}
 }

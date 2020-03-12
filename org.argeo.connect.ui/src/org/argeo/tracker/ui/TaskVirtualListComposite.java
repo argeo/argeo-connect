@@ -1,6 +1,6 @@
 package org.argeo.tracker.ui;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.util.JcrViewerDClickListener;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -48,8 +48,8 @@ public class TaskVirtualListComposite extends Composite {
 		Table table = v.getTable();
 		table.setLinesVisible(true);
 		table.setHeaderVisible(false);
-		CmsUtils.markup(table);
-		CmsUtils.setItemHeight(table, rowHeight);
+		CmsUiUtils.markup(table);
+		CmsUiUtils.setItemHeight(table, rowHeight);
 
 		v.setContentProvider(new ILazyContentProvider() {
 

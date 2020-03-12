@@ -1,7 +1,7 @@
 package org.argeo.cms.text;
 
 import static javax.jcr.Property.JCR_TITLE;
-import static org.argeo.cms.util.CmsUtils.fillWidth;
+import static org.argeo.cms.ui.util.CmsUiUtils.fillWidth;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,17 +21,17 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.CmsException;
 import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.CmsImageManager;
-import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.viewers.AbstractPageViewer;
-import org.argeo.cms.viewers.EditablePart;
-import org.argeo.cms.viewers.NodePart;
-import org.argeo.cms.viewers.PropertyPart;
-import org.argeo.cms.viewers.Section;
-import org.argeo.cms.viewers.SectionPart;
-import org.argeo.cms.widgets.EditableImage;
-import org.argeo.cms.widgets.EditableText;
-import org.argeo.cms.widgets.Img;
-import org.argeo.cms.widgets.StyledControl;
+import org.argeo.cms.ui.util.CmsUiUtils;
+import org.argeo.cms.ui.viewers.AbstractPageViewer;
+import org.argeo.cms.ui.viewers.EditablePart;
+import org.argeo.cms.ui.viewers.NodePart;
+import org.argeo.cms.ui.viewers.PropertyPart;
+import org.argeo.cms.ui.viewers.Section;
+import org.argeo.cms.ui.viewers.SectionPart;
+import org.argeo.cms.ui.widgets.EditableImage;
+import org.argeo.cms.ui.widgets.EditableText;
+import org.argeo.cms.ui.widgets.Img;
+import org.argeo.cms.ui.widgets.StyledControl;
 import org.argeo.connect.CmsNames;
 import org.argeo.connect.CmsTypes;
 import org.argeo.jcr.JcrUtils;
@@ -60,7 +60,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 	private final Section mainSection;
 
 	private TextInterpreter textInterpreter = new TextInterpreterImpl();
-	private CmsImageManager imageManager = CmsUtils.getCmsView()
+	private CmsImageManager imageManager = CmsUiUtils.getCmsView()
 			.getImageManager();
 
 	private FileUploadListener fileUploadListener;
@@ -92,7 +92,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 			return;
 		Section section = (Section) control;
 		if (section instanceof TextSection) {
-			CmsUtils.clear(section);
+			CmsUiUtils.clear(section);
 			Node node = section.getNode();
 			TextSection textSection = (TextSection) section;
 			if (node.hasProperty(Property.JCR_TITLE)) {
@@ -100,7 +100,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 					section.createHeader();
 				if (node.hasProperty(Property.JCR_TITLE)) {
 					SectionTitle title = newSectionTitle(textSection, node);
-					title.setLayoutData(CmsUtils.fillWidth());
+					title.setLayoutData(CmsUiUtils.fillWidth());
 					updateContent(title);
 				}
 			}
@@ -120,7 +120,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 					// TODO list node types in exception
 				}
 				if (sectionPart instanceof Control)
-					((Control) sectionPart).setLayoutData(CmsUtils.fillWidth());
+					((Control) sectionPart).setLayoutData(CmsUiUtils.fillWidth());
 			}
 
 			if (!flat)
@@ -130,7 +130,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 					if (child.isNodeType(CmsTypes.CMS_SECTION)) {
 						TextSection newSection = new TextSection(section,
 								SWT.NONE, child);
-						newSection.setLayoutData(CmsUtils.fillWidth());
+						newSection.setLayoutData(CmsUiUtils.fillWidth());
 						refresh(newSection);
 					}
 				}
@@ -163,17 +163,17 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 
 			@Override
 			protected void setContainerLayoutData(Composite composite) {
-				composite.setLayoutData(CmsUtils.grabWidth(SWT.CENTER,
+				composite.setLayoutData(CmsUiUtils.grabWidth(SWT.CENTER,
 						SWT.DEFAULT));
 			}
 
 			@Override
 			protected void setControlLayoutData(Control control) {
-				control.setLayoutData(CmsUtils.grabWidth(SWT.CENTER,
+				control.setLayoutData(CmsUiUtils.grabWidth(SWT.CENTER,
 						SWT.DEFAULT));
 			}
 		};
-		img.setLayoutData(CmsUtils.grabWidth(SWT.CENTER, SWT.DEFAULT));
+		img.setLayoutData(CmsUiUtils.grabWidth(SWT.CENTER, SWT.DEFAULT));
 		updateContent(img);
 		img.setMouseListener(getMouseListener());
 		return img;
@@ -564,7 +564,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 
 				TextSection newSection = new TextSection(section,
 						section.getStyle(), newSectionNode);
-				newSection.setLayoutData(CmsUtils.fillWidth());
+				newSection.setLayoutData(CmsUiUtils.fillWidth());
 				newSection.moveBelow(paragraph);
 
 				// dispose
@@ -686,7 +686,7 @@ public abstract class AbstractTextViewer extends AbstractPageViewer implements
 		Section section = paragraph.getSection();
 		updateContent(paragraph);
 		Paragraph newParagraph = newParagraph((TextSection) section, newNode);
-		newParagraph.setLayoutData(CmsUtils.fillWidth());
+		newParagraph.setLayoutData(CmsUiUtils.fillWidth());
 		newParagraph.moveBelow(paragraph);
 		layout(paragraph.getControl(), newParagraph.getControl());
 		return newParagraph;

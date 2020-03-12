@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ui.RelatedActivityList;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.e4.ConnectE4Msg;
 import org.argeo.connect.resources.ResourcesNames;
@@ -163,7 +163,7 @@ public class PersonEditor extends AbstractPeopleWithImgEditor implements PeopleN
 
 		// Add a label with info provided by the PersonOverviewLabelProvider
 		final Label readOnlyInfoLbl = getFormToolkit().createLabel(readOnlyPanel, "", SWT.WRAP);
-		CmsUtils.markup(readOnlyInfoLbl);
+		CmsUiUtils.markup(readOnlyInfoLbl);
 		final ColumnLabelProvider personLP = new PersonOverviewLabelProvider(
 				ConnectUiConstants.LIST_TYPE_OVERVIEW_TITLE, getResourcesService(), getPeopleService(),
 				getSystemWorkbenchService());

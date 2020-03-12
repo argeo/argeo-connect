@@ -3,7 +3,7 @@ package org.argeo.connect.ui.widgets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ui.ConnectUiStyles;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -44,7 +44,7 @@ public abstract class AbstractConnectContextMenu {
 		shell.setLayout(EclipseUiUtils.noSpaceGridLayout());
 		Composite boxCmp = new Composite(shell, SWT.NO_FOCUS | SWT.BORDER);
 		boxCmp.setLayout(EclipseUiUtils.noSpaceGridLayout());
-		CmsUtils.style(boxCmp, ConnectUiStyles.CONTEXT_MENU_BOX);
+		CmsUiUtils.style(boxCmp, ConnectUiStyles.CONTEXT_MENU_BOX);
 		createContextMenu(boxCmp);
 		shell.addShellListener(new ActionsShellListener());
 	}
@@ -55,8 +55,8 @@ public abstract class AbstractConnectContextMenu {
 			Button btn = new Button(boxCmp, SWT.FLAT | SWT.LEAD);
 			btn.setText(getLabel(actionId));
 			btn.setLayoutData(EclipseUiUtils.fillWidth());
-			CmsUtils.markup(btn);
-			CmsUtils.style(btn, actionId + ConnectUiStyles.BUTTON_SUFFIX);
+			CmsUiUtils.markup(btn);
+			CmsUiUtils.style(btn, actionId + ConnectUiStyles.BUTTON_SUFFIX);
 			btn.setData(KEY_ACTION_ID, actionId);
 			btn.addSelectionListener(asl);
 			actionButtons.put(actionId, btn);

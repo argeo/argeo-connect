@@ -9,7 +9,7 @@ import javax.jcr.Value;
 
 import org.apache.commons.io.IOUtils;
 import org.argeo.cms.ui.CmsUiProvider;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectNames;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
@@ -121,7 +121,7 @@ public class OrganizationPage implements CmsUiProvider {
 				new Label(parent, SWT.NONE).setText(valueStr);
 
 				Button icon = new Button(parent, SWT.NONE);
-				icon.setLayoutData(CmsUtils.rowData16px());
+				icon.setLayoutData(CmsUiUtils.rowData16px());
 				icon.setData(RWT.CUSTOM_VARIANT, "cms_icon_delete");
 				icon.addSelectionListener(new SelectionAdapter() {
 					private static final long serialVersionUID = 1L;

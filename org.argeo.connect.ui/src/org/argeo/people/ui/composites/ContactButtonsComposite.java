@@ -4,7 +4,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.ui.ConnectEditor;
 import org.argeo.connect.ui.ConnectImages;
@@ -87,7 +87,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private void createCategoryButton(Composite parent) {
 		Label btn = new Label(parent, SWT.NONE);
-		// CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
+		// CmsUiUtils.style(btn, ConnectUiStyles.FLAT_BTN);
 
 		btn.setImage(systemWorkbenchService.getIconForType(contactNode));
 		GridData gd = new GridData();
@@ -99,7 +99,7 @@ public class ContactButtonsComposite extends Composite {
 
 	private Button createDeleteButton(Composite parent) {
 		Button btn = new Button(parent, SWT.FLAT | SWT.CENTER);
-		CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
+		CmsUiUtils.style(btn, ConnectUiStyles.FLAT_BTN);
 		btn.setImage(ConnectImages.DELETE);
 		GridData gd = new GridData();
 		gd.widthHint = 20;
@@ -115,7 +115,7 @@ public class ContactButtonsComposite extends Composite {
 					&& contactNode.getProperty(PeopleNames.PEOPLE_IS_PRIMARY).getBoolean());
 			if (isEditing) {
 				Button btn = new Button(parent, SWT.FLAT | SWT.CENTER);
-				// CmsUtils.style(btn, ConnectUiStyles.FLAT_BTN);
+				// CmsUiUtils.style(btn, ConnectUiStyles.FLAT_BTN);
 
 				btn.setImage(isPrimary ? ConnectImages.PRIMARY : ConnectImages.PRIMARY_NOT);
 				// btn.setEnabled(isEditing);

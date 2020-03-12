@@ -13,7 +13,7 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
@@ -113,7 +113,7 @@ public class CommentListFormPart extends Composite {
 			public void refresh() {
 				if (commentsCmp.isDisposed())
 					return;
-				CmsUtils.clear(commentsCmp);
+				CmsUiUtils.clear(commentsCmp);
 
 				List<Node> comments = getComments();
 				for (Node comment : comments)

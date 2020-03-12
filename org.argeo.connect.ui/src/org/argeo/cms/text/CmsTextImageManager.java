@@ -6,7 +6,7 @@ import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.argeo.cms.util.DefaultImageManager;
+import org.argeo.cms.ui.util.DefaultImageManager;
 import org.argeo.connect.CmsNames;
 import org.argeo.connect.CmsTypes;
 import org.eclipse.swt.graphics.ImageData;

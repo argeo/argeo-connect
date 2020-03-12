@@ -48,7 +48,7 @@ public interface ConnectUiConstants {
 	// we cannot use the CSS class parameter inside of a custom variant control.
 	String ENTITY_HEADER_INNER_CSS_STYLE = "style='font-size:14px;'";
 
-	// CENTRALISE dependency to RWT. TODO manage this cleanly in CmsUtils
+	// CENTRALISE dependency to RWT. TODO manage this cleanly in CmsUiUtils
 	//int MARKUP_VIEWER_HYPERLINK = RWT.HYPERLINK;
 	int MARKUP_VIEWER_HYPERLINK = 1 << 26;
 }

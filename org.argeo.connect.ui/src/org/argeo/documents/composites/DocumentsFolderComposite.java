@@ -19,7 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.fs.FileDrop;
 import org.argeo.cms.ui.fs.FsStyles;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.documents.DocumentsException;
@@ -227,7 +227,7 @@ public class DocumentsFolderComposite extends Composite {
 			nameStr = path.getFileName().toString();
 //		elemBtn.setText(nameStr + " >> ");
 		elemBtn.setText(nameStr);
-		CmsUtils.style(elemBtn, FsStyles.BREAD_CRUMB_BTN);
+		CmsUiUtils.style(elemBtn, FsStyles.BREAD_CRUMB_BTN);
 		elemBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = -4103695476023480651L;
 
@@ -254,7 +254,7 @@ public class DocumentsFolderComposite extends Composite {
 
 		// Bread crumbs
 		breadCrumbCmp = new Composite(filterCmp, SWT.NO_FOCUS);
-		CmsUtils.style(breadCrumbCmp, FsStyles.BREAD_CRUMB_BTN);
+		CmsUiUtils.style(breadCrumbCmp, FsStyles.BREAD_CRUMB_BTN);
 		RowLayout breadCrumbLayout = new RowLayout();
 		breadCrumbLayout.spacing = 0;
 		breadCrumbLayout.marginTop = 0;
@@ -454,7 +454,7 @@ public class DocumentsFolderComposite extends Composite {
 	private void addProperty(Composite parent, String propName, String value) {
 		Label propLbl = new Label(parent, SWT.NONE);
 		propLbl.setText(ConnectUtils.replaceAmpersand(propName + ": " + value));
-		CmsUtils.markup(propLbl);
+		CmsUiUtils.markup(propLbl);
 	}
 
 	public Path getCurrentFolder() {

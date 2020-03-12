@@ -4,8 +4,8 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.argeo.cms.ui.CmsEditable;
-import org.argeo.cms.util.CmsUtils;
-import org.argeo.cms.widgets.TextStyles;
+import org.argeo.cms.ui.util.CmsUiUtils;
+import org.argeo.cms.ui.widgets.TextStyles;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -40,11 +40,11 @@ public class TextEditorHeader implements SelectionListener, Observer {
 			display = new Composite(parent, SWT.NONE);
 			// display.setBackgroundMode(SWT.INHERIT_NONE);
 			display.setLayoutData(layoutData);
-			display.setLayout(CmsUtils.noSpaceGridLayout());
-			CmsUtils.style(display, TextStyles.TEXT_EDITOR_HEADER);
+			display.setLayout(CmsUiUtils.noSpaceGridLayout());
+			CmsUiUtils.style(display, TextStyles.TEXT_EDITOR_HEADER);
 			publish = new Button(display, SWT.FLAT | SWT.PUSH);
 			publish.setText(getPublishButtonLabel());
-			CmsUtils.style(publish, TextStyles.TEXT_EDITOR_HEADER);
+			CmsUiUtils.style(publish, TextStyles.TEXT_EDITOR_HEADER);
 			publish.addSelectionListener(this);
 			display.moveAbove(null);
 		}

@@ -14,7 +14,7 @@ import javax.jcr.version.VersionManager;
 import org.argeo.cms.ui.dialogs.CmsMessageDialog;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
-import org.argeo.cms.util.CmsUtils;
+import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.resources.ResourcesNames;
 import org.argeo.connect.resources.ResourcesService;
@@ -171,8 +171,8 @@ public class TagLikeListPart extends Composite {
 						Link link = new Link(tagCmp, SWT.NONE);
 						// link.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
 
-						CmsUtils.markup(link);
-						CmsUtils.style(link, ConnectUiStyles.ENTITY_HEADER);
+						CmsUiUtils.markup(link);
+						CmsUiUtils.style(link, ConnectUiStyles.ENTITY_HEADER);
 						link.setText(getLinkText(taggablePropName, tagValue));
 						link.addSelectionListener(new SelectionAdapter() {
 							private static final long serialVersionUID = 1L;
@@ -270,7 +270,7 @@ public class TagLikeListPart extends Composite {
 		final Button deleteBtn = new Button(parent, SWT.FLAT);
 		deleteBtn.setImage(ConnectImages.DELETE_SMALL);
 		// deleteBtn.setText("-");
-		// CmsUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
+		// CmsUiUtils.style(deleteBtn, ConnectUiStyles.SMALL_DELETE_BTN);
 		// deleteBtn.setLayoutData(new GridData(24, 24));
 		deleteBtn.addSelectionListener(new SelectionAdapter() {
 			private static final long serialVersionUID = 1L;
