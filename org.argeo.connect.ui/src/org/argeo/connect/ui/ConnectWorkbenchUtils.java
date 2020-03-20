@@ -584,7 +584,7 @@ public class ConnectWorkbenchUtils {
 		Session mainSession = null;
 		try {
 			// FIXME would not work if home is another physical workspace
-			tmpSession = referenceSession.getRepository().login(NodeConstants.HOME);
+			tmpSession = referenceSession.getRepository().login(NodeConstants.HOME_WORKSPACE);
 			Node draftNode = appService.createDraftEntity(tmpSession, mainMixin);
 			for (int i = 0; i < additionnalProps.length - 1; i += 2) {
 				draftNode.setProperty(additionnalProps[i], additionnalProps[i + 1]);

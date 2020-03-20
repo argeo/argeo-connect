@@ -80,7 +80,7 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);
 		// TODO make it more robust
-		Path[] paths = { getPath(nodeFileSystemProvider, '/' + NodeConstants.HOME + ConnectJcrUtils.getPath(home)) };
+		Path[] paths = { getPath(nodeFileSystemProvider, '/' + NodeConstants.HOME_WORKSPACE + ConnectJcrUtils.getPath(home)) };
 		// Insure the parent node is there.
 //		Node documents = JcrUtils.mkdirs(home, getAppBaseName(), NodeType.NT_FOLDER);
 //		ConnectJcrUtils.saveIfNecessary(documents);
@@ -243,7 +243,7 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 	public Node createFolderBookmark(Path path, String name, Repository repository) {
 		Session session = null;
 		try {
-			session = repository.login(NodeConstants.HOME);
+			session = repository.login(NodeConstants.HOME_WORKSPACE);
 			Node bookmarkParent = getMyBookmarksParent(session);
 			// String uriStr = NODE_PREFIX + path.toString();
 			// uriStr = uriStr.replaceAll(" ", "%20");

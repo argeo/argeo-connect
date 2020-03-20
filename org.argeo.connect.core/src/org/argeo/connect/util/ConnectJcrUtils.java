@@ -641,7 +641,7 @@ public class ConnectJcrUtils {
 	public static boolean isHome(Node node) {
 		try {
 			String workspaceName = node.getSession().getWorkspace().getName();
-			return (workspaceName.equals(NodeConstants.HOME) || workspaceName.equals(NodeConstants.SRV))
+			return (workspaceName.equals(NodeConstants.HOME_WORKSPACE) || workspaceName.equals(NodeConstants.SRV_WORKSPACE))
 					&& node.hasProperty(Property.JCR_ID);
 		} catch (RepositoryException re) {
 			throw new ConnectException("Unable to test that " + node + " is home ", re);

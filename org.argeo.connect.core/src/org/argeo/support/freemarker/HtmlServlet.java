@@ -64,7 +64,7 @@ public class HtmlServlet extends HttpServlet {
 			public Repository addingService(ServiceReference<Repository> reference) {
 				String cn = reference.getProperty(NodeConstants.CN).toString();
 				Repository repo = super.addingService(reference);
-				if (NodeConstants.NODE.equals(cn))
+				if (NodeConstants.EGO_REPOSITORY.equals(cn))
 					repository = repo;
 				return repo;
 			}

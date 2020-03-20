@@ -100,8 +100,8 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 
 	@PostConstruct
 	public void createPartControl(Composite parent) {
-		homeSession = ConnectJcrUtils.login(repository, NodeConstants.HOME);
-		groupSession = ConnectJcrUtils.login(repository, NodeConstants.SRV);
+		homeSession = ConnectJcrUtils.login(repository, NodeConstants.HOME_WORKSPACE);
+		groupSession = ConnectJcrUtils.login(repository, NodeConstants.SRV_WORKSPACE);
 		// MainLayout
 		parent.setLayout(new GridLayout());
 //		addFilterPanel(parent);

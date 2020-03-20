@@ -61,7 +61,7 @@ public class CreateEntity {
 		String jcrId = null;
 
 		try {
-			draftSession = repository.login(NodeConstants.HOME);
+			draftSession = repository.login(NodeConstants.HOME_WORKSPACE);
 
 			Node tmpNode = systemAppService.createDraftEntity(draftSession, nodeType);
 			Wizard wizard = systemWorkbenchService.getCreationWizard(tmpNode);

@@ -396,7 +396,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 
 	}
 
-	/* PUBLIC ABILITIES AND EXPOSED OBJECTS */
+	/* PUBLIC_WORKSPACE ABILITIES AND EXPOSED OBJECTS */
 	/** Enables definition of a new "main" node for this editor */
 	public void setNode(Node node) {
 		this.node = node;
