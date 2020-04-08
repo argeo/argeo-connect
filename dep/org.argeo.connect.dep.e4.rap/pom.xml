@@ -11,6 +11,14 @@
 	<artifactId>org.argeo.connect.dep.e4.rap</artifactId>
 	<name>Connect Platform Eclipse 4</name>
 	<dependencies>
+		<!-- Base Argeo platform distribution -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.dep.node</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+			<type>pom</type>
+		</dependency>
+
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.theme.argeo2</artifactId>
@@ -20,16 +28,6 @@
 		<!-- UIs -->
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.api</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
-			<artifactId>org.argeo.connect.core</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.ui</artifactId>
 			<version>2.1.82-SNAPSHOT</version>
 		</dependency>
@@ -37,148 +35,6 @@
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.e4</artifactId>
 			<version>2.1.82-SNAPSHOT</version>
-		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.connect</groupId> -->
-		<!-- <artifactId>org.argeo.people.web</artifactId> -->
-		<!-- <version>2.1.79-SNAPSHOT</version> -->
-		<!-- </dependency> -->
-
-		<!-- Additional third parties -->
-		<dependency>
-			<groupId>org.argeo.tp.javax</groupId>
-			<artifactId>javax.activation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.javax</groupId>
-			<artifactId>javax.xml.bind</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache.commons</groupId>
-			<artifactId>org.apache.commons.lang3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache.commons</groupId>
-			<artifactId>org.apache.commons.collections4</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.misc</groupId>
-			<artifactId>net.sf.jxl</artifactId>
-		</dependency>
-
-		<!-- HTML -->
-		<!-- Freemarker -->
-		<dependency>
-			<groupId>org.argeo.tp.misc</groupId>
-			<artifactId>org.freemarker</artifactId>
-		</dependency>
-
-		<!-- Flexmark -->
-		<dependency>
-			<groupId>org.argeo.tp.misc</groupId>
-			<artifactId>com.vladsch.flexmark</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.misc</groupId>
-			<artifactId>com.vladsch.flexmark.util</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.misc</groupId>
-			<artifactId>com.vladsch.flexmark.formatter</artifactId>
-		</dependency>
-
-
-		<!-- PDFBox -->
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.pdfbox</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.pdfbox.fontbox</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.pdfbox.jempbox</artifactId>
-		</dependency>
-		<!-- Batik (required by POI) -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.tp.misc</groupId> -->
-		<!-- <artifactId>org.w3c.dom.svg</artifactId> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.tp.apache</groupId> -->
-		<!-- <artifactId>org.apache.xmlgraphics.commons</artifactId> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.tp.apache</groupId> -->
-		<!-- <artifactId>org.apache.batik.constants</artifactId> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.tp.apache</groupId> -->
-		<!-- <artifactId>org.apache.batik.i18n</artifactId> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.tp.apache</groupId> -->
-		<!-- <artifactId>org.apache.batik.util</artifactId> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.tp.apache</groupId> -->
-		<!-- <artifactId>org.apache.batik.css</artifactId> -->
-		<!-- </dependency> -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.argeo.tp.apache</groupId> -->
-		<!-- <artifactId>org.apache.batik.anim</artifactId> -->
-		<!-- </dependency> -->
-		<!-- POI (MS office documents) -->
-		<dependency>
-			<groupId>org.argeo.tp.apache.commons</groupId>
-			<artifactId>org.apache.commons.math3</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.xml.security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.xmlbeans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.xalan</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.xalan.serializer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.xml.resolver</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.xerces</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.poi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.poi.ooxml</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.poi.ooxml.schemas</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.argeo.tp.apache</groupId>
-			<artifactId>org.apache.poi.scratchpad</artifactId>
-		</dependency>
-		<!-- Mail -->
-		<dependency>
-			<groupId>org.argeo.tp.javax</groupId>
-			<artifactId>javax.mail</artifactId>
 		</dependency>
 
 		<!-- Base Argeo platform distribution -->

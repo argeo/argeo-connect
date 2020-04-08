@@ -8,4 +8,5 @@ org.eclipse.core.commands.common,\
 org.eclipse.core.runtime.jobs,\
 org.eclipse.e4.ui.services,\
 org.eclipse.e4.ui.model.application,\
+org.eclipse.nebula.widgets.richtext;resolution:=optional,\
 *

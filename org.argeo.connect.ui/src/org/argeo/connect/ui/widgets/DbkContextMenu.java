@@ -22,81 +22,87 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /** Dialog to edit a text part. */
-class DbkContextMenu extends Shell implements CmsNames, TextStyles {
-	private final static String[] DEFAULT_TEXT_STYLES = {
-			TextStyles.TEXT_DEFAULT, TextStyles.TEXT_PRE, TextStyles.TEXT_QUOTE };
+class DbkContextMenu implements CmsNames, TextStyles {
+	private final static String[] DEFAULT_TEXT_STYLES = { TextStyles.TEXT_DEFAULT, TextStyles.TEXT_PRE,
+			TextStyles.TEXT_QUOTE };
 
 	private final AbstractDbkViewer textViewer;
 
-	private static final long serialVersionUID = -3826246895162050331L;
 	private List<StyleButton> styleButtons = new ArrayList<DbkContextMenu.StyleButton>();
 
 	private Label deleteButton, publishButton, editButton;
 
 	private EditablePart currentTextPart;
 
+	private Shell shell;
+
 	public DbkContextMenu(AbstractDbkViewer textViewer, Display display) {
-		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
+		shell = new Shell(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
+//		super(display, SWT.NO_TRIM | SWT.BORDER | SWT.ON_TOP);
 		this.textViewer = textViewer;
-		setLayout(new GridLayout());
-		setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_TOOLS_DIALOG);
+		shell.setLayout(new GridLayout());
+		shell.setData(RWT.CUSTOM_VARIANT, TEXT_STYLED_TOOLS_DIALOG);
 
 		StyledToolMouseListener stml = new StyledToolMouseListener();
 		if (textViewer.getCmsEditable().isEditing()) {
 			for (String style : DEFAULT_TEXT_STYLES) {
-				StyleButton styleButton = new StyleButton(this, SWT.WRAP);
-				styleButton.setData(RWT.CUSTOM_VARIANT, style);
-				styleButton.setData(RWT.MARKUP_ENABLED, true);
-				styleButton.addMouseListener(stml);
+				StyleButton styleButton = new StyleButton(shell, SWT.WRAP);
+				styleButton.getLabel().setData(RWT.CUSTOM_VARIANT, style);
+				styleButton.getLabel().setData(RWT.MARKUP_ENABLED, true);
+				styleButton.getLabel().addMouseListener(stml);
 				styleButtons.add(styleButton);
 			}
 
 			// Delete
-			deleteButton = new Label(this, SWT.NONE);
+			deleteButton = new Label(shell, SWT.NONE);
 			deleteButton.setText("Delete");
 			deleteButton.addMouseListener(stml);
 
 			// Publish
-			publishButton = new Label(this, SWT.NONE);
+			publishButton = new Label(shell, SWT.NONE);
 			publishButton.setText("Publish");
 			publishButton.addMouseListener(stml);
 		} else if (textViewer.getCmsEditable().canEdit()) {
 			// Edit
-			editButton = new Label(this, SWT.NONE);
+			editButton = new Label(shell, SWT.NONE);
 			editButton.setText("Edit");
 			editButton.addMouseListener(stml);
 		}
-		addShellListener(new ToolsShellListener());
+		shell.addShellListener(new ToolsShellListener());
 	}
 
 	public void show(EditablePart source, Point location) {
-		if (isVisible())
-			setVisible(false);
+		if (shell.isVisible())
+			shell.setVisible(false);
 
 		this.currentTextPart = source;
 
 		if (currentTextPart instanceof Paragraph) {
 			final int size = 32;
-			String text = textViewer
-					.getRawParagraphText((Paragraph) currentTextPart);
-			String textToShow = text.length() > size ? text.substring(0,
-					size - 3) + "..." : text;
+			String text = textViewer.getRawParagraphText((Paragraph) currentTextPart);
+			String textToShow = text.length() > size ? text.substring(0, size - 3) + "..." : text;
 			for (StyleButton styleButton : styleButtons) {
-				styleButton.setText(textToShow);
+				styleButton.getLabel().setText(textToShow);
 			}
 		}
-		pack();
-		layout();
+		shell.pack();
+		shell.layout();
 		if (source instanceof Control)
-			setLocation(((Control) source).toDisplay(location.x, location.y));
-		open();
+			shell.setLocation(((Control) source).toDisplay(location.x, location.y));
+		shell.open();
 	}
 
-	class StyleButton extends Label {
+	class StyleButton extends Composite {
 		private static final long serialVersionUID = 7731102609123946115L;
+		private Label label;
 
 		public StyleButton(Composite parent, int swtStyle) {
-			super(parent, swtStyle);
+			super(parent, SWT.NONE);
+			label = new Label(this, swtStyle);
+		}
+
+		public Label getLabel() {
+			return label;
 		}
 
 	}
@@ -110,8 +116,7 @@ class DbkContextMenu extends Shell implements CmsNames, TextStyles {
 			if (eventSource instanceof StyleButton) {
 				StyleButton sb = (StyleButton) e.getSource();
 				String style = sb.getData(RWT.CUSTOM_VARIANT).toString();
-				textViewer
-						.setParagraphStyle((Paragraph) currentTextPart, style);
+				textViewer.setParagraphStyle((Paragraph) currentTextPart, style);
 			} else if (eventSource == deleteButton) {
 				textViewer.deletePart((SectionPart) currentTextPart);
 			} else if (eventSource == editButton) {
@@ -119,7 +124,7 @@ class DbkContextMenu extends Shell implements CmsNames, TextStyles {
 			} else if (eventSource == publishButton) {
 				textViewer.getCmsEditable().stopEditing();
 			}
-			setVisible(false);
+			shell.setVisible(false);
 		}
 	}
 
@@ -128,7 +133,7 @@ class DbkContextMenu extends Shell implements CmsNames, TextStyles {
 
 		@Override
 		public void shellDeactivated(ShellEvent e) {
-			setVisible(false);
+			shell.setVisible(false);
 		}
 
 	}

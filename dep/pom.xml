@@ -13,6 +13,7 @@
 	<name>Connect Dependencies</name>
 	<packaging>pom</packaging>
 	<modules>
+		<module>org.argeo.connect.dep.node</module>
 		<module>org.argeo.connect.dep.e4.rap</module>
 		<!-- <module>org.argeo.connect.dep.e4.rcp</module> -->
 	</modules>

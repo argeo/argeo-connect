@@ -39,6 +39,7 @@
 			<groupId>org.argeo.commons</groupId>
 			<artifactId>org.argeo.eclipse.ui.rap</artifactId>
 			<version>${version.argeo-commons}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Eclipse E4 -->
