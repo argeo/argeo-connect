@@ -36,7 +36,7 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 	private final static Log log = LogFactory.getLog(ActivitiesServiceImpl.class);
 
 	/* DEPENDENCY INJECTION */
-	private CmsUserManager userAdminService;
+	private CmsUserManager cmsUserManager;
 	private ResourcesService resourcesService;
 
 	/* API METHODS */
@@ -255,7 +255,7 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 	 */
 	@Override
 	public NodeIterator getTasksForUser(Session session, String username, boolean onlyOpenTasks) {
-		return getTasksForGroup(session, userAdminService.getUserRoles(username), onlyOpenTasks);
+		return getTasksForGroup(session, cmsUserManager.getUserRoles(username), onlyOpenTasks);
 	}
 
 	public NodeIterator getTasksForGroup(Session session, String[] roles, boolean onlyOpenTasks) {
@@ -382,7 +382,7 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 		try {
 			if (taskNode.hasProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO)) {
 				String groupId = taskNode.getProperty(ActivitiesNames.ACTIVITIES_ASSIGNED_TO).getString();
-				return userAdminService.getUserDisplayName(groupId);
+				return cmsUserManager.getUserDisplayName(groupId);
 			}
 			return "";
 		} catch (RepositoryException e) {
@@ -496,8 +496,8 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 	// }
 
 	/* DEPENDENCY INJECTION */
-	public void setUserAdminService(CmsUserManager userAdminService) {
-		this.userAdminService = userAdminService;
+	public void setCmsUserManager(CmsUserManager cmsUserManager) {
+		this.cmsUserManager = cmsUserManager;
 	}
 
 	public void setResourcesService(ResourcesService resourcesService) {

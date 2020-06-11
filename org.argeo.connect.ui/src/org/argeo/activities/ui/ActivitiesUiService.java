@@ -13,14 +13,13 @@ import org.eclipse.swt.graphics.Image;
 
 /** Activities specific implementation of AppUiService */
 public class ActivitiesUiService implements AppUiService {
-
-	private CmsUserManager userAdminService;
+	private CmsUserManager cmsUserManager;
 	private ActivitiesService activitiesService;
 
 	@Override
 	public Wizard getCreationWizard(Node node) {
 		if (ConnectJcrUtils.isNodeType(node, ActivitiesTypes.ACTIVITIES_TASK))
-			return new NewSimpleTaskWizard(userAdminService, activitiesService, node);
+			return new NewSimpleTaskWizard(cmsUserManager, activitiesService, node);
 		return null;
 	}
 
@@ -35,8 +34,8 @@ public class ActivitiesUiService implements AppUiService {
 		return null;
 	}
 
-	public void setUserAdminService(CmsUserManager userAdminService) {
-		this.userAdminService = userAdminService;
+	public void setCmsUserManager(CmsUserManager cmsUserManager) {
+		this.cmsUserManager = cmsUserManager;
 	}
 
 	public void setActivitiesService(ActivitiesService activitiesService) {

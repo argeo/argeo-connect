@@ -16,7 +16,6 @@ import javax.security.auth.login.LoginContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.api.NodeConstants;
-import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.AppMaintenanceService;
 import org.argeo.connect.ConnectException;
 import org.argeo.connect.ServiceRanking;
@@ -30,7 +29,7 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 	/* DEPENDENCY INJECTION */
 	private Repository repository;
 	// private String workspaceName = "main";
-	private CmsUserManager userAdminService;
+//	private CmsUserManager cmsUserManager;
 
 	private SortedMap<ServiceRanking, AppMaintenanceService> maintenanceServices = Collections
 			.synchronizedSortedMap(new TreeMap<>());
@@ -155,9 +154,16 @@ public class DynamicSystemMaintenanceService implements SystemMaintenanceService
 	// this.workspaceName = workspaceName;
 	// }
 
-	public void setUserAdminService(CmsUserManager userAdminService) {
-		this.userAdminService = userAdminService;
-	}
+//	@Deprecated
+//	public void setUserAdminService(CmsUserManager cmsUserManager) {
+//		this.cmsUserManager = cmsUserManager;
+//		if (log.isDebugEnabled())
+//			log.warn("setUserAdminService is deprecated, use setCmsUserManager instead");
+//	}
+//
+//	public void setCmsUserManager(CmsUserManager cmsUserManager) {
+//		this.cmsUserManager = cmsUserManager;
+//	}
 
 	public void addAppService(AppMaintenanceService appService, Map<String, Object> properties) {
 		maintenanceServices.put(new ServiceRanking(properties), appService);

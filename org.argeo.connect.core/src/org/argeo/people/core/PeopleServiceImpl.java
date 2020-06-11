@@ -47,7 +47,7 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 
 	/* DEPENDENCY INJECTION */
 	private ResourcesService resourcesService;
-	private CmsUserManager userAdminService;
+	private CmsUserManager cmsUserManager;
 
 	/* Centralises the various specific People services */
 	private PersonService personService;
@@ -108,10 +108,10 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 			createdNode.addMixin(PeopleTypes.PEOPLE_USER);
 		} else if (createdNode.hasProperty(PeopleNames.PEOPLE_PRIMARY_EMAIL)) {
 			String email = JcrUtils.get(createdNode, PEOPLE_PRIMARY_EMAIL);
-			String dn = userAdminService.buildDefaultDN(email, Role.USER);
-			User user = userAdminService.getUser(dn);
+			String dn = cmsUserManager.buildDefaultDN(email, Role.USER);
+			User user = cmsUserManager.getUser(dn);
 			if (user == null)
-				user = userAdminService.createUserFromPerson(createdNode);
+				user = cmsUserManager.createUserFromPerson(createdNode);
 			createdNode.addMixin(PeopleTypes.PEOPLE_USER);
 			createdNode.setProperty(PeopleNames.PEOPLE_USERNAME, dn);
 		}
@@ -422,8 +422,8 @@ public class PeopleServiceImpl extends AbstractAppService implements PeopleServi
 		personService = new PersonServiceImpl(this, resourcesService);
 	}
 
-	public void setUserAdminService(CmsUserManager userAdminService) {
-		this.userAdminService = userAdminService;
+	public void setCmsUserManager(CmsUserManager cmsUserManager) {
+		this.cmsUserManager = cmsUserManager;
 	}
 
 }

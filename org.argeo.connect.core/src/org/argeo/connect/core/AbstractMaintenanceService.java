@@ -21,11 +21,12 @@ import org.argeo.naming.Distinguished;
 import org.osgi.service.useradmin.Group;
 import org.osgi.service.useradmin.Role;
 
+/** base class for the app maintenance services. */
 public abstract class AbstractMaintenanceService implements AppMaintenanceService {
 	private final static Log log = LogFactory.getLog(AbstractMaintenanceService.class);
 
 	private Repository repository;
-	private CmsUserManager userAdminService;
+	private CmsUserManager cmsUserManager;
 
 	public void init() {
 		makeSureRolesExists(EnumSet.allOf(OfficeRole.class));
@@ -81,24 +82,25 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 		makeSureRolesExists(enumToDns(enumSet));
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void makeSureRolesExists(List<String> requiredRoles) {
 		if (requiredRoles == null)
 			return;
-		if (userAdminService == null) {
+		if (cmsUserManager == null) {
 			log.warn("No user admin service available, cannot make sure that role exists");
 			return;
 		}
 		for (String role : requiredRoles) {
-			Role systemRole = userAdminService.getUserAdmin().getRole(role);
+			Role systemRole = cmsUserManager.getUserAdmin().getRole(role);
 			if (systemRole == null) {
 				try {
-					userAdminService.getUserTransaction().begin();
-					userAdminService.getUserAdmin().createRole(role, Role.GROUP);
-					userAdminService.getUserTransaction().commit();
+					cmsUserManager.getUserTransaction().begin();
+					cmsUserManager.getUserAdmin().createRole(role, Role.GROUP);
+					cmsUserManager.getUserTransaction().commit();
 					log.info("Created role " + role);
 				} catch (Exception e) {
 					try {
-						userAdminService.getUserTransaction().rollback();
+						cmsUserManager.getUserTransaction().rollback();
 					} catch (Exception e1) {
 						// silent
 					}
@@ -116,23 +118,24 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 		addToGroup(OfficeRole.coworker.dn(), groupDn);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void addToGroup(String officeGroup, String groupDn) {
-		if (userAdminService == null) {
+		if (cmsUserManager == null) {
 			log.warn("No user admin service available, cannot add group " + officeGroup + " to " + groupDn);
 			return;
 		}
-		Group managerGroup = (Group) userAdminService.getUserAdmin().getRole(officeGroup);
-		Group group = (Group) userAdminService.getUserAdmin().getRole(groupDn);
+		Group managerGroup = (Group) cmsUserManager.getUserAdmin().getRole(officeGroup);
+		Group group = (Group) cmsUserManager.getUserAdmin().getRole(groupDn);
 		if (group == null)
 			throw new ConnectException("Group " + groupDn + " not found");
 		try {
-			userAdminService.getUserTransaction().begin();
+			cmsUserManager.getUserTransaction().begin();
 			if (group.addMember(managerGroup))
 				log.info("Added " + officeGroup + " to " + group);
-			userAdminService.getUserTransaction().commit();
+			cmsUserManager.getUserTransaction().commit();
 		} catch (Exception e) {
 			try {
-				userAdminService.getUserTransaction().rollback();
+				cmsUserManager.getUserTransaction().rollback();
 			} catch (Exception e1) {
 				// silent
 			}
@@ -144,8 +147,8 @@ public abstract class AbstractMaintenanceService implements AppMaintenanceServic
 		this.repository = repository;
 	}
 
-	public void setUserAdminService(CmsUserManager userAdminService) {
-		this.userAdminService = userAdminService;
+	public void setCmsUserManager(CmsUserManager cmsUserManager) {
+		this.cmsUserManager = cmsUserManager;
 	}
 
 }
