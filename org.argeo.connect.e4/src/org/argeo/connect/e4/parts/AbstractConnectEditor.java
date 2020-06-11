@@ -584,7 +584,7 @@ public abstract class AbstractConnectEditor implements ConnectEditor {
 	@Focus
 	public void setFocus() {
 		try {
-			browserNavigation.pushState(node.getPath(), partName);
+			browserNavigation.pushState('/' + node.getSession().getWorkspace().getName() + node.getPath(), partName);
 		} catch (RepositoryException e) {
 			log.error("Cannot set client state", e);
 		}

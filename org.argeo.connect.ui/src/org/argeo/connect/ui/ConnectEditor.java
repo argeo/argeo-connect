@@ -4,6 +4,7 @@ import org.argeo.cms.ui.CmsEditable;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 
+/** Marker interface for an editor. */
 public interface ConnectEditor extends CmsEditable {
 	String PARAM_JCR_ID = "param.jcrId";
 	String PARAM_OPEN_FOR_EDIT = "param.openForEdit";
