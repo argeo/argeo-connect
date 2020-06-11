@@ -1,5 +1,7 @@
 package org.argeo.connect.core;
 
+import static org.osgi.service.component.ComponentConstants.COMPONENT_NAME;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.SortedMap;
@@ -113,10 +115,14 @@ public class DynamicSystemAppService extends AbstractAppService implements Syste
 	public void addAppService(AppService appService, Map<String, Object> properties) {
 		knownAppServices.put(new ServiceRanking(properties), appService);
 		if (log.isDebugEnabled())
-			log.debug("Added app service " + appService);
+			log.debug("Added app service "
+					+ (properties.containsKey(COMPONENT_NAME) ? properties.get(COMPONENT_NAME) : appService));
 	}
 
 	public void removeAppService(AppService appService, Map<String, Object> properties) {
 		knownAppServices.remove(new ServiceRanking(properties));
+		if (log.isDebugEnabled())
+			log.debug("Removed app service "
+					+ (properties.containsKey(COMPONENT_NAME) ? properties.get(COMPONENT_NAME) : appService));
 	}
 }
