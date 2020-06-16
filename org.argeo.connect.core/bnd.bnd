@@ -7,6 +7,7 @@ cms.datamodel;filter:="(name=docbook)",\
 cms.datamodel;filter:="(name=cms)",\
 
 Import-Package: javax.jcr.nodetype,\
+org.osgi.service.component,\
 org.argeo.docbook.jcr,\
 javax.jcr.security,\
 org.apache.jackrabbit.util,\
