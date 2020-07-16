@@ -28,6 +28,7 @@ import org.eclipse.rap.rwt.client.service.BrowserNavigation;
  * Base Editor for a Documents entity. Centralise methods to ease business
  * specific development
  */
+// TODO centralise with AbstractConnectEditor
 public abstract class AbstractDocumentsEditor implements CmsEditable {
 	private final static Log log = LogFactory.getLog(AbstractDocumentsEditor.class);
 
@@ -115,7 +116,8 @@ public abstract class AbstractDocumentsEditor implements CmsEditable {
 	@Focus
 	public void setFocus() {
 		try {
-			browserNavigation.pushState(node.getPath(), mPart.getLabel());
+			browserNavigation.pushState('/' + node.getSession().getWorkspace().getName() + node.getPath(),
+					mPart.getLabel());
 		} catch (RepositoryException e) {
 			log.error("Cannot set client state", e);
 		}

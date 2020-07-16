@@ -27,13 +27,12 @@ public class FolderEditor extends AbstractDocumentsEditor {
 			protected void externalNavigateTo(Path path) {
 				// TODO rather directly use the jcrPath / an URI?
 				Session session = ConnectJcrUtils.getSession(getNode());
-				Node currNode = ConnectJcrUtils.getNode(session, path.toString());
+				Node currNode = getDocumentsService().getNode(session, path);
 				getSystemWorkbenchService().openEntityEditor(currNode);
 			}
 		};
 		dfc.setLayoutData(EclipseUiUtils.fillAll());
-		String jcrPath = ConnectJcrUtils.getPath(getNode());
-		Path path = getDocumentsService().getPath(getNodeFileSystemProvider(), jcrPath);
+		Path path = getDocumentsService().getPath(getNodeFileSystemProvider(), getNode());
 		dfc.populate(path);
 		parent.layout(true, true);
 	}

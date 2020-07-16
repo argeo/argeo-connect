@@ -11,7 +11,6 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.argeo.cms.ui.util.CmsUiUtils;
-import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.documents.DocumentsException;
 import org.argeo.documents.DocumentsService;
@@ -52,7 +51,7 @@ public class DocumentsFileComposite extends Composite {
 
 		rightPannelCmp = new Composite(form, SWT.NO_FOCUS);
 
-		Path path = documentsService.getPath(fsp, ConnectJcrUtils.getPath(context));
+		Path path = documentsService.getPath(fsp, context);
 		setOverviewInput(path);
 		form.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		form.setWeights(new int[] { 55, 20 });
@@ -80,8 +79,8 @@ public class DocumentsFileComposite extends Composite {
 	}
 
 	/**
-	 * Recreates the content of the box that displays information about the
-	 * current selected Path.
+	 * Recreates the content of the box that displays information about the current
+	 * selected Path.
 	 */
 	private void setOverviewInput(Path path) {
 		try {

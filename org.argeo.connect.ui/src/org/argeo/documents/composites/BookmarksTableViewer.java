@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+/** List the documents bookmarks. */
 public class BookmarksTableViewer extends TableViewer {
 	private static final long serialVersionUID = -2638259376244326947L;
 

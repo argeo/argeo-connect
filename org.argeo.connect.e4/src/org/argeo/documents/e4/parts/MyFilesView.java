@@ -2,6 +2,7 @@ package org.argeo.documents.e4.parts;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.List;
@@ -348,8 +349,8 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 					String uriStr = ConnectJcrUtils.get(tmpNode, DocumentsNames.DOCUMENTS_URI);
 					try {
 						Path currPath = documentsService.getPath(nodeFileSystemProvider, new URI(uriStr));
-						String jcrPath = currPath.toString();
-						if (!homeSession.itemExists(jcrPath)) {
+//						String jcrPath = currPath.toString();
+						if (!Files.exists(currPath)) {
 							String msg = "Bookmarked folder at URI " + uriStr
 									+ " cannot be found. If it is a local folder "
 									+ "it has been removed or renamed.\nDo you want to delete corresponding bookmark?";
@@ -362,7 +363,7 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 							}
 							return;
 						} else
-							currNode = homeSession.getNode(jcrPath);
+							currNode = documentsService.getNode(homeSession, currPath);
 					} catch (URISyntaxException | RepositoryException e) {
 						throw new DocumentsException("Cannot get target node for bookmark " + tmpNode, e);
 					}

@@ -11,6 +11,7 @@ import javax.jcr.Session;
 
 import org.argeo.connect.AppService;
 
+/** Document backend. */
 public interface DocumentsService extends AppService {
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session);
 
@@ -22,7 +23,9 @@ public interface DocumentsService extends AppService {
 
 	public Node getMyBookmarksParent(Session session);
 
-	public Path getPath(FileSystemProvider nodeFileSystemProvider, String nodePath);
+	public Path getPath(FileSystemProvider nodeFileSystemProvider, Node context);
+
+	public Node getNode(Session session, Path path);
 
 	public NodeIterator getLastUpdatedDocuments(Session session);
 

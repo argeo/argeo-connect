@@ -37,6 +37,7 @@ import org.argeo.api.NodeConstants;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectException;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.Jcr;
 import org.argeo.jcr.JcrUtils;
 
 /**
@@ -517,7 +518,12 @@ public class ConnectJcrUtils {
 
 	}
 
-	/** Centralises exception management to call {@link Node#getPath()} */
+	/**
+	 * Centralises exception management to call {@link Node#getPath()}
+	 * 
+	 * @deprecated Use {@link Jcr#getPath(Node)} instead.
+	 */
+	@Deprecated
 	public static String getPath(Node node) {
 		try {
 			return node.getPath();
@@ -641,8 +647,8 @@ public class ConnectJcrUtils {
 	public static boolean isHome(Node node) {
 		try {
 			String workspaceName = node.getSession().getWorkspace().getName();
-			return (workspaceName.equals(NodeConstants.HOME_WORKSPACE) || workspaceName.equals(NodeConstants.SRV_WORKSPACE))
-					&& node.hasProperty(Property.JCR_ID);
+			return (workspaceName.equals(NodeConstants.HOME_WORKSPACE)
+					|| workspaceName.equals(NodeConstants.SRV_WORKSPACE)) && node.hasProperty(Property.JCR_ID);
 		} catch (RepositoryException re) {
 			throw new ConnectException("Unable to test that " + node + " is home ", re);
 		}

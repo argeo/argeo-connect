@@ -31,6 +31,7 @@ import org.argeo.documents.DocumentsException;
 import org.argeo.documents.DocumentsNames;
 import org.argeo.documents.DocumentsService;
 import org.argeo.documents.DocumentsTypes;
+import org.argeo.jcr.Jcr;
 import org.argeo.jcr.JcrUtils;
 
 /** Default backend for the Documents App */
@@ -79,12 +80,7 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 
 	public Path[] getMyDocumentsPath(FileSystemProvider nodeFileSystemProvider, Session session) {
 		Node home = NodeUtils.getUserHome(session);
-		// TODO make it more robust
-		Path[] paths = { getPath(nodeFileSystemProvider, '/' + NodeConstants.HOME_WORKSPACE + ConnectJcrUtils.getPath(home)) };
-		// Insure the parent node is there.
-//		Node documents = JcrUtils.mkdirs(home, getAppBaseName(), NodeType.NT_FOLDER);
-//		ConnectJcrUtils.saveIfNecessary(documents);
-//		Path[] paths = { getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(documents)) };
+		Path[] paths = { getPath(nodeFileSystemProvider, home) };
 		return paths;
 	}
 
@@ -96,7 +92,7 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 				String cn = (String) ln.getRdn(ln.size() - 1).getValue();
 				Node workgroupHome = NodeUtils.getGroupHome(session, cn);
 				if (workgroupHome != null) {
-					paths.add(getPath(nodeFileSystemProvider, ConnectJcrUtils.getPath(workgroupHome)));
+					paths.add(getPath(nodeFileSystemProvider, workgroupHome));
 //					Node documents = JcrUtils.mkdirs(workgroupHome, getAppBaseName(), NodeType.NT_FOLDER);
 //					documents.addMixin(NodeType.MIX_TITLE);
 //					if (session.hasPendingChanges()) {
@@ -190,10 +186,16 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 	// }
 	// }
 
-	public Path getPath(FileSystemProvider nodeFileSystemProvider, String nodePath) {
+	public Path getPath(FileSystemProvider nodeFileSystemProvider, Node node) {
 		// try {
 		// URI uri = new URI(NODE_PREFIX + nodePath);
-		URI uri = nodePathToURI(nodePath);
+		String fullPath = '/' + Jcr.getWorkspaceName(node) + Jcr.getPath(node);
+		URI uri;
+		try {
+			uri = new URI(NodeConstants.SCHEME_NODE, null, fullPath, null);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Cannot interpret " + fullPath + " as an URI", e);
+		}
 		return getPath(nodeFileSystemProvider, uri);
 
 		// FileSystem fileSystem = nodeFileSystemProvider.getFileSystem(uri);
@@ -210,6 +212,23 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 		// throw new RuntimeException("Unable to initialise file system for " +
 		// nodePath, e);
 		// }
+	}
+
+	public Node getNode(Session session, Path path) {
+		assert path.getNameCount() > 0;
+		String workspaceName = path.getName(0).toString();
+		String jcrPath = '/' + path.subpath(1, path.getNameCount()).toString();
+		try {
+			if (workspaceName.equals(session.getWorkspace().getName())) {
+				return session.getNode(jcrPath);
+			} else {
+				Session newSession = session.getRepository().login(workspaceName);
+				// FIXME close it
+				return newSession.getNode(jcrPath);
+			}
+		} catch (RepositoryException e) {
+			throw new DocumentsException("Cannot get node from path " + path, e);
+		}
 	}
 
 	public NodeIterator getLastUpdatedDocuments(Session session) {
@@ -250,7 +269,7 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 			String nodeName = path.getFileName().toString();
 			Node bookmark = bookmarkParent.addNode(nodeName);
 			bookmark.addMixin(DocumentsTypes.DOCUMENTS_BOOKMARK);
-			bookmark.setProperty(DocumentsNames.DOCUMENTS_URI, nodePathToURI(path.toString()).toString());
+			bookmark.setProperty(DocumentsNames.DOCUMENTS_URI, path.toUri().toString());
 			bookmark.setProperty(Property.JCR_TITLE, name);
 			session.save();
 			return bookmark;
@@ -261,11 +280,11 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 		}
 	}
 
-	private static URI nodePathToURI(String nodePath) {
-		try {
-			return new URI(NodeConstants.SCHEME_NODE, null, nodePath, null);
-		} catch (URISyntaxException e) {
-			throw new DocumentsException("Badly formatted path " + nodePath, e);
-		}
-	}
+//	private static URI nodePathToURI(String nodePath) {
+//		try {
+//			return new URI(NodeConstants.SCHEME_NODE, null, nodePath, null);
+//		} catch (URISyntaxException e) {
+//			throw new DocumentsException("Badly formatted path " + nodePath, e);
+//		}
+//	}
 }

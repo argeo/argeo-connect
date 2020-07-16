@@ -29,6 +29,7 @@ import org.argeo.documents.composites.DocumentsFolderComposite;
 import org.argeo.eclipse.ui.ColumnDefinition;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.jcr.lists.SimpleJcrNodeLabelProvider;
+import org.argeo.jcr.Jcr;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
@@ -381,8 +382,8 @@ public class ProjectEditor extends AbstractTrackerEditor {
 				}
 			};
 			dfc.setLayoutData(EclipseUiUtils.fillAll());
-			String jcrPath = ConnectJcrUtils.getPath(project) + "/" + TrackerNames.TRACKER_DATA;
-			Path path = getDocumentsService().getPath(fileSystemProvider, jcrPath);
+			Path path = getDocumentsService().getPath(fileSystemProvider,
+					Jcr.getNode(project, TrackerNames.TRACKER_DATA));
 			dfc.populate(path);
 			parent.layout(true, true);
 		}
@@ -513,7 +514,6 @@ public class ProjectEditor extends AbstractTrackerEditor {
 			}
 		});
 	}
-
 
 	/* DEPENDENCY INJECTION */
 	public void setFileSystemProvider(FileSystemProvider fileSystemProvider) {
