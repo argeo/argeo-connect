@@ -13,6 +13,7 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
@@ -265,7 +266,7 @@ public class ActivityChildrenList extends LazyCTabControl {
 		Session tmpSession = null;
 		Session targetSession = null;
 		try {
-			tmpSession = activity.getSession().getRepository().login();
+			tmpSession = activity.getSession().getRepository().login(NodeConstants.HOME_WORKSPACE);
 			Node tmpTask = activitiesService.createDraftEntity(tmpSession, ActivitiesTypes.ACTIVITIES_TASK);
 			tmpTask.setProperty(ActivitiesNames.ACTIVITIES_PARENT_UID,
 					activity.getProperty(ConnectNames.CONNECT_UID).getString());
@@ -293,7 +294,7 @@ public class ActivityChildrenList extends LazyCTabControl {
 		Session tmpSession = null;
 		Session targetSession = null;
 		try {
-			tmpSession = activity.getSession().getRepository().login();
+			tmpSession = activity.getSession().getRepository().login(NodeConstants.HOME_WORKSPACE);
 			Node tmpChild = activitiesService.createDraftEntity(tmpSession, type);
 			tmpChild.setProperty(ActivitiesNames.ACTIVITIES_PARENT_UID,
 					activity.getProperty(ConnectNames.CONNECT_UID).getString());

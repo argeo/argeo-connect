@@ -18,10 +18,8 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 
 import org.argeo.api.NodeUtils;
-import org.argeo.connect.AppService;
 import org.argeo.connect.ConnectConstants;
 import org.argeo.connect.ConnectNames;
-import org.argeo.connect.ConnectTypes;
 import org.argeo.connect.resources.ResourcesService;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.jcr.JcrUtils;
@@ -731,13 +729,13 @@ public class PeopleJcrUtils implements PeopleNames {
 		return string.replace(' ', '_');
 	}
 
-	public static Node createImportTmpParent(Session session, AppService appService) throws RepositoryException {
-		Node peopleDraftParent = appService.getDraftParent(session);
-		String relPath = "imports/"
-				+ appService.getDefaultRelPath(session, ConnectTypes.CONNECT_ENTITY, session.getUserID());
-		Node parent = JcrUtils.mkdirs(peopleDraftParent, ConnectJcrUtils.parentRelPath(relPath));
-		return parent.addNode(session.getUserID());
-	}
+//	public static Node createImportTmpParent(Session session, AppService appService) throws RepositoryException {
+//		Node peopleDraftParent = appService.getDraftParent(session);
+//		String relPath = "imports/"
+//				+ appService.getDefaultRelPath(session, ConnectTypes.CONNECT_ENTITY, session.getUserID());
+//		Node parent = JcrUtils.mkdirs(peopleDraftParent, ConnectJcrUtils.parentRelPath(relPath));
+//		return parent.addNode(session.getUserID());
+//	}
 
 	public static void syncPerson(Dictionary<String, Object> user, Node person) throws RepositoryException {
 		sync(user, LdapAttrs.mail, person, PeopleNames.PEOPLE_PRIMARY_EMAIL);

@@ -13,6 +13,7 @@ import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ui.AssignedToLP;
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.IManagedForm;
 import org.argeo.connect.AppService;
@@ -202,7 +203,7 @@ public class CategoryEditor extends AbstractTrackerEditor implements IJcrTableVi
 					Session targetSession = null;
 					try {
 						AppService as = getAppService();
-						tmpSession = project.getSession().getRepository().login();
+						tmpSession = project.getSession().getRepository().login(NodeConstants.HOME_WORKSPACE);
 						Node draftIssue = as.createDraftEntity(tmpSession, TrackerTypes.TRACKER_ISSUE);
 						draftIssue.setProperty(TrackerNames.TRACKER_PROJECT_UID,
 								ConnectJcrUtils.get(project, ConnectNames.CONNECT_UID));
