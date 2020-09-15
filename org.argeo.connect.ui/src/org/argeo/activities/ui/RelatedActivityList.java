@@ -14,6 +14,7 @@ import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
 import org.argeo.activities.ActivitiesTypes;
 import org.argeo.activities.ActivityValueCatalogs;
+import org.argeo.api.NodeConstants;
 import org.argeo.cms.CmsUserManager;
 import org.argeo.cms.ui.eclipse.forms.AbstractFormPart;
 import org.argeo.cms.ui.eclipse.forms.FormToolkit;
@@ -297,13 +298,13 @@ public class RelatedActivityList extends LazyCTabControl {
 		Session targetSession = null;
 
 		try {
-			tmpSession = relatedEntity.getSession().getRepository().login();
+			tmpSession = relatedEntity.getSession().getRepository().login(NodeConstants.HOME_WORKSPACE);
+			targetSession = relatedEntity.getSession().getRepository().login();
 			List<Node> relatedTo = new ArrayList<Node>();
-			relatedTo.add(tmpSession.getNode(relatedEntity.getPath()));
+			relatedTo.add(targetSession.getNode(relatedEntity.getPath()));
 			Node draftActivity = systemAppService.createDraftEntity(tmpSession, type);
 			activitiesService.configureActivity(draftActivity, type, title, desc, relatedTo);
 
-			targetSession = relatedEntity.getSession().getRepository().login();
 			Node targetParent = targetSession
 					.getNode("/" + systemAppService.getBaseRelPath(ActivitiesTypes.ACTIVITIES_ACTIVITY));
 			Node createdActivity = systemAppService.publishEntity(targetParent, type, draftActivity);

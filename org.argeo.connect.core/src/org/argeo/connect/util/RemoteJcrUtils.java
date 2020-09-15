@@ -105,7 +105,7 @@ public class RemoteJcrUtils {
 				String fromRefJcrId = val.getString();
 				Node oldReferencedNode = null;
 				try {
-					oldReferencedNode = fromProperty.getSession().getNodeByIdentifier(fromRefJcrId);
+					oldReferencedNode = toNode.getSession().getNodeByIdentifier(fromRefJcrId);
 				} catch (ItemNotFoundException e) {
 					log.warn("Cannot resolve reference for multi-valued property " + fromProperty + " with ID "
 							+ fromRefJcrId + ". Corresponding value has not been copied.");
