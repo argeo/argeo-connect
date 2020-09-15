@@ -261,37 +261,37 @@ public class RelatedActivityList extends LazyCTabControl {
 		}
 	}
 
-	private boolean createTask(Shell shell, Node relatedEntity) {
-		Session tmpSession = null;
-		Session targetSession = null;
-		try {
-			tmpSession = relatedEntity.getSession().getRepository().login();
-			Node draftTask = systemAppService.createDraftEntity(tmpSession, ActivitiesTypes.ACTIVITIES_TASK);
-			Wizard wizard = systemWorkbenchService.getCreationWizard(draftTask);
-
-			WizardDialog dialog = new WizardDialog(shell, wizard);
-			if (dialog.open() == Window.OK) {
-				List<Node> relatedTo = new ArrayList<Node>();
-				relatedTo.add(tmpSession.getNode(relatedEntity.getPath()));
-				ConnectJcrUtils.setMultipleReferences(draftTask, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
-
-				targetSession = relatedEntity.getSession().getRepository().login();
-				Node targetParent = targetSession
-						.getNode("/" + systemAppService.getBaseRelPath(ActivitiesTypes.ACTIVITIES_TASK));
-				String currMainType = systemAppService.getMainNodeType(draftTask);
-				Node newTask = systemAppService.publishEntity(targetParent, currMainType, draftTask);
-				systemAppService.saveEntity(newTask, false);
-				relatedEntity.getSession().refresh(true);
-				return true;
-			}
-		} catch (RepositoryException e) {
-			throw new ActivitiesException("Unable to create task node related to " + relatedEntity, e);
-		} finally {
-			JcrUtils.logoutQuietly(tmpSession);
-			JcrUtils.logoutQuietly(targetSession);
-		}
-		return false;
-	}
+//	private boolean createTask(Shell shell, Node relatedEntity) {
+//		Session tmpSession = null;
+//		Session targetSession = null;
+//		try {
+//			tmpSession = relatedEntity.getSession().getRepository().login();
+//			Node draftTask = systemAppService.createDraftEntity(tmpSession, ActivitiesTypes.ACTIVITIES_TASK);
+//			Wizard wizard = systemWorkbenchService.getCreationWizard(draftTask);
+//
+//			WizardDialog dialog = new WizardDialog(shell, wizard);
+//			if (dialog.open() == Window.OK) {
+//				List<Node> relatedTo = new ArrayList<Node>();
+//				relatedTo.add(tmpSession.getNode(relatedEntity.getPath()));
+//				ConnectJcrUtils.setMultipleReferences(draftTask, ActivitiesNames.ACTIVITIES_RELATED_TO, relatedTo);
+//
+//				targetSession = relatedEntity.getSession().getRepository().login();
+//				Node targetParent = targetSession
+//						.getNode("/" + systemAppService.getBaseRelPath(ActivitiesTypes.ACTIVITIES_TASK));
+//				String currMainType = systemAppService.getMainNodeType(draftTask);
+//				Node newTask = systemAppService.publishEntity(targetParent, currMainType, draftTask);
+//				systemAppService.saveEntity(newTask, false);
+//				relatedEntity.getSession().refresh(true);
+//				return true;
+//			}
+//		} catch (RepositoryException e) {
+//			throw new ActivitiesException("Unable to create task node related to " + relatedEntity, e);
+//		} finally {
+//			JcrUtils.logoutQuietly(tmpSession);
+//			JcrUtils.logoutQuietly(targetSession);
+//		}
+//		return false;
+//	}
 
 	private boolean createActivity(Node relatedEntity, String type, String title, String desc) {
 		Session tmpSession = null;

@@ -10,6 +10,7 @@ import java.util.Calendar;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.cms.CmsUserManager;
 import org.argeo.connect.core.OfficeRole;
@@ -18,6 +19,7 @@ import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.ui.widgets.GroupDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.Jcr;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
@@ -49,6 +51,9 @@ public class ConfigureMilestoneWizard extends Wizard {
 	private final TrackerService trackerService;
 	private final Node project;
 	private final Node milestone;
+	private Session session;
+	// TODO make it configurable
+	private String projectWorkspace = null;
 
 	// Ease implementation
 	private Node chosenProject;
@@ -72,8 +77,9 @@ public class ConfigureMilestoneWizard extends Wizard {
 		this.trackerService = trackerService;
 		this.milestone = milestone;
 		try {
+			session = milestone.getSession().getRepository().login(projectWorkspace);
 			if (milestone.hasProperty(TrackerNames.TRACKER_PROJECT_UID)) {
-				project = trackerService.getEntityByUid(milestone.getSession(), null,
+				project = trackerService.getEntityByUid(session, null,
 						milestone.getProperty(TrackerNames.TRACKER_PROJECT_UID).getString());
 			} else
 				project = null;
@@ -127,6 +133,8 @@ public class ConfigureMilestoneWizard extends Wizard {
 			return true;
 		} catch (RepositoryException e1) {
 			throw new TrackerException("Unable to create version with ID " + title + " on " + project, e1);
+		} finally {
+			Jcr.logout(session);
 		}
 	}
 
@@ -166,7 +174,7 @@ public class ConfigureMilestoneWizard extends Wizard {
 			projectTxt.setLayoutData(gd);
 
 			if (project == null) {
-				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(milestone), projectTxt, false);
+				projectDD = new ProjectDropDown(session, projectTxt, false);
 
 				projectTxt.addFocusListener(new FocusAdapter() {
 					private static final long serialVersionUID = 1719432159240562984L;

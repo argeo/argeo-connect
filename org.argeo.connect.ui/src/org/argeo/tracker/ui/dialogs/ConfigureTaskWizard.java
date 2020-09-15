@@ -9,6 +9,7 @@ import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.argeo.activities.ActivitiesNames;
 import org.argeo.activities.ActivitiesService;
@@ -21,6 +22,7 @@ import org.argeo.connect.ui.widgets.DateText;
 import org.argeo.connect.ui.widgets.GroupDropDown;
 import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.Jcr;
 import org.argeo.tracker.TrackerException;
 import org.argeo.tracker.TrackerNames;
 import org.argeo.tracker.TrackerService;
@@ -59,6 +61,10 @@ public class ConfigureTaskWizard extends Wizard {
 	private final Node project;
 	private final Node task;
 
+	private Session session;
+	// TODO make it configurable
+	private String projectWorkspace = null;
+
 	// Business objects
 	private Node chosenProject;
 
@@ -82,6 +88,12 @@ public class ConfigureTaskWizard extends Wizard {
 		this.activitiesService = activitiesService;
 		this.appWorkbenchService = appWorkbenchService;
 		this.task = draftEntity;
+
+		try {
+			session = draftEntity.getSession().getRepository().login(projectWorkspace);
+		} catch (RepositoryException e) {
+			throw new IllegalStateException("Cannot open new session", e);
+		}
 		project = TrackerUtils.getRelatedProject(trackerService, task);
 		chosenProject = project;
 	}
@@ -107,7 +119,7 @@ public class ConfigureTaskWizard extends Wizard {
 		}
 
 		try {
-			// TODO implement a cleaner overwritting of default
+			// TODO implement a cleaner overwriting of default
 			// ActivitiesService task creation
 			if (ConnectJcrUtils.isNodeType(task, ActivitiesTypes.ACTIVITIES_TASK)
 					&& !ConnectJcrUtils.isNodeType(task, TrackerTypes.TRACKER_TASK)) {
@@ -156,6 +168,8 @@ public class ConfigureTaskWizard extends Wizard {
 			}
 		} catch (RepositoryException e) {
 			throw new TrackerException("Unable to create issue on project " + project, e);
+		} finally {
+			Jcr.logout(session);
 		}
 		return true;
 	}
@@ -192,7 +206,7 @@ public class ConfigureTaskWizard extends Wizard {
 			projectTxt.setLayoutData(gd);
 
 			if (project == null) {
-				projectDD = new ProjectDropDown(ConnectJcrUtils.getSession(task), projectTxt, false);
+				projectDD = new ProjectDropDown(session, projectTxt, false);
 
 				projectTxt.addFocusListener(new FocusAdapter() {
 					private static final long serialVersionUID = 1719432159240562984L;
@@ -218,7 +232,7 @@ public class ConfigureTaskWizard extends Wizard {
 			milestoneTxt.setMessage("Choose a milestone");
 			gd = new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1);
 			milestoneTxt.setLayoutData(gd);
-			milestoneDD = new MilestoneDropDown(ConnectJcrUtils.getSession(task), milestoneTxt, false);
+			milestoneDD = new MilestoneDropDown(session, milestoneTxt, false);
 			if (project != null)
 				milestoneDD.setProject(project);
 
@@ -300,7 +314,7 @@ public class ConfigureTaskWizard extends Wizard {
 				// wakeUpDateCmp.setText(task.getProperty(ActivitiesNames.ACTIVITIES_WAKE_UP_DATE).getDate());
 				String muid = ConnectJcrUtils.get(task, TrackerNames.TRACKER_MILESTONE_UID);
 				if (EclipseUiUtils.notEmpty(muid)) {
-					milestone = trackerService.getEntityByUid(ConnectJcrUtils.getSession(task), null, muid);
+					milestone = trackerService.getEntityByUid(session, null, muid);
 					milestoneDD.resetMilestone(milestone);
 				}
 

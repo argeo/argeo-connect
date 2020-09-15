@@ -271,6 +271,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 					super.refresh();
 				}
 			};
+			part.initialize(getManagedForm());
 			getManagedForm().addPart(part);
 			// addMainSectionMenu(part);
 
@@ -349,6 +350,7 @@ public class MilestoneEditor extends AbstractTrackerEditor implements IJcrTableV
 					super.refresh();
 				}
 			};
+			issueListPart.initialize(getManagedForm());
 			getManagedForm().addPart(issueListPart);
 		}
 

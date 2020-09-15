@@ -35,6 +35,7 @@ import org.argeo.documents.DocumentsTypes;
 import org.argeo.documents.composites.BookmarksTableViewer;
 import org.argeo.eclipse.ui.EclipseUiUtils;
 import org.argeo.eclipse.ui.fs.FsTableViewer;
+import org.argeo.jcr.Jcr;
 import org.argeo.jcr.JcrUtils;
 import org.argeo.jcr.fs.JcrPath;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -50,6 +51,9 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.rap.rwt.RWT;
+import org.eclipse.rap.rwt.service.UISessionEvent;
+import org.eclipse.rap.rwt.service.UISessionListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -363,7 +367,15 @@ public class MyFilesView implements IDoubleClickListener, Refreshable {
 							}
 							return;
 						} else
-							currNode = documentsService.getNode(homeSession, currPath);
+							currNode = documentsService.getNode(homeSession.getRepository(), currPath);
+						// TODO make it more portable
+						RWT.getUISession().addUISessionListener(new UISessionListener() {
+							private static final long serialVersionUID = 1L;
+
+							public void beforeDestroy(UISessionEvent event) {
+								Jcr.logout(Jcr.session(currNode));
+							}
+						});
 					} catch (URISyntaxException | RepositoryException e) {
 						throw new DocumentsException("Cannot get target node for bookmark " + tmpNode, e);
 					}

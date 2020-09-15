@@ -9,6 +9,7 @@ import java.nio.file.spi.FileSystemProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.jcr.NoSuchWorkspaceException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
@@ -36,7 +37,8 @@ import org.argeo.jcr.JcrUtils;
 
 /** Default backend for the Documents App */
 public class DocumentsServiceImpl extends AbstractAppService implements DocumentsService {
-	// private final static String NODE_PREFIX = "node://";
+	// TODO make it more robust and configurable
+	private String baseWorkspaceName = "main";
 
 	@Override
 	public Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
@@ -189,7 +191,9 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 	public Path getPath(FileSystemProvider nodeFileSystemProvider, Node node) {
 		// try {
 		// URI uri = new URI(NODE_PREFIX + nodePath);
-		String fullPath = '/' + Jcr.getWorkspaceName(node) + Jcr.getPath(node);
+		String workspaceName = Jcr.getWorkspaceName(node);
+		String fullPath = baseWorkspaceName.equals(workspaceName) ? Jcr.getPath(node)
+				: '/' + workspaceName + Jcr.getPath(node);
 		URI uri;
 		try {
 			uri = new URI(NodeConstants.SCHEME_NODE, null, fullPath, null);
@@ -214,18 +218,19 @@ public class DocumentsServiceImpl extends AbstractAppService implements Document
 		// }
 	}
 
-	public Node getNode(Session session, Path path) {
-		assert path.getNameCount() > 0;
-		String workspaceName = path.getName(0).toString();
+	public Node getNode(Repository repository, Path path) {
+		String workspaceName = path.getNameCount() == 0 ? baseWorkspaceName : path.getName(0).toString();
 		String jcrPath = '/' + path.subpath(1, path.getNameCount()).toString();
 		try {
-			if (workspaceName.equals(session.getWorkspace().getName())) {
-				return session.getNode(jcrPath);
-			} else {
-				Session newSession = session.getRepository().login(workspaceName);
-				// FIXME close it
-				return newSession.getNode(jcrPath);
+			Session newSession;
+			try {
+				newSession = repository.login(workspaceName);
+			} catch (NoSuchWorkspaceException e) {
+				// base workspace
+				newSession = repository.login(baseWorkspaceName);
+				jcrPath = path.toString();
 			}
+			return newSession.getNode(jcrPath);
 		} catch (RepositoryException e) {
 			throw new DocumentsException("Cannot get node from path " + path, e);
 		}

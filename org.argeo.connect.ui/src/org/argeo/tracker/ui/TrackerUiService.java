@@ -24,18 +24,18 @@ import org.eclipse.swt.graphics.Image;
  */
 public class TrackerUiService implements AppUiService {
 
-	private CmsUserManager userAdminService;
+	private CmsUserManager cmsUserManager;
 	private TrackerService trackerService;
 	private ActivitiesService activitiesService;
 
 	@Override
 	public Wizard getCreationWizard(Node node) {
 		if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_ISSUE))
-			return new ConfigureIssueWizard(userAdminService, trackerService, node);
+			return new ConfigureIssueWizard(cmsUserManager, trackerService, node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_TASK))
-			return new ConfigureTaskWizard(userAdminService, activitiesService, trackerService, null, node);
+			return new ConfigureTaskWizard(cmsUserManager, activitiesService, trackerService, null, node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_MILESTONE))
-			return new ConfigureMilestoneWizard(userAdminService, trackerService, node);
+			return new ConfigureMilestoneWizard(cmsUserManager, trackerService, node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_VERSION))
 			return new ConfigureVersionWizard(trackerService, node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_COMPONENT))
@@ -45,7 +45,7 @@ public class TrackerUiService implements AppUiService {
 		// return new ConfigureProjectWizard(userAdminService, trackerService,
 		// node);
 		else if (ConnectJcrUtils.isNodeType(node, TrackerTypes.TRACKER_PROJECT))
-			return new ConfigureProjectWizard(userAdminService, trackerService, node);
+			return new ConfigureProjectWizard(cmsUserManager, trackerService, node);
 		return null;
 	}
 
@@ -54,8 +54,8 @@ public class TrackerUiService implements AppUiService {
 		return null;
 	}
 
-	public void setUserAdminService(CmsUserManager userAdminService) {
-		this.userAdminService = userAdminService;
+	public void setCmsUserManager(CmsUserManager userAdminService) {
+		this.cmsUserManager = userAdminService;
 	}
 
 	public void setTrackerService(TrackerService trackerService) {

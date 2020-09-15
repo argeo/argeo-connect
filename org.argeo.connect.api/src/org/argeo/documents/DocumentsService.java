@@ -25,7 +25,11 @@ public interface DocumentsService extends AppService {
 
 	public Path getPath(FileSystemProvider nodeFileSystemProvider, Node context);
 
-	public Node getNode(Session session, Path path);
+	/**
+	 * Returns the node corresponding to this path. This will always open a new
+	 * session, which should be closed bay the caller.
+	 */
+	public Node getNode(Repository repository, Path path);
 
 	public NodeIterator getLastUpdatedDocuments(Session session);
 
