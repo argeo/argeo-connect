@@ -171,7 +171,7 @@ public class DocumentsUiService {
 					return true;
 				}
 			} catch (IOException e) {
-				throw new DocumentsException("Cannot create folder " + name + " at " + parentFolderPath.toString(), e);
+				throw new DocumentsException("Cannot rename " + name + " at " + parentFolderPath.toString(), e);
 			}
 		}
 		return false;
