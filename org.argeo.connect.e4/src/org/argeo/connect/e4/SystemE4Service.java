@@ -13,6 +13,10 @@ import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.SystemWorkbenchService;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.entity.EntityDefinition;
+import org.argeo.entity.EntityNames;
+import org.argeo.entity.EntityTypes;
+import org.argeo.jcr.Jcr;
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -33,6 +37,7 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 
 	private String defaultEditorId = null;// DefaultDashboardEditor.ID;
 	private SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices;
+	private SortedMap<ServiceRanking, EntityDefinition> knownEntityDefinitions;
 
 	// public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService>
 	// knownAppWbServices) {
@@ -41,9 +46,10 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 	// }
 
 	public SystemE4Service(SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices,
-			IEclipseContext eclipseContext) {
+			SortedMap<ServiceRanking, EntityDefinition> knownEntityDefinitions, IEclipseContext eclipseContext) {
 		super();
 		this.knownAppWbServices = knownAppWbServices;
+		this.knownEntityDefinitions = knownEntityDefinitions;
 		this.eclipseContext = eclipseContext;
 		// this.partService = partService;
 		// this.commandService = commandService;
@@ -124,6 +130,15 @@ public class SystemE4Service implements SystemWorkbenchService, AppE4Service {
 
 	@Override
 	public String getEntityEditorId(Node entity) {
+		if (Jcr.isNodeType(entity, EntityTypes.ENTITY_ENTITY)) {
+			String entityType = Jcr.get(entity, EntityNames.ENTITY_TYPE);
+			for (EntityDefinition entityDefinition : knownEntityDefinitions.values()) {
+				if (entityDefinition.getType().equals(entityType)) {
+					return entityDefinition.getEditorId(entity);
+				}
+			}
+		}
+
 		String result = null;
 		for (AppWorkbenchService appWbService : knownAppWbServices.values()) {
 			result = appWbService.getEntityEditorId(entity);

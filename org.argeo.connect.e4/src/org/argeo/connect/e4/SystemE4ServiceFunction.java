@@ -8,13 +8,20 @@ import java.util.TreeMap;
 import org.argeo.connect.ServiceRanking;
 import org.argeo.connect.ui.AppWorkbenchService;
 import org.argeo.connect.ui.SystemWorkbenchService;
+import org.argeo.entity.EntityDefinition;
 import org.eclipse.e4.core.contexts.ContextFunction;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 
+/**
+ * An Eclipse {@link ContextFunction} used to inject
+ * {@link SystemWorkbenchService}.
+ */
 public class SystemE4ServiceFunction extends ContextFunction {
 	// Injected known AppWorkbenchServices: order is important, first found
 	// result will be returned by the various methods.
 	private SortedMap<ServiceRanking, AppWorkbenchService> knownAppWbServices = Collections
+			.synchronizedSortedMap(new TreeMap<>());
+	private SortedMap<ServiceRanking, EntityDefinition> knownEntityDefinitions = Collections
 			.synchronizedSortedMap(new TreeMap<>());
 
 	@Override
@@ -25,7 +32,7 @@ public class SystemE4ServiceFunction extends ContextFunction {
 //		ECommandService commandService = appContext.get(ECommandService.class);
 //		EHandlerService handlerService = appContext.get(EHandlerService.class);
 
-		SystemE4Service systemE4Service = new SystemE4Service(knownAppWbServices, context);
+		SystemE4Service systemE4Service = new SystemE4Service(knownAppWbServices, knownEntityDefinitions, context);
 
 		// if (app == null) {// during login
 		// context.set(SystemWorkbenchService.class, systemE4Service);
@@ -51,6 +58,14 @@ public class SystemE4ServiceFunction extends ContextFunction {
 
 	public void removeAppService(AppWorkbenchService appService, Map<String, Object> properties) {
 		knownAppWbServices.remove(new ServiceRanking(properties));
+	}
+
+	public void addEntityDefinition(EntityDefinition entityDefinition, Map<String, Object> properties) {
+		knownEntityDefinitions.put(new ServiceRanking(properties), entityDefinition);
+	}
+
+	public void removeEntityDefinition(EntityDefinition entityDefinition, Map<String, Object> properties) {
+		knownEntityDefinitions.remove(new ServiceRanking(properties));
 	}
 
 }

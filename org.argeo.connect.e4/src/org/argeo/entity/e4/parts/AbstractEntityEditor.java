@@ -109,11 +109,13 @@ public abstract class AbstractEntityEditor implements CmsEditable {
 
 	@Focus
 	public void setFocus() {
-		try {
-			browserNavigation.pushState('/' + node.getSession().getWorkspace().getName() + node.getPath(), partName);
-		} catch (RepositoryException e) {
-			log.error("Cannot set client state", e);
-		}
+		if (node != null)
+			try {
+				browserNavigation.pushState('/' + node.getSession().getWorkspace().getName() + node.getPath(),
+						partName);
+			} catch (RepositoryException e) {
+				log.error("Cannot set client state", e);
+			}
 	}
 
 	/*

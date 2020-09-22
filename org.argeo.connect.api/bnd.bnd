@@ -6,7 +6,8 @@ cms.datamodel; name=activities; cnd=/org/argeo/activities/activities.cnd; abstra
 cms.datamodel; name=people; cnd=/org/argeo/people/people.cnd; abstract=true,\
 cms.datamodel; name=documents; cnd=/org/argeo/documents/documents.cnd; abstract=true,\
 cms.datamodel; name=tracker; cnd=/org/argeo/tracker/tracker.cnd; abstract=true,\
-cms.datamodel; name=docbook; cnd=/org/argeo/docbook/jcr/docbook.cnd; abstract=true
+cms.datamodel; name=docbook; cnd=/org/argeo/docbook/jcr/docbook.cnd; abstract=true,\
+cms.datamodel; name=entity; cnd=/org/argeo/entity/entity.cnd; abstract=true
 
 Import-Package: org.argeo.api,\
 *
