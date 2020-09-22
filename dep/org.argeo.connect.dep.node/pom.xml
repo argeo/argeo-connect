@@ -202,7 +202,7 @@
 									<goal>rpm</goal>
 								</goals>
 								<configuration>
-									<name>argeo-connect-e4-rap</name>
+									<name>argeo-connect-node</name>
 									<mappings>
 										<mapping>
 											<directory>/usr/share/osgi</directory>
@@ -221,8 +221,8 @@
 										</mapping>
 									</mappings>
 									<requires>
-										<require>argeo-cms-e4-rap</require>
-										<require>argeo-connect-e4-tp</require>
+										<require>argeo-cms-node</require>
+										<require>argeo-connect-node-tp</require>
 									</requires>
 								</configuration>
 							</execution>
@@ -263,7 +263,7 @@
 									<goal>rpm</goal>
 								</goals>
 								<configuration>
-									<name>argeo-connect-e4-tp</name>
+									<name>argeo-connect-node-tp</name>
 									<version>${version.argeo-tp}</version>
 									<release>${maven.build.timestamp}</release>
 									<mappings>

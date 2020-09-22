@@ -16,7 +16,6 @@
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.dep.node</artifactId>
 			<version>2.1.82-SNAPSHOT</version>
-			<type>pom</type>
 		</dependency>
 
 		<dependency>
@@ -97,8 +96,9 @@
 										</mapping>
 									</mappings>
 									<requires>
+										<require>argeo-connect-node</require>
 										<require>argeo-cms-e4-rap</require>
-										<require>argeo-connect-e4-tp</require>
+<!-- 										<require>argeo-connect-e4-tp</require> -->
 									</requires>
 								</configuration>
 							</execution>
@@ -107,64 +107,64 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
-			<id>rpmbuild-tp</id>
-			<build>
-				<plugins>
-					<plugin>
-						<artifactId>maven-assembly-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>prepare-source-tp</id>
-								<phase>package</phase>
-								<goals>
-									<goal>single</goal>
-								</goals>
-								<configuration>
-									<descriptorRefs>
-										<descriptorRef>a2-source-tp</descriptorRef>
-									</descriptorRefs>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>rpm-maven-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>rpm-tp</id>
-								<phase>package</phase>
-								<goals>
-									<goal>rpm</goal>
-								</goals>
-								<configuration>
-									<name>argeo-connect-e4-tp</name>
-									<version>${version.argeo-tp}</version>
-									<release>${maven.build.timestamp}</release>
-									<mappings>
-										<mapping>
-											<directory>/usr/share/osgi</directory>
-											<username>root</username>
-											<groupname>root</groupname>
-											<filemode>644</filemode>
-											<directoryIncluded>true</directoryIncluded>
-											<sources>
-												<source>
-													<location>${project.build.directory}/${project.artifactId}-${project.version}-a2-source-tp</location>
-													<includes>
-														<include>**/*.jar</include>
-													</includes>
-												</source>
-											</sources>
-										</mapping>
-									</mappings>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
+<!-- 		<profile> -->
+<!-- 			<id>rpmbuild-tp</id> -->
+<!-- 			<build> -->
+<!-- 				<plugins> -->
+<!-- 					<plugin> -->
+<!-- 						<artifactId>maven-assembly-plugin</artifactId> -->
+<!-- 						<executions> -->
+<!-- 							<execution> -->
+<!-- 								<id>prepare-source-tp</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>single</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<descriptorRefs> -->
+<!-- 										<descriptorRef>a2-source-tp</descriptorRef> -->
+<!-- 									</descriptorRefs> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
+<!-- 						</executions> -->
+<!-- 					</plugin> -->
+<!-- 					<plugin> -->
+<!-- 						<groupId>org.codehaus.mojo</groupId> -->
+<!-- 						<artifactId>rpm-maven-plugin</artifactId> -->
+<!-- 						<executions> -->
+<!-- 							<execution> -->
+<!-- 								<id>rpm-tp</id> -->
+<!-- 								<phase>package</phase> -->
+<!-- 								<goals> -->
+<!-- 									<goal>rpm</goal> -->
+<!-- 								</goals> -->
+<!-- 								<configuration> -->
+<!-- 									<name>argeo-connect-e4-tp</name> -->
+<!-- 									<version>${version.argeo-tp}</version> -->
+<!-- 									<release>${maven.build.timestamp}</release> -->
+<!-- 									<mappings> -->
+<!-- 										<mapping> -->
+<!-- 											<directory>/usr/share/osgi</directory> -->
+<!-- 											<username>root</username> -->
+<!-- 											<groupname>root</groupname> -->
+<!-- 											<filemode>644</filemode> -->
+<!-- 											<directoryIncluded>true</directoryIncluded> -->
+<!-- 											<sources> -->
+<!-- 												<source> -->
+<!-- 													<location>${project.build.directory}/${project.artifactId}-${project.version}-a2-source-tp</location> -->
+<!-- 													<includes> -->
+<!-- 														<include>**/*.jar</include> -->
+<!-- 													</includes> -->
+<!-- 												</source> -->
+<!-- 											</sources> -->
+<!-- 										</mapping> -->
+<!-- 									</mappings> -->
+<!-- 								</configuration> -->
+<!-- 							</execution> -->
+<!-- 						</executions> -->
+<!-- 					</plugin> -->
+<!-- 				</plugins> -->
+<!-- 			</build> -->
+<!-- 		</profile> -->
 	</profiles>
 </project>
