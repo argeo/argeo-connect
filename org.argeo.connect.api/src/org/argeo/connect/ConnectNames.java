@@ -1,16 +1,13 @@
 package org.argeo.connect;
 
+import org.argeo.entity.EntityNames;
+
 /** Connect generic JCR names. */
 public interface ConnectNames {
 
-	/**
-	 * An implementation specific UID, might be a JCR node Identifier but it is
-	 * not compulsory We personally use the type 4 (pseudo randomly generated)
-	 * UUID - we retrieve them simply in java with this method
-	 * <code>UUID.randomUUID().toString()</code> Class 3 UUID of the
-	 * distinguished name in UTF-8
-	 */
-	String CONNECT_UID = "connect:uid";
+	/** @deprecated Use {@link EntityNames#ENTITY_UID} instead. */
+	@Deprecated
+	String CONNECT_UID = EntityNames.ENTITY_UID;
 
 	String CONNECT_PHOTO = "photo";
 

@@ -1,13 +1,13 @@
 <connect = 'http://www.argeo.org/ns/connect'>
 
-// Base mixin for all connect concept to ease requests in the repository
+// Basemixin for all connect concept to ease requests in the repository
 [connect:base] > mix:title, mix:created, mix:lastModified
- mixin 
+mixin 
 
 // ENTITY TYPE: it is the parent of all connect business types.
-[connect:entity] > connect:base, mix:referenceable
- mixin
-- connect:uid (String) m // nofulltext // An implementation dependent UID for each entity
+[connect:entity] > entity:entity, connect:base, mix:referenceable
+mixin
+//- connect:uid (String) // nofulltext // An implementation dependent UID for each entity
 + connect:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
 + photo (nt:file) // An optional picture for this entity
 
@@ -19,7 +19,7 @@
 										 // Might be the FN value of a vCard
 
 [connect:person] 
- mixin
+mixin
 - ldap:givenName (STRING) 
 - ldap:sn (STRING)
 - ldap:title (STRING)
@@ -27,12 +27,12 @@
 - ldap:generationQualifier
 
 [connect:org] 
- mixin
+mixin
 - ldap:cn (STRING) 
 - ldap:displayName (STRING) 
 
 [connect:contactable] 
- mixin
+mixin
 - ldap:mobile (STRING) // Primary mobile phone number
 - ldap:mail (STRING)  // Primary email
 - ldap:postalAddress (STRING) // The address in human readable form
@@ -40,7 +40,7 @@
 - ldap:associatedDomain (STRING) // Primary website
 
 [connect:postalAddress]  
- mixin
+mixin
 - ldap:street (STRING)
 - ldap:postalCode (STRING)
 - ldap:l (STRING) // city
@@ -48,7 +48,7 @@
 - ldap:c (STRING) // country
 
 [connect:closable]  
- mixin
+mixin
 - connect:closeDate (DATE) 
 - connect:closedBy (STRING) // The dn of the user who closed this task
 // - tracker:closingComment (STRING) // Really?
@@ -58,7 +58,7 @@
 // RESOURCE MANAGEMENT
 
 [connect:taggable] 
- mixin
+mixin
 - connect:tags (STRING) *
 
 [connect:tag] > nt:unstructured, mix:title

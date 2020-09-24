@@ -1,7 +1,8 @@
 Require-Capability: cms.datamodel;filter:="(name=ldap)"
 
-Provide-Capability: cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd,\
+Provide-Capability:\
 cms.datamodel; name=entity; cnd=/org/argeo/entity/entity.cnd,\
+cms.datamodel; name=connect; cnd=/org/argeo/connect/connect.cnd,\
 cms.datamodel; name=cms; cnd=/org/argeo/connect/cms.cnd; abstract=true,\
 cms.datamodel; name=activities; cnd=/org/argeo/activities/activities.cnd; abstract=true,\
 cms.datamodel; name=people; cnd=/org/argeo/people/people.cnd; abstract=true,\
