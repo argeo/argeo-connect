@@ -61,12 +61,16 @@ public class JcrEntityDefinition implements EntityDefinition {
 		return type;
 	}
 
+	protected Repository getRepository() {
+		return repository;
+	}
+
 	public void setRepository(Repository repository) {
 		this.repository = repository;
 	}
 
 	public String toString() {
-		return "Entity Definition "+getType();
+		return "Entity Definition " + getType();
 	}
 
 }

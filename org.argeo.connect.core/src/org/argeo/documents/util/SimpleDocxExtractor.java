@@ -3,7 +3,9 @@ package org.argeo.documents.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,6 +37,7 @@ public class SimpleDocxExtractor {
 	final static String TYPE = "type";
 	final static String SPELL_START = "spellStart";
 	final static String SPELL_END = "spellEnd";
+	
 
 	protected List<Tbl> tables = new ArrayList<>();
 	protected List<String> text = new ArrayList<>();
@@ -83,7 +86,10 @@ public class SimpleDocxExtractor {
 				if (currentTbl != null) {
 					currentTbl.appendText(buffer.toString());
 				} else {
-					String str = buffer.toString().strip();
+					String str = buffer.toString();
+					// replace NO-BREAK SPACE by regular space.
+					str = str.replace('\u00A0',' ');
+					str = str.strip();
 					if (!"".equals(str)) {
 						processTextItem(text, str);
 					}
@@ -122,7 +128,7 @@ public class SimpleDocxExtractor {
 
 	}
 
-	protected static class Tbl {
+	public static class Tbl {
 		Tr currentRow = new Tr();
 		List<Tr> rows = new ArrayList<>();
 
@@ -140,6 +146,10 @@ public class SimpleDocxExtractor {
 			currentRow = new Tr();
 		}
 
+		public List<Tr> getRows() {
+			return rows;
+		}
+
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
@@ -151,7 +161,7 @@ public class SimpleDocxExtractor {
 		}
 	}
 
-	protected static class Tr {
+	public static class Tr {
 		Tc current = new Tc();
 		List<Tc> columns = new ArrayList<>();
 
@@ -164,9 +174,13 @@ public class SimpleDocxExtractor {
 			return sb.toString();
 		}
 
+		public List<Tc> getColumns() {
+			return columns;
+		}
+
 	}
 
-	protected static class Tc {
+	public static class Tc {
 		StringBuilder text = new StringBuilder();
 
 		@Override
@@ -176,7 +190,7 @@ public class SimpleDocxExtractor {
 
 	}
 
-	protected void parse(InputStream in) {
+	public void parse(Reader in) {
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			spf.setNamespaceAware(true);
@@ -189,7 +203,15 @@ public class SimpleDocxExtractor {
 		}
 	}
 
-	protected static InputStream extractDocumentXml(ZipInputStream zIn) throws IOException {
+	public List<String> getText() {
+		return text;
+	}
+
+	public List<Tbl> getTables() {
+		return tables;
+	}
+
+	public static Reader extractDocumentXml(ZipInputStream zIn) throws IOException {
 		ZipEntry entry = null;
 		while ((entry = zIn.getNextEntry()) != null) {
 			if ("word/document.xml".equals(entry.getName())) {
@@ -199,7 +221,7 @@ public class SimpleDocxExtractor {
 					while ((len = zIn.read(buffer)) > 0) {
 						out.write(buffer, 0, len);
 					}
-					return new ByteArrayInputStream(out.toByteArray());
+					return new InputStreamReader(new ByteArrayInputStream(out.toByteArray()), StandardCharsets.UTF_8);
 				}
 			} else {
 				System.out.println(entry.getName());
@@ -221,7 +243,7 @@ public class SimpleDocxExtractor {
 		String file = args[0];
 
 		SimpleDocxExtractor importer = new SimpleDocxExtractor();
-		try (InputStream documentIn = extractDocumentXml(openAsZip(file))) {
+		try (Reader documentIn = extractDocumentXml(openAsZip(file))) {
 			importer.parse(documentIn);
 		}
 

@@ -29,6 +29,7 @@ import org.argeo.connect.util.ConnectJcrUtils;
 import org.argeo.connect.util.ConnectUtils;
 import org.argeo.connect.util.XPathUtils;
 import org.argeo.eclipse.ui.EclipseUiUtils;
+import org.argeo.jcr.Jcr;
 import org.argeo.jcr.JcrUtils;
 
 /** Concrete access to Connect's {@link ActivitiesService} */
@@ -222,6 +223,8 @@ public class ActivitiesServiceImpl extends AbstractAppService implements Activit
 				if (activity.isNodeType(type))
 					return ActivityValueCatalogs.MAPS_ACTIVITY_TYPES.get(type);
 			}
+			if (activity.hasProperty(Property.JCR_TITLE))
+				return Jcr.get(activity, Property.JCR_TITLE);
 			throw new ActivitiesException("Undefined type for activity: " + activity);
 		} catch (RepositoryException e) {
 			throw new ActivitiesException("Unable to get type for activity " + activity, e);
