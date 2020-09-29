@@ -10,8 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -20,6 +22,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.argeo.util.DigestUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -27,7 +30,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 /** Parses a .docx document, trying its best to extract text and table data. */
-public class SimpleDocxExtractor {
+public class DocxExtractor {
 	final static String T = "t";
 	final static String TC = "tc";
 	final static String TR = "tr";
@@ -43,9 +46,14 @@ public class SimpleDocxExtractor {
 	protected List<Tbl> tables = new ArrayList<>();
 	protected List<String> text = new ArrayList<>();
 	protected Map<String, byte[]> media = new TreeMap<>();
+	private Set<String> mediaDigests = new HashSet<>();
 
 	protected void processTextItem(List<String> lines, String str) {
 		lines.add(str);
+	}
+
+	protected boolean skipMedia(String digest) {
+		return false;
 	}
 
 	class DocxHandler extends DefaultHandler {
@@ -246,7 +254,8 @@ public class SimpleDocxExtractor {
 					String fileName = entry.getName().substring(entry.getName().lastIndexOf('/') + 1);
 					int dotIndex = fileName.lastIndexOf('.');
 					String ext = fileName.substring(dotIndex + 1).toLowerCase();
-					if ("jpeg".equals(ext) || "jfif".equals(ext))
+					// we ignore .jfif
+					if ("jpeg".equals(ext))
 						ext = "jpg";
 					fileName = fileName.substring(0, dotIndex) + "." + ext;
 					switch (ext) {
@@ -261,7 +270,14 @@ public class SimpleDocxExtractor {
 							while ((len = zIn.read(buffer)) > 0) {
 								out.write(buffer, 0, len);
 							}
-							media.put(fileName, out.toByteArray());
+							byte[] bytes = out.toByteArray();
+							String digest = DigestUtils.digest(DigestUtils.MD5, bytes);
+							if (skipMedia(digest))
+								break;
+							if (!mediaDigests.contains(digest)) {
+								media.put(fileName, bytes);
+								mediaDigests.add(digest);
+							}
 						}
 						break;
 					default:
@@ -310,7 +326,7 @@ public class SimpleDocxExtractor {
 			throw new IllegalArgumentException("Provide a file path");
 		Path p = Paths.get(args[0]);
 
-		SimpleDocxExtractor importer = new SimpleDocxExtractor();
+		DocxExtractor importer = new DocxExtractor();
 		try (ZipInputStream zIn = new ZipInputStream(Files.newInputStream(p))) {
 			importer.load(zIn);
 		}
