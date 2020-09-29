@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -37,10 +39,10 @@ public class SimpleDocxExtractor {
 	final static String TYPE = "type";
 	final static String SPELL_START = "spellStart";
 	final static String SPELL_END = "spellEnd";
-	
 
 	protected List<Tbl> tables = new ArrayList<>();
 	protected List<String> text = new ArrayList<>();
+	protected Map<String, byte[]> media = new TreeMap<>();
 
 	protected void processTextItem(List<String> lines, String str) {
 		lines.add(str);
@@ -69,9 +71,14 @@ public class SimpleDocxExtractor {
 					inSpellErr = false;
 
 			} else if (TBL.equals(name)) {
-				if (currentTbl != null)
-					throw new IllegalStateException("Already an active table");
-				currentTbl = new Tbl();
+				if (currentTbl != null) {
+					Tbl childTbl = new Tbl();
+					childTbl.parentTbl = currentTbl;
+					currentTbl = childTbl;
+					// throw new IllegalStateException("Already an active table");
+				} else {
+					currentTbl = new Tbl();
+				}
 			}
 		}
 
@@ -88,7 +95,7 @@ public class SimpleDocxExtractor {
 				} else {
 					String str = buffer.toString();
 					// replace NO-BREAK SPACE by regular space.
-					str = str.replace('\u00A0',' ');
+					str = str.replace('\u00A0', ' ');
 					str = str.strip();
 					if (!"".equals(str)) {
 						processTextItem(text, str);
@@ -112,7 +119,10 @@ public class SimpleDocxExtractor {
 			} else if (name.equals(TBL)) {
 				if (currentTbl != null) {
 					tables.add(currentTbl);
-					currentTbl = null;
+					if (currentTbl.parentTbl != null)
+						currentTbl = currentTbl.parentTbl;
+					else
+						currentTbl = null;
 				} else {
 					throw new IllegalStateException("Closing a table while none was open.");
 				}
@@ -129,6 +139,7 @@ public class SimpleDocxExtractor {
 	}
 
 	public static class Tbl {
+		Tbl parentTbl = null;
 		Tr currentRow = new Tr();
 		List<Tr> rows = new ArrayList<>();
 
@@ -190,7 +201,7 @@ public class SimpleDocxExtractor {
 
 	}
 
-	public void parse(Reader in) {
+	protected void parse(Reader in) {
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			spf.setNamespaceAware(true);
@@ -211,42 +222,98 @@ public class SimpleDocxExtractor {
 		return tables;
 	}
 
-	public static Reader extractDocumentXml(ZipInputStream zIn) throws IOException {
-		ZipEntry entry = null;
-		while ((entry = zIn.getNextEntry()) != null) {
-			if ("word/document.xml".equals(entry.getName())) {
-				try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-					byte[] buffer = new byte[2048];
-					int len = 0;
-					while ((len = zIn.read(buffer)) > 0) {
-						out.write(buffer, 0, len);
-					}
-					return new InputStreamReader(new ByteArrayInputStream(out.toByteArray()), StandardCharsets.UTF_8);
-				}
-			} else {
-				System.out.println(entry.getName());
-			}
-		}
-		throw new IllegalArgumentException("No document.xml found");
+	public Map<String, byte[]> getMedia() {
+		return media;
 	}
 
-	protected static ZipInputStream openAsZip(String file) throws IOException {
-		ZipInputStream zIn;
-		Path path = Paths.get(file);
-		zIn = new ZipInputStream(Files.newInputStream(path));
-		return zIn;
+	public void load(ZipInputStream zIn) {
+		try {
+			ZipEntry entry = null;
+			while ((entry = zIn.getNextEntry()) != null) {
+				if ("word/document.xml".equals(entry.getName())) {
+					try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+						byte[] buffer = new byte[2048];
+						int len = 0;
+						while ((len = zIn.read(buffer)) > 0) {
+							out.write(buffer, 0, len);
+						}
+						try (Reader reader = new InputStreamReader(new ByteArrayInputStream(out.toByteArray()),
+								StandardCharsets.UTF_8)) {
+							parse(reader);
+						}
+					}
+				} else if (entry.getName().startsWith("word/media")) {
+					String fileName = entry.getName().substring(entry.getName().lastIndexOf('/') + 1);
+					int dotIndex = fileName.lastIndexOf('.');
+					String ext = fileName.substring(dotIndex + 1).toLowerCase();
+					if ("jpeg".equals(ext) || "jfif".equals(ext))
+						ext = "jpg";
+					fileName = fileName.substring(0, dotIndex) + "." + ext;
+					switch (ext) {
+					case "png":
+					case "jpg":
+					case "gif":
+					case "bmp":
+					case "tiff":
+						try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+							byte[] buffer = new byte[2048];
+							int len = 0;
+							while ((len = zIn.read(buffer)) > 0) {
+								out.write(buffer, 0, len);
+							}
+							media.put(fileName, out.toByteArray());
+						}
+						break;
+					default:
+						break;
+					}
+				} else {
+					// System.out.println(entry.getName());
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// throw new IllegalArgumentException("No document.xml found");
+
 	}
+
+//	public static Reader extractDocumentXml(ZipInputStream zIn) throws IOException {
+//		ZipEntry entry = null;
+//		while ((entry = zIn.getNextEntry()) != null) {
+//			if ("word/document.xml".equals(entry.getName())) {
+//				try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+//					byte[] buffer = new byte[2048];
+//					int len = 0;
+//					while ((len = zIn.read(buffer)) > 0) {
+//						out.write(buffer, 0, len);
+//					}
+//					return new InputStreamReader(new ByteArrayInputStream(out.toByteArray()), StandardCharsets.UTF_8);
+//				}
+//			} else {
+//				System.out.println(entry.getName());
+//			}
+//		}
+//		throw new IllegalArgumentException("No document.xml found");
+//	}
+
+//	protected static ZipInputStream openAsZip(String file) throws IOException {
+//		ZipInputStream zIn;
+//		Path path = Paths.get(file);
+//		zIn = new ZipInputStream(Files.newInputStream(path));
+//		return zIn;
+//	}
 
 	public static void main(String[] args) throws IOException {
 		if (args.length == 0)
 			throw new IllegalArgumentException("Provide a file path");
-		String file = args[0];
+		Path p = Paths.get(args[0]);
 
 		SimpleDocxExtractor importer = new SimpleDocxExtractor();
-		try (Reader documentIn = extractDocumentXml(openAsZip(file))) {
-			importer.parse(documentIn);
+		try (ZipInputStream zIn = new ZipInputStream(Files.newInputStream(p))) {
+			importer.load(zIn);
 		}
-
 		// display
 		System.out.println("## TEXT");
 		for (int i = 0; i < importer.text.size(); i++) {
@@ -260,6 +327,12 @@ public class SimpleDocxExtractor {
 			Tbl tbl = importer.tables.get(i);
 			System.out.println("## TABLE " + i);
 			System.out.println(tbl);
+		}
+
+		System.out.println("## MEDIA");
+		for (String fileName : importer.media.keySet()) {
+			int sizeKb = importer.media.get(fileName).length / 1024;
+			System.out.println(fileName + " " + sizeKb + " kB");
 		}
 	}
 
