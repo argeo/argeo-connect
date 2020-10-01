@@ -5,9 +5,9 @@
 mixin 
 
 // ENTITY TYPE: it is the parent of all connect business types.
-[connect:entity] > entity:entity, connect:base, mix:referenceable
+[connect:entity] > connect:base, mix:referenceable
 mixin
-//- connect:uid (String) // nofulltext // An implementation dependent UID for each entity
+- connect:uid (String) m // nofulltext // An implementation dependent UID for each entity
 + connect:externalIds (nt:unstructured) // Optional, enable synchronisation with third party systems
 + photo (nt:file) // An optional picture for this entity
 
