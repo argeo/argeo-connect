@@ -115,6 +115,13 @@ public class DelayedText {
 
 	public Text getText() {
 		return text;
+	}
+
+	public void close() {
+		if (pushSession != null)
+			pushSession.stop();
+		if (timer != null)
+			timer.cancel();
 	};
 
 }
