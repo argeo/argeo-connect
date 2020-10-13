@@ -30,6 +30,15 @@
 
 		<!-- Eclipse 4 -->
 		<module>org.argeo.connect.e4</module>
+		
+		<!-- Legacy Suite -->
+		<module>org.argeo.suite.cms</module>
+		<module>org.argeo.suite.e4</module>
+		<module>org.argeo.suite.e4.rap</module>
+		<module>org.argeo.suite.standard</module>
+		<module>org.argeo.suite.tracker</module>
+		<module>org.argeo.suite.docs</module>
+		<module>org.argeo.suite.studio</module>
 
 		<module>dep</module>
 		<!-- Example -->

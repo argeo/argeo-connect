@@ -1,4 +1,5 @@
 <cms = 'http://www.argeo.org/ns/cms'>
+<argeo = 'http://www.argeo.org/ns/argeo'>
 
 // TEXT
 [cms:styled]
