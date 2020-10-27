@@ -38,7 +38,7 @@ import org.argeo.jcr.JcrUtils;
 /** Default backend for the Documents App */
 public class DocumentsServiceImpl extends AbstractAppService implements DocumentsService {
 	// TODO make it more robust and configurable
-	private String baseWorkspaceName = "main";
+	private String baseWorkspaceName = NodeConstants.SYS_WORKSPACE;
 
 	@Override
 	public Node publishEntity(Node parent, String nodeType, Node srcNode, boolean removeSrcNode)
