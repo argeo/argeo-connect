@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.argeo.maven</groupId>
@@ -12,7 +10,7 @@
 	<packaging>pom</packaging>
 	<name>Parent POM for Argeo Suite Extensions</name>
 	<description />
-	<version>2.1.82-SNAPSHOT</version>
+	<version>2.1.82</version>
 	<properties>
 		<!-- Dependencies -->
 		<version.argeo-tp>2.1.27</version.argeo-tp>
@@ -32,7 +30,7 @@
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.connect.dep.e4.rap</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -55,42 +53,42 @@
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.suite.cms</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.suite.docs</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.suite.e4</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.suite.e4.rap</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.suite.standard</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.suite.studio</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.suite.tracker</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 		</dependency>
 		<dependency>
 			<groupId>org.argeo.connect</groupId>
 			<artifactId>org.argeo.theme.argeo2</artifactId>
-			<version>2.1.82-SNAPSHOT</version>
+			<version>2.1.82</version>
 		</dependency>
 		
 		<!-- SDK -->
@@ -217,4 +215,8 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
+  <scm>
+    <tag>argeo-connect-2.1.82</tag>
+  </scm>
 </project>
