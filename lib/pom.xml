@@ -8,65 +8,30 @@
 		<version>2.1.2</version>
 	</parent>
 	<groupId>org.argeo.connect</groupId>
-	<artifactId>argeo-connect</artifactId>
+	<artifactId>argeo-suite-lib</artifactId>
 	<packaging>pom</packaging>
-	<name>Argeo Connect</name>
-	<description>Real world IT</description>
+	<name>Parent POM for Argeo Suite Extensions</name>
+	<description />
 	<version>2.1.82-SNAPSHOT</version>
 	<properties>
+		<!-- Dependencies -->
 		<version.argeo-tp>2.1.27</version.argeo-tp>
 		<version.argeo-tp-extras>2.1.13</version.argeo-tp-extras>
 		<version.argeo-commons>2.1.91-SNAPSHOT</version.argeo-commons>
-		<argeo.rpm.stagingRepository>/srv/rpmfactory/argeo-osgi-2/el7</argeo.rpm.stagingRepository>
+
+		<argeo.rpm.stagingRepository>/srv/rpmfactory/argeo-osgi-2-gpl/el7</argeo.rpm.stagingRepository>
+		<git.rw />
 	</properties>
-	<modules>
-		<module>org.argeo.connect.api</module>
-		<module>org.argeo.connect.core</module>
-
-		<!-- UI -->
-		<module>org.argeo.connect.ui</module>
-		<module>org.argeo.people.web</module>
-		<module>org.argeo.theme.argeo2</module>
-
-		<!-- Eclipse 4 -->
-		<module>org.argeo.connect.e4</module>
-		
-		<!-- Legacy Suite -->
-		<module>org.argeo.suite.cms</module>
-		<module>org.argeo.suite.e4</module>
-		<module>org.argeo.suite.e4.rap</module>
-		<module>org.argeo.suite.standard</module>
-		<module>org.argeo.suite.tracker</module>
-		<module>org.argeo.suite.docs</module>
-		<module>org.argeo.suite.studio</module>
-
-		<module>dep</module>
-		<module>lib</module>
-		<!-- Example -->
-		<module>example</module>
-	</modules>
-	<scm>
-		<connection>scm:git:http://git.argeo.org/lgpl/argeo-connect.git</connection>
-		<url>http://git.argeo.org/?p=lgpl/argeo-connect.git;a=summary</url>
-		<developerConnection>scm:git:https://code.argeo.org/git/lgpl/argeo-connect.git</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
-	<organization>
-		<name>Argeo GmbH</name>
-	</organization>
-	<inceptionYear>2008</inceptionYear>
-	<licenses>
-		<license>
-			<name>LGPL-3.0-or-later</name>
-			<url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
 	<dependencies>
 		<dependency>
-			<groupId>org.argeo.tp</groupId>
-			<artifactId>argeo-tp</artifactId>
-			<version>${version.argeo-tp}</version>
+			<groupId>org.argeo.tp.equinox</groupId>
+			<artifactId>org.eclipse.osgi</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.connect.dep.e4.rap</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -83,6 +48,60 @@
 					<artifactId>slf4j.osgi</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- Suite -->
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.suite.cms</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.suite.docs</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.suite.e4</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.suite.e4.rap</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.suite.standard</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.suite.studio</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.suite.tracker</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.connect</groupId>
+			<artifactId>org.argeo.theme.argeo2</artifactId>
+			<version>2.1.82-SNAPSHOT</version>
+		</dependency>
+		
+		<!-- SDK -->
+		<dependency>
+			<groupId>org.argeo.tp.sdk</groupId>
+			<artifactId>org.junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.argeo.tp.sdk</groupId>
+			<artifactId>org.hamcrest</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -113,7 +132,7 @@
 	<repositories>
 		<repository>
 			<id>argeo</id>
-			<url>http://repo.argeo.org/data/java/argeo-2.1/</url>
+			<url>http://repo.argeo.org/data/java/argeo-2.1</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -122,7 +141,7 @@
 		</repository>
 		<repository>
 			<id>argeo-extras</id>
-			<url>http://repo.argeo.org/data/java/argeo-extras-2.1/</url>
+			<url>http://repo.argeo.org/data/java/argeo-extras-2.1</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>daily</updatePolicy>
@@ -197,33 +216,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<distributionManagement>
-		<site>
-			<id>staging</id>
-			<url>file:///srv/docfactory/argeo-2.1/site/argeo-connect/</url>
-		</site>
-	</distributionManagement>
-	<profiles>
-		<profile>
-			<id>localrepo</id>
-			<repositories>
-				<repository>
-					<id>argeo</id>
-					<url>http://localhost:7080/data/java/argeo-2.1</url>
-					<releases>
-						<enabled>true</enabled>
-						<updatePolicy>daily</updatePolicy>
-						<checksumPolicy>warn</checksumPolicy>
-					</releases>
-				</repository>
-			</repositories>
-			<distributionManagement>
-				<repository>
-					<id>staging</id>
-					<url>dav:http://localhost:7080/data/java/argeo-2.1/</url>
-					<uniqueVersion>false</uniqueVersion>
-				</repository>
-			</distributionManagement>
-		</profile>
-	</profiles>
 </project>
