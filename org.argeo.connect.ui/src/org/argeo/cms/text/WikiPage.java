@@ -12,8 +12,6 @@ import org.argeo.cms.ui.util.CmsLink;
 import org.argeo.cms.ui.util.CmsUiUtils;
 import org.argeo.cms.ui.viewers.JcrVersionCmsEditable;
 import org.argeo.cms.ui.widgets.ScrolledPage;
-import org.argeo.connect.CmsNames;
-import org.argeo.connect.CmsTypes;
 import org.argeo.jcr.JcrUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;

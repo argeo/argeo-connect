@@ -6,7 +6,6 @@ import java.util.List;
 import org.argeo.cms.ui.viewers.EditablePart;
 import org.argeo.cms.ui.viewers.SectionPart;
 import org.argeo.cms.ui.widgets.TextStyles;
-import org.argeo.connect.CmsNames;
 import org.eclipse.rap.rwt.RWT;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -21,6 +20,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /** Dialog to edit a text part. */
+@Deprecated
 class TextContextMenu extends Shell implements CmsNames, TextStyles {
 	private final static String[] DEFAULT_TEXT_STYLES = {
 			TextStyles.TEXT_DEFAULT, TextStyles.TEXT_PRE, TextStyles.TEXT_QUOTE };
